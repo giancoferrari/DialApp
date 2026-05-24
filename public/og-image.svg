@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#F0EBDD"/>
+
+  <!-- Subtle dot pattern -->
+  <defs>
+    <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#1F1D17" opacity="0.06"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#dots)"/>
+
+  <!-- Decorative blob top-right -->
+  <ellipse cx="1080" cy="120" rx="220" ry="200" fill="#B5C29A" opacity="0.25" transform="rotate(-15 1080 120)"/>
+
+  <!-- Decorative blob bottom-left -->
+  <ellipse cx="120" cy="530" rx="180" ry="160" fill="#D9824D" opacity="0.12" transform="rotate(20 120 530)"/>
+
+  <!-- Logo mark (D shape) -->
+  <g transform="translate(120, 220)">
+    <rect width="108" height="108" rx="24" fill="#1F3A2A"/>
+    <path fill-rule="evenodd" clip-rule="evenodd"
+      d="M20 17L20 91L45 91C74 91 91 74 91 54C91 34 74 17 45 17L20 17ZM34 31L45 31C65 31 77 41 77 54C77 67 65 77 45 77L34 77Z"
+      fill="#D9824D"/>
+  </g>
+
+  <!-- Wordmark: "Dial." -->
+  <text x="254" y="296"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="108"
+    font-weight="700"
+    letter-spacing="-4"
+    fill="#1F1D17">Dial<tspan fill="#D9824D">.</tspan></text>
+
+  <!-- Tagline -->
+  <text x="122" y="368"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="32"
+    font-weight="400"
+    letter-spacing="1"
+    fill="#6B6857">Your Personal Caddy</text>
+
+  <!-- Divider line -->
+  <rect x="122" y="400" width="80" height="3" rx="2" fill="#D9824D" opacity="0.6"/>
+
+  <!-- Bottom descriptor -->
+  <text x="122" y="460"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="24"
+    fill="#8B9E6E"
+    letter-spacing="3">
+    TRACK · DIAL IN · PLAY BETTER
+  </text>
+
+  <!-- URL -->
+  <text x="122" y="560"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="22"
+    fill="#B5AC95"
+    letter-spacing="1">dialgolf.xyz</text>
+</svg>
