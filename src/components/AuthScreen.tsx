@@ -472,7 +472,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
 
                   {/* Legal checkboxes — signup only */}
                   {mode === 'signup' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20, alignItems: 'center' }}>
                       {[
                         {
                           checked: agreeTerms,
