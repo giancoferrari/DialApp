@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { useAuth } from './contexts/AuthContext'
-import { fetchShots, insertShot } from './lib/shots'
+import { fetchShots, insertShot, setClubDistance } from './lib/shots'
 import { fetchCourses } from './lib/courses'
 import { fetchRounds } from './lib/rounds'
 import { fetchPracticeSessions } from './lib/practice'
@@ -188,6 +188,22 @@ function AppShell() {
   const handleLogFor = (club: Club) => { setLogPreclub(club); setLogOpen(true) }
   const handleCloseLog = () => { setLogOpen(false); setLogPreclub(null) }
 
+  const handleSetDistance = async (clubId: string, yardage: number) => {
+    if (!user) return
+    const tempId = -Date.now()
+    setShots(prev => [
+      { id: tempId, clubId, yardage, ts: Date.now(), note: '' },
+      ...prev.filter(s => s.clubId !== clubId),
+    ])
+    try {
+      const saved = await setClubDistance(user.id, clubId, yardage)
+      setShots(prev => prev.map(s => s.id === tempId ? saved : s))
+    } catch (err) {
+      console.error('Failed to set distance:', err)
+      setShots(prev => prev.filter(s => s.id !== tempId))
+    }
+  }
+
   const handleSetView = (v: View) => {
     if (v === view) return
     try { localStorage.setItem('dial_view', v) } catch { /* */ }
@@ -227,7 +243,7 @@ function AppShell() {
           />
         )}
         {view === 'bag' && (
-          <BagView shots={shots} onLogFor={handleLogFor} isMobile={isMobile} />
+          <BagView shots={shots} onSetDistance={handleSetDistance} isMobile={isMobile} />
         )}
         {view === 'dialin' && (
           <DialInView shots={shots} isMobile={isMobile} />

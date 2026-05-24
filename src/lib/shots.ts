@@ -53,3 +53,17 @@ export async function deleteShot(id: string | number): Promise<void> {
   const { error } = await supabase.from('shots').delete().eq('id', String(id))
   if (error) throw error
 }
+
+export async function setClubDistance(
+  userId: string,
+  clubId: string,
+  yardage: number
+): Promise<Shot> {
+  const { error: delError } = await supabase
+    .from('shots')
+    .delete()
+    .eq('user_id', userId)
+    .eq('club_id', clubId)
+  if (delError) throw delError
+  return insertShot(userId, { clubId, yardage, ts: Date.now(), note: '' })
+}

@@ -3,9 +3,7 @@ import type { Club, Shot, ClubCat } from './types'
 export const CLUBS_DATA: Club[] = [
   { id: 'driver', name: 'Driver',         abbr: 'D',   cat: 'woods'   },
   { id: '3w',     name: '3 Wood',         abbr: '3W',  cat: 'woods'   },
-  { id: '5w',     name: '5 Wood',         abbr: '5W',  cat: 'woods'   },
-  { id: '4h',     name: '4 Hybrid',       abbr: '4H',  cat: 'hybrids' },
-  { id: '5h',     name: '5 Hybrid',       abbr: '5H',  cat: 'hybrids' },
+  { id: 'h',      name: 'Hybrid',         abbr: 'H',   cat: 'hybrids' },
   { id: '4i',     name: '4 Iron',         abbr: '4I',  cat: 'irons'   },
   { id: '5i',     name: '5 Iron',         abbr: '5I',  cat: 'irons'   },
   { id: '6i',     name: '6 Iron',         abbr: '6I',  cat: 'irons'   },
@@ -48,15 +46,13 @@ export function makeInitialShots(): Shot[] {
     { id: 14, clubId: 'sw',     yardage: 92,  ts: now - d * 4,   note: '' },
     { id: 15, clubId: '5i',     yardage: 180, ts: now - d * 4,   note: '' },
     { id: 16, clubId: '9i',     yardage: 138, ts: now - d * 5,   note: '' },
-    { id: 17, clubId: '4h',     yardage: 208, ts: now - d * 5,   note: '' },
+    { id: 17, clubId: 'h',      yardage: 205, ts: now - d * 5,   note: '' },
     { id: 18, clubId: '7i',     yardage: 165, ts: now - d * 6,   note: '' },
     { id: 19, clubId: '4i',     yardage: 188, ts: now - d * 7,   note: '' },
-    { id: 20, clubId: '5w',     yardage: 215, ts: now - d * 7,   note: '' },
-    { id: 21, clubId: 'lw',     yardage: 78,  ts: now - d * 8,   note: '' },
-    { id: 22, clubId: 'driver', yardage: 248, ts: now - d * 9,   note: '' },
-    { id: 23, clubId: '9i',     yardage: 141, ts: now - d * 10,  note: '' },
-    { id: 24, clubId: '5h',     yardage: 195, ts: now - d * 11,  note: '' },
-    { id: 25, clubId: 'sw',     yardage: 88,  ts: now - d * 12,  note: '' },
+    { id: 20, clubId: 'lw',     yardage: 78,  ts: now - d * 8,   note: '' },
+    { id: 21, clubId: 'driver', yardage: 248, ts: now - d * 9,   note: '' },
+    { id: 22, clubId: '9i',     yardage: 141, ts: now - d * 10,  note: '' },
+    { id: 23, clubId: 'sw',     yardage: 88,  ts: now - d * 11,  note: '' },
   ]
 }
 
