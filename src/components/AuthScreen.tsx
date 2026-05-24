@@ -472,7 +472,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
 
                   {/* Legal checkboxes — signup only */}
                   {mode === 'signup' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20, alignItems: 'center' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
                       {[
                         {
                           checked: agreeTerms,
@@ -494,11 +494,11 @@ export default function AuthScreen({ onShowLegal }: Props) {
                           label: 'I confirm that I am 18 years of age or older',
                         },
                       ].map((item, i) => (
-                        <label key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
+                        <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
                           <div
                             onClick={item.onChange}
                             style={{
-                              width: 18, height: 18, borderRadius: 5, flexShrink: 0, marginTop: 1,
+                              width: 18, height: 18, borderRadius: 5, flexShrink: 0,
                               border: `1.5px solid ${item.checked ? '#1F3A2A' : '#C9C0A8'}`,
                               background: item.checked ? '#1F3A2A' : 'transparent',
                               display: 'flex', alignItems: 'center', justifyContent: 'center',
