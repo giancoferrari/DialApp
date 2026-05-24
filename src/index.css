@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base reset ────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Paper-grain cream background */
+  background:
+    radial-gradient(rgba(31,29,23,0.025) 0.5px, transparent 0.5px) 0 0 / 4px 4px,
+    #F0EBDD;
+  color: #1F1D17;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #C9C0A8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #8B9E6E; }
+
+/* ── Input resets ───────────────────────────────────────────── */
+input, button, textarea { font-family: inherit; }
+button { cursor: pointer; }
+input:focus { outline: none; }
+
+/* ── GSAP / animation helpers ──────────────────────────────── */
+.will-animate {
+  opacity: 0;
+}
+
+/* ── Keyframes ─────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.94) translateY(8px); opacity: 0; }
+  to   { transform: scale(1)    translateY(0px); opacity: 1; }
+}
+
+@keyframes popIn {
+  0%   { transform: scale(0);    opacity: 0; }
+  70%  { transform: scale(1.18);             }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+/* ── Reduced-motion: strip all movement ────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .will-animate { opacity: 1; }
+}
