@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { Shot, WindDirection, WindStrength } from '../types'
 import { CLUBS_DATA, getClubAvg } from '../data'
 
-interface Props { shots: Shot[] }
+interface Props { shots: Shot[]; isMobile?: boolean }
 
 const WIND_DIRS: { id: WindDirection; label: string; hint: string }[] = [
   { id: 'none',     label: 'No wind',         hint: 'Calm' },
@@ -45,7 +45,7 @@ const card: React.CSSProperties = {
   borderRadius: 20, padding: '24px 28px',
 }
 
-export default function DialInView({ shots }: Props) {
+export default function DialInView({ shots, isMobile }: Props) {
   const [target, setTarget]     = useState('')
   const [dir, setDir]           = useState<WindDirection>('none')
   const [str, setStr]           = useState<WindStrength>('light')
@@ -68,17 +68,17 @@ export default function DialInView({ shots }: Props) {
   }
 
   return (
-    <div style={{ maxWidth: 1320, margin: '0 auto', padding: '48px 40px' }}>
+    <div style={{ maxWidth: 1320, margin: '0 auto', padding: isMobile ? '24px 16px' : '48px 40px' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 36 }}>
+      <div style={{ marginBottom: isMobile ? 24 : 36 }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#5C7A4D', textTransform: 'uppercase', marginBottom: 8 }}>
           Club Recommender
         </div>
-        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 38, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: 0 }}>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 28 : 38, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: 0 }}>
           Dial in.
         </h1>
-        <p style={{ fontSize: 15, color: '#6B6857', marginTop: 8 }}>
+        <p style={{ fontSize: 14, color: '#6B6857', marginTop: 8 }}>
           Enter your target distance and wind conditions — we'll find your club.
         </p>
       </div>
@@ -90,7 +90,7 @@ export default function DialInView({ shots }: Props) {
           <p style={{ fontSize: 14, color: '#6B6857' }}>Log shots in My Bag first so we can recommend clubs based on your real averages.</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, maxWidth: 820 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 16 : 24, maxWidth: isMobile ? '100%' : 820 }}>
 
           {/* Target distance */}
           <div style={card}>
@@ -100,6 +100,7 @@ export default function DialInView({ shots }: Props) {
                 type="number" min={1} max={400} value={target}
                 onChange={e => { setTarget(e.target.value); setResult(null) }}
                 placeholder="e.g. 150"
+                inputMode="numeric"
                 style={{
                   flex: 1, background: '#F0EBDD', border: '1px solid #E0D8C5',
                   borderRadius: 12, padding: '13px 16px', fontSize: 22,
@@ -141,7 +142,7 @@ export default function DialInView({ shots }: Props) {
 
           {/* Wind strength — only if wind selected */}
           {dir !== 'none' && (
-            <div style={card}>
+            <div style={{ ...card, gridColumn: isMobile ? '1' : 'auto' }}>
               <span style={labelStyle}>Wind strength</span>
               <div style={{ display: 'flex', gap: 8 }}>
                 {WIND_STRENGTHS.map(s => (
@@ -166,7 +167,7 @@ export default function DialInView({ shots }: Props) {
           )}
 
           {/* Find button */}
-          <div style={{ display: 'flex', alignItems: 'flex-end', gridColumn: dir !== 'none' ? 'auto' : '2' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gridColumn: isMobile ? '1' : (dir !== 'none' ? 'auto' : '2') }}>
             <button
               onClick={handleFind}
               disabled={!target}

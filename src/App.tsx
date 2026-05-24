@@ -230,7 +230,7 @@ function AppShell() {
           <BagView shots={shots} onLogFor={handleLogFor} isMobile={isMobile} />
         )}
         {view === 'dialin' && (
-          <DialInView shots={shots} />
+          <DialInView shots={shots} isMobile={isMobile} />
         )}
         {view === 'rounds' && (
           <ScorecardView

@@ -38,6 +38,10 @@ export default function AuthScreen({ onShowLegal }: Props) {
   const [confirmed, setConfirmed] = useState(false)
   const [showPwHints, setShowPwHints] = useState(false)
 
+  const [agreeTerms, setAgreeTerms]     = useState(false)
+  const [agreePrivacy, setAgreePrivacy] = useState(false)
+  const [agreeAge, setAgreeAge]         = useState(false)
+
   const [cooldown, setCooldown]   = useState(0)  // seconds remaining
   const cooldownUntil = useRef<number>(0)
   const failCount     = useRef<number>(0)
@@ -86,6 +90,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
     if (reduced) {
       setMode(next); setError(null); setEmail(''); setPassword(''); setConfirm('')
       setFirstName(''); setLastName(''); setShowPwHints(false); setResetSent(false)
+      setAgreeTerms(false); setAgreePrivacy(false); setAgreeAge(false)
       return
     }
     gsap.to(formRef.current, {
@@ -93,6 +98,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
       onComplete: () => {
         setMode(next); setError(null); setEmail(''); setPassword(''); setConfirm('')
         setFirstName(''); setLastName(''); setShowPwHints(false); setResetSent(false)
+        setAgreeTerms(false); setAgreePrivacy(false); setAgreeAge(false)
         gsap.fromTo(formRef.current, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out' })
       },
     })
@@ -127,6 +133,9 @@ export default function AuthScreen({ onShowLegal }: Props) {
       const pwErr = validatePassword(password)
       if (pwErr) { setError(pwErr); return }
       if (password !== confirm) { setError('Passwords do not match.'); return }
+      if (!agreeTerms)   { setError('Please accept the Terms of Service to continue.'); return }
+      if (!agreePrivacy) { setError('Please accept the Privacy Policy to continue.'); return }
+      if (!agreeAge)     { setError('You must be 18 or older to create an account.'); return }
     }
 
     setLoading(true)
@@ -332,7 +341,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                         <input
                           type="text" required value={firstName}
                           onChange={e => setFirstName(e.target.value)}
-                          placeholder="Jane"
+                          placeholder="First name"
                           style={inputStyle}
                           onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
                           onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
@@ -343,7 +352,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                         <input
                           type="text" required value={lastName}
                           onChange={e => setLastName(e.target.value)}
-                          placeholder="Doe"
+                          placeholder="Last name"
                           style={inputStyle}
                           onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
                           onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
@@ -461,6 +470,55 @@ export default function AuthScreen({ onShowLegal }: Props) {
                     </div>
                   )}
 
+                  {/* Legal checkboxes — signup only */}
+                  {mode === 'signup' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+                      {[
+                        {
+                          checked: agreeTerms,
+                          onChange: () => setAgreeTerms(v => !v),
+                          label: <>I agree to the{' '}
+                            <button type="button" onClick={() => onShowLegal('terms')} style={{ background: 'none', border: 'none', color: '#1F3A2A', fontSize: 13, cursor: 'pointer', padding: 0, textDecoration: 'underline', fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>Terms of Service</button>
+                          </>,
+                        },
+                        {
+                          checked: agreePrivacy,
+                          onChange: () => setAgreePrivacy(v => !v),
+                          label: <>I have read the{' '}
+                            <button type="button" onClick={() => onShowLegal('privacy')} style={{ background: 'none', border: 'none', color: '#1F3A2A', fontSize: 13, cursor: 'pointer', padding: 0, textDecoration: 'underline', fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>Privacy Policy</button>
+                          </>,
+                        },
+                        {
+                          checked: agreeAge,
+                          onChange: () => setAgreeAge(v => !v),
+                          label: 'I confirm that I am 18 years of age or older',
+                        },
+                      ].map((item, i) => (
+                        <label key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
+                          <div
+                            onClick={item.onChange}
+                            style={{
+                              width: 18, height: 18, borderRadius: 5, flexShrink: 0, marginTop: 1,
+                              border: `1.5px solid ${item.checked ? '#1F3A2A' : '#C9C0A8'}`,
+                              background: item.checked ? '#1F3A2A' : 'transparent',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              transition: 'all 0.15s', cursor: 'pointer',
+                            }}
+                          >
+                            {item.checked && (
+                              <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                                <path d="M1 4l3 3 5-6" stroke="#FAF6EA" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            )}
+                          </div>
+                          <span style={{ fontSize: 13, color: '#6B6857', lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif" }}>
+                            {item.label}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Error */}
                   {error && (
                     <div style={{
@@ -498,30 +556,29 @@ export default function AuthScreen({ onShowLegal }: Props) {
           )}
         </div>
 
-        {/* Legal footer */}
-        <p style={{
-          textAlign: 'center', fontSize: 12, color: '#B5AC95',
-          marginTop: 20, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.6,
-        }}>
-          {mode === 'signup' && !confirmed && (
-            <>By creating an account you agree to our{' '}</>
-          )}
-          <button onClick={() => onShowLegal('terms')} style={{
-            background: 'none', border: 'none', color: '#6B6857', fontSize: 12,
-            cursor: 'pointer', textDecoration: 'underline', padding: 0,
-            fontFamily: "'DM Sans', sans-serif",
+        {/* Legal footer — sign-in only */}
+        {mode !== 'signup' && (
+          <p style={{
+            textAlign: 'center', fontSize: 12, color: '#B5AC95',
+            marginTop: 20, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.6,
           }}>
-            Terms of Service
-          </button>
-          {' '}and{' '}
-          <button onClick={() => onShowLegal('privacy')} style={{
-            background: 'none', border: 'none', color: '#6B6857', fontSize: 12,
-            cursor: 'pointer', textDecoration: 'underline', padding: 0,
-            fontFamily: "'DM Sans', sans-serif",
-          }}>
-            Privacy Policy
-          </button>
-        </p>
+            <button onClick={() => onShowLegal('terms')} style={{
+              background: 'none', border: 'none', color: '#6B6857', fontSize: 12,
+              cursor: 'pointer', textDecoration: 'underline', padding: 0,
+              fontFamily: "'DM Sans', sans-serif",
+            }}>
+              Terms of Service
+            </button>
+            {' '}·{' '}
+            <button onClick={() => onShowLegal('privacy')} style={{
+              background: 'none', border: 'none', color: '#6B6857', fontSize: 12,
+              cursor: 'pointer', textDecoration: 'underline', padding: 0,
+              fontFamily: "'DM Sans', sans-serif",
+            }}>
+              Privacy Policy
+            </button>
+          </p>
+        )}
       </div>
     </div>
   )
