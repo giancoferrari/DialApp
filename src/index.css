@@ -12,12 +12,14 @@ body {
   font-family: 'DM Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Paper-grain cream background */
   background:
     radial-gradient(rgba(31,29,23,0.025) 0.5px, transparent 0.5px) 0 0 / 4px 4px,
     #F0EBDD;
   color: #1F1D17;
   min-height: 100vh;
+  /* Prevent text-size adjust on iOS */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 #root {
@@ -35,10 +37,14 @@ input, button, textarea { font-family: inherit; }
 button { cursor: pointer; }
 input:focus { outline: none; }
 
+/* Prevent 300ms tap delay on mobile */
+button, a { touch-action: manipulation; }
+
+/* Safe-area padding for bottom content on iOS */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
 /* ── GSAP / animation helpers ──────────────────────────────── */
-.will-animate {
-  opacity: 0;
-}
+.will-animate { opacity: 0; }
 
 /* ── Keyframes ─────────────────────────────────────────────── */
 @keyframes fadeIn {
@@ -51,10 +57,44 @@ input:focus { outline: none; }
   to   { transform: scale(1)    translateY(0px); opacity: 1; }
 }
 
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
 @keyframes popIn {
   0%   { transform: scale(0);    opacity: 0; }
   70%  { transform: scale(1.18);             }
   100% { transform: scale(1);    opacity: 1; }
+}
+
+/* ── Mobile: hide horizontal scrollbar on chips ─────────────── */
+@media (max-width: 768px) {
+  /* Date input styling on mobile */
+  input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    min-height: 44px;
+  }
+
+  /* Smooth momentum scroll on iOS */
+  .overflow-x-scroll,
+  [style*="overflow-x: auto"] {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .overflow-x-scroll::-webkit-scrollbar,
+  [style*="overflow-x: auto"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Larger tap targets on mobile */
+  button {
+    min-height: 36px;
+  }
+
+  /* Improve table scroll */
+  table { font-size: 12px; }
 }
 
 /* ── Reduced-motion: strip all movement ────────────────────── */

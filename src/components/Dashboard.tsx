@@ -50,8 +50,9 @@ function StatCard({ label, value, sub, accent }: {
   return (
     <div ref={cardRef} style={{
       background: '#FAF6EA', border: '1px solid #E0D8C5',
-      borderRadius: 20, padding: '20px 22px',
-      flex: 1, display: 'flex', alignItems: 'center', gap: 18,
+      borderRadius: 20, padding: '16px 18px',
+      flex: '1 0 140px', display: 'flex', alignItems: 'center', gap: 14,
+      minWidth: 0,
     }}>
       <div style={{ width: 4, alignSelf: 'stretch', borderRadius: 2, background: accent }} />
       <div style={{ flex: 1 }}>
@@ -63,7 +64,7 @@ function StatCard({ label, value, sub, accent }: {
         </div>
         <div style={{
           fontFamily: "'Bricolage Grotesque', sans-serif",
-          fontSize: 44, fontWeight: 700, lineHeight: 1,
+          fontSize: 36, fontWeight: 700, lineHeight: 1,
           color: '#1F1D17', letterSpacing: '-0.04em',
         }}>
           {displayed}
@@ -80,9 +81,11 @@ interface Props {
   onOpenBag: () => void
   onLog: () => void
   onLogFor: (club: Club) => void
+  isMobile?: boolean
+  userName?: string
 }
 
-export default function Dashboard({ shots, loading, onOpenBag, onLog, onLogFor }: Props) {
+export default function Dashboard({ shots, loading, onOpenBag, onLog, onLogFor, isMobile = false, userName = '' }: Props) {
   const containerRef = useRef<HTMLElement>(null)
   const heroLeftRef  = useRef<HTMLDivElement>(null)
   const heroRightRef = useRef<HTMLDivElement>(null)
@@ -148,13 +151,15 @@ export default function Dashboard({ shots, loading, onOpenBag, onLog, onLogFor }
     return () => mm.revert()
   }, { scope: containerRef })
 
+  const px = isMobile ? 16 : 40
+
   return (
-    <main ref={containerRef} style={{ maxWidth: 1320, margin: '0 auto', padding: '48px 40px 96px' }}>
+    <main ref={containerRef} style={{ maxWidth: 1320, margin: '0 auto', padding: `${isMobile ? 24 : 48}px ${px}px ${isMobile ? 96 : 96}px` }}>
 
       {/* ── HERO ── */}
       <section style={{
-        display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 64,
-        alignItems: 'center', marginBottom: 80,
+        display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.4fr 1fr', gap: isMobile ? 0 : 64,
+        alignItems: 'center', marginBottom: isMobile ? 32 : 80,
       }}>
         <div ref={heroLeftRef}>
           {/* Date chip — auto-updates at midnight */}
@@ -171,9 +176,9 @@ export default function Dashboard({ shots, loading, onOpenBag, onLog, onLogFor }
 
           <h1 style={{
             fontFamily: "'Bricolage Grotesque', sans-serif",
-            fontSize: 92, fontWeight: 700,
-            lineHeight: 0.95, letterSpacing: '-0.045em',
-            color: '#1F1D17', marginBottom: 24, marginTop: 0,
+            fontSize: isMobile ? 52 : 92, fontWeight: 700,
+            lineHeight: 0.95, letterSpacing: '-0.04em',
+            color: '#1F1D17', marginBottom: isMobile ? 16 : 24, marginTop: 0,
           }}>
             <span style={{ color: '#5C7A4D', fontStyle: 'italic', fontWeight: 400 }}>let's </span>
             <span style={{ color: '#D9824D' }}>dial</span>
@@ -224,44 +229,46 @@ export default function Dashboard({ shots, loading, onOpenBag, onLog, onLogFor }
           </div>
         </div>
 
-        <div ref={heroRightRef} style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
+        <div ref={heroRightRef} style={{ display: isMobile ? 'none' : 'flex', justifyContent: 'center', position: 'relative' }}>
           <OrganicGraphic size={420} />
-          {personalBest && (
+          <div style={{
+            position: 'absolute', bottom: 24, left: -10,
+            background: '#FAF6EA', border: '1px solid #E0D8C5',
+            borderRadius: 18, padding: '14px 18px',
+            boxShadow: '0 12px 30px rgba(31,58,42,0.10)',
+            display: 'flex', alignItems: 'center', gap: 12,
+          }}>
             <div style={{
-              position: 'absolute', bottom: 24, left: -10,
-              background: '#FAF6EA', border: '1px solid #E0D8C5',
-              borderRadius: 18, padding: '14px 18px',
-              boxShadow: '0 12px 30px rgba(31,58,42,0.10)',
-              display: 'flex', alignItems: 'center', gap: 12,
+              width: 40, height: 40, borderRadius: 20, background: '#1F3A2A', flexShrink: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 18, color: '#D9824D',
             }}>
-              <div style={{
-                width: 36, height: 36, borderRadius: 18, background: '#1F3A2A',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <ArrowUpRight size={14} color="#D9824D" />
-              </div>
-              <div>
-                <div style={{
-                  fontSize: 10, fontWeight: 600, letterSpacing: '0.08em',
-                  color: '#6B6857', textTransform: 'uppercase', marginBottom: 2,
-                }}>
-                  Personal best
-                </div>
-                <div style={{
-                  fontFamily: "'Bricolage Grotesque', sans-serif",
-                  fontSize: 22, fontWeight: 700, color: '#1F1D17',
-                  letterSpacing: '-0.02em', lineHeight: 1,
-                }}>
-                  {personalBest.yardage} yds · {personalBestClub?.name ?? 'Club'}
-                </div>
-              </div>
+              {userName ? userName[0].toUpperCase() : 'G'}
             </div>
-          )}
+            <div>
+              <div style={{
+                fontFamily: "'Bricolage Grotesque', sans-serif",
+                fontSize: 20, fontWeight: 700, color: '#1F1D17',
+                letterSpacing: '-0.02em', lineHeight: 1.1,
+              }}>
+                Hello, {userName || 'Golfer'}!
+              </div>
+              {personalBest ? (
+                <div style={{ fontSize: 12, color: '#6B6857', marginTop: 3, fontWeight: 500 }}>
+                  PB: {personalBest.yardage} yds · {personalBestClub?.name ?? 'Club'}
+                </div>
+              ) : (
+                <div style={{ fontSize: 12, color: '#B5AC95', marginTop: 3 }}>
+                  Ready to get dialed in?
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
       {/* ── FEATURED + STATS ── */}
-      <section style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: 24, marginBottom: 80 }}>
+      <section style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.7fr 1fr', gap: isMobile ? 12 : 24, marginBottom: isMobile ? 24 : 80 }}>
         <article ref={featuredRef} style={{
           background: '#1F3A2A', color: '#FAF6EA',
           borderRadius: 28, padding: '40px 44px',
@@ -295,7 +302,7 @@ export default function Dashboard({ shots, loading, onOpenBag, onLog, onLogFor }
                 <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', color: '#B5C29A', textTransform: 'uppercase', marginBottom: 6 }}>
                   Average
                 </div>
-                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 132, fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.04em', color: '#FAF6EA' }}>
+                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 80 : 132, fontWeight: 700, lineHeight: 0.9, letterSpacing: '-0.04em', color: '#FAF6EA' }}>
                   {driverAvg || '—'}
                   {driverAvg > 0 && <span style={{ fontSize: 32, color: '#D9824D', fontWeight: 600 }}>.</span>}
                 </div>
@@ -364,7 +371,7 @@ export default function Dashboard({ shots, loading, onOpenBag, onLog, onLogFor }
           </div>
         </article>
 
-        <div ref={statsColRef} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div ref={statsColRef} style={{ display: 'flex', flexDirection: isMobile ? 'row' : 'column', gap: 10, overflowX: isMobile ? 'auto' : 'visible', paddingBottom: isMobile ? 4 : 0 }}>
           <StatCard label="Total shots logged" value={totalShots}   sub="All time"              accent="#1F3A2A" />
           <StatCard label="Clubs dialed in"    value={trackedClubs} sub={`of ${CLUBS_DATA.length} clubs`} accent="#5C7A4D" />
           <StatCard label="Shots this week"    value={weekShots}    sub="Past 7 days"           accent="#D9824D" />
@@ -372,7 +379,7 @@ export default function Dashboard({ shots, loading, onOpenBag, onLog, onLogFor }
       </section>
 
       {/* ── FAIRWAY STRIP ── */}
-      <section ref={stripRef} style={{ marginBottom: 64 }}>
+      <section ref={stripRef} style={{ marginBottom: isMobile ? 24 : 64, display: isMobile ? 'none' : 'block' }}>
         <FairwayStrip height={140} />
       </section>
 
@@ -383,7 +390,7 @@ export default function Dashboard({ shots, loading, onOpenBag, onLog, onLogFor }
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 8 }}>
               <FlagPin size={12} /> Recent activity
             </div>
-            <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 44, fontWeight: 700, letterSpacing: '-0.035em', color: '#1F1D17', lineHeight: 1, margin: 0 }}>
+            <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 28 : 44, fontWeight: 700, letterSpacing: '-0.035em', color: '#1F1D17', lineHeight: 1, margin: 0 }}>
               Your last <span style={{ fontStyle: 'italic', color: '#5C7A4D', fontWeight: 400 }}>shots</span>.
             </h2>
           </div>
@@ -416,36 +423,41 @@ export default function Dashboard({ shots, loading, onOpenBag, onLog, onLogFor }
                   className="shot-row"
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '64px 1fr 1.5fr 120px 100px 28px',
-                    alignItems: 'center', gap: 24, padding: '18px 28px',
+                    gridTemplateColumns: isMobile ? '44px 1fr auto' : '64px 1fr 1.5fr 120px 100px 28px',
+                    alignItems: 'center', gap: isMobile ? 12 : 24,
+                    padding: isMobile ? '14px 16px' : '18px 28px',
                     borderTop: i === 0 ? 'none' : '1px solid #ECE5D2',
                     cursor: 'pointer', transition: 'background 0.15s',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = '#F4EFE0' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
                 >
-                  <ClubBadge abbr={club?.abbr ?? '?'} size={48} />
+                  <ClubBadge abbr={club?.abbr ?? '?'} size={isMobile ? 40 : 48} />
                   <div>
-                    <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 600, color: '#1F1D17', letterSpacing: '-0.02em' }}>
+                    <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 15 : 18, fontWeight: 600, color: '#1F1D17', letterSpacing: '-0.02em' }}>
                       {club?.name}
                     </div>
                     <div style={{ fontSize: 12, color: '#6B6857', marginTop: 2 }}>
-                      {club ? CAT_LABELS[club.cat] : ''}
+                      {isMobile ? timeAgo(shot.ts) : (club ? CAT_LABELS[club.cat] : '')}
                     </div>
                   </div>
-                  <div style={{ fontSize: 13, color: '#6B6857' }}>
-                    {shot.note || <span style={{ color: '#B5AC95' }}>—</span>}
-                  </div>
+                  {!isMobile && (
+                    <div style={{ fontSize: 13, color: '#6B6857' }}>
+                      {shot.note || <span style={{ color: '#B5AC95' }}>—</span>}
+                    </div>
+                  )}
                   <div style={{ textAlign: 'right' }}>
-                    <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 32, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.025em' }}>
+                    <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 24 : 32, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.025em' }}>
                       {shot.yardage}
                     </span>
-                    <span style={{ fontSize: 13, color: '#6B6857', marginLeft: 4, fontWeight: 500 }}>yds</span>
+                    <span style={{ fontSize: 12, color: '#6B6857', marginLeft: 3, fontWeight: 500 }}>yds</span>
                   </div>
-                  <div style={{ fontSize: 12, color: '#6B6857', textAlign: 'right', letterSpacing: '-0.005em' }}>
-                    {timeAgo(shot.ts)}
-                  </div>
-                  <ArrowUpRight size={16} color="#6B6857" />
+                  {!isMobile && (
+                    <>
+                      <div style={{ fontSize: 12, color: '#6B6857', textAlign: 'right', letterSpacing: '-0.005em' }}>{timeAgo(shot.ts)}</div>
+                      <ArrowUpRight size={16} color="#6B6857" />
+                    </>
+                  )}
                 </div>
               )
             })}

@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { useAuth } from '../contexts/AuthContext'
 import DialWordmark from './DialWordmark'
 
-type Mode = 'signin' | 'signup'
+type Mode = 'signin' | 'signup' | 'forgot'
 
 interface Props {
   onShowLegal: (doc: 'privacy' | 'terms') => void
@@ -25,8 +25,9 @@ function passwordStrength(pw: string): { score: number; label: string; color: st
 }
 
 export default function AuthScreen({ onShowLegal }: Props) {
-  const { signIn, signUp } = useAuth()
+  const { signIn, signUp, resetPasswordForEmail } = useAuth()
   const [mode, setMode]         = useState<Mode>('signin')
+  const [resetSent, setResetSent] = useState(false)
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName]   = useState('')
   const [email, setEmail]       = useState('')
@@ -37,8 +38,35 @@ export default function AuthScreen({ onShowLegal }: Props) {
   const [confirmed, setConfirmed] = useState(false)
   const [showPwHints, setShowPwHints] = useState(false)
 
+  const [cooldown, setCooldown]   = useState(0)  // seconds remaining
+  const cooldownUntil = useRef<number>(0)
+  const failCount     = useRef<number>(0)
+  const cooldownTimer = useRef<ReturnType<typeof setInterval> | null>(null)
+
   const containerRef = useRef<HTMLDivElement>(null)
   const formRef      = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    return () => { if (cooldownTimer.current) clearInterval(cooldownTimer.current) }
+  }, [])
+
+  const startCooldown = () => {
+    failCount.current++
+    const secs = Math.min(failCount.current * 30, 120)  // 30s, 60s, 90s, capped at 120s
+    cooldownUntil.current = Date.now() + secs * 1000
+    setCooldown(secs)
+    if (cooldownTimer.current) clearInterval(cooldownTimer.current)
+    cooldownTimer.current = setInterval(() => {
+      const remaining = Math.ceil((cooldownUntil.current - Date.now()) / 1000)
+      if (remaining <= 0) {
+        setCooldown(0)
+        clearInterval(cooldownTimer.current!)
+        cooldownTimer.current = null
+      } else {
+        setCooldown(remaining)
+      }
+    }, 500)
+  }
 
   useGSAP(() => {
     const mm = gsap.matchMedia()
@@ -57,14 +85,14 @@ export default function AuthScreen({ onShowLegal }: Props) {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduced) {
       setMode(next); setError(null); setEmail(''); setPassword(''); setConfirm('')
-      setFirstName(''); setLastName(''); setShowPwHints(false)
+      setFirstName(''); setLastName(''); setShowPwHints(false); setResetSent(false)
       return
     }
     gsap.to(formRef.current, {
       opacity: 0, y: 6, duration: 0.15, ease: 'power2.in',
       onComplete: () => {
         setMode(next); setError(null); setEmail(''); setPassword(''); setConfirm('')
-        setFirstName(''); setLastName(''); setShowPwHints(false)
+        setFirstName(''); setLastName(''); setShowPwHints(false); setResetSent(false)
         gsap.fromTo(formRef.current, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out' })
       },
     })
@@ -80,7 +108,18 @@ export default function AuthScreen({ onShowLegal }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (cooldown > 0) return
     setError(null)
+
+    if (mode === 'forgot') {
+      if (!email.trim()) { setError('Please enter your email.'); return }
+      setLoading(true)
+      const { error: err } = await resetPasswordForEmail(email.trim())
+      setLoading(false)
+      if (err) { setError(err); startCooldown() }
+      else { setResetSent(true) }
+      return
+    }
 
     if (mode === 'signup') {
       if (!firstName.trim()) { setError('Please enter your first name.'); return }
@@ -98,6 +137,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
 
     if (err) {
       setError(err)
+      startCooldown()
     } else if (mode === 'signup') {
       setConfirmed(true)
     }
@@ -193,36 +233,96 @@ export default function AuthScreen({ onShowLegal }: Props) {
             </div>
           ) : (
             <>
-              {/* Mode tabs */}
-              <div style={{
-                display: 'flex', gap: 4, background: '#F0EBDD',
-                border: '1px solid #E0D8C5', borderRadius: 999,
-                padding: 4, marginBottom: 28,
-              }}>
-                {(['signin', 'signup'] as Mode[]).map(m => (
-                  <button
-                    key={m}
-                    onClick={() => switchMode(m)}
-                    style={{
-                      flex: 1, border: 'none', borderRadius: 999,
-                      padding: '9px 0', cursor: 'pointer',
-                      background: mode === m ? '#1F3A2A' : 'transparent',
-                      color: mode === m ? '#FAF6EA' : '#6B6857',
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: 13.5, fontWeight: 500,
-                      transition: 'all 0.18s ease',
-                    }}
-                    onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
-                    onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-                  >
-                    {m === 'signin' ? 'Sign in' : 'Create account'}
-                  </button>
-                ))}
-              </div>
+              {/* Mode tabs — hidden when in forgot mode */}
+              {mode !== 'forgot' && (
+                <div style={{
+                  display: 'flex', gap: 4, background: '#F0EBDD',
+                  border: '1px solid #E0D8C5', borderRadius: 999,
+                  padding: 4, marginBottom: 28,
+                }}>
+                  {(['signin', 'signup'] as Mode[]).map(m => (
+                    <button
+                      key={m}
+                      onClick={() => switchMode(m)}
+                      style={{
+                        flex: 1, border: 'none', borderRadius: 999,
+                        padding: '9px 0', cursor: 'pointer',
+                        background: mode === m ? '#1F3A2A' : 'transparent',
+                        color: mode === m ? '#FAF6EA' : '#6B6857',
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: 13.5, fontWeight: 500,
+                        transition: 'all 0.18s ease',
+                      }}
+                      onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
+                      onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+                    >
+                      {m === 'signin' ? 'Sign in' : 'Create account'}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {/* Form */}
               <div ref={formRef}>
-                <form onSubmit={handleSubmit}>
+                {/* Forgot password form */}
+                {mode === 'forgot' && (
+                  <div>
+                    <button
+                      onClick={() => switchMode('signin')}
+                      style={{ background: 'none', border: 'none', color: '#6B6857', fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginBottom: 20, padding: 0 }}
+                    >
+                      ← Back to sign in
+                    </button>
+                    <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginBottom: 8 }}>
+                      Reset password
+                    </div>
+                    <p style={{ fontSize: 14, color: '#6B6857', lineHeight: 1.55, marginBottom: 24 }}>
+                      Enter your email and we'll send you a link to reset your password. The link expires in 30 minutes.
+                    </p>
+                    {resetSent ? (
+                      <div style={{ background: 'rgba(92,122,77,0.10)', border: '1px solid rgba(92,122,77,0.3)', borderRadius: 12, padding: '14px 16px', fontSize: 14, color: '#3D5C2A', lineHeight: 1.5 }}>
+                        <strong>Check your inbox.</strong> We sent a reset link to <strong>{email}</strong>. It expires in 30 minutes.
+                        <div style={{ marginTop: 12 }}>
+                          <button
+                            onClick={() => switchMode('signin')}
+                            style={{ background: 'none', border: 'none', color: '#1F3A2A', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", textDecoration: 'underline', padding: 0 }}
+                          >
+                            Back to sign in
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                        <div>
+                          <label style={labelStyle}>Email</label>
+                          <input
+                            type="email" required value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            placeholder="you@example.com"
+                            style={inputStyle}
+                            onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
+                            onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+                          />
+                        </div>
+                        {error && (
+                          <div style={{ background: 'rgba(217,130,77,0.10)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#D9824D' }}>
+                            {error}
+                          </div>
+                        )}
+                        <button
+                          type="submit"
+                          disabled={loading || cooldown > 0}
+                          style={{ width: '100%', background: (loading || cooldown > 0) ? '#C9C0A8' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px 24px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer', transition: 'all 0.15s' }}
+                          onMouseEnter={e => { if (!loading && !cooldown) e.currentTarget.style.background = '#16271D' }}
+                          onMouseLeave={e => { if (!loading && !cooldown) e.currentTarget.style.background = '#1F3A2A' }}
+                        >
+                          {loading ? 'Sending…' : cooldown > 0 ? `Try again in ${cooldown}s` : 'Send reset link'}
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                )}
+                <form onSubmit={handleSubmit} style={{ display: mode === 'forgot' ? 'none' : undefined }}>
 
                   {/* First + last name — signup only */}
                   {mode === 'signup' && (
@@ -266,7 +366,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                   </div>
 
                   {/* Password */}
-                  <div style={{ marginBottom: mode === 'signup' ? 8 : 20 }}>
+                  <div style={{ marginBottom: mode === 'signup' ? 8 : 12 }}>
                     <label style={labelStyle}>Password</label>
                     <input
                       type="password" required value={password}
@@ -280,6 +380,19 @@ export default function AuthScreen({ onShowLegal }: Props) {
                       onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
                     />
                   </div>
+
+                  {/* Forgot password link — sign-in only */}
+                  {mode === 'signin' && (
+                    <div style={{ textAlign: 'right', marginBottom: 20, marginTop: 6 }}>
+                      <button
+                        type="button"
+                        onClick={() => switchMode('forgot')}
+                        style={{ background: 'none', border: 'none', color: '#5C7A4D', fontSize: 12.5, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", padding: 0, fontWeight: 500 }}
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
+                  )}
 
                   {/* Password strength — signup only */}
                   {mode === 'signup' && showPwHints && password && strength && (
@@ -362,20 +475,22 @@ export default function AuthScreen({ onShowLegal }: Props) {
                   {/* Submit */}
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || cooldown > 0}
                     style={{
-                      width: '100%', background: loading ? '#C9C0A8' : '#1F3A2A',
+                      width: '100%', background: (loading || cooldown > 0) ? '#C9C0A8' : '#1F3A2A',
                       color: '#FAF6EA', border: 'none', borderRadius: 999,
                       padding: '14px 24px', fontFamily: "'DM Sans', sans-serif",
-                      fontSize: 14, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer',
+                      fontSize: 14, fontWeight: 500, cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer',
                       transition: 'all 0.15s',
                     }}
-                    onMouseEnter={e => { if (!loading) e.currentTarget.style.background = '#16271D' }}
-                    onMouseLeave={e => { if (!loading) e.currentTarget.style.background = '#1F3A2A' }}
-                    onMouseDown={e => { if (!loading) e.currentTarget.style.transform = 'scale(0.98)' }}
+                    onMouseEnter={e => { if (!loading && !cooldown) e.currentTarget.style.background = '#16271D' }}
+                    onMouseLeave={e => { if (!loading && !cooldown) e.currentTarget.style.background = '#1F3A2A' }}
+                    onMouseDown={e => { if (!loading && !cooldown) e.currentTarget.style.transform = 'scale(0.98)' }}
                     onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
                   >
-                    {loading ? 'Please wait…' : mode === 'signin' ? 'Sign in' : 'Create account'}
+                    {loading ? 'Please wait…'
+                      : cooldown > 0 ? `Try again in ${cooldown}s`
+                      : mode === 'signin' ? 'Sign in' : 'Create account'}
                   </button>
                 </form>
               </div>

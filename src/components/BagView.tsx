@@ -14,9 +14,10 @@ interface CardProps {
   club: Club
   shots: Shot[]
   onLog: () => void
+  isMobile?: boolean
 }
 
-function ClubGridCard({ club, shots, onLog }: CardProps) {
+function ClubGridCard({ club, shots, onLog, isMobile = false }: CardProps) {
   const avg   = getClubAvg(shots, club.id)
   const last  = getClubLast(shots, club.id)
   const count = getClubShots(shots, club.id).length
@@ -30,13 +31,13 @@ function ClubGridCard({ club, shots, onLog }: CardProps) {
       onClick={onLog}
       style={{
         background: '#FAF6EA', border: '1px solid #E0D8C5',
-        borderRadius: 24, padding: 24, cursor: 'pointer',
+        borderRadius: isMobile ? 16 : 24, padding: isMobile ? 16 : 24, cursor: 'pointer',
         transition: 'all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
         transform: hover ? 'translateY(-3px)' : 'translateY(0)',
         boxShadow: hover ? '0 16px 36px rgba(31,58,42,0.10)' : 'none',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: isMobile ? 12 : 24 }}>
         <ClubBadge abbr={club.abbr} size={52} variant={hover ? 'sage' : 'default'} />
         <span style={{
           fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
@@ -49,23 +50,33 @@ function ClubGridCard({ club, shots, onLog }: CardProps) {
 
       <h3 style={{
         fontFamily: "'Bricolage Grotesque', sans-serif",
-        fontSize: 24, fontWeight: 700, color: '#1F1D17',
-        letterSpacing: '-0.025em', marginBottom: 16, lineHeight: 1, marginTop: 0,
+        fontSize: isMobile ? 16 : 24, fontWeight: 700, color: '#1F1D17',
+        letterSpacing: '-0.025em', marginBottom: isMobile ? 10 : 16, lineHeight: 1, marginTop: 0,
       }}>
         {club.name}
       </h3>
 
-      <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-end', gap: 8 }}>
-        <span style={{
-          fontFamily: "'Bricolage Grotesque', sans-serif",
-          fontSize: 64, fontWeight: 700, lineHeight: 0.9,
-          color: avg ? '#1F3A2A' : '#C9C0A8', letterSpacing: '-0.04em',
-        }}>
-          {avg ?? '—'}
-        </span>
-        <span style={{ fontSize: 13, color: '#6B6857', paddingBottom: 8, fontWeight: 500 }}>
-          yds avg
-        </span>
+      <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-end', gap: 8, minHeight: isMobile ? 40 : 60 }}>
+        {avg ? (
+          <>
+            <span style={{
+              fontFamily: "'Bricolage Grotesque', sans-serif",
+              fontSize: isMobile ? 40 : 64, fontWeight: 700, lineHeight: 0.9,
+              color: '#1F3A2A', letterSpacing: '-0.04em',
+            }}>
+              {avg}
+            </span>
+            <span style={{ fontSize: 13, color: '#6B6857', paddingBottom: 8, fontWeight: 500 }}>
+              yds avg
+            </span>
+          </>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', paddingBottom: 4 }}>
+            <div style={{ fontSize: isMobile ? 13 : 14, color: '#B5AC95', fontWeight: 400, fontFamily: "'DM Sans', sans-serif" }}>
+              Tap to log a shot
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Range bar */}
@@ -100,11 +111,12 @@ function ClubGridCard({ club, shots, onLog }: CardProps) {
 interface Props {
   shots: Shot[]
   onLogFor: (club: Club) => void
+  isMobile?: boolean
 }
 
 const ALL_CATS: Array<ClubCat | 'all'> = ['all', 'woods', 'hybrids', 'irons', 'wedges']
 
-export default function BagView({ shots, onLogFor }: Props) {
+export default function BagView({ shots, onLogFor, isMobile = false }: Props) {
   const [filter, setFilter] = useState<ClubCat | 'all'>('all')
   const containerRef = useRef<HTMLElement>(null)
   const headerLeftRef = useRef<HTMLDivElement>(null)
@@ -154,13 +166,15 @@ export default function BagView({ shots, onLogFor }: Props) {
     return () => mm.revert()
   }, { scope: containerRef, dependencies: [filter] })
 
+  const px = isMobile ? 16 : 40
+
   return (
-    <main ref={containerRef} style={{ maxWidth: 1320, margin: '0 auto', padding: '48px 40px 96px' }}>
+    <main ref={containerRef} style={{ maxWidth: 1320, margin: '0 auto', padding: `${isMobile ? 24 : 48}px ${px}px ${isMobile ? 96 : 96}px` }}>
 
       {/* Header */}
       <section style={{
-        display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 64,
-        alignItems: 'center', marginBottom: 48,
+        display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1fr', gap: isMobile ? 0 : 64,
+        alignItems: 'center', marginBottom: isMobile ? 20 : 48,
       }}>
         <div ref={headerLeftRef}>
           <div style={{
@@ -172,9 +186,9 @@ export default function BagView({ shots, onLogFor }: Props) {
           </div>
           <h1 style={{
             fontFamily: "'Bricolage Grotesque', sans-serif",
-            fontSize: 76, fontWeight: 700, lineHeight: 0.95,
-            letterSpacing: '-0.045em', color: '#1F1D17',
-            marginBottom: 20, marginTop: 0,
+            fontSize: isMobile ? 44 : 76, fontWeight: 700, lineHeight: 0.95,
+            letterSpacing: '-0.04em', color: '#1F1D17',
+            marginBottom: isMobile ? 12 : 20, marginTop: 0,
           }}>
             <span style={{ color: '#1F3A2A' }}>Every</span>
             <span style={{ color: '#D9824D' }}> club,</span>
@@ -191,13 +205,13 @@ export default function BagView({ shots, onLogFor }: Props) {
             or review your distribution.
           </p>
         </div>
-        <div ref={headerRightRef} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <div ref={headerRightRef} style={{ display: isMobile ? 'none' : 'flex', justifyContent: 'flex-end' }}>
           <OrganicGraphic size={280} />
         </div>
       </section>
 
       {/* Filter pills */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 28, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, overflowX: isMobile ? 'auto' : 'visible', flexWrap: isMobile ? 'nowrap' : 'wrap', paddingBottom: isMobile ? 4 : 0, WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
         {ALL_CATS.map(cat => {
           const active = filter === cat
           const label = cat === 'all' ? 'All clubs' : CAT_LABELS[cat]
@@ -207,13 +221,13 @@ export default function BagView({ shots, onLogFor }: Props) {
               key={cat}
               onClick={() => setFilter(cat)}
               style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
+                display: 'inline-flex', alignItems: 'center', gap: 6,
                 border: '1px solid', borderColor: active ? '#1F3A2A' : '#E0D8C5',
                 background: active ? '#1F3A2A' : '#FAF6EA',
                 color: active ? '#FAF6EA' : '#1F1D17',
-                borderRadius: 999, padding: '9px 16px',
-                fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500,
-                cursor: 'pointer', transition: 'all 0.15s',
+                borderRadius: 999, padding: isMobile ? '7px 12px' : '9px 16px',
+                fontFamily: "'DM Sans', sans-serif", fontSize: isMobile ? 12.5 : 13.5, fontWeight: 500,
+                cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap' as const, flexShrink: 0,
               }}
               onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
               onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
@@ -235,11 +249,11 @@ export default function BagView({ shots, onLogFor }: Props) {
       {/* Club grid */}
       <div
         ref={gridRef}
-        style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}
+        style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: isMobile ? 10 : 16 }}
       >
         {filtered.map(club => (
           <div key={club.id} className="club-card">
-            <ClubGridCard club={club} shots={shots} onLog={() => onLogFor(club)} />
+            <ClubGridCard club={club} shots={shots} onLog={() => onLogFor(club)} isMobile={isMobile} />
           </div>
         ))}
       </div>

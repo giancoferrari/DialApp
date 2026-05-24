@@ -2,22 +2,29 @@ import { supabase } from './supabase'
 import type { Shot } from '../types'
 
 type DbShot = {
-  id: number
+  id: string
   user_id: string
   club_id: string
   yardage: number
-  ts: number
-  note: string
+  ts: string        // stored as ISO timestamptz in Postgres
+  note: string | null
 }
 
 function toShot(row: DbShot): Shot {
-  return { id: row.id, clubId: row.club_id, yardage: row.yardage, ts: row.ts, note: row.note }
+  return {
+    id: row.id as unknown as number,
+    clubId: row.club_id,
+    yardage: row.yardage,
+    ts: new Date(row.ts).getTime(),
+    note: row.note ?? '',
+  }
 }
 
-export async function fetchShots(): Promise<Shot[]> {
+export async function fetchShots(userId: string): Promise<Shot[]> {
   const { data, error } = await supabase
     .from('shots')
     .select('*')
+    .eq('user_id', userId)
     .order('ts', { ascending: false })
   if (error) throw error
   return (data as DbShot[]).map(toShot)
@@ -29,9 +36,20 @@ export async function insertShot(
 ): Promise<Shot> {
   const { data, error } = await supabase
     .from('shots')
-    .insert([{ user_id: userId, club_id: shot.clubId, yardage: shot.yardage, ts: shot.ts, note: shot.note }])
+    .insert([{
+      user_id: userId,
+      club_id: shot.clubId,
+      yardage: shot.yardage,
+      ts: new Date(shot.ts).toISOString(),
+      note: shot.note ?? '',
+    }])
     .select()
     .single()
   if (error) throw error
   return toShot(data as DbShot)
+}
+
+export async function deleteShot(id: string | number): Promise<void> {
+  const { error } = await supabase.from('shots').delete().eq('id', String(id))
+  if (error) throw error
 }

@@ -29,3 +29,23 @@
 ## Stop the server
 
 Press `Ctrl + C` in the terminal.
+
+---
+
+## How to push changes to GitHub (and go live)
+
+Run these three commands every time you want your changes to go live on Vercel:
+
+```
+git add .
+```
+```
+git commit -m "describe what you changed"
+```
+```
+git push
+```
+
+Vercel will automatically deploy within ~1 minute.
+
+> Your `.env` file is never pushed — it's protected by `.gitignore`. Keep it only on your computer.
