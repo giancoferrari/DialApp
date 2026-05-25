@@ -196,11 +196,28 @@ function NewMatchModal({
           <div>
             <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>Format</label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              {(['stroke', 'match_play', 'skins', 'wolf'] as GameMode[]).map(mode => (
-                <button key={mode} onClick={() => setGameMode(mode)} style={{ padding: '10px', borderRadius: 10, border: '1px solid', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 500, transition: 'all 0.15s', background: gameMode === mode ? '#1F3A2A' : 'transparent', color: gameMode === mode ? '#FAF6EA' : '#1F1D17', borderColor: gameMode === mode ? '#1F3A2A' : '#E0D8C5', textAlign: 'center' }}>
-                  {MODE_LABELS[mode]}
-                </button>
-              ))}
+              {(['stroke', 'match_play', 'skins', 'wolf'] as GameMode[]).map(mode => {
+                const available = mode === 'stroke'
+                const active = gameMode === mode
+                return (
+                  <button
+                    key={mode}
+                    onClick={() => available && setGameMode(mode)}
+                    disabled={!available}
+                    style={{
+                      padding: '10px 8px', borderRadius: 10, border: '1px solid', cursor: available ? 'pointer' : 'default',
+                      fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 500, transition: 'all 0.15s', textAlign: 'center',
+                      background: active ? '#1F3A2A' : 'transparent',
+                      color: active ? '#FAF6EA' : available ? '#1F1D17' : '#B5AC95',
+                      borderColor: active ? '#1F3A2A' : '#E0D8C5',
+                      opacity: available ? 1 : 0.7,
+                    }}
+                  >
+                    {MODE_LABELS[mode]}
+                    {!available && <div style={{ fontSize: 10, marginTop: 2, color: '#B5AC95' }}>Coming soon</div>}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
@@ -623,11 +640,12 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
 
   useEffect(() => { load() }, [load])
 
-  // Realtime: refresh when this user receives a new match invite
+  // Realtime: refresh on new invites AND when any match status changes (e.g. pending→active)
   useEffect(() => {
     const ch = supabase
       .channel(`match-invites-${userId}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'match_players', filter: `user_id=eq.${userId}` }, () => load())
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'matches' }, () => load())
       .subscribe()
     return () => { supabase.removeChannel(ch) }
   }, [userId, load])
