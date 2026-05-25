@@ -11,7 +11,8 @@ import FlagPin from './FlagPin'
 import OrganicGraphic from './OrganicGraphic'
 import FairwayStrip from './FairwayStrip'
 import ClubBadge from './ClubBadge'
-import { ArrowRight, ArrowUpRight } from './Icons'
+import { ArrowRight, ArrowUpRight, BagIcon, TargetIcon, ScorecardIcon, DumbbellIcon } from './Icons'
+import type { View } from '../types'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -81,11 +82,12 @@ interface Props {
   onOpenBag: () => void
   onLog: () => void
   onLogFor: (club: Club) => void
+  onNavigate: (v: View) => void
   isMobile?: boolean
   userName?: string
 }
 
-export default function Dashboard({ shots, loading, onOpenBag, onLog, onLogFor, isMobile = false, userName = '' }: Props) {
+export default function Dashboard({ shots, loading, onOpenBag, onLog, onLogFor, onNavigate, isMobile = false, userName = '' }: Props) {
   const containerRef = useRef<HTMLElement>(null)
   const heroLeftRef  = useRef<HTMLDivElement>(null)
   const heroRightRef = useRef<HTMLDivElement>(null)
@@ -264,6 +266,44 @@ export default function Dashboard({ shots, loading, onOpenBag, onLog, onLogFor, 
               )}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── TOOLS GRID ── */}
+      <section style={{ marginBottom: isMobile ? 32 : 64 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 14 }}>
+          Your tools
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+          {([
+            { label: 'My Bag',   sub: 'Distances',  Icon: BagIcon,       view: 'bag'      },
+            { label: 'Dial In',  sub: 'Calculator', Icon: TargetIcon,    view: 'dialin'   },
+            { label: 'Rounds',   sub: 'Scorecards', Icon: ScorecardIcon, view: 'rounds'   },
+            { label: 'Practice', sub: 'Training',   Icon: DumbbellIcon,  view: 'practice' },
+          ] as const).map(item => (
+            <button
+              key={item.view}
+              onClick={() => onNavigate(item.view)}
+              style={{
+                background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 18,
+                padding: isMobile ? '14px 10px' : '18px 14px',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+                cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#F0EBDD'; e.currentTarget.style.borderColor = '#1F3A2A' }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FAF6EA'; e.currentTarget.style.borderColor = '#E0D8C5' }}
+            >
+              <item.Icon size={isMobile ? 20 : 22} color="#1F3A2A" />
+              <div>
+                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 13 : 14, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
+                  {item.label}
+                </div>
+                {!isMobile && (
+                  <div style={{ fontSize: 11, color: '#6B6857', marginTop: 2 }}>{item.sub}</div>
+                )}
+              </div>
+            </button>
+          ))}
         </div>
       </section>
 

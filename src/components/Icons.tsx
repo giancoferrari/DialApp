@@ -105,6 +105,36 @@ export function CameraIcon({ size = 22, color = 'currentColor' }: { size?: numbe
   )
 }
 
+export function UsersIcon({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <circle cx="9" cy="7" r="3.5" stroke={color} strokeWidth="1.6" />
+      <path d="M2 20C2 17 5.13 14.5 9 14.5C12.87 14.5 16 17 16 20" stroke={color} strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="17" cy="8" r="2.5" stroke={color} strokeWidth="1.5" />
+      <path d="M19.5 15C21 15.8 22 17.3 22 19" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+export function TrophyIcon({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path d="M8 21H16M12 17V21M7 3H17V11C17 13.76 14.76 16 12 16C9.24 16 7 13.76 7 11V3Z" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M7 5H4C4 5 3 10 7 11" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M17 5H20C20 5 21 10 17 11" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+export function CoinIcon({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="9" stroke={color} strokeWidth="1.6" />
+      <path d="M12 7V17M14.5 9.5C14.5 8.12 13.38 7 12 7C10.62 7 9.5 8.12 9.5 9.5C9.5 10.88 10.62 12 12 12C13.38 12 14.5 13.12 14.5 14.5C14.5 15.88 13.38 17 12 17C10.62 17 9.5 15.88 9.5 14.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export function PencilIcon({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">

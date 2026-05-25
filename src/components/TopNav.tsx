@@ -1,24 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
 import type { View } from '../types'
 import DialWordmark from './DialWordmark'
-import { PlusIcon, PersonIcon, HomeIcon, BagIcon, TargetIcon, ScorecardIcon, DumbbellIcon } from './Icons'
+import { PlusIcon, PersonIcon, HomeIcon, BagIcon, TargetIcon, ScorecardIcon, DumbbellIcon, UsersIcon, TrophyIcon } from './Icons'
 
 const NAV_ITEMS: { id: View; label: string }[] = [
-  { id: 'dashboard', label: 'Dashboard' },
-  { id: 'bag',       label: 'My bag'    },
-  { id: 'dialin',    label: 'Dial in'   },
-  { id: 'rounds',    label: 'Rounds'    },
-  { id: 'practice',  label: 'Practice'  },
-  { id: 'profile',   label: 'Profile'   },
+  { id: 'dashboard', label: 'Home'     },
+  { id: 'bag',       label: 'My Bag'   },
+  { id: 'dialin',    label: 'Dial In'  },
+  { id: 'rounds',    label: 'Rounds'   },
+  { id: 'practice',  label: 'Practice' },
+  { id: 'friends',   label: 'Friends'  },
+  { id: 'matches',   label: 'Matches'  },
+  { id: 'profile',   label: 'Profile'  },
 ]
 
 const BOTTOM_NAV: { id: View; label: string; Icon: React.ComponentType<{ size?: number; color?: string }> }[] = [
-  { id: 'dashboard', label: 'Home',     Icon: HomeIcon     },
-  { id: 'bag',       label: 'Bag',      Icon: BagIcon      },
-  { id: 'dialin',    label: 'Dial In',  Icon: TargetIcon   },
-  { id: 'rounds',    label: 'Rounds',   Icon: ScorecardIcon },
-  { id: 'practice',  label: 'Practice', Icon: DumbbellIcon },
-  { id: 'profile',   label: 'Profile',  Icon: PersonIcon   },
+  { id: 'dashboard', label: 'Home',    Icon: HomeIcon    },
+  { id: 'friends',   label: 'Friends', Icon: UsersIcon   },
+  { id: 'matches',   label: 'Matches', Icon: TrophyIcon  },
+  { id: 'profile',   label: 'Profile', Icon: PersonIcon  },
 ]
 
 interface Props {
@@ -246,7 +246,7 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, avat
               >
                 <item.Icon size={22} color={active ? '#1F3A2A' : '#6B6857'} />
                 <span style={{
-                  fontSize: 9, fontWeight: active ? 600 : 500,
+                  fontSize: 10, fontWeight: active ? 600 : 500,
                   fontFamily: "'DM Sans', sans-serif",
                   letterSpacing: '-0.01em',
                 }}>

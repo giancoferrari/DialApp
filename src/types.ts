@@ -15,7 +15,7 @@ export interface Shot {
   note: string
 }
 
-export type View = 'dashboard' | 'bag' | 'dialin' | 'rounds' | 'practice' | 'profile'
+export type View = 'dashboard' | 'bag' | 'dialin' | 'rounds' | 'practice' | 'profile' | 'friends' | 'matches'
 
 // ── Course ──────────────────────────────────────────────
 export interface CourseHole {
@@ -96,6 +96,74 @@ export interface UserProfile {
   goalHandicap: number | null
   goalNotes: string | null
   equipment: EquipmentItem[]
+  createdAt: string
+  updatedAt: string
+}
+
+// ── Social / Friends ──────────────────────────────────────
+export interface PublicProfile {
+  userId: string
+  username: string | null
+  avatarUrl: string | null
+  handicapIndex: number | null
+  firstName: string | null
+}
+
+export type FriendshipStatus = 'pending' | 'accepted' | 'declined'
+
+export interface Friendship {
+  id: string
+  requesterId: string
+  addresseeId: string
+  status: FriendshipStatus
+  createdAt: string
+  profile?: PublicProfile
+}
+
+// ── Virtual Wallet ────────────────────────────────────────
+export interface Wallet {
+  id: string
+  userId: string
+  balance: number
+  createdAt: string
+  updatedAt: string
+}
+
+export type WalletTxType = 'top_up' | 'wager_placed' | 'wager_won' | 'wager_refund'
+
+// ── Matches ───────────────────────────────────────────────
+export type GameMode    = 'stroke' | 'match_play' | 'skins' | 'wolf'
+export type MatchStatus = 'pending' | 'active' | 'completed' | 'cancelled'
+export type PlayerStatus = 'invited' | 'accepted' | 'declined'
+
+export interface MatchScore {
+  id: string
+  matchId: string
+  userId: string
+  holeNumber: number
+  score: number | null
+  updatedAt: string
+}
+
+export interface MatchPlayer {
+  id: string
+  matchId: string
+  userId: string
+  status: PlayerStatus
+  profile?: PublicProfile
+  scores: MatchScore[]
+}
+
+export interface Match {
+  id: string
+  createdBy: string
+  courseName: string
+  holes: 9 | 18
+  gameMode: GameMode
+  wagerPerPlayer: number
+  status: MatchStatus
+  winnerId: string | null
+  players: MatchPlayer[]
   createdAt: string
   updatedAt: string
 }

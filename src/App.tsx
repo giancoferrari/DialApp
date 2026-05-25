@@ -16,6 +16,8 @@ import DialInView from './components/DialInView'
 import ScorecardView from './components/ScorecardView'
 import PracticeView from './components/PracticeView'
 import ProfileView from './components/ProfileView'
+import FriendsView from './components/FriendsView'
+import MatchesView from './components/MatchesView'
 import LogShotModal from './components/LogShotModal'
 import AuthScreen from './components/AuthScreen'
 import LegalModal from './components/LegalModal'
@@ -253,6 +255,7 @@ function AppShell() {
               onOpenBag={() => handleSetView('bag')}
               onLog={handleLog}
               onLogFor={handleLogFor}
+              onNavigate={handleSetView}
               isMobile={isMobile}
               userName={user?.user_metadata?.first_name ?? ''}
             />
@@ -294,6 +297,12 @@ function AppShell() {
               onSignOut={signOut}
               isMobile={isMobile}
             />
+          )}
+          {view === 'friends' && (
+            <FriendsView userId={user!.id} isMobile={isMobile} />
+          )}
+          {view === 'matches' && (
+            <MatchesView userId={user!.id} isMobile={isMobile} />
           )}
         </div>
       </div>
