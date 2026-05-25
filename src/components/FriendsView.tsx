@@ -4,7 +4,7 @@ import {
   searchUsers, fetchFriendships, fetchProfilesForIds,
   sendFriendRequest, updateFriendship, removeFriend,
 } from '../lib/friends'
-import { CheckIcon, CloseIcon, PersonIcon } from './Icons'
+import { CloseIcon, PersonIcon } from './Icons'
 
 interface Props {
   userId: string

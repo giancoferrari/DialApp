@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import type { Match, Wallet, PublicProfile, GameMode, Friendship } from '../types'
+import type { Match, Wallet, PublicProfile, GameMode } from '../types'
 import { fetchMatches, createMatch, acceptMatchInvite, declineMatchInvite, upsertScore, completeMatch, cancelMatch, fetchMatchRealtime } from '../lib/matches'
 import { fetchOrCreateWallet, topUpWallet } from '../lib/wallet'
 import { fetchFriendships, fetchProfilesForIds } from '../lib/friends'
@@ -334,7 +334,7 @@ function ScoringModal({
 
         {/* Standings */}
         <div style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, padding: '16px', marginBottom: 20, display: 'flex', gap: 12, justifyContent: 'center' }}>
-          {standings.map(({ p, total, filled }, i) => (
+          {standings.map(({ p, total, filled }) => (
             <div key={p.userId} style={{ textAlign: 'center', flex: 1 }}>
               <Avatar profile={p.profile} size={36} />
               <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: p.userId === leaderId && total > 0 ? '#1F3A2A' : '#1F1D17', letterSpacing: '-0.03em', marginTop: 6 }}>
