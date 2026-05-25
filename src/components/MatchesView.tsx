@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { Match, Wallet, PublicProfile, GameMode } from '../types'
-import { fetchMatches, createMatch, acceptMatchInvite, declineMatchInvite, upsertScore, completeMatch, cancelMatch, fetchMatchRealtime } from '../lib/matches'
+import { fetchMatches, createMatch, acceptMatchInvite, declineMatchInvite, activateMatch, upsertScore, completeMatch, cancelMatch, fetchMatchRealtime } from '../lib/matches'
 import { fetchOrCreateWallet, topUpWallet, withdrawFromWallet } from '../lib/wallet'
 import { fetchFriendships, fetchProfilesForIds } from '../lib/friends'
 import { supabase } from '../lib/supabase'
@@ -679,6 +679,11 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
     catch { setError('Failed to cancel.') }
   }
 
+  const handleStart = async (match: Match) => {
+    try { await activateMatch(match.id); await load() }
+    catch (e: unknown) { setError(e instanceof Error ? e.message : 'Failed to start match.') }
+  }
+
   const pending   = matches.filter(m => m.status === 'pending')
   const active    = matches.filter(m => m.status === 'active')
   const completed = matches.filter(m => m.status === 'completed')
@@ -699,6 +704,11 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
     const iWon      = isDone && match.winnerId === userId
     const myTotal   = me?.scores.reduce((sum, s) => sum + (s.score ?? 0), 0) ?? 0
     const holesPlayed = me?.scores.length ?? 0
+    // Creator can start once every non-creator has accepted (none left as 'invited')
+    const canStart  = match.status === 'pending'
+      && match.createdBy === userId
+      && match.players.length > 1
+      && match.players.every(p => p.status !== 'invited')
 
     return (
       <div style={{ background: '#FAF6EA', border: `1px solid ${isActive ? '#1F3A2A' : '#E0D8C5'}`, borderRadius: 18, overflow: 'hidden' }}>
@@ -748,7 +758,13 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
           {isDone && (
             <button onClick={() => setScoring(match)} style={{ flex: 1, background: '#F0EBDD', border: '1px solid #E0D8C5', borderRadius: 10, padding: '10px', fontSize: 13, color: '#1F1D17', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>View Scorecard</button>
           )}
-          {match.status === 'pending' && me?.status === 'accepted' && (
+          {canStart && (
+            <>
+              <button onClick={() => handleStart(match)} style={{ flex: 2, background: '#5C7A4D', border: 'none', borderRadius: 10, padding: '10px', fontSize: 13, fontWeight: 600, color: '#FAF6EA', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Start Match →</button>
+              <button onClick={() => handleCancel(match)} style={{ flex: 1, background: 'transparent', border: '1px solid #E0D8C5', borderRadius: 10, padding: '10px', fontSize: 12, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
+            </>
+          )}
+          {match.status === 'pending' && me?.status === 'accepted' && !canStart && (
             <button onClick={() => handleCancel(match)} style={{ flex: 1, background: '#F0EBDD', border: '1px solid #E0D8C5', borderRadius: 10, padding: '10px', fontSize: 13, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
           )}
         </div>

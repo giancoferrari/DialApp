@@ -129,6 +129,14 @@ export async function acceptMatchInvite(matchId: string, userId: string, wager: 
   }
 }
 
+export async function activateMatch(matchId: string): Promise<void> {
+  const { error } = await supabase
+    .from('matches')
+    .update({ status: 'active', updated_at: new Date().toISOString() })
+    .eq('id', matchId)
+  if (error) throw new Error(error.message)
+}
+
 export async function declineMatchInvite(matchId: string, userId: string): Promise<void> {
   await supabase
     .from('match_players')
