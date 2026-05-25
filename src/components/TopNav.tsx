@@ -58,7 +58,7 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, onSi
       }}>
         <div style={{
           maxWidth: 1320, margin: '0 auto',
-          padding: isMobile ? '0 16px' : '0 40px',
+          padding: isMobile ? '0 24px' : '0 40px',
           display: 'flex', alignItems: 'center', gap: isMobile ? 12 : 28,
         }}>
           {/* Wordmark */}
@@ -104,41 +104,29 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, onSi
 
           <div style={{ flex: 1 }} />
 
-          {/* Log shot button */}
-          {isMobile ? (
-            <button
-              onClick={onLog}
-              style={{
-                width: 40, height: 40, borderRadius: 20,
-                background: '#1F3A2A', border: 'none',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', flexShrink: 0,
-              }}
-            >
-              <PlusIcon size={18} color="#FAF6EA" />
-            </button>
-          ) : (
-            <button
-              onClick={onLog}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                background: '#1F3A2A', color: '#FAF6EA', border: 'none',
-                borderRadius: 999, padding: '10px 18px 10px 20px',
-                fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500,
-                cursor: 'pointer', letterSpacing: '-0.005em',
-                transition: 'background 0.15s', whiteSpace: 'nowrap',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#16271D' }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A' }}
-              onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
-              onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-            >
-              Log a shot
-              <span style={{ width: 22, height: 22, borderRadius: 11, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                <PlusIcon size={14} color="#FAF6EA" />
-              </span>
-            </button>
-          )}
+          {/* Log shot button — pill style on both mobile and desktop */}
+          <button
+            onClick={onLog}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: '#1F3A2A', color: '#FAF6EA', border: 'none',
+              borderRadius: 999,
+              padding: isMobile ? '9px 10px 9px 16px' : '10px 18px 10px 20px',
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: isMobile ? 13 : 13.5, fontWeight: 500,
+              cursor: 'pointer', letterSpacing: '-0.005em',
+              transition: 'background 0.15s', whiteSpace: 'nowrap', flexShrink: 0,
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#16271D' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A' }}
+            onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
+            onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+          >
+            Log a shot
+            <span style={{ width: 22, height: 22, borderRadius: 11, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <PlusIcon size={14} color="#FAF6EA" />
+            </span>
+          </button>
 
           {/* Avatar + dropdown */}
           <div ref={avatarRef} style={{ position: 'relative' }}>
