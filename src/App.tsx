@@ -142,8 +142,9 @@ function AppShell() {
   const [logPreclub, setLogPreclub]   = useState<Club | null>(null)
   const [legalDoc, setLegalDoc]       = useState<'privacy' | 'terms' | null>(null)
 
-  const pageRef  = useRef<HTMLDivElement>(null)
-  const prevView = useRef<View>(view)
+  const pageRef    = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const prevView   = useRef<View>(view)
 
   useEffect(() => {
     if (!user) return
@@ -207,23 +208,30 @@ function AppShell() {
   const handleSetView = (v: View) => {
     if (v === view) return
     try { localStorage.setItem('dial_view', v) } catch { /* */ }
+    const resetScroll = () => {
+      if (contentRef.current) contentRef.current.scrollTop = 0
+      else window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+    }
     if (pageRef.current) {
       gsap.to(pageRef.current, {
         opacity: 0, y: -8, duration: 0.18, ease: 'power2.in',
-        onComplete: () => {
-          setView(v)
-          // Reset scroll to top on every view change
-          window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
-        },
+        onComplete: () => { setView(v); resetScroll() },
       })
     } else {
-      setView(v)
-      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+      setView(v); resetScroll()
     }
   }
 
+  const shellStyle: React.CSSProperties = isMobile
+    ? { height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }
+    : { minHeight: '100vh', position: 'relative' }
+
+  const contentStyle: React.CSSProperties = isMobile
+    ? { flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never, paddingBottom: 'calc(env(safe-area-inset-bottom) + 64px)' }
+    : {}
+
   return (
-    <div style={{ minHeight: '100vh', position: 'relative' }}>
+    <div style={shellStyle}>
       {isPasswordRecovery && <SetNewPasswordModal />}
       <TopNav
         view={view}
@@ -235,56 +243,58 @@ function AppShell() {
         isMobile={isMobile}
       />
 
-      <div ref={pageRef}>
-        {view === 'dashboard' && (
-          <Dashboard
-            shots={shots}
-            loading={shotsLoading}
-            onOpenBag={() => handleSetView('bag')}
-            onLog={handleLog}
-            onLogFor={handleLogFor}
-            isMobile={isMobile}
-            userName={user?.user_metadata?.first_name ?? ''}
-          />
-        )}
-        {view === 'bag' && (
-          <BagView shots={shots} onSetDistance={handleSetDistance} isMobile={isMobile} />
-        )}
-        {view === 'dialin' && (
-          <DialInView shots={shots} isMobile={isMobile} />
-        )}
-        {view === 'rounds' && (
-          <ScorecardView
-            courses={courses}
-            rounds={rounds}
-            onCourseAdded={c => setCourses(prev => [c, ...prev])}
-            onCourseDeleted={id => setCourses(prev => prev.filter(c => c.id !== id))}
-            onRoundAdded={r => setRounds(prev => [r, ...prev.filter(x => x.id !== r.id)])}
-            onRoundDeleted={id => setRounds(prev => prev.filter(r => r.id !== id))}
-            isMobile={isMobile}
-            homeCourse={profile?.homeCourse ?? null}
-          />
-        )}
-        {view === 'practice' && (
-          <PracticeView
-            sessions={practiceSessions}
-            onSave={s => setPracticeSessions(prev => [s, ...prev])}
-            onDelete={id => setPracticeSessions(prev => prev.filter(s => s.id !== id))}
-            isMobile={isMobile}
-          />
-        )}
-        {view === 'profile' && (
-          <ProfileView
-            profile={profile}
-            userEmail={user?.email ?? ''}
-            shots={shots}
-            rounds={rounds}
-            userId={user!.id}
-            onProfileSaved={setProfile}
-            onSignOut={signOut}
-            isMobile={isMobile}
-          />
-        )}
+      <div ref={contentRef} style={contentStyle}>
+        <div ref={pageRef}>
+          {view === 'dashboard' && (
+            <Dashboard
+              shots={shots}
+              loading={shotsLoading}
+              onOpenBag={() => handleSetView('bag')}
+              onLog={handleLog}
+              onLogFor={handleLogFor}
+              isMobile={isMobile}
+              userName={user?.user_metadata?.first_name ?? ''}
+            />
+          )}
+          {view === 'bag' && (
+            <BagView shots={shots} onSetDistance={handleSetDistance} isMobile={isMobile} />
+          )}
+          {view === 'dialin' && (
+            <DialInView shots={shots} isMobile={isMobile} />
+          )}
+          {view === 'rounds' && (
+            <ScorecardView
+              courses={courses}
+              rounds={rounds}
+              onCourseAdded={c => setCourses(prev => [c, ...prev])}
+              onCourseDeleted={id => setCourses(prev => prev.filter(c => c.id !== id))}
+              onRoundAdded={r => setRounds(prev => [r, ...prev.filter(x => x.id !== r.id)])}
+              onRoundDeleted={id => setRounds(prev => prev.filter(r => r.id !== id))}
+              isMobile={isMobile}
+              homeCourse={profile?.homeCourse ?? null}
+            />
+          )}
+          {view === 'practice' && (
+            <PracticeView
+              sessions={practiceSessions}
+              onSave={s => setPracticeSessions(prev => [s, ...prev])}
+              onDelete={id => setPracticeSessions(prev => prev.filter(s => s.id !== id))}
+              isMobile={isMobile}
+            />
+          )}
+          {view === 'profile' && (
+            <ProfileView
+              profile={profile}
+              userEmail={user?.email ?? ''}
+              shots={shots}
+              rounds={rounds}
+              userId={user!.id}
+              onProfileSaved={setProfile}
+              onSignOut={signOut}
+              isMobile={isMobile}
+            />
+          )}
+        </div>
       </div>
 
       <LogShotModal

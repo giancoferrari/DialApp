@@ -48,7 +48,7 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, onSi
     <>
       {/* ── Top bar ── */}
       <div style={{
-        position: 'sticky', top: 0, zIndex: 30,
+        position: isMobile ? 'relative' : 'sticky', top: isMobile ? undefined : 0, zIndex: 30,
         background: 'rgba(240,235,221,0.92)',
         backdropFilter: 'blur(20px) saturate(160%)',
         WebkitBackdropFilter: 'blur(20px) saturate(160%)',

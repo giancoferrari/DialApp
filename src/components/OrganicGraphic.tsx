@@ -75,22 +75,6 @@ export default function OrganicGraphic({ size = 360 }: { size?: number }) {
         <circle cx="6" cy="68" r="3.2" fill="#1F1D17" opacity="0.4" />
       </svg>
 
-      {/* Tiny golfer */}
-      <svg width="16" height="22" style={{ position: 'absolute', top: '52%', left: '36%', zIndex: 6 }}>
-        <ellipse cx="8" cy="19" rx="5.5" ry="1.6" fill="rgba(0,0,0,0.2)" />
-        <circle cx="8" cy="5" r="2" fill="#1F1D17" />
-        <line x1="8" y1="7" x2="8" y2="16" stroke="#1F1D17" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="8" y1="10" x2="13" y2="6" stroke="#1F1D17" strokeWidth="1" strokeLinecap="round" />
-      </svg>
-
-      {/* Golf ball */}
-      <div style={{
-        position: 'absolute', top: '50%', left: '42%',
-        width: 9, height: 9, borderRadius: '50%',
-        background: '#FAF6EA', border: '1px solid rgba(31,29,23,0.4)',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.15)', zIndex: 5,
-      }} />
-
       {/* Paper-grain overlay */}
       <div style={{
         position: 'absolute', inset: 0,
