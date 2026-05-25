@@ -24,9 +24,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isPasswordRecovery, setIsPasswordRecovery] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
+    // Request persistent storage so iOS doesn't clear the auth token
+    if (navigator.storage?.persist) navigator.storage.persist()
+
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session) {
+        // Access token may be expired — refresh proactively
+        const expires = session.expires_at ? session.expires_at * 1000 : 0
+        if (expires && expires < Date.now()) {
+          const { data } = await supabase.auth.refreshSession()
+          setSession(data.session)
+          setUser(data.session?.user ?? null)
+        } else {
+          setSession(session)
+          setUser(session.user)
+        }
+      } else {
+        setSession(null)
+        setUser(null)
+      }
       setLoading(false)
     })
 
