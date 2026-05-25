@@ -414,7 +414,6 @@ export default function ProfileView({
                 type="number" step="0.1" min="0" max="54" placeholder="e.g. 10.0"
                 value={goalHcp}
                 onChange={e => setGoalHcp(e.target.value)}
-                onBlur={() => save({ goalHandicap: goalHcp ? parseFloat(goalHcp) : null })}
                 style={{
                   flex: 1, background: '#F0EBDD', border: '1px solid #E0D8C5',
                   borderRadius: 10, padding: '9px 12px', fontSize: 14,
