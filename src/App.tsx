@@ -210,10 +210,15 @@ function AppShell() {
     if (pageRef.current) {
       gsap.to(pageRef.current, {
         opacity: 0, y: -8, duration: 0.18, ease: 'power2.in',
-        onComplete: () => setView(v),
+        onComplete: () => {
+          setView(v)
+          // Reset scroll to top on every view change
+          window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+        },
       })
     } else {
       setView(v)
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
     }
   }
 

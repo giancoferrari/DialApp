@@ -219,7 +219,10 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, onSi
           borderTop: '1px solid rgba(31,58,42,0.08)',
           display: 'flex', alignItems: 'stretch',
           paddingBottom: 'env(safe-area-inset-bottom)',
-        }}>
+          // Force GPU compositing so Safari doesn't drop it on scroll
+          transform: 'translateZ(0)',
+          WebkitTransform: 'translateZ(0)',
+        } as React.CSSProperties}>
           {BOTTOM_NAV.map(item => {
             const active = view === item.id
             return (
