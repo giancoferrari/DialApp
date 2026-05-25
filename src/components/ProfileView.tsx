@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
-import { upsertProfile } from '../lib/profile'
+import { useState, useEffect, useRef } from 'react'
+import { upsertProfile, uploadAvatar } from '../lib/profile'
 import { CLUBS_DATA } from '../data'
 import type { UserProfile, EquipmentItem, Shot, Round } from '../types'
-import { CloseIcon, CheckIcon } from './Icons'
+import { CloseIcon, CheckIcon, CameraIcon, PencilIcon } from './Icons'
 
 interface Props {
   profile: UserProfile | null
@@ -28,73 +28,6 @@ function SectionHeader({ label }: { label: string }) {
   )
 }
 
-function EditableField({
-  label, value, placeholder, type = 'text', onSave, prefix, suffix,
-}: {
-  label: string; value: string; placeholder: string;
-  type?: string; onSave: (v: string) => void; prefix?: string; suffix?: string
-}) {
-  const [editing, setEditing] = useState(false)
-  const [draft, setDraft]     = useState(value)
-
-  useEffect(() => { if (!editing) setDraft(value) }, [value, editing])
-
-  const commit = () => { onSave(draft); setEditing(false) }
-
-  return (
-    <div>
-      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 6 }}>
-        {label}
-      </div>
-      {editing ? (
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          {prefix && <span style={{ fontSize: 14, color: '#6B6857', flexShrink: 0 }}>{prefix}</span>}
-          <input
-            autoFocus
-            type={type}
-            value={draft}
-            onChange={e => setDraft(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') setEditing(false) }}
-            style={{
-              flex: 1, background: '#F0EBDD', border: '1px solid #1F3A2A',
-              borderRadius: 10, padding: '10px 12px', fontSize: 14,
-              color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif",
-            }}
-          />
-          {suffix && <span style={{ fontSize: 14, color: '#6B6857', flexShrink: 0 }}>{suffix}</span>}
-          <button
-            onClick={commit}
-            style={{ background: '#1F3A2A', border: 'none', borderRadius: 8, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
-          >
-            <CheckIcon size={14} color="#FAF6EA" />
-          </button>
-          <button
-            onClick={() => setEditing(false)}
-            style={{ background: '#F0EBDD', border: '1px solid #E0D8C5', borderRadius: 8, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
-          >
-            <CloseIcon size={12} color="#6B6857" />
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={() => setEditing(true)}
-          style={{
-            display: 'block', width: '100%', textAlign: 'left',
-            background: '#F0EBDD', border: '1px solid #E0D8C5',
-            borderRadius: 10, padding: '10px 12px', fontSize: 14,
-            color: value ? '#1F1D17' : '#B5AC95', cursor: 'pointer',
-            fontFamily: "'DM Sans', sans-serif", transition: 'border-color 0.15s',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
-        >
-          {value ? (prefix ? `${prefix} ` : '') + value + (suffix ? ` ${suffix}` : '') : placeholder}
-        </button>
-      )}
-    </div>
-  )
-}
-
 function ProgressBar({ value, max, color = '#1F3A2A' }: { value: number; max: number; color?: string }) {
   const pct = Math.min(Math.max((value / max) * 100, 0), 100)
   return (
@@ -107,24 +40,29 @@ function ProgressBar({ value, max, color = '#1F3A2A' }: { value: number; max: nu
 export default function ProfileView({
   profile, userEmail, shots, rounds, onProfileSaved, onSignOut, userId, isMobile = false,
 }: Props) {
-  const [saving, setSaving]         = useState(false)
-  const [saveError, setSaveError]   = useState<string | null>(null)
-  const [savedFlash, setSavedFlash] = useState(false)
+  const [saving, setSaving]               = useState(false)
+  const [saveError, setSaveError]         = useState<string | null>(null)
+  const [savedFlash, setSavedFlash]       = useState(false)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [editingUsername, setEditingUsername] = useState(false)
+  const [draftUsername, setDraftUsername] = useState(profile?.username ?? '')
 
-  // Local editable state mirroring profile
-  const [handicap,    setHandicap]    = useState<string>(profile?.handicapIndex != null ? String(profile.handicapIndex) : '')
-  const [homeCourse,  setHomeCourse]  = useState<string>(profile?.homeCourse ?? '')
-  const [goalScore,   setGoalScore]   = useState<string>(profile?.goalScore != null ? String(profile.goalScore) : '')
-  const [goalHcp,     setGoalHcp]     = useState<string>(profile?.goalHandicap != null ? String(profile.goalHandicap) : '')
-  const [goalNotes,   setGoalNotes]   = useState<string>(profile?.goalNotes ?? '')
-  const [equipment,   setEquipment]   = useState<EquipmentItem[]>(
+  const [handicap,   setHandicap]   = useState<string>(profile?.handicapIndex != null ? String(profile.handicapIndex) : '')
+  const [homeCourse, setHomeCourse] = useState<string>(profile?.homeCourse ?? '')
+  const [goalScore,  setGoalScore]  = useState<string>(profile?.goalScore != null ? String(profile.goalScore) : '')
+  const [goalHcp,    setGoalHcp]    = useState<string>(profile?.goalHandicap != null ? String(profile.goalHandicap) : '')
+  const [goalNotes,  setGoalNotes]  = useState<string>(profile?.goalNotes ?? '')
+  const [equipment,  setEquipment]  = useState<EquipmentItem[]>(
     profile?.equipment.length
       ? profile.equipment
       : CLUBS_DATA.map(c => ({ clubId: c.id, brand: '', model: '' }))
   )
 
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   useEffect(() => {
     if (!profile) return
+    setDraftUsername(profile.username ?? '')
     setHandicap(profile.handicapIndex != null ? String(profile.handicapIndex) : '')
     setHomeCourse(profile.homeCourse ?? '')
     setGoalScore(profile.goalScore != null ? String(profile.goalScore) : '')
@@ -141,10 +79,31 @@ export default function ProfileView({
       setSavedFlash(true)
       setTimeout(() => setSavedFlash(false), 2000)
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err)
-      setSaveError(msg || 'Failed to save. Please try again.')
+      setSaveError(err instanceof Error ? err.message : 'Failed to save. Please try again.')
+    } finally { setSaving(false) }
+  }
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingAvatar(true)
+    setSaveError(null)
+    try {
+      const url = await uploadAvatar(userId, file)
+      const saved = await upsertProfile(userId, { avatarUrl: url })
+      onProfileSaved(saved)
+    } catch {
+      setSaveError('Photo upload failed. Make sure the "avatars" storage bucket exists in Supabase with public access.')
+    } finally {
+      setUploadingAvatar(false)
+      if (e.target) e.target.value = ''
     }
-    finally { setSaving(false) }
+  }
+
+  const saveUsername = async () => {
+    const trimmed = draftUsername.trim().toLowerCase()
+    setEditingUsername(false)
+    await save({ username: trimmed || null })
   }
 
   const updateEquipmentField = (clubId: string, field: 'brand' | 'model', val: string) => {
@@ -154,10 +113,9 @@ export default function ProfileView({
   const saveEquipment = () => save({ equipment })
 
   // ── Derived stats ──────────────────────────────────────
-  const totalShots = shots.length
-  const avgDriver  = shots.filter(s => s.clubId === 'driver').reduce((acc, s, _, arr) =>
-    acc + s.yardage / arr.length, 0) || 0
-  const longestDrive = Math.max(0, ...shots.filter(s => s.clubId === 'driver').map(s => s.yardage))
+  const totalShots    = shots.length
+  const avgDriver     = shots.filter(s => s.clubId === 'driver').reduce((acc, s, _, arr) => acc + s.yardage / arr.length, 0) || 0
+  const longestDrive  = Math.max(0, ...shots.filter(s => s.clubId === 'driver').map(s => s.yardage))
 
   const roundsWithScores = rounds.filter(r => r.roundHoles.length > 0)
   const bestRound = roundsWithScores.reduce<{ score: number; courseName: string; date: string } | null>((best, r) => {
@@ -169,7 +127,6 @@ export default function ProfileView({
     ? Math.round(roundsWithScores.reduce((sum, r) => sum + r.roundHoles.reduce((s, h) => s + (h.score ?? 0), 0), 0) / roundsWithScores.length)
     : null
 
-  // Courses played
   const courseMap: Record<string, { name: string; bestScore: number | null; count: number }> = {}
   rounds.forEach(r => {
     if (!courseMap[r.courseName]) courseMap[r.courseName] = { name: r.courseName, bestScore: null, count: 0 }
@@ -182,80 +139,179 @@ export default function ProfileView({
   })
   const coursesPlayed = Object.values(courseMap).sort((a, b) => b.count - a.count)
 
-  // Goal progress
-  const goalScoreNum   = goalScore   ? parseInt(goalScore)   : null
-  const goalHcpNum     = goalHcp     ? parseFloat(goalHcp)   : null
-  const hcpNum         = handicap    ? parseFloat(handicap)  : null
+  const goalScoreNum = goalScore ? parseInt(goalScore) : null
+  const goalHcpNum   = goalHcp   ? parseFloat(goalHcp)  : null
+  const hcpNum       = handicap  ? parseFloat(handicap) : null
 
   const goalScorePct = goalScoreNum && bestRound
     ? Math.min(100, Math.round((1 - (bestRound.score - goalScoreNum) / 20) * 100))
     : null
 
-  const px = isMobile ? 16 : 40
+  const px = isMobile ? 20 : 40
 
   const card: React.CSSProperties = {
     background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 20, padding: '24px',
   }
 
   const CATS = [
-    { id: 'woods', label: 'Woods' },
+    { id: 'woods',   label: 'Woods'   },
     { id: 'hybrids', label: 'Hybrids' },
-    { id: 'irons', label: 'Irons' },
-    { id: 'wedges', label: 'Wedges' },
+    { id: 'irons',   label: 'Irons'   },
+    { id: 'wedges',  label: 'Wedges'  },
   ] as const
 
-  return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: `${isMobile ? 24 : 48}px ${px}px ${isMobile ? 96 : 80}px` }}>
+  const displayName = profile?.username ? `@${profile.username}` : 'Add username'
 
-      {/* Page header */}
-      <div style={{ marginBottom: 36 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 10 }}>
-          Your profile
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <div style={{
-            width: 64, height: 64, borderRadius: 32,
-            background: '#1F3A2A', color: '#D9824D',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 28,
-            flexShrink: 0,
-          }}>
-            {userEmail ? userEmail[0].toUpperCase() : 'G'}
+  return (
+    <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 28 : 48}px ${px}px ${isMobile ? 120 : 80}px` }}>
+
+      {/* ── Instagram-style profile header ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 32 }}>
+
+        {/* Avatar */}
+        <div style={{ position: 'relative', marginBottom: 18 }}>
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              width: 88, height: 88, borderRadius: 44,
+              background: '#1F3A2A', overflow: 'hidden',
+              border: '3px solid #E0D8C5', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              position: 'relative',
+            }}
+          >
+            {profile?.avatarUrl ? (
+              <img src={profile.avatarUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 36, color: '#D9824D' }}>
+                {userEmail ? userEmail[0].toUpperCase() : 'G'}
+              </span>
+            )}
+            {uploadingAvatar && (
+              <div style={{ position: 'absolute', inset: 0, background: 'rgba(31,29,23,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ color: '#FAF6EA', fontSize: 22 }}>…</span>
+              </div>
+            )}
           </div>
-          <div>
-            <h1 style={{
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              position: 'absolute', bottom: 2, right: 2,
+              width: 28, height: 28, borderRadius: 14,
+              background: '#1F3A2A', border: '2px solid #F5F0E8',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <CameraIcon size={13} color="#FAF6EA" />
+          </button>
+          <input
+            ref={fileInputRef} type="file" accept="image/*"
+            style={{ display: 'none' }} onChange={handleAvatarChange}
+          />
+        </div>
+
+        {/* Username */}
+        {editingUsername ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <input
+              autoFocus
+              value={draftUsername}
+              onChange={e => setDraftUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, '').slice(0, 20))}
+              onKeyDown={e => { if (e.key === 'Enter') saveUsername(); if (e.key === 'Escape') setEditingUsername(false) }}
+              placeholder="username"
+              style={{
+                textAlign: 'center', background: '#F0EBDD',
+                border: '1px solid #1F3A2A', borderRadius: 10,
+                padding: '8px 14px', fontSize: 17, color: '#1F1D17',
+                outline: 'none', fontFamily: "'DM Sans', sans-serif", width: 180,
+              }}
+            />
+            <button
+              onClick={saveUsername}
+              style={{ background: '#1F3A2A', border: 'none', borderRadius: 8, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+            >
+              <CheckIcon size={14} color="#FAF6EA" />
+            </button>
+            <button
+              onClick={() => setEditingUsername(false)}
+              style={{ background: '#F0EBDD', border: '1px solid #E0D8C5', borderRadius: 8, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+            >
+              <CloseIcon size={12} color="#6B6857" />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => { setDraftUsername(profile?.username ?? ''); setEditingUsername(true) }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 7, marginBottom: 6,
+              background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px',
+              borderRadius: 8, transition: 'background 0.12s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(31,29,23,0.05)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+          >
+            <span style={{
               fontFamily: "'Bricolage Grotesque', sans-serif",
-              fontSize: isMobile ? 28 : 38, fontWeight: 700,
-              color: '#1F1D17', letterSpacing: '-0.03em', margin: 0, lineHeight: 1.1,
+              fontSize: 22, fontWeight: 700, color: profile?.username ? '#1F1D17' : '#B5AC95',
+              letterSpacing: '-0.02em',
             }}>
-              {userEmail}
-            </h1>
-            <div style={{ fontSize: 13, color: '#6B6857', marginTop: 4 }}>
-              {totalShots} shots logged · {roundsWithScores.length} rounds played
+              {displayName}
+            </span>
+            <PencilIcon size={14} color="#B5AC95" />
+          </button>
+        )}
+
+        <div style={{ fontSize: 13, color: '#B5AC95', marginBottom: 24 }}>{userEmail}</div>
+
+        {/* Stats row */}
+        <div style={{ display: 'flex', gap: isMobile ? 32 : 48 }}>
+          {[
+            { value: totalShots,              label: 'shots'    },
+            { value: roundsWithScores.length, label: 'rounds'   },
+            { value: hcpNum != null ? hcpNum.toFixed(1) : '—', label: 'handicap' },
+          ].map(s => (
+            <div key={s.label} style={{ textAlign: 'center' }}>
+              <div style={{
+                fontFamily: "'Bricolage Grotesque', sans-serif",
+                fontSize: 30, fontWeight: 700, color: '#1F1D17',
+                letterSpacing: '-0.04em', lineHeight: 1,
+              }}>
+                {s.value}
+              </div>
+              <div style={{
+                fontSize: 10, color: '#6B6857', fontWeight: 600,
+                textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 5,
+              }}>
+                {s.label}
+              </div>
             </div>
-          </div>
-          {savedFlash && (
-            <div style={{
-              marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6,
-              background: '#1F3A2A', color: '#FAF6EA', borderRadius: 999,
-              padding: '6px 14px', fontSize: 13, fontWeight: 500,
-            }}>
-              <CheckIcon size={14} color="#FAF6EA" /> Saved
-            </div>
-          )}
+          ))}
         </div>
+
+        {savedFlash && (
+          <div style={{
+            marginTop: 16, display: 'flex', alignItems: 'center', gap: 6,
+            background: '#1F3A2A', color: '#FAF6EA', borderRadius: 999,
+            padding: '6px 14px', fontSize: 13, fontWeight: 500,
+          }}>
+            <CheckIcon size={13} color="#FAF6EA" /> Saved
+          </div>
+        )}
       </div>
 
+      {/* Divider */}
+      <div style={{ height: 1, background: '#E0D8C5', marginBottom: 28 }} />
+
       {saveError && (
-        <div style={{ background: 'rgba(192,57,43,0.08)', border: '1px solid rgba(192,57,43,0.25)', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: '#C0392B', lineHeight: 1.45, marginBottom: 20 }}>
-          <strong>Error:</strong> {saveError}
+        <div style={{ background: 'rgba(217,130,77,0.10)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: '#D9824D', lineHeight: 1.45, marginBottom: 20 }}>
+          {saveError}
         </div>
       )}
 
       {/* ── Handicap + Quick Stats ── */}
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 16, marginBottom: 20 }}>
 
-        {/* Handicap card */}
         <div style={{ ...card, background: '#1F3A2A', color: '#FAF6EA' }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#B5C29A', textTransform: 'uppercase', marginBottom: 12 }}>
             Handicap Index
@@ -294,12 +350,11 @@ export default function ProfileView({
           </div>
         </div>
 
-        {/* Stats snapshot */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {[
-            { label: 'Best round', value: bestRound ? `${bestRound.score} @ ${bestRound.courseName}` : '—' },
-            { label: 'Avg score', value: avgScore ? String(avgScore) : '—' },
-            { label: 'Avg driver', value: avgDriver ? `${Math.round(avgDriver)} yds` : '—' },
+            { label: 'Best round',    value: bestRound ? `${bestRound.score} @ ${bestRound.courseName}` : '—' },
+            { label: 'Avg score',     value: avgScore ? String(avgScore) : '—' },
+            { label: 'Avg driver',    value: avgDriver ? `${Math.round(avgDriver)} yds` : '—' },
             { label: 'Longest drive', value: longestDrive ? `${longestDrive} yds` : '—' },
           ].map(s => (
             <div key={s.label} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 14, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -315,7 +370,6 @@ export default function ProfileView({
         <SectionHeader label="Goals" />
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 20 }}>
 
-          {/* Score goal */}
           <div>
             <div style={{ fontSize: 13, color: '#6B6857', marginBottom: 10 }}>Score to break</div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
@@ -346,14 +400,13 @@ export default function ProfileView({
                 <ProgressBar value={goalScorePct} max={100} color={bestRound.score <= (goalScoreNum ?? 999) ? '#5C7A4D' : '#1F3A2A'} />
                 {bestRound.score <= (goalScoreNum ?? 999) && (
                   <div style={{ fontSize: 12, color: '#5C7A4D', fontWeight: 600, marginTop: 6 }}>
-                    ✓ Goal achieved! Best score: {bestRound.score}
+                    Goal achieved! Best: {bestRound.score}
                   </div>
                 )}
               </div>
             )}
           </div>
 
-          {/* Handicap goal */}
           <div>
             <div style={{ fontSize: 13, color: '#6B6857', marginBottom: 10 }}>Target handicap</div>
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
@@ -368,6 +421,10 @@ export default function ProfileView({
                   color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif",
                 }}
                 onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
+                onBlur={e => {
+                  e.currentTarget.style.borderColor = '#E0D8C5'
+                  save({ goalHandicap: goalHcp ? parseFloat(goalHcp) : null })
+                }}
               />
             </div>
             {hcpNum != null && goalHcpNum != null && (
@@ -383,7 +440,7 @@ export default function ProfileView({
                 />
                 {hcpNum <= goalHcpNum && (
                   <div style={{ fontSize: 12, color: '#5C7A4D', fontWeight: 600, marginTop: 6 }}>
-                    ✓ Goal reached!
+                    Goal reached!
                   </div>
                 )}
               </div>
@@ -391,7 +448,6 @@ export default function ProfileView({
           </div>
         </div>
 
-        {/* Notes */}
         <div style={{ marginTop: 16 }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 8 }}>Notes & intentions</div>
           <textarea
@@ -409,12 +465,23 @@ export default function ProfileView({
       {/* ── Home Course ── */}
       <div style={{ ...card, marginBottom: 20 }}>
         <SectionHeader label="Home Course" />
-        <EditableField
-          label="Home course"
-          value={homeCourse}
-          placeholder="Where do you play most?"
-          onSave={v => { setHomeCourse(v); save({ homeCourse: v || null }) }}
-        />
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 6 }}>Home course</div>
+          <input
+            type="text"
+            value={homeCourse}
+            placeholder="Where do you play most?"
+            onChange={e => setHomeCourse(e.target.value)}
+            onBlur={() => save({ homeCourse: homeCourse || null })}
+            style={{
+              display: 'block', width: '100%', boxSizing: 'border-box',
+              background: '#F0EBDD', border: '1px solid #E0D8C5',
+              borderRadius: 10, padding: '10px 12px', fontSize: 14,
+              color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif",
+            }}
+            onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
+          />
+        </div>
       </div>
 
       {/* ── Courses played ── */}

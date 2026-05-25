@@ -9,14 +9,16 @@ const NAV_ITEMS: { id: View; label: string }[] = [
   { id: 'dialin',    label: 'Dial in'   },
   { id: 'rounds',    label: 'Rounds'    },
   { id: 'practice',  label: 'Practice'  },
+  { id: 'profile',   label: 'Profile'   },
 ]
 
 const BOTTOM_NAV: { id: View; label: string; Icon: React.ComponentType<{ size?: number; color?: string }> }[] = [
   { id: 'dashboard', label: 'Home',     Icon: HomeIcon     },
-  { id: 'bag',       label: 'My Bag',   Icon: BagIcon      },
+  { id: 'bag',       label: 'Bag',      Icon: BagIcon      },
   { id: 'dialin',    label: 'Dial In',  Icon: TargetIcon   },
   { id: 'rounds',    label: 'Rounds',   Icon: ScorecardIcon },
   { id: 'practice',  label: 'Practice', Icon: DumbbellIcon },
+  { id: 'profile',   label: 'Profile',  Icon: PersonIcon   },
 ]
 
 interface Props {
@@ -25,11 +27,12 @@ interface Props {
   onLog: () => void
   onProfile: () => void
   userEmail: string
+  avatarUrl?: string | null
   onSignOut: () => void
   isMobile: boolean
 }
 
-export default function TopNav({ view, onView, onLog, onProfile, userEmail, onSignOut, isMobile }: Props) {
+export default function TopNav({ view, onView, onLog, onProfile, userEmail, avatarUrl, onSignOut, isMobile }: Props) {
   const [menuOpen, setMenuOpen] = useState(false)
   const avatarRef               = useRef<HTMLDivElement>(null)
   const initial = userEmail ? userEmail[0].toUpperCase() : 'G'
@@ -142,11 +145,15 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, onSi
                 letterSpacing: '-0.02em',
                 transition: 'transform 0.15s, background 0.15s',
                 userSelect: 'none',
+                overflow: 'hidden',
               }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)' }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
             >
-              {initial}
+              {avatarUrl
+                ? <img src={avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : initial
+              }
             </div>
 
             {menuOpen && (
@@ -239,7 +246,7 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, onSi
               >
                 <item.Icon size={22} color={active ? '#1F3A2A' : '#6B6857'} />
                 <span style={{
-                  fontSize: 9.5, fontWeight: active ? 600 : 500,
+                  fontSize: 9, fontWeight: active ? 600 : 500,
                   fontFamily: "'DM Sans', sans-serif",
                   letterSpacing: '-0.01em',
                 }}>

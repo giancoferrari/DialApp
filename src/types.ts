@@ -88,6 +88,8 @@ export interface EquipmentItem {
 export interface UserProfile {
   id: string
   userId: string
+  username: string | null
+  avatarUrl: string | null
   handicapIndex: number | null
   homeCourse: string | null
   goalScore: number | null

@@ -239,6 +239,7 @@ function AppShell() {
         onLog={handleLog}
         onProfile={() => handleSetView('profile')}
         userEmail={user?.email ?? ''}
+        avatarUrl={profile?.avatarUrl ?? null}
         onSignOut={signOut}
         isMobile={isMobile}
       />

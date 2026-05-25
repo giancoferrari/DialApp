@@ -4,6 +4,8 @@ import type { UserProfile, EquipmentItem } from '../types'
 type DbProfile = {
   id: string
   user_id: string
+  username: string | null
+  avatar_url: string | null
   handicap_index: number | null
   home_course: string | null
   goal_score: number | null
@@ -18,6 +20,8 @@ function toProfile(r: DbProfile): UserProfile {
   return {
     id: r.id,
     userId: r.user_id,
+    username: r.username ?? null,
+    avatarUrl: r.avatar_url ?? null,
     handicapIndex: r.handicap_index,
     homeCourse: r.home_course,
     goalScore: r.goal_score,
@@ -48,12 +52,14 @@ export async function upsertProfile(
     user_id: userId,
     updated_at: new Date().toISOString(),
   }
-  if ('handicapIndex'  in updates) payload.handicap_index  = updates.handicapIndex  ?? null
-  if ('homeCourse'     in updates) payload.home_course      = updates.homeCourse     ?? null
-  if ('goalScore'      in updates) payload.goal_score       = updates.goalScore      ?? null
-  if ('goalHandicap'   in updates) payload.goal_handicap    = updates.goalHandicap   ?? null
-  if ('goalNotes'      in updates) payload.goal_notes       = updates.goalNotes      ?? null
-  if ('equipment'      in updates) payload.equipment        = updates.equipment      ?? []
+  if ('username'      in updates) payload.username       = updates.username      ?? null
+  if ('avatarUrl'     in updates) payload.avatar_url     = updates.avatarUrl     ?? null
+  if ('handicapIndex' in updates) payload.handicap_index = updates.handicapIndex ?? null
+  if ('homeCourse'    in updates) payload.home_course    = updates.homeCourse    ?? null
+  if ('goalScore'     in updates) payload.goal_score     = updates.goalScore     ?? null
+  if ('goalHandicap'  in updates) payload.goal_handicap  = updates.goalHandicap  ?? null
+  if ('goalNotes'     in updates) payload.goal_notes     = updates.goalNotes     ?? null
+  if ('equipment'     in updates) payload.equipment      = updates.equipment     ?? []
 
   const { data, error } = await supabase
     .from('user_profiles')
@@ -62,4 +68,15 @@ export async function upsertProfile(
     .single()
   if (error) throw error
   return toProfile(data as DbProfile)
+}
+
+export async function uploadAvatar(userId: string, file: File): Promise<string> {
+  const ext = file.name.split('.').pop() ?? 'jpg'
+  const path = `${userId}/avatar.${ext}`
+  const { error } = await supabase.storage
+    .from('avatars')
+    .upload(path, file, { upsert: true, contentType: file.type })
+  if (error) throw error
+  const { data } = supabase.storage.from('avatars').getPublicUrl(path)
+  return `${data.publicUrl}?t=${Date.now()}`
 }
