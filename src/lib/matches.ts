@@ -69,7 +69,7 @@ export async function fetchMatches(userId: string): Promise<Match[]> {
     .select('*')
     .in('id', matchIds)
     .order('updated_at', { ascending: false })
-  if (error) throw error
+  if (error) throw new Error(error.message)
 
   return Promise.all((data ?? []).map(hydrateMatch))
 }
@@ -91,14 +91,14 @@ export async function createMatch(
     })
     .select()
     .single()
-  if (error) throw error
+  if (error) throw new Error(`matches insert: ${error.message} (code: ${error.code})`)
 
   const players = [
     { match_id: data.id, user_id: createdBy, status: 'accepted' },
     ...inviteeIds.map(id => ({ match_id: data.id, user_id: id, status: 'invited' })),
   ]
   const { error: playersErr } = await supabase.from('match_players').insert(players)
-  if (playersErr) throw new Error(`Failed to add players: ${playersErr.message}`)
+  if (playersErr) throw new Error(`match_players insert: ${playersErr.message} (code: ${playersErr.code})`)
 
   // Deduct wager from creator if wager > 0
   if (opts.wagerPerPlayer > 0) {
@@ -144,7 +144,7 @@ export async function upsertScore(matchId: string, userId: string, holeNumber: n
       { match_id: matchId, user_id: userId, hole_number: holeNumber, score, updated_at: new Date().toISOString() },
       { onConflict: 'match_id,user_id,hole_number' },
     )
-  if (error) throw error
+  if (error) throw new Error(error.message)
 
   await supabase.from('matches').update({ updated_at: new Date().toISOString() }).eq('id', matchId)
 }
@@ -188,7 +188,6 @@ export async function completeMatch(match: Match): Promise<string | null> {
     const pot = match.wagerPerPlayer * accepted.length
     await creditWinner(winnerId, match.id, pot)
   } else if (match.wagerPerPlayer > 0 && !winnerId) {
-    // Tie — refund all
     for (const p of accepted) {
       await refundWager(p.userId, match.id, match.wagerPerPlayer)
     }
@@ -217,6 +216,6 @@ export async function fetchMatchRealtime(matchId: string): Promise<Match> {
     .select('*')
     .eq('id', matchId)
     .single()
-  if (error) throw error
+  if (error) throw new Error(error.message)
   return hydrateMatch(data)
 }
