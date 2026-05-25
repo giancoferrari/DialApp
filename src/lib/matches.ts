@@ -97,7 +97,8 @@ export async function createMatch(
     { match_id: data.id, user_id: createdBy, status: 'accepted' },
     ...inviteeIds.map(id => ({ match_id: data.id, user_id: id, status: 'invited' })),
   ]
-  await supabase.from('match_players').insert(players)
+  const { error: playersErr } = await supabase.from('match_players').insert(players)
+  if (playersErr) throw new Error(`Failed to add players: ${playersErr.message}`)
 
   // Deduct wager from creator if wager > 0
   if (opts.wagerPerPlayer > 0) {
