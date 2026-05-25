@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { useAuth } from './contexts/AuthContext'
@@ -7,6 +7,7 @@ import { fetchCourses } from './lib/courses'
 import { fetchRounds } from './lib/rounds'
 import { fetchPracticeSessions } from './lib/practice'
 import { fetchProfile } from './lib/profile'
+import { supabase } from './lib/supabase'
 import { useIsMobile } from './hooks/useIsMobile'
 import type { Shot, View, Club, Course, Round, PracticeSession, UserProfile } from './types'
 import TopNav from './components/TopNav'
@@ -18,6 +19,7 @@ import PracticeView from './components/PracticeView'
 import ProfileView from './components/ProfileView'
 import FriendsView from './components/FriendsView'
 import MatchesView from './components/MatchesView'
+import NotificationsView from './components/NotificationsView'
 import LogShotModal from './components/LogShotModal'
 import AuthScreen from './components/AuthScreen'
 import LegalModal from './components/LegalModal'
@@ -143,10 +145,22 @@ function AppShell() {
   const [logOpen, setLogOpen]         = useState(false)
   const [logPreclub, setLogPreclub]   = useState<Club | null>(null)
   const [legalDoc, setLegalDoc]       = useState<'privacy' | 'terms' | null>(null)
+  const [notifCount, setNotifCount]   = useState(0)
 
   const pageRef    = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const prevView   = useRef<View>(view)
+
+  const refreshNotifCount = useCallback(async () => {
+    if (!user) return
+    const [{ count: fc }, { count: mc }] = await Promise.all([
+      supabase.from('friendships').select('id', { count: 'exact', head: true })
+        .eq('addressee_id', user.id).eq('status', 'pending'),
+      supabase.from('match_players').select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id).eq('status', 'invited'),
+    ])
+    setNotifCount((fc ?? 0) + (mc ?? 0))
+  }, [user])
 
   useEffect(() => {
     if (!user) return
@@ -164,7 +178,8 @@ function AppShell() {
       })
       .catch(console.error)
       .finally(() => setShotsLoading(false))
-  }, [user])
+    refreshNotifCount()
+  }, [user, refreshNotifCount])
 
   useGSAP(() => {
     if (!pageRef.current || prevView.current === view) return
@@ -244,6 +259,7 @@ function AppShell() {
         avatarUrl={profile?.avatarUrl ?? null}
         onSignOut={signOut}
         isMobile={isMobile}
+        notifCount={notifCount}
       />
 
       <div ref={contentRef} style={contentStyle}>
@@ -303,6 +319,9 @@ function AppShell() {
           )}
           {view === 'matches' && (
             <MatchesView userId={user!.id} isMobile={isMobile} />
+          )}
+          {view === 'notifications' && (
+            <NotificationsView userId={user!.id} isMobile={isMobile} onCountChange={setNotifCount} />
           )}
         </div>
       </div>

@@ -1,24 +1,26 @@
 import { useEffect, useRef, useState } from 'react'
 import type { View } from '../types'
 import DialWordmark from './DialWordmark'
-import { PlusIcon, PersonIcon, HomeIcon, UsersIcon, TrophyIcon } from './Icons'
+import { PlusIcon, PersonIcon, HomeIcon, UsersIcon, TrophyIcon, BellIcon } from './Icons'
 
 const NAV_ITEMS: { id: View; label: string }[] = [
-  { id: 'dashboard', label: 'Home'     },
-  { id: 'bag',       label: 'My Bag'   },
-  { id: 'dialin',    label: 'Dial In'  },
-  { id: 'rounds',    label: 'Rounds'   },
-  { id: 'practice',  label: 'Practice' },
-  { id: 'friends',   label: 'Friends'  },
-  { id: 'matches',   label: 'Matches'  },
-  { id: 'profile',   label: 'Profile'  },
+  { id: 'dashboard',     label: 'Home'          },
+  { id: 'bag',           label: 'My Bag'        },
+  { id: 'dialin',        label: 'Dial In'       },
+  { id: 'rounds',        label: 'Rounds'        },
+  { id: 'practice',      label: 'Practice'      },
+  { id: 'friends',       label: 'Friends'       },
+  { id: 'matches',       label: 'Matches'       },
+  { id: 'notifications', label: 'Notifications' },
+  { id: 'profile',       label: 'Profile'       },
 ]
 
 const BOTTOM_NAV: { id: View; label: string; Icon: React.ComponentType<{ size?: number; color?: string }> }[] = [
-  { id: 'dashboard', label: 'Home',    Icon: HomeIcon    },
-  { id: 'friends',   label: 'Friends', Icon: UsersIcon   },
-  { id: 'matches',   label: 'Matches', Icon: TrophyIcon  },
-  { id: 'profile',   label: 'Profile', Icon: PersonIcon  },
+  { id: 'dashboard',     label: 'Home',    Icon: HomeIcon    },
+  { id: 'friends',       label: 'Friends', Icon: UsersIcon   },
+  { id: 'matches',       label: 'Matches', Icon: TrophyIcon  },
+  { id: 'notifications', label: 'Alerts',  Icon: BellIcon    },
+  { id: 'profile',       label: 'Profile', Icon: PersonIcon  },
 ]
 
 interface Props {
@@ -30,9 +32,10 @@ interface Props {
   avatarUrl?: string | null
   onSignOut: () => void
   isMobile: boolean
+  notifCount?: number
 }
 
-export default function TopNav({ view, onView, onLog, onProfile, userEmail, avatarUrl, onSignOut, isMobile }: Props) {
+export default function TopNav({ view, onView, onLog, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0 }: Props) {
   const [menuOpen, setMenuOpen] = useState(false)
   const avatarRef               = useRef<HTMLDivElement>(null)
   const initial = userEmail ? userEmail[0].toUpperCase() : 'G'
@@ -232,6 +235,7 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, avat
         } as React.CSSProperties}>
           {BOTTOM_NAV.map(item => {
             const active = view === item.id
+            const showBadge = item.id === 'notifications' && notifCount > 0
             return (
               <button
                 key={item.id}
@@ -244,7 +248,21 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, avat
                   transition: 'color 0.15s',
                 }}
               >
-                <item.Icon size={22} color={active ? '#1F3A2A' : '#6B6857'} />
+                <div style={{ position: 'relative' }}>
+                  <item.Icon size={21} color={active ? '#1F3A2A' : '#6B6857'} />
+                  {showBadge && (
+                    <div style={{
+                      position: 'absolute', top: -3, right: -5,
+                      minWidth: 16, height: 16, borderRadius: 8,
+                      background: '#D9824D', border: '1.5px solid rgba(240,235,221,0.97)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 9, fontWeight: 700, color: '#FAF6EA',
+                      fontFamily: "'DM Sans', sans-serif", padding: '0 3px',
+                    }}>
+                      {notifCount > 9 ? '9+' : notifCount}
+                    </div>
+                  )}
+                </div>
                 <span style={{
                   fontSize: 10, fontWeight: active ? 600 : 500,
                   fontFamily: "'DM Sans', sans-serif",

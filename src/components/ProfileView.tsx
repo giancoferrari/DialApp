@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { upsertProfile, uploadAvatar } from '../lib/profile'
+import { supabase } from '../lib/supabase'
 import { CLUBS_DATA } from '../data'
 import type { UserProfile, EquipmentItem, Shot, Round } from '../types'
 import { CloseIcon, CheckIcon, CameraIcon, PencilIcon } from './Icons'
@@ -58,7 +59,17 @@ export default function ProfileView({
       : CLUBS_DATA.map(c => ({ clubId: c.id, brand: '', model: '' }))
   )
 
+  const [friendsCount, setFriendsCount] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    supabase
+      .from('friendships')
+      .select('id', { count: 'exact', head: true })
+      .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`)
+      .eq('status', 'accepted')
+      .then(({ count }) => setFriendsCount(count ?? 0))
+  }, [userId])
 
   useEffect(() => {
     if (!profile) return
@@ -93,7 +104,7 @@ export default function ProfileView({
       const saved = await upsertProfile(userId, { avatarUrl: url })
       onProfileSaved(saved)
     } catch {
-      setSaveError('Photo upload failed. Make sure the "avatars" storage bucket exists in Supabase with public access.')
+      setSaveError('Photo upload failed. Make sure storage upload policies are set in Supabase (see setup instructions).')
     } finally {
       setUploadingAvatar(false)
       if (e.target) e.target.value = ''
@@ -265,9 +276,8 @@ export default function ProfileView({
         {/* Stats row */}
         <div style={{ display: 'flex', gap: isMobile ? 32 : 48 }}>
           {[
-            { value: totalShots,              label: 'shots'    },
-            { value: roundsWithScores.length, label: 'rounds'   },
             { value: hcpNum != null ? hcpNum.toFixed(1) : '—', label: 'handicap' },
+            { value: friendsCount, label: 'friends' },
           ].map(s => (
             <div key={s.label} style={{ textAlign: 'center' }}>
               <div style={{
