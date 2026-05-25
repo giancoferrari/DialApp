@@ -2,13 +2,12 @@ import { useState, useEffect, useRef } from 'react'
 import { upsertProfile, uploadAvatar } from '../lib/profile'
 import { supabase } from '../lib/supabase'
 import { CLUBS_DATA } from '../data'
-import type { UserProfile, EquipmentItem, Shot, Round } from '../types'
+import type { UserProfile, EquipmentItem, Round } from '../types'
 import { CloseIcon, CheckIcon, CameraIcon, PencilIcon } from './Icons'
 
 interface Props {
   profile: UserProfile | null
   userEmail: string
-  shots: Shot[]
   rounds: Round[]
   onProfileSaved: (p: UserProfile) => void
   onSignOut: () => void
@@ -39,7 +38,7 @@ function ProgressBar({ value, max, color = '#1F3A2A' }: { value: number; max: nu
 }
 
 export default function ProfileView({
-  profile, userEmail, shots, rounds, onProfileSaved, onSignOut, userId, isMobile = false,
+  profile, userEmail, rounds, onProfileSaved, onSignOut, userId, isMobile = false,
 }: Props) {
   const [saving, setSaving]               = useState(false)
   const [saveError, setSaveError]         = useState<string | null>(null)
@@ -124,8 +123,6 @@ export default function ProfileView({
   const saveEquipment = () => save({ equipment })
 
   // ── Derived stats ──────────────────────────────────────
-  const totalShots = shots.length
-
   const roundsWithScores = rounds.filter(r => r.roundHoles.length > 0)
   const bestRound = roundsWithScores.reduce<{ score: number; courseName: string; date: string } | null>((best, r) => {
     const score = r.roundHoles.reduce((s, h) => s + (h.score ?? 0), 0)

@@ -47,12 +47,11 @@ const MODE_LABELS: Record<GameMode, string> = {
 
 // ── Score cell with golf notation ─────────────────────────────────────
 function ScoreCell({
-  score, par, isMe, isEmpty, onClick,
+  score, par, isMe, onClick,
 }: {
   score: number | null
   par: number
   isMe: boolean
-  isEmpty: boolean
   onClick?: () => void
 }) {
   const diff = score !== null ? score - par : null
@@ -287,7 +286,6 @@ function ScorecardGrid({
   status: string
 }) {
   const labelW = 52
-  const holeW = `${Math.floor((100 - 10) / holes.length)}%`
 
   const headerCell = (content: React.ReactNode, key: string | number) => (
     <div key={key} style={{ textAlign: 'center', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 13, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.01em' }}>
@@ -331,7 +329,6 @@ function ScorecardGrid({
                   score={player.scores[h] ?? null}
                   par={pars[i]}
                   isMe={isMe && status === 'active'}
-                  isEmpty={player.scores[h] == null}
                   onClick={() => onCellTap(h)}
                 />
               ))}

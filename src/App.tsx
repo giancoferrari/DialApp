@@ -306,7 +306,6 @@ function AppShell() {
             <ProfileView
               profile={profile}
               userEmail={user?.email ?? ''}
-              shots={shots}
               rounds={rounds}
               userId={user!.id}
               onProfileSaved={setProfile}
