@@ -30,6 +30,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
   const [resetSent, setResetSent] = useState(false)
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName]   = useState('')
+  const [username, setUsername]   = useState('')
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm]   = useState('')
@@ -89,7 +90,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduced) {
       setMode(next); setError(null); setEmail(''); setPassword(''); setConfirm('')
-      setFirstName(''); setLastName(''); setShowPwHints(false); setResetSent(false)
+      setFirstName(''); setLastName(''); setUsername(''); setShowPwHints(false); setResetSent(false)
       setAgreeTerms(false); setAgreePrivacy(false); setAgreeAge(false)
       return
     }
@@ -97,7 +98,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
       opacity: 0, y: 6, duration: 0.15, ease: 'power2.in',
       onComplete: () => {
         setMode(next); setError(null); setEmail(''); setPassword(''); setConfirm('')
-        setFirstName(''); setLastName(''); setShowPwHints(false); setResetSent(false)
+        setFirstName(''); setLastName(''); setUsername(''); setShowPwHints(false); setResetSent(false)
         setAgreeTerms(false); setAgreePrivacy(false); setAgreeAge(false)
         gsap.fromTo(formRef.current, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out' })
       },
@@ -130,6 +131,10 @@ export default function AuthScreen({ onShowLegal }: Props) {
     if (mode === 'signup') {
       if (!firstName.trim()) { setError('Please enter your first name.'); return }
       if (!lastName.trim())  { setError('Please enter your last name.'); return }
+      if (!username.trim())  { setError('Please choose a username.'); return }
+      if (username.includes('@')) { setError('Username cannot contain @.'); return }
+      if (username.trim().length < 3) { setError('Username must be at least 3 characters.'); return }
+      if (/\s/.test(username)) { setError('Username cannot contain spaces.'); return }
       const pwErr = validatePassword(password)
       if (pwErr) { setError(pwErr); return }
       if (password !== confirm) { setError('Passwords do not match.'); return }
@@ -141,7 +146,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
     setLoading(true)
     const { error: err } = mode === 'signin'
       ? await signIn(email, password)
-      : await signUp(email, password, firstName.trim(), lastName.trim())
+      : await signUp(email, password, firstName.trim(), lastName.trim(), username.trim())
     setLoading(false)
 
     if (err) {
@@ -361,13 +366,31 @@ export default function AuthScreen({ onShowLegal }: Props) {
                     </div>
                   )}
 
+                  {/* Username — signup only */}
+                  {mode === 'signup' && (
+                    <div style={{ marginBottom: 14 }}>
+                      <label style={labelStyle}>Username</label>
+                      <input
+                        type="text" required value={username}
+                        onChange={e => setUsername(e.target.value.replace(/\s/g, ''))}
+                        placeholder="e.g. tigerwoods99"
+                        style={inputStyle}
+                        onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
+                        onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+                      />
+                      <div style={{ fontSize: 11, color: '#B5AC95', marginTop: 5 }}>
+                        Used to find you on Dial. Min. 3 characters, no spaces.
+                      </div>
+                    </div>
+                  )}
+
                   {/* Email */}
                   <div style={{ marginBottom: 14 }}>
-                    <label style={labelStyle}>Email</label>
+                    <label style={labelStyle}>{mode === 'signin' ? 'Email or username' : 'Email'}</label>
                     <input
-                      type="email" required value={email}
+                      type={mode === 'signin' ? 'text' : 'email'} required value={email}
                       onChange={e => setEmail(e.target.value)}
-                      placeholder="you@example.com"
+                      placeholder={mode === 'signin' ? 'you@example.com or @username' : 'you@example.com'}
                       style={inputStyle}
                       onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
                       onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}

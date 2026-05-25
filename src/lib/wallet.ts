@@ -22,7 +22,7 @@ export async function fetchOrCreateWallet(userId: string): Promise<Wallet> {
 
   const { data: created, error: createErr } = await supabase
     .from('wallets')
-    .insert({ user_id: userId, balance: 1000 })
+    .insert({ user_id: userId, balance: 0 })
     .select()
     .single()
   if (createErr) throw createErr
@@ -42,8 +42,27 @@ export async function topUpWallet(userId: string, amount: number): Promise<Walle
   await supabase.from('wallet_transactions').insert({
     user_id: userId,
     amount,
-    type: 'top_up',
-    description: `Added ${amount} coins`,
+    type: 'topup',
+  })
+
+  return toWallet(data)
+}
+
+export async function withdrawFromWallet(userId: string, amount: number): Promise<Wallet> {
+  const wallet = await fetchOrCreateWallet(userId)
+  if (wallet.balance < amount) throw new Error('Insufficient funds.')
+  const { data, error } = await supabase
+    .from('wallets')
+    .update({ balance: wallet.balance - amount, updated_at: new Date().toISOString() })
+    .eq('user_id', userId)
+    .select()
+    .single()
+  if (error) throw error
+
+  await supabase.from('wallet_transactions').insert({
+    user_id: userId,
+    amount: -amount,
+    type: 'refund',
   })
 
   return toWallet(data)
@@ -51,7 +70,7 @@ export async function topUpWallet(userId: string, amount: number): Promise<Walle
 
 export async function deductWager(userId: string, matchId: string, amount: number): Promise<Wallet> {
   const wallet = await fetchOrCreateWallet(userId)
-  if (wallet.balance < amount) throw new Error('Insufficient coins')
+  if (wallet.balance < amount) throw new Error('Insufficient funds.')
   const { data, error } = await supabase
     .from('wallets')
     .update({ balance: wallet.balance - amount, updated_at: new Date().toISOString() })
@@ -64,8 +83,7 @@ export async function deductWager(userId: string, matchId: string, amount: numbe
     user_id: userId,
     match_id: matchId,
     amount: -amount,
-    type: 'wager_placed',
-    description: `Wager placed`,
+    type: 'wager',
   })
 
   return toWallet(data)
@@ -85,8 +103,7 @@ export async function creditWinner(userId: string, matchId: string, amount: numb
     user_id: userId,
     match_id: matchId,
     amount,
-    type: 'wager_won',
-    description: `Match won`,
+    type: 'winnings',
   })
 
   return toWallet(data)
@@ -106,8 +123,7 @@ export async function refundWager(userId: string, matchId: string, amount: numbe
     user_id: userId,
     match_id: matchId,
     amount,
-    type: 'wager_refund',
-    description: `Wager refunded`,
+    type: 'refund',
   })
 
   return toWallet(data)

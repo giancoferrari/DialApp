@@ -1,14 +1,15 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
+import { upsertProfile } from '../lib/profile'
 
 interface AuthContextType {
   user: User | null
   session: Session | null
   loading: boolean
   isPasswordRecovery: boolean
-  signIn: (email: string, password: string) => Promise<{ error: string | null }>
-  signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<{ error: string | null }>
+  signIn: (emailOrUsername: string, password: string) => Promise<{ error: string | null }>
+  signUp: (email: string, password: string, firstName: string, lastName: string, username: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
   resetPasswordForEmail: (email: string) => Promise<{ error: string | null }>
   updatePassword: (newPassword: string) => Promise<{ error: string | null }>
@@ -56,21 +57,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (emailOrUsername: string, password: string) => {
+    let email = emailOrUsername.trim()
+    if (!email.includes('@')) {
+      const { data, error: rpcErr } = await supabase.rpc('get_email_by_username', { lookup_username: email })
+      if (rpcErr || !data) return { error: 'No account found with that username.' }
+      email = data as string
+    }
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     return { error: error?.message ?? null }
   }
 
-  const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
-    const { error } = await supabase.auth.signUp({
+  const signUp = async (email: string, password: string, firstName: string, lastName: string, username: string) => {
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
-        data: { first_name: firstName, last_name: lastName, full_name: `${firstName} ${lastName}`.trim() },
+        data: { first_name: firstName, last_name: lastName, full_name: `${firstName} ${lastName}`.trim(), username },
       },
     })
-    return { error: error?.message ?? null }
+    if (error) return { error: error.message }
+    if (data.user) {
+      try { await upsertProfile(data.user.id, { username }) } catch { /* non-fatal */ }
+    }
+    return { error: null }
   }
 
   const signOut = async () => {

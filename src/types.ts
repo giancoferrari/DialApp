@@ -106,6 +106,7 @@ export interface PublicProfile {
   username: string | null
   avatarUrl: string | null
   handicapIndex: number | null
+  homeCourse: string | null
   firstName: string | null
 }
 

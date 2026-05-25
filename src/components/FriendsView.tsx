@@ -6,6 +6,44 @@ import {
 } from '../lib/friends'
 import { CloseIcon, PersonIcon } from './Icons'
 
+function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onClose: () => void }) {
+  const initial = profile.username?.[0]?.toUpperCase() ?? '?'
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(31,29,23,0.55)', backdropFilter: 'blur(6px)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div style={{ background: '#F0EBDD', borderRadius: 28, padding: '36px 28px', width: '100%', maxWidth: 340, textAlign: 'center', boxShadow: '0 24px 64px rgba(31,58,42,0.18)' }}>
+        <div style={{ width: 88, height: 88, borderRadius: 44, background: '#1F3A2A', margin: '0 auto 18px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid #E0D8C5' }}>
+          {profile.avatarUrl
+            ? <img src={profile.avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 36, color: '#D9824D' }}>{initial}</span>
+          }
+        </div>
+        <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginBottom: 6 }}>
+          {profile.username ? `@${profile.username}` : 'No username'}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 20 }}>
+          {profile.handicapIndex != null && (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em' }}>{profile.handicapIndex.toFixed(1)}</div>
+              <div style={{ fontSize: 10, color: '#6B6857', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Handicap</div>
+            </div>
+          )}
+        </div>
+        {profile.homeCourse && (
+          <div style={{ fontSize: 13, color: '#6B6857', background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 10, padding: '8px 14px', marginBottom: 20 }}>
+            Home: <strong style={{ color: '#1F1D17' }}>{profile.homeCourse}</strong>
+          </div>
+        )}
+        <button
+          onClick={onClose}
+          style={{ width: '100%', background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '12px', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  )
+}
+
 interface Props {
   userId: string
   isMobile?: boolean
@@ -24,14 +62,15 @@ function Avatar({ profile, size = 44 }: { profile?: PublicProfile; size?: number
 }
 
 export default function FriendsView({ userId, isMobile = false }: Props) {
-  const [friendships,   setFriendships]   = useState<Friendship[]>([])
+  const [friendships,    setFriendships]   = useState<Friendship[]>([])
   const [friendProfiles, setFriendProfiles] = useState<PublicProfile[]>([])
-  const [loading,       setLoading]       = useState(true)
-  const [searchQuery,   setSearchQuery]   = useState('')
-  const [searchResults, setSearchResults] = useState<PublicProfile[]>([])
-  const [searching,     setSearching]     = useState(false)
-  const [actionLoading, setActionLoading] = useState<string | null>(null)
-  const [error,         setError]         = useState<string | null>(null)
+  const [loading,        setLoading]       = useState(true)
+  const [searchQuery,    setSearchQuery]   = useState('')
+  const [searchResults,  setSearchResults] = useState<PublicProfile[]>([])
+  const [searching,      setSearching]     = useState(false)
+  const [actionLoading,  setActionLoading] = useState<string | null>(null)
+  const [error,          setError]         = useState<string | null>(null)
+  const [viewProfile,    setViewProfile]   = useState<PublicProfile | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -155,7 +194,6 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
           onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
           onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
         />
-        <PersonIcon size={16} color="#B5AC95" />
         <div style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
           <PersonIcon size={16} color="#B5AC95" />
         </div>
@@ -278,14 +316,16 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
               const profile = getProfile(friendId)
               return (
                 <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', borderTop: i === 0 ? 'none' : '1px solid #F0EBDD' }}>
-                  <Avatar profile={profile} size={44} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
-                      {profile?.username ? `@${profile.username}` : friendId.slice(0, 8)}
+                  <div onClick={() => profile && setViewProfile(profile)} style={{ cursor: profile ? 'pointer' : 'default', display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
+                    <Avatar profile={profile} size={44} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
+                        {profile?.username ? `@${profile.username}` : friendId.slice(0, 8)}
+                      </div>
+                      {profile?.handicapIndex != null && (
+                        <div style={{ fontSize: 12, color: '#6B6857' }}>HCP {profile.handicapIndex.toFixed(1)}</div>
+                      )}
                     </div>
-                    {profile?.handicapIndex != null && (
-                      <div style={{ fontSize: 12, color: '#6B6857' }}>HCP {profile.handicapIndex.toFixed(1)}</div>
-                    )}
                   </div>
                   <button
                     onClick={() => handleRemove(f.id)}
@@ -302,6 +342,8 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
           </div>
         )}
       </div>
+
+      {viewProfile && <FriendProfileModal profile={viewProfile} onClose={() => setViewProfile(null)} />}
     </div>
   )
 }

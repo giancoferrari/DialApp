@@ -113,9 +113,7 @@ export default function ProfileView({
   const saveEquipment = () => save({ equipment })
 
   // ── Derived stats ──────────────────────────────────────
-  const totalShots    = shots.length
-  const avgDriver     = shots.filter(s => s.clubId === 'driver').reduce((acc, s, _, arr) => acc + s.yardage / arr.length, 0) || 0
-  const longestDrive  = Math.max(0, ...shots.filter(s => s.clubId === 'driver').map(s => s.yardage))
+  const totalShots = shots.length
 
   const roundsWithScores = rounds.filter(r => r.roundHoles.length > 0)
   const bestRound = roundsWithScores.reduce<{ score: number; courseName: string; date: string } | null>((best, r) => {
@@ -352,10 +350,8 @@ export default function ProfileView({
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {[
-            { label: 'Best round',    value: bestRound ? `${bestRound.score} @ ${bestRound.courseName}` : '—' },
-            { label: 'Avg score',     value: avgScore ? String(avgScore) : '—' },
-            { label: 'Avg driver',    value: avgDriver ? `${Math.round(avgDriver)} yds` : '—' },
-            { label: 'Longest drive', value: longestDrive ? `${longestDrive} yds` : '—' },
+            { label: 'Best round', value: bestRound ? `${bestRound.score} @ ${bestRound.courseName}` : '—' },
+            { label: 'Avg score',  value: avgScore ? String(avgScore) : '—' },
           ].map(s => (
             <div key={s.label} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 14, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: 13, color: '#6B6857', fontWeight: 500 }}>{s.label}</span>

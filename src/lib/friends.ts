@@ -7,15 +7,18 @@ function toPublicProfile(r: Record<string, unknown>): PublicProfile {
     username: (r.username as string) ?? null,
     avatarUrl: (r.avatar_url as string) ?? null,
     handicapIndex: (r.handicap_index as number) ?? null,
+    homeCourse: (r.home_course as string) ?? null,
     firstName: null,
   }
 }
+
+const PROFILE_SELECT = 'user_id, username, avatar_url, handicap_index, home_course'
 
 export async function searchUsers(query: string, currentUserId: string): Promise<PublicProfile[]> {
   if (!query.trim()) return []
   const { data, error } = await supabase
     .from('user_profiles')
-    .select('user_id, username, avatar_url, handicap_index')
+    .select(PROFILE_SELECT)
     .ilike('username', `%${query.trim()}%`)
     .neq('user_id', currentUserId)
     .limit(10)
@@ -43,7 +46,7 @@ export async function fetchProfilesForIds(userIds: string[]): Promise<PublicProf
   if (!userIds.length) return []
   const { data, error } = await supabase
     .from('user_profiles')
-    .select('user_id, username, avatar_url, handicap_index')
+    .select(PROFILE_SELECT)
     .in('user_id', userIds)
   if (error) throw error
   return (data ?? []).map(toPublicProfile)
@@ -66,10 +69,7 @@ export async function sendFriendRequest(requesterId: string, addresseeId: string
 }
 
 export async function updateFriendship(id: string, status: 'accepted' | 'declined'): Promise<void> {
-  const { error } = await supabase
-    .from('friendships')
-    .update({ status })
-    .eq('id', id)
+  const { error } = await supabase.from('friendships').update({ status }).eq('id', id)
   if (error) throw error
 }
 
