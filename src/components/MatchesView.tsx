@@ -56,8 +56,8 @@ function ScoreCell({
 }) {
   const diff = score !== null ? score - par : null
   let bg = 'transparent'
-  let border = '1.5px dashed #C9C0A8'
-  let borderRadius = 8
+  let border = '1px dashed #C9C0A8'
+  let borderRadius = 6
   let color = '#1F1D17'
   let boxShadow = 'none'
 
@@ -66,13 +66,13 @@ function ScoreCell({
     if (diff !== null && diff <= -2) {
       bg = '#1F3A2A'; color = '#FAF6EA'; borderRadius = 999; boxShadow = '0 0 0 1.5px #1F3A2A'
     } else if (diff === -1) {
-      bg = 'transparent'; border = '2px solid #1F3A2A'; borderRadius = 999; color = '#1F3A2A'
+      bg = 'transparent'; border = '1.5px solid #1F3A2A'; borderRadius = 999; color = '#1F3A2A'
     } else if (diff === 0) {
       bg = 'transparent'; color = '#1F1D17'
     } else if (diff === 1) {
-      bg = 'transparent'; border = '2px solid #D9824D'; borderRadius = 4; color = '#D9824D'
+      bg = 'transparent'; border = '1.5px solid #D9824D'; borderRadius = 3; color = '#D9824D'
     } else {
-      bg = 'transparent'; border = '2px solid #C0392B'; borderRadius = 4; color = '#C0392B'
+      bg = 'transparent'; border = '1.5px solid #C0392B'; borderRadius = 3; color = '#C0392B'
     }
   }
 
@@ -80,13 +80,12 @@ function ScoreCell({
     <div
       onClick={isMe ? onClick : undefined}
       style={{
-        width: '100%', aspectRatio: '1', minHeight: 32, maxHeight: 40,
+        width: '100%', aspectRatio: '1',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: bg, border, borderRadius, color, boxShadow,
-        fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700,
+        fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 11, fontWeight: 700,
         cursor: isMe ? 'pointer' : 'default',
-        transition: 'all 0.12s',
-        userSelect: 'none',
+        transition: 'all 0.12s', userSelect: 'none',
       }}
     >
       {score ?? ''}
@@ -291,7 +290,7 @@ function NewMatchModal({
   )
 }
 
-// ── Scorecard Grid (rounds-style) ─────────────────────────────────────
+// ── Scorecard Grid — mobile-first, no horizontal scroll, with subtotal ─
 function ScorecardGrid({
   holes, pars, players, userId, onCellTap, status,
 }: {
@@ -302,57 +301,57 @@ function ScorecardGrid({
   onCellTap: (hole: number) => void
   status: string
 }) {
-  const labelW = 52
-
-  const headerCell = (content: React.ReactNode, key: string | number) => (
-    <div key={key} style={{ textAlign: 'center', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 13, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.01em' }}>
-      {content}
-    </div>
-  )
+  const subtotalLabel = holes[0] === 1 ? 'OUT' : 'IN'
+  const parTotal = pars.reduce((a, b) => a + b, 0)
+  // label | holes... | subtotal — all fluid, fits any screen width
+  const cols = `26px repeat(${holes.length}, 1fr) 30px`
+  const cellStyle = (bg: string): React.CSSProperties => ({
+    display: 'grid', gridTemplateColumns: cols,
+    background: bg, padding: '5px 6px', gap: 2, alignItems: 'center',
+  })
 
   return (
-    <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' as never }}>
-      <div style={{ minWidth: labelW + holes.length * 36 + 8 }}>
-
-        {/* HOLE row — green header */}
-        <div style={{ display: 'grid', gridTemplateColumns: `${labelW}px repeat(${holes.length}, 1fr)`, background: '#1F3A2A', borderRadius: '10px 10px 0 0', padding: '8px 10px', gap: 4 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#B5C29A', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'flex', alignItems: 'center' }}>HOLE</div>
-          {holes.map(h => headerCell(h, h))}
-        </div>
-
-        {/* PAR row */}
-        <div style={{ display: 'grid', gridTemplateColumns: `${labelW}px repeat(${holes.length}, 1fr)`, background: '#F5F0E5', padding: '6px 10px', gap: 4, borderBottom: '1px solid #E0D8C5' }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#6B6857', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'flex', alignItems: 'center' }}>PAR</div>
-          {holes.map((h, i) => (
-            <div key={h} style={{ textAlign: 'center', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 13, fontWeight: 600, color: '#6B6857' }}>
-              {pars[i]}
-            </div>
-          ))}
-        </div>
-
-        {/* Player score rows */}
-        {players.map((player, pi) => {
-          const isMe = player.userId === userId
-          return (
-            <div key={player.userId} style={{ display: 'grid', gridTemplateColumns: `${labelW}px repeat(${holes.length}, 1fr)`, background: pi % 2 === 0 ? '#FAF6EA' : '#F5F0E5', padding: '6px 10px', gap: 4, borderBottom: pi < players.length - 1 ? '1px solid #ECE5D2' : 'none', borderRadius: pi === players.length - 1 ? '0 0 10px 10px' : 0 }}>
-              <div style={{ fontSize: 10, fontWeight: 600, color: isMe ? '#1F3A2A' : '#6B6857', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {isMe ? 'YOU' : player.name.slice(0, 4)}
-                </span>
-              </div>
-              {holes.map((h, i) => (
-                <ScoreCell
-                  key={h}
-                  score={player.scores[h] ?? null}
-                  par={pars[i]}
-                  isMe={isMe && status === 'active'}
-                  onClick={() => onCellTap(h)}
-                />
-              ))}
-            </div>
-          )
-        })}
+    <div style={{ width: '100%' }}>
+      {/* HOLE header */}
+      <div style={{ ...cellStyle('#1F3A2A'), borderRadius: '10px 10px 0 0' }}>
+        <div style={{ fontSize: 8, fontWeight: 700, color: '#B5C29A', letterSpacing: '0.06em', textTransform: 'uppercase' }}>H</div>
+        {holes.map(h => (
+          <div key={h} style={{ textAlign: 'center', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 11, fontWeight: 700, color: '#FAF6EA' }}>{h}</div>
+        ))}
+        <div style={{ textAlign: 'center', fontSize: 8, fontWeight: 700, color: '#B5C29A', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{subtotalLabel}</div>
       </div>
+
+      {/* PAR row */}
+      <div style={{ ...cellStyle('#F0EBDD'), borderBottom: '1px solid #E0D8C5' }}>
+        <div style={{ fontSize: 8, fontWeight: 700, color: '#6B6857', textTransform: 'uppercase' }}>P</div>
+        {holes.map((h, i) => (
+          <div key={h} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#6B6857', fontFamily: "'Bricolage Grotesque', sans-serif" }}>{pars[i]}</div>
+        ))}
+        <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#6B6857', fontFamily: "'Bricolage Grotesque', sans-serif" }}>{parTotal}</div>
+      </div>
+
+      {/* Player rows */}
+      {players.map((player, pi) => {
+        const isMe = player.userId === userId
+        const subtotal = holes.reduce((sum, h) => sum + (player.scores[h] ?? 0), 0)
+        return (
+          <div key={player.userId} style={{
+            ...cellStyle(pi % 2 === 0 ? '#FAF6EA' : '#F5F0E5'),
+            borderBottom: pi < players.length - 1 ? '1px solid #ECE5D2' : 'none',
+            borderRadius: pi === players.length - 1 ? '0 0 10px 10px' : 0,
+          }}>
+            <div style={{ fontSize: 8, fontWeight: 700, color: isMe ? '#1F3A2A' : '#6B6857', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {isMe ? 'YOU' : player.name.replace('@', '').slice(0, 3).toUpperCase()}
+            </div>
+            {holes.map((h, i) => (
+              <ScoreCell key={h} score={player.scores[h] ?? null} par={pars[i]} isMe={isMe && status === 'active'} onClick={() => onCellTap(h)} />
+            ))}
+            <div style={{ textAlign: 'center', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 11, fontWeight: 700, color: isMe ? '#1F3A2A' : '#6B6857' }}>
+              {subtotal > 0 ? subtotal : '—'}
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -389,15 +388,17 @@ function ScoringModal({
   const matchDate = new Date(liveMatch.createdAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase()
 
   useEffect(() => {
+    const refresh = async () => {
+      try {
+        const updated = await fetchMatchRealtime(liveMatch.id)
+        setLiveMatch(updated)
+        onMatchUpdated(updated)
+      } catch { /* ignore transient errors */ }
+    }
     const channel = supabase
-      .channel(`match-scores-${liveMatch.id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'match_scores', filter: `match_id=eq.${liveMatch.id}` },
-        async () => {
-          const updated = await fetchMatchRealtime(liveMatch.id)
-          setLiveMatch(updated)
-          onMatchUpdated(updated)
-        }
-      )
+      .channel(`match-live-${liveMatch.id}`)
+      .on('postgres_changes', { event: '*',    schema: 'public', table: 'match_scores', filter: `match_id=eq.${liveMatch.id}` }, refresh)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'matches',      filter: `id=eq.${liveMatch.id}` },      refresh)
       .subscribe()
     return () => { supabase.removeChannel(channel) }
   }, [liveMatch.id, onMatchUpdated])
@@ -433,8 +434,8 @@ function ScoringModal({
 
   const handleComplete = async () => {
     setCompleting(true); setError(null)
+    try { await completeMatch(liveMatch) } catch { /* might already be completed by opponent */ }
     try {
-      await completeMatch(liveMatch)
       const updated = await fetchMatchRealtime(liveMatch.id)
       setLiveMatch(updated)
       onMatchUpdated(updated)
@@ -713,10 +714,10 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
     return (
       <div style={{ background: '#FAF6EA', border: `1px solid ${isActive ? '#1F3A2A' : '#E0D8C5'}`, borderRadius: 18, overflow: 'hidden' }}>
         <div style={{ background: isActive ? '#1F3A2A' : isDone ? (iWon ? '#1F3A2A' : '#F0EBDD') : '#FAF6EA', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid rgba(31,58,42,0.08)' }}>
-          <TrophyIcon size={18} color={isActive ? '#D9824D' : '#6B6857'} />
+          <TrophyIcon size={18} color={(isActive || (isDone && iWon)) ? '#D9824D' : '#6B6857'} />
           <div style={{ flex: 1 }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: isActive ? '#FAF6EA' : '#1F1D17', letterSpacing: '-0.02em' }}>{match.courseName}</div>
-            <div style={{ fontSize: 12, color: isActive ? '#B5C29A' : '#6B6857', marginTop: 2 }}>
+            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: (isActive || (isDone && iWon)) ? '#FAF6EA' : '#1F1D17', letterSpacing: '-0.02em' }}>{match.courseName}</div>
+            <div style={{ fontSize: 12, color: (isActive || (isDone && iWon)) ? '#B5C29A' : '#6B6857', marginTop: 2 }}>
               {MODE_LABELS[match.gameMode]} · {match.holes} holes{match.wagerPerPlayer > 0 && ` · $${match.wagerPerPlayer} each`}
             </div>
           </div>

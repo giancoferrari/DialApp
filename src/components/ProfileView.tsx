@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { upsertProfile, uploadAvatar } from '../lib/profile'
 import { supabase } from '../lib/supabase'
 import { CLUBS_DATA } from '../data'
@@ -37,6 +37,96 @@ function ProgressBar({ value, max, color = '#1F3A2A' }: { value: number; max: nu
   )
 }
 
+// ── Avatar crop modal ─────────────────────────────────────────────────
+const CROP_SIZE = 280
+
+function AvatarCropModal({ file, onConfirm, onCancel }: { file: File; onConfirm: (blob: Blob) => void; onCancel: () => void }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [img, setImg]       = useState<HTMLImageElement | null>(null)
+  const [zoom, setZoom]     = useState(1)
+  const [offset, setOffset] = useState({ x: 0, y: 0 })
+  const dragRef             = useRef<{ x: number; y: number } | null>(null)
+
+  useEffect(() => {
+    const url = URL.createObjectURL(file)
+    const image = new Image()
+    image.onload = () => {
+      const fitZoom = Math.max(CROP_SIZE / image.naturalWidth, CROP_SIZE / image.naturalHeight)
+      setZoom(fitZoom)
+      setOffset({ x: 0, y: 0 })
+      setImg(image)
+      URL.revokeObjectURL(url)
+    }
+    image.src = url
+  }, [file])
+
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current
+    if (!canvas || !img) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    ctx.clearRect(0, 0, CROP_SIZE, CROP_SIZE)
+    ctx.save()
+    ctx.beginPath()
+    ctx.arc(CROP_SIZE / 2, CROP_SIZE / 2, CROP_SIZE / 2, 0, Math.PI * 2)
+    ctx.clip()
+    const iw = img.naturalWidth * zoom
+    const ih = img.naturalHeight * zoom
+    ctx.drawImage(img, CROP_SIZE / 2 + offset.x - iw / 2, CROP_SIZE / 2 + offset.y - ih / 2, iw, ih)
+    ctx.restore()
+  }, [img, zoom, offset])
+
+  useEffect(() => { draw() }, [draw])
+
+  const startDrag = (clientX: number, clientY: number) => { dragRef.current = { x: clientX - offset.x, y: clientY - offset.y } }
+  const moveDrag  = (clientX: number, clientY: number) => {
+    if (!dragRef.current) return
+    setOffset({ x: clientX - dragRef.current.x, y: clientY - dragRef.current.y })
+  }
+  const endDrag = () => { dragRef.current = null }
+
+  const handleConfirm = () => {
+    canvasRef.current?.toBlob(blob => { if (blob) onConfirm(blob) }, 'image/jpeg', 0.92)
+  }
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(31,29,23,0.88)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div style={{ background: '#F0EBDD', borderRadius: 24, padding: 24, width: '100%', maxWidth: 360 }}>
+        <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', marginBottom: 4 }}>Adjust photo</div>
+        <div style={{ fontSize: 13, color: '#6B6857', marginBottom: 20 }}>Drag to reposition · slide to zoom</div>
+
+        <div style={{ position: 'relative', width: CROP_SIZE, height: CROP_SIZE, margin: '0 auto 20px', borderRadius: '50%', overflow: 'hidden', cursor: 'grab', border: '3px solid #1F3A2A', background: '#1F1D17', touchAction: 'none' }}>
+          <canvas
+            ref={canvasRef}
+            width={CROP_SIZE}
+            height={CROP_SIZE}
+            onMouseDown={e => startDrag(e.clientX, e.clientY)}
+            onMouseMove={e => moveDrag(e.clientX, e.clientY)}
+            onMouseUp={endDrag}
+            onMouseLeave={endDrag}
+            onTouchStart={e => { e.preventDefault(); startDrag(e.touches[0].clientX, e.touches[0].clientY) }}
+            onTouchMove={e => { e.preventDefault(); moveDrag(e.touches[0].clientX, e.touches[0].clientY) }}
+            onTouchEnd={endDrag}
+            style={{ display: 'block' }}
+          />
+        </div>
+
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#6B6857', marginBottom: 6 }}>
+            <span>Zoom</span><span>{Math.round(zoom * 100)}%</span>
+          </div>
+          <input type="range" min="0.3" max="4" step="0.01" value={zoom} onChange={e => setZoom(parseFloat(e.target.value))} style={{ width: '100%', accentColor: '#1F3A2A' }} />
+        </div>
+
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button onClick={onCancel} style={{ flex: 1, background: 'transparent', border: '1px solid #E0D8C5', borderRadius: 12, padding: '12px', fontSize: 14, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
+          <button onClick={handleConfirm} style={{ flex: 2, background: '#1F3A2A', border: 'none', borderRadius: 12, padding: '12px', fontSize: 14, fontWeight: 600, color: '#FAF6EA', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Save Photo</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function ProfileView({
   profile, userEmail, rounds, onProfileSaved, onSignOut, userId, isMobile = false,
 }: Props) {
@@ -59,6 +149,7 @@ export default function ProfileView({
   )
 
   const [friendsCount, setFriendsCount] = useState(0)
+  const [cropFile, setCropFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -93,21 +184,25 @@ export default function ProfileView({
     } finally { setSaving(false) }
   }
 
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    setCropFile(file)
+    if (e.target) e.target.value = ''
+  }
+
+  const handleCropConfirm = async (blob: Blob) => {
+    setCropFile(null)
     setUploadingAvatar(true)
     setSaveError(null)
     try {
+      const file = new File([blob], 'avatar.jpg', { type: 'image/jpeg' })
       const url = await uploadAvatar(userId, file)
       const saved = await upsertProfile(userId, { avatarUrl: url })
       onProfileSaved(saved)
-    } catch {
-      setSaveError('Photo upload failed. Make sure storage upload policies are set in Supabase (see setup instructions).')
-    } finally {
-      setUploadingAvatar(false)
-      if (e.target) e.target.value = ''
-    }
+    } catch (err: unknown) {
+      setSaveError(`Photo upload failed: ${err instanceof Error ? err.message : 'Check storage policies in Supabase.'}`)
+    } finally { setUploadingAvatar(false) }
   }
 
   const saveUsername = async () => {
@@ -170,6 +265,14 @@ export default function ProfileView({
 
   return (
     <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 28 : 48}px ${px}px ${isMobile ? 120 : 80}px` }}>
+
+      {cropFile && (
+        <AvatarCropModal
+          file={cropFile}
+          onConfirm={handleCropConfirm}
+          onCancel={() => setCropFile(null)}
+        />
+      )}
 
       {/* ── Instagram-style profile header ── */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 32 }}>
