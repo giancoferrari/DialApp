@@ -52,7 +52,8 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, onSi
         background: 'rgba(240,235,221,0.92)',
         backdropFilter: 'blur(20px) saturate(160%)',
         WebkitBackdropFilter: 'blur(20px) saturate(160%)',
-        padding: isMobile ? '12px 0' : '20px 0',
+        paddingTop: isMobile ? 'calc(env(safe-area-inset-top) + 12px)' : '20px',
+        paddingBottom: isMobile ? '12px' : '20px',
         borderBottom: '1px solid rgba(31,58,42,0.06)',
       }}>
         <div style={{
