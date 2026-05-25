@@ -9,7 +9,7 @@ const WIND_DIRS: { id: WindDirection; label: string; hint: string }[] = [
   { id: 'headwind', label: 'Into wind',        hint: 'Ball goes shorter' },
   { id: 'tailwind', label: 'Downwind',         hint: 'Ball goes farther' },
   { id: 'left',     label: 'Left → Right',     hint: 'Wind pushes right' },
-  { id: 'right',    label: 'Right → Left',     hint: 'Wind pushes left' },
+  { id: 'right',    label: 'Right ← Left',     hint: 'Wind pushes left' },
 ]
 
 const WIND_STRENGTHS: { id: WindStrength; label: string; mph: string }[] = [
