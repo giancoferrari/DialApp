@@ -302,7 +302,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
             {displayName}
           </div>
           <div style={{ fontSize: 12, color: 'rgba(250,246,234,0.55)', marginBottom: 10, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {userEmail}
+            {profile?.username ? `@${profile.username}` : userEmail}
           </div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: rank.color + '22', border: `1px solid ${rank.color}44`, borderRadius: 999, padding: '3px 10px 3px 7px' }}>
             <ShieldIcon size={11} color={rank.color} />
