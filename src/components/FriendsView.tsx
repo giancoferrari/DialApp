@@ -108,7 +108,7 @@ function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onCl
             {[
               { val: profile.rankedPoints ?? 0, label: 'Points' },
               ...(profile.handicapIndex != null ? [{ val: profile.handicapIndex.toFixed(1), label: 'Handicap' }] : []),
-            ].map((s, i, arr) => (
+            ].map((s, i) => (
               <div key={s.label} style={{ flex: 1, textAlign: 'center', padding: '14px 8px', borderLeft: i > 0 ? '1px solid #E0D8C5' : 'none', background: i % 2 === 0 ? 'transparent' : 'rgba(224,216,197,0.25)' }}>
                 <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1 }}>{s.val}</div>
                 <div style={{ fontSize: 10, color: '#B5AC95', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 4 }}>{s.label}</div>

@@ -142,7 +142,7 @@ function AppShell() {
   const [rounds, setRounds]           = useState<Round[]>([])
   const [practiceSessions, setPracticeSessions] = useState<PracticeSession[]>([])
   const [profile, setProfile]         = useState<UserProfile | null>(null)
-  const [shotsLoading, setShotsLoading] = useState(true)
+  const [, setShotsLoading] = useState(true)
   const [logOpen, setLogOpen]         = useState(false)
   const [logPreclub, setLogPreclub]   = useState<Club | null>(null)
   const [legalDoc, setLegalDoc]       = useState<'privacy' | 'terms' | null>(null)
@@ -204,8 +204,6 @@ function AppShell() {
     }
   }
 
-  const handleLog    = () => { setLogPreclub(null); setLogOpen(true) }
-  const handleLogFor = (club: Club) => { setLogPreclub(club); setLogOpen(true) }
   const handleCloseLog = () => { setLogOpen(false); setLogPreclub(null) }
 
   const handleLogRound = () => {
