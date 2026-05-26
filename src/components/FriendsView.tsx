@@ -17,76 +17,143 @@ function profileLabel(profile?: PublicProfile | null): { primary: string; second
 }
 
 function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onClose: () => void }) {
-  const initial = profile.username?.[0]?.toUpperCase() ?? '?'
+  const initial = (profile.firstName?.[0] ?? profile.username?.[0] ?? '?').toUpperCase()
   const rank = getRank(profile.rankedPoints ?? 0)
   const totalMatches = (profile.wins ?? 0) + (profile.losses ?? 0) + (profile.ties ?? 0)
+  const label = profileLabel(profile)
+
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(31,29,23,0.50)', backdropFilter: 'blur(20px) saturate(140%)', WebkitBackdropFilter: 'blur(20px) saturate(140%)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-      <div style={{ background: 'rgba(237,232,212,0.90)', backdropFilter: 'blur(28px) saturate(180%)', WebkitBackdropFilter: 'blur(28px) saturate(180%)', border: '1px solid rgba(255,255,255,0.55)', borderRadius: 28, padding: '36px 28px', width: '100%', maxWidth: 340, textAlign: 'center', boxShadow: '0 24px 64px rgba(31,58,42,0.18), inset 0 1px 0 rgba(255,255,255,0.7)' }}>
-        <div style={{ width: 88, height: 88, borderRadius: 44, background: '#1F3A2A', margin: '0 auto 16px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid #E0D8C5' }}>
-          {profile.avatarUrl
-            ? <img src={profile.avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 36, color: '#D9824D' }}>{initial}</span>
-          }
-        </div>
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 200,
+        background: 'rgba(20,18,12,0.72)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 24,
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: '#FAF6EA',
+          borderRadius: 28, width: '100%', maxWidth: 360,
+          boxShadow: '0 32px 80px rgba(20,18,12,0.32), 0 2px 0 rgba(255,255,255,0.9) inset',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Header band */}
+        <div style={{
+          background: '#1F3A2A',
+          padding: '32px 28px 48px',
+          textAlign: 'center',
+          position: 'relative',
+        }}>
+          {/* Close */}
+          <button
+            onClick={onClose}
+            style={{
+              position: 'absolute', top: 14, right: 14,
+              width: 32, height: 32, borderRadius: 16,
+              background: 'rgba(250,246,234,0.12)', border: 'none',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <CloseIcon size={16} color="rgba(250,246,234,0.7)" />
+          </button>
 
-        {/* Rank badge */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: rank.color + '18', border: `1px solid ${rank.color}40`, borderRadius: 999, padding: '4px 12px 4px 8px', marginBottom: 12 }}>
-          <ShieldIcon size={12} color={rank.color} />
-          <span style={{ fontSize: 11, fontWeight: 700, color: rank.color, letterSpacing: '0.04em', fontFamily: "'DM Sans', sans-serif" }}>{rank.name}</span>
-        </div>
-
-        {/* Name + username */}
-        {profile.firstName && (
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 4 }}>
-            {profile.firstName}
+          {/* Avatar */}
+          <div style={{
+            width: 96, height: 96, borderRadius: 48,
+            background: '#2A4D39',
+            border: '3px solid rgba(250,246,234,0.18)',
+            margin: '0 auto 14px',
+            overflow: 'hidden',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {profile.avatarUrl
+              ? <img src={profile.avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 40, color: '#D9824D' }}>{initial}</span>
+            }
           </div>
-        )}
-        <div style={{ fontSize: profile.firstName ? 14 : 22, fontWeight: profile.firstName ? 500 : 700, color: profile.firstName ? '#6B6857' : '#1F1D17', fontFamily: profile.firstName ? "'DM Sans', sans-serif" : "'Bricolage Grotesque', sans-serif", letterSpacing: profile.firstName ? '-0.01em' : '-0.025em', marginBottom: 16 }}>
-          {profile.username ? `@${profile.username}` : 'No username'}
-        </div>
 
-        {/* Stats */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 16 }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em' }}>{profile.rankedPoints ?? 0}</div>
-            <div style={{ fontSize: 10, color: '#6B6857', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Points</div>
+          {/* Name */}
+          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.025em', lineHeight: 1.1 }}>
+            {label.primary}
           </div>
-          {profile.handicapIndex != null && (
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em' }}>{profile.handicapIndex.toFixed(1)}</div>
-              <div style={{ fontSize: 10, color: '#6B6857', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Handicap</div>
+          {label.secondary && (
+            <div style={{ fontSize: 13, color: 'rgba(250,246,234,0.5)', marginTop: 3, fontFamily: "'DM Sans', sans-serif" }}>
+              {label.secondary}
             </div>
           )}
         </div>
 
-        {/* Win/loss record */}
-        {totalMatches > 0 && (
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+        {/* Pull-up card */}
+        <div style={{
+          background: '#FAF6EA',
+          borderRadius: '24px 24px 0 0',
+          marginTop: -24,
+          padding: '24px 24px 28px',
+        }}>
+          {/* Rank badge */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: rank.color + '15', border: `1px solid ${rank.color}35`, borderRadius: 999, padding: '5px 14px 5px 10px' }}>
+              <ShieldIcon size={12} color={rank.color} />
+              <span style={{ fontSize: 12, fontWeight: 700, color: rank.color, letterSpacing: '0.04em', fontFamily: "'DM Sans', sans-serif" }}>{rank.name}</span>
+            </div>
+          </div>
+
+          {/* Stats row */}
+          <div style={{ display: 'flex', borderRadius: 16, overflow: 'hidden', border: '1px solid #E0D8C5', marginBottom: 16 }}>
             {[
-              { value: profile.wins ?? 0,   label: 'W', color: '#5C7A4D', bg: 'rgba(92,122,77,0.12)' },
-              { value: profile.losses ?? 0, label: 'L', color: '#D9824D', bg: 'rgba(217,130,77,0.12)' },
-              { value: profile.ties ?? 0,   label: 'T', color: '#6B6857', bg: 'rgba(107,104,87,0.10)' },
-            ].map(s => (
-              <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4, background: s.bg, borderRadius: 8, padding: '4px 10px' }}>
-                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: s.color }}>{s.value}</span>
-                <span style={{ fontSize: 10, fontWeight: 700, color: s.color, letterSpacing: '0.06em' }}>{s.label}</span>
+              { val: profile.rankedPoints ?? 0, label: 'Points' },
+              ...(profile.handicapIndex != null ? [{ val: profile.handicapIndex.toFixed(1), label: 'Handicap' }] : []),
+            ].map((s, i, arr) => (
+              <div key={s.label} style={{ flex: 1, textAlign: 'center', padding: '14px 8px', borderLeft: i > 0 ? '1px solid #E0D8C5' : 'none', background: i % 2 === 0 ? 'transparent' : 'rgba(224,216,197,0.25)' }}>
+                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1 }}>{s.val}</div>
+                <div style={{ fontSize: 10, color: '#B5AC95', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 4 }}>{s.label}</div>
               </div>
             ))}
           </div>
-        )}
 
-        {profile.homeCourse && (
-          <div style={{ fontSize: 13, color: '#6B6857', background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 10, padding: '8px 14px', marginBottom: 20 }}>
-            Home: <strong style={{ color: '#1F1D17' }}>{profile.homeCourse}</strong>
-          </div>
-        )}
-        <button
-          onClick={onClose}
-          style={{ width: '100%', background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '12px', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginTop: profile.homeCourse ? 0 : 4 }}
-        >
-          Close
-        </button>
+          {/* W/L/T */}
+          {totalMatches > 0 && (
+            <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+              {[
+                { value: profile.wins ?? 0,   label: 'Wins',   color: '#5C7A4D', bg: 'rgba(92,122,77,0.10)'   },
+                { value: profile.losses ?? 0, label: 'Losses', color: '#C0603A', bg: 'rgba(192,96,58,0.10)'   },
+                { value: profile.ties ?? 0,   label: 'Ties',   color: '#6B6857', bg: 'rgba(107,104,87,0.08)'  },
+              ].map(s => (
+                <div key={s.label} style={{ flex: 1, textAlign: 'center', background: s.bg, borderRadius: 12, padding: '10px 4px' }}>
+                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: s.color, letterSpacing: '-0.03em' }}>{s.value}</div>
+                  <div style={{ fontSize: 10, fontWeight: 600, color: s.color, opacity: 0.75, letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 2 }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Home course */}
+          {profile.homeCourse && (
+            <div style={{ fontSize: 13, color: '#6B6857', background: '#F0EBDD', borderRadius: 10, padding: '9px 14px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <PersonIcon size={13} color="#B5AC95" />
+              <span>{profile.homeCourse}</span>
+            </div>
+          )}
+
+          <button
+            onClick={onClose}
+            style={{
+              width: '100%', background: '#1F3A2A', color: '#FAF6EA',
+              border: 'none', borderRadius: 16, padding: '13px',
+              fontSize: 14, fontWeight: 600, cursor: 'pointer',
+              fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#16271D' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A' }}
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   )
