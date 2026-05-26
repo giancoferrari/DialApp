@@ -172,9 +172,15 @@ function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onCl
               border: 'none', borderRadius: 16, padding: '13px',
               fontSize: 14, fontWeight: 600, cursor: 'pointer',
               fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em',
+              transition: 'all 0.15s cubic-bezier(0.22, 1, 0.36, 1)',
+              boxShadow: '0 4px 14px rgba(31,58,42,0.22)',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#16271D' }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#16271D'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(31,58,42,0.28)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(31,58,42,0.22)' }}
+            onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
+            onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+            onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
+            onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
           >
             Close
           </button>
@@ -289,13 +295,13 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
   }
 
   const px = isMobile ? 20 : 40
-  const card: React.CSSProperties = { background: 'rgba(250,246,234,0.62)', backdropFilter: 'blur(24px) saturate(160%)', WebkitBackdropFilter: 'blur(24px) saturate(160%)', border: '1px solid rgba(255,255,255,0.52)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 24px rgba(31,29,23,0.08), inset 0 1px 0 rgba(255,255,255,0.65)' }
+  const card: React.CSSProperties = { background: 'rgba(250,246,234,0.70)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 22, overflow: 'hidden', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.80)' }
 
   const btnSmall = (bg: string, color: string): React.CSSProperties => ({
     background: bg, color, border: 'none', borderRadius: 999,
     padding: '7px 14px', fontSize: 12.5, fontWeight: 500,
     cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
-    transition: 'opacity 0.15s', whiteSpace: 'nowrap',
+    transition: 'all 0.12s cubic-bezier(0.22, 1, 0.36, 1)', whiteSpace: 'nowrap',
   })
 
   return (
@@ -341,7 +347,7 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
         </div>
 
         {(searchResults.length > 0 || searching) && (
-          <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, background: 'rgba(250,246,234,0.85)', backdropFilter: 'blur(24px) saturate(160%)', WebkitBackdropFilter: 'blur(24px) saturate(160%)', border: '1px solid rgba(255,255,255,0.55)', borderRadius: 16, overflow: 'hidden', zIndex: 20, boxShadow: '0 12px 32px rgba(31,58,42,0.14), inset 0 1px 0 rgba(255,255,255,0.7)' }}>
+          <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, background: 'rgba(250,246,234,0.92)', backdropFilter: 'blur(40px) saturate(200%)', WebkitBackdropFilter: 'blur(40px) saturate(200%)', border: '1px solid rgba(255,255,255,0.68)', borderRadius: 18, overflow: 'hidden', zIndex: 20, boxShadow: '0 16px 40px rgba(31,58,42,0.16), inset 0 1px 0 rgba(255,255,255,0.85)' }}>
             {searching && (
               <div style={{ padding: '14px 16px', fontSize: 13, color: '#B5AC95' }}>Searching…</div>
             )}

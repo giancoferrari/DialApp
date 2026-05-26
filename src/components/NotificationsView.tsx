@@ -134,7 +134,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
       {loading ? (
         <div style={{ textAlign: 'center', padding: '48px', fontSize: 14, color: '#B5AC95' }}>Loading…</div>
       ) : total === 0 ? (
-        <div style={{ background: 'rgba(250,246,234,0.62)', backdropFilter: 'blur(24px) saturate(160%)', WebkitBackdropFilter: 'blur(24px) saturate(160%)', border: '1px solid rgba(255,255,255,0.52)', borderRadius: 20, padding: '48px 24px', textAlign: 'center', boxShadow: '0 4px 24px rgba(31,29,23,0.08), inset 0 1px 0 rgba(255,255,255,0.65)' }}>
+        <div style={{ background: 'rgba(250,246,234,0.70)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 22, padding: '48px 24px', textAlign: 'center', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.80)' }}>
           <div style={{ width: 56, height: 56, borderRadius: 28, background: '#F0EBDD', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="#C9C0A8" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -147,7 +147,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
           {friendReqs.map(f => (
-            <div key={f.id} style={{ background: 'rgba(250,246,234,0.62)', backdropFilter: 'blur(24px) saturate(160%)', WebkitBackdropFilter: 'blur(24px) saturate(160%)', border: '1px solid rgba(255,255,255,0.52)', borderRadius: 18, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 4px 20px rgba(31,29,23,0.07), inset 0 1px 0 rgba(255,255,255,0.65)' }}>
+            <div key={f.id} style={{ background: 'rgba(250,246,234,0.70)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 20, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 6px 24px rgba(31,29,23,0.08), inset 0 1px 0 rgba(255,255,255,0.80)' }}>
               <Avatar profile={f.profile} size={44} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
@@ -163,14 +163,24 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
                 <button
                   onClick={() => handleFriendDecline(f)}
                   disabled={busy === f.id}
-                  style={{ width: 36, height: 36, borderRadius: 18, background: '#F0EBDD', border: '1px solid #E0D8C5', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                  style={{ width: 38, height: 38, borderRadius: 19, background: 'rgba(240,235,221,0.80)', border: '1px solid rgba(224,216,197,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'transform 0.12s ease', flexShrink: 0 }}
+                  onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.88)' }}
+                  onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
+                  onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.88)' }}
+                  onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
                 >
                   <CloseIcon size={14} color="#6B6857" />
                 </button>
                 <button
                   onClick={() => handleFriendAccept(f)}
                   disabled={busy === f.id}
-                  style={{ width: 36, height: 36, borderRadius: 18, background: '#1F3A2A', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                  style={{ width: 38, height: 38, borderRadius: 19, background: '#1F3A2A', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'transform 0.12s ease', flexShrink: 0, boxShadow: '0 3px 10px rgba(31,58,42,0.28)' }}
+                  onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.88)' }}
+                  onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
+                  onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.88)' }}
+                  onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
                 >
                   <CheckIcon size={14} color="#FAF6EA" />
                 </button>
@@ -181,7 +191,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
           {matchInvites.map(m => {
             const inviter = m.players.find(p => p.userId === m.createdBy)
             return (
-              <div key={m.id} style={{ background: 'rgba(31,58,42,0.84)', backdropFilter: 'blur(24px) saturate(140%)', WebkitBackdropFilter: 'blur(24px) saturate(140%)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 18, overflow: 'hidden', boxShadow: '0 8px 32px rgba(31,58,42,0.22), inset 0 1px 0 rgba(255,255,255,0.14)' }}>
+              <div key={m.id} style={{ background: 'rgba(31,58,42,0.90)', backdropFilter: 'blur(36px) saturate(160%)', WebkitBackdropFilter: 'blur(36px) saturate(160%)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 22, overflow: 'hidden', boxShadow: '0 12px 40px rgba(31,58,42,0.26), inset 0 1px 0 rgba(255,255,255,0.18)' }}>
                 <div style={{ background: 'transparent', padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                   <TrophyIcon size={14} color="#D9824D" />
                   <span style={{ fontSize: 11, fontWeight: 600, color: '#B5C29A', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Match Invite</span>

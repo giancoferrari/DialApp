@@ -36,35 +36,37 @@ export default function ToolsView({ onNavigate, isMobile = false }: Props) {
             key={item.view}
             onClick={() => onNavigate(item.view)}
             style={{
-              background: 'rgba(250,246,234,0.62)',
-              backdropFilter: 'blur(24px) saturate(160%)',
-              WebkitBackdropFilter: 'blur(24px) saturate(160%)',
-              border: '1px solid rgba(255,255,255,0.52)',
-              borderRadius: 20,
+              background: 'rgba(250,246,234,0.70)',
+              backdropFilter: 'blur(36px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(36px) saturate(180%)',
+              border: '1px solid rgba(255,255,255,0.62)',
+              borderRadius: 22,
               padding: '24px 20px',
               display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 14,
               cursor: 'pointer', textAlign: 'left',
-              boxShadow: '0 4px 20px rgba(31,29,23,0.07), inset 0 1px 0 rgba(255,255,255,0.7)',
-              transition: 'all 0.18s ease',
+              boxShadow: '0 6px 24px rgba(31,29,23,0.08), inset 0 1px 0 rgba(255,255,255,0.82)',
+              transition: 'all 0.22s cubic-bezier(0.22, 1, 0.36, 1)',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = 'rgba(250,246,234,0.85)'
-              e.currentTarget.style.boxShadow = '0 10px 28px rgba(31,58,42,0.14), inset 0 1px 0 rgba(255,255,255,0.8)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.background = 'rgba(250,246,234,0.90)'
+              e.currentTarget.style.boxShadow = '0 14px 36px rgba(31,58,42,0.16), inset 0 1px 0 rgba(255,255,255,0.90)'
+              e.currentTarget.style.transform = 'translateY(-3px)'
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = 'rgba(250,246,234,0.62)'
-              e.currentTarget.style.boxShadow = '0 4px 20px rgba(31,29,23,0.07), inset 0 1px 0 rgba(255,255,255,0.7)'
+              e.currentTarget.style.background = 'rgba(250,246,234,0.70)'
+              e.currentTarget.style.boxShadow = '0 6px 24px rgba(31,29,23,0.08), inset 0 1px 0 rgba(255,255,255,0.82)'
               e.currentTarget.style.transform = 'translateY(0)'
             }}
             onMouseDown={e => {
-              e.currentTarget.style.transform = 'scale(0.97)'
-              e.currentTarget.style.boxShadow = '0 1px 6px rgba(31,29,23,0.05)'
+              e.currentTarget.style.transform = 'scale(0.96)'
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(31,29,23,0.06)'
             }}
             onMouseUp={e => {
-              e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.boxShadow = '0 10px 28px rgba(31,58,42,0.14), inset 0 1px 0 rgba(255,255,255,0.8)'
+              e.currentTarget.style.transform = 'translateY(-3px)'
+              e.currentTarget.style.boxShadow = '0 14px 36px rgba(31,58,42,0.16), inset 0 1px 0 rgba(255,255,255,0.90)'
             }}
+            onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
+            onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
           >
             <div style={{
               width: 44, height: 44, borderRadius: 14,

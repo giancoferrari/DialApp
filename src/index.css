@@ -13,9 +13,12 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background:
-    radial-gradient(ellipse 140% 60% at 8% 92%, rgba(92,122,77,0.26) 0%, transparent 65%),
-    radial-gradient(ellipse 100% 65% at 92% 5%, rgba(181,194,154,0.20) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 50% at 50% 50%, rgba(217,130,77,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 170% 85% at 4% 98%, rgba(52,82,37,0.34) 0%, transparent 58%),
+    radial-gradient(ellipse 120% 70% at 96% 4%,  rgba(130,155,100,0.24) 0%, transparent 52%),
+    radial-gradient(ellipse 95% 60% at 68% 88%,  rgba(72,102,57,0.20) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 55% at 12% 22%,  rgba(165,185,138,0.18) 0%, transparent 46%),
+    radial-gradient(ellipse 85% 48% at 82% 32%,  rgba(217,130,77,0.09) 0%, transparent 42%),
+    radial-gradient(ellipse 60% 40% at 45% 55%,  rgba(92,122,77,0.08) 0%, transparent 38%),
     #EDE8D4;
   background-attachment: fixed;
   color: #1F1D17;
@@ -68,6 +71,23 @@ button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent
   0%   { transform: scale(0);    opacity: 0; }
   70%  { transform: scale(1.18);             }
   100% { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes pressDown {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0%   { opacity: 0; }
+  50%  { opacity: 0.06; }
+  100% { opacity: 0; }
+}
+
+@keyframes rankBarFill {
+  from { width: 0; }
+  to   { width: var(--bar-width, 100%); }
 }
 
 /* ── Mobile: hide horizontal scrollbar on chips ─────────────── */

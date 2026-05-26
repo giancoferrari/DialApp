@@ -154,12 +154,16 @@ export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, u
               fontFamily: "'DM Sans', sans-serif",
               fontSize: isMobile ? 13 : 13.5, fontWeight: 500,
               cursor: 'pointer', letterSpacing: '-0.005em',
-              transition: 'background 0.15s', whiteSpace: 'nowrap', flexShrink: 0,
+              transition: 'all 0.15s cubic-bezier(0.22, 1, 0.36, 1)',
+              whiteSpace: 'nowrap', flexShrink: 0,
+              boxShadow: '0 4px 14px rgba(31,58,42,0.20)',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#16271D' }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A' }}
-            onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#16271D'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(31,58,42,0.28)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(31,58,42,0.20)' }}
+            onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
             onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+            onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
+            onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
           >
             {isMobile ? 'Log round' : 'Log a round'}
             <span style={{ width: 22, height: 22, borderRadius: 11, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -256,11 +260,12 @@ export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, u
       {isMobile && (
         <nav style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40,
-          background: 'rgba(237,232,212,0.82)',
-          backdropFilter: 'blur(32px) saturate(200%)',
-          WebkitBackdropFilter: 'blur(32px) saturate(200%)',
-          borderTop: '1px solid rgba(255,255,255,0.5)',
-          boxShadow: '0 -1px 0 rgba(255,255,255,0.7), 0 -8px 32px rgba(31,29,23,0.07)',
+          background: 'rgba(237,232,212,0.92)',
+          backdropFilter: 'blur(44px) saturate(220%)',
+          WebkitBackdropFilter: 'blur(44px) saturate(220%)',
+          borderTop: '1px solid rgba(255,255,255,0.65)',
+          borderRadius: '22px 22px 0 0',
+          boxShadow: '0 -2px 0 rgba(255,255,255,0.85), 0 -14px 44px rgba(31,29,23,0.09)',
           display: 'flex', alignItems: 'stretch',
           paddingBottom: 'env(safe-area-inset-bottom)',
           transform: 'translateZ(0)',
@@ -275,22 +280,38 @@ export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, u
                 style={{
                   flex: 1, background: 'none', border: 'none',
                   display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  justifyContent: 'center', padding: '6px 2px 8px',
-                  cursor: 'pointer',
+                  justifyContent: 'center', padding: '8px 2px 6px',
+                  cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                  transition: 'transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1)',
                 }}
+                onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.88)' }}
+                onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
+                onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.88)' }}
+                onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
               >
+                {/* Orange dot indicator */}
+                <div style={{
+                  width: 4, height: 4, borderRadius: 2,
+                  background: '#D9824D',
+                  marginBottom: 4,
+                  opacity: active ? 1 : 0,
+                  transform: active ? 'scale(1)' : 'scale(0)',
+                  transition: 'all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                }} />
                 <div style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-                  padding: '5px 10px', borderRadius: 14,
-                  background: active ? 'rgba(31,58,42,0.10)' : 'transparent',
+                  padding: '5px 12px', borderRadius: 14,
+                  background: active ? 'rgba(31,58,42,0.11)' : 'transparent',
                   transition: 'background 0.22s ease',
                 }}>
-                  <item.Icon size={21} color={active ? '#1F3A2A' : '#6B6857'} />
+                  <item.Icon size={22} color={active ? '#1F3A2A' : '#8B9078'} />
                   <span style={{
-                    fontSize: 10, fontWeight: active ? 600 : 500,
+                    fontSize: 10, fontWeight: active ? 700 : 500,
                     fontFamily: "'DM Sans', sans-serif",
-                    letterSpacing: '-0.01em',
-                    color: active ? '#1F3A2A' : '#6B6857',
+                    letterSpacing: active ? '-0.01em' : '0',
+                    color: active ? '#1F3A2A' : '#8B9078',
+                    transition: 'all 0.22s ease',
                   }}>
                     {item.label}
                   </span>

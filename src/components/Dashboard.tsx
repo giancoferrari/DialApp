@@ -117,12 +117,12 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
 
   // ── Shared style ──
   const glassCard: React.CSSProperties = {
-    background: 'rgba(250,246,234,0.65)',
-    backdropFilter: 'blur(20px) saturate(160%)',
-    WebkitBackdropFilter: 'blur(20px) saturate(160%)',
-    border: '1px solid rgba(255,255,255,0.55)',
+    background: 'rgba(250,246,234,0.70)',
+    backdropFilter: 'blur(36px) saturate(180%)',
+    WebkitBackdropFilter: 'blur(36px) saturate(180%)',
+    border: '1px solid rgba(255,255,255,0.62)',
     borderRadius: 20,
-    boxShadow: '0 2px 12px rgba(31,29,23,0.06), inset 0 1px 0 rgba(255,255,255,0.7)',
+    boxShadow: '0 4px 20px rgba(31,29,23,0.07), inset 0 1px 0 rgba(255,255,255,0.82)',
   }
 
   return (
@@ -163,10 +163,11 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
 
       {/* ── Rank Card ──────────────────────────────────────── */}
       <div style={{
-        background: '#1F3A2A',
+        background: 'linear-gradient(160deg, rgba(35,68,46,1) 0%, rgba(26,50,33,1) 100%)',
         borderRadius: 24, padding: '20px 22px 22px',
         marginBottom: 14,
-        boxShadow: '0 10px 36px rgba(31,58,42,0.24), inset 0 1px 0 rgba(255,255,255,0.07)',
+        boxShadow: '0 14px 44px rgba(31,58,42,0.28), inset 0 1px 0 rgba(255,255,255,0.10)',
+        border: '1px solid rgba(255,255,255,0.06)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 18 }}>
           <div style={{
@@ -401,13 +402,17 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
           onClick={() => onNavigate('friends')}
           style={{
             flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            ...glassCard, border: '1px solid rgba(224,216,197,0.6)',
-            padding: '13px 10px', cursor: 'pointer',
+            ...glassCard, border: '1px solid rgba(224,216,197,0.55)',
+            padding: '14px 10px', cursor: 'pointer',
             fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500, color: '#1F1D17',
-            transition: 'background 0.15s',
+            transition: 'all 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#FAF6EA' }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.65)' }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.92)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.70)'; e.currentTarget.style.transform = 'translateY(0)' }}
+          onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
+          onMouseUp={e => { e.currentTarget.style.transform = 'translateY(-1px)' }}
+          onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
+          onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
         >
           <UsersIcon size={16} color="#1F3A2A" /> Friends
         </button>
@@ -416,14 +421,18 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
           style={{
             flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             background: '#1F3A2A', color: '#FAF6EA',
-            border: 'none', borderRadius: 16,
-            padding: '13px 10px', cursor: 'pointer',
+            border: 'none', borderRadius: 20,
+            padding: '14px 10px', cursor: 'pointer',
             fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500,
-            transition: 'background 0.15s',
-            boxShadow: '0 4px 16px rgba(31,58,42,0.18)',
+            transition: 'all 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
+            boxShadow: '0 6px 20px rgba(31,58,42,0.22)',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#16271D' }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#16271D'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(31,58,42,0.28)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(31,58,42,0.22)' }}
+          onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
+          onMouseUp={e => { e.currentTarget.style.transform = 'translateY(-1px)' }}
+          onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
+          onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
         >
           <TrophyIcon size={16} color="#D9824D" /> Start a Match
         </button>
