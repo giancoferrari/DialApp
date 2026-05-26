@@ -2,6 +2,7 @@ import { supabase } from './supabase'
 import type { Match, MatchPlayer, MatchScore, GameMode, PublicProfile } from '../types'
 import { fetchProfilesForIds } from './friends'
 import { deductWager, creditWinner, refundWager } from './wallet'
+import { awardPoints } from './points'
 
 function toScore(r: Record<string, unknown>): MatchScore {
   return {
@@ -200,6 +201,8 @@ export async function completeMatch(match: Match): Promise<string | null> {
       await refundWager(p.userId, match.id, match.wagerPerPlayer)
     }
   }
+
+  await awardPoints(winnerId, accepted.map(p => p.userId))
 
   return winnerId
 }

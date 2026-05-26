@@ -15,7 +15,7 @@ export interface Shot {
   note: string
 }
 
-export type View = 'dashboard' | 'bag' | 'dialin' | 'rounds' | 'practice' | 'profile' | 'friends' | 'matches' | 'notifications'
+export type View = 'dashboard' | 'bag' | 'dialin' | 'rounds' | 'practice' | 'profile' | 'friends' | 'matches' | 'notifications' | 'tools'
 
 // ── Course ──────────────────────────────────────────────
 export interface CourseHole {
@@ -96,6 +96,10 @@ export interface UserProfile {
   goalHandicap: number | null
   goalNotes: string | null
   equipment: EquipmentItem[]
+  rankedPoints: number
+  wins: number
+  losses: number
+  ties: number
   createdAt: string
   updatedAt: string
 }
@@ -108,6 +112,10 @@ export interface PublicProfile {
   handicapIndex: number | null
   homeCourse: string | null
   firstName: string | null
+  rankedPoints: number
+  wins: number
+  losses: number
+  ties: number
 }
 
 export type FriendshipStatus = 'pending' | 'accepted' | 'declined'

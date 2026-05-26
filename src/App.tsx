@@ -20,6 +20,7 @@ import ProfileView from './components/ProfileView'
 import FriendsView from './components/FriendsView'
 import MatchesView from './components/MatchesView'
 import NotificationsView from './components/NotificationsView'
+import ToolsView from './components/ToolsView'
 import LogShotModal from './components/LogShotModal'
 import AuthScreen from './components/AuthScreen'
 import LegalModal from './components/LegalModal'
@@ -146,6 +147,7 @@ function AppShell() {
   const [logPreclub, setLogPreclub]   = useState<Club | null>(null)
   const [legalDoc, setLegalDoc]       = useState<'privacy' | 'terms' | null>(null)
   const [notifCount, setNotifCount]   = useState(0)
+  const [roundAutoKey, setRoundAutoKey] = useState(0)
 
   const pageRef    = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -206,6 +208,13 @@ function AppShell() {
   const handleLogFor = (club: Club) => { setLogPreclub(club); setLogOpen(true) }
   const handleCloseLog = () => { setLogOpen(false); setLogPreclub(null) }
 
+  const handleLogRound = () => {
+    setRoundAutoKey(k => k + 1)
+    handleSetView('rounds')
+  }
+
+  const handleNotif = () => { handleSetView('notifications') }
+
   const handleSetDistance = async (clubId: string, yardage: number) => {
     if (!user) return
     const tempId = -Date.now()
@@ -253,7 +262,8 @@ function AppShell() {
       <TopNav
         view={view}
         onView={handleSetView}
-        onLog={handleLog}
+        onLogRound={handleLogRound}
+        onNotif={handleNotif}
         onProfile={() => handleSetView('profile')}
         userEmail={user?.email ?? ''}
         avatarUrl={profile?.avatarUrl ?? null}
@@ -284,6 +294,7 @@ function AppShell() {
           )}
           {view === 'rounds' && (
             <ScorecardView
+              key={roundAutoKey}
               courses={courses}
               rounds={rounds}
               onCourseAdded={c => setCourses(prev => [c, ...prev])}
@@ -292,6 +303,7 @@ function AppShell() {
               onRoundDeleted={id => setRounds(prev => prev.filter(r => r.id !== id))}
               isMobile={isMobile}
               homeCourse={profile?.homeCourse ?? null}
+              autoStart={roundAutoKey > 0}
             />
           )}
           {view === 'practice' && (
@@ -321,6 +333,9 @@ function AppShell() {
           )}
           {view === 'notifications' && (
             <NotificationsView userId={user!.id} isMobile={isMobile} onCountChange={setNotifCount} />
+          )}
+          {view === 'tools' && (
+            <ToolsView onNavigate={handleSetView} isMobile={isMobile} />
           )}
         </div>
       </div>

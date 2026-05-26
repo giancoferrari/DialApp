@@ -12,6 +12,10 @@ type DbProfile = {
   goal_handicap: number | null
   goal_notes: string | null
   equipment: EquipmentItem[]
+  ranked_points: number
+  wins: number
+  losses: number
+  ties: number
   created_at: string
   updated_at: string
 }
@@ -28,6 +32,10 @@ function toProfile(r: DbProfile): UserProfile {
     goalHandicap: r.goal_handicap,
     goalNotes: r.goal_notes,
     equipment: r.equipment ?? [],
+    rankedPoints: r.ranked_points ?? 0,
+    wins: r.wins ?? 0,
+    losses: r.losses ?? 0,
+    ties: r.ties ?? 0,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   }

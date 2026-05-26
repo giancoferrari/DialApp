@@ -2,9 +2,8 @@ import { useRef, useState, useEffect } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import type { Shot, Club } from '../types'
-import { CLUBS_DATA } from '../data'
 import OrganicGraphic from './OrganicGraphic'
-import { ArrowRight, BagIcon, TargetIcon, ScorecardIcon, DumbbellIcon, UsersIcon, TrophyIcon } from './Icons'
+import { ArrowRight, UsersIcon, TrophyIcon } from './Icons'
 import type { View } from '../types'
 
 gsap.registerPlugin(useGSAP)
@@ -45,9 +44,7 @@ export default function Dashboard({ shots, onNavigate, isMobile = false, userNam
   const date = useLiveDate()
   const today = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 
-  const totalShots  = shots.length
-  const weekShots   = shots.filter(s => Date.now() - s.ts < 7 * 86_400_000).length
-  const trackedClubs = CLUBS_DATA.filter(c => shots.some(s => s.clubId === c.id)).length
+  const totalShots = shots.length
 
   useGSAP(() => {
     const mm = gsap.matchMedia()
@@ -139,20 +136,6 @@ export default function Dashboard({ shots, onNavigate, isMobile = false, userNam
               <TrophyIcon size={16} color="#1F1D17" /> Start a Match <ArrowRight size={16} color="#1F1D17" />
             </button>
           </div>
-
-          {/* Quick stats strip */}
-          <div style={{ display: 'flex', gap: 20, marginTop: 32 }}>
-            {[
-              { value: totalShots,   label: 'shots logged' },
-              { value: weekShots,    label: 'this week'    },
-              { value: trackedClubs, label: 'clubs dialed' },
-            ].map(s => (
-              <div key={s.label}>
-                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1 }}>{s.value}</div>
-                <div style={{ fontSize: 11, color: '#6B6857', fontWeight: 500, marginTop: 2 }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
         </div>
 
         <div ref={heroRightRef} style={{ display: isMobile ? 'none' : 'flex', justifyContent: 'center', position: 'relative' }}>
@@ -185,58 +168,6 @@ export default function Dashboard({ shots, onNavigate, isMobile = false, userNam
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ── TOOLS GRID ── */}
-      <section style={{ marginBottom: isMobile ? 32 : 64 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 14 }}>
-          Your tools
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-          {([
-            { label: 'My Bag',   sub: 'Distances',  Icon: BagIcon,       view: 'bag'      },
-            { label: 'Dial In',  sub: 'Calculator', Icon: TargetIcon,    view: 'dialin'   },
-            { label: 'Rounds',   sub: 'Scorecards', Icon: ScorecardIcon, view: 'rounds'   },
-            { label: 'Practice', sub: 'Training',   Icon: DumbbellIcon,  view: 'practice' },
-          ] as const).map(item => (
-            <button
-              key={item.view}
-              onClick={() => onNavigate(item.view)}
-              style={{
-                background: 'rgba(250,246,234,0.62)',
-                backdropFilter: 'blur(24px) saturate(160%)',
-                WebkitBackdropFilter: 'blur(24px) saturate(160%)',
-                border: '1px solid rgba(255,255,255,0.52)',
-                borderRadius: 18,
-                padding: isMobile ? '14px 10px' : '18px 14px',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-                cursor: 'pointer', transition: 'all 0.18s ease', textAlign: 'center',
-                boxShadow: '0 4px 16px rgba(31,29,23,0.07), inset 0 1px 0 rgba(255,255,255,0.7)',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(250,246,234,0.85)'
-                e.currentTarget.style.boxShadow = '0 10px 28px rgba(31,58,42,0.14), inset 0 1px 0 rgba(255,255,255,0.8)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(250,246,234,0.62)'
-                e.currentTarget.style.transform = 'scale(1)'
-                e.currentTarget.style.boxShadow = '0 4px 16px rgba(31,29,23,0.07), inset 0 1px 0 rgba(255,255,255,0.7)'
-              }}
-              onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(31,29,23,0.05)' }}
-              onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(31,58,42,0.14), inset 0 1px 0 rgba(255,255,255,0.8)' }}
-            >
-              <item.Icon size={isMobile ? 20 : 22} color="#1F3A2A" />
-              <div>
-                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 13 : 14, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
-                  {item.label}
-                </div>
-                {!isMobile && (
-                  <div style={{ fontSize: 11, color: '#6B6857', marginTop: 2 }}>{item.sub}</div>
-                )}
-              </div>
-            </button>
-          ))}
         </div>
       </section>
 

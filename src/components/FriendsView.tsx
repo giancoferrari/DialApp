@@ -4,30 +4,63 @@ import {
   searchUsers, fetchFriendships, fetchProfilesForIds,
   sendFriendRequest, updateFriendship, removeFriend,
 } from '../lib/friends'
-import { CloseIcon, PersonIcon } from './Icons'
+import { CloseIcon, PersonIcon, ShieldIcon } from './Icons'
+import { getRank } from '../lib/points'
 
 function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onClose: () => void }) {
   const initial = profile.username?.[0]?.toUpperCase() ?? '?'
+  const rank = getRank(profile.rankedPoints ?? 0)
+  const totalMatches = (profile.wins ?? 0) + (profile.losses ?? 0) + (profile.ties ?? 0)
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(31,29,23,0.50)', backdropFilter: 'blur(20px) saturate(140%)', WebkitBackdropFilter: 'blur(20px) saturate(140%)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
       <div style={{ background: 'rgba(237,232,212,0.90)', backdropFilter: 'blur(28px) saturate(180%)', WebkitBackdropFilter: 'blur(28px) saturate(180%)', border: '1px solid rgba(255,255,255,0.55)', borderRadius: 28, padding: '36px 28px', width: '100%', maxWidth: 340, textAlign: 'center', boxShadow: '0 24px 64px rgba(31,58,42,0.18), inset 0 1px 0 rgba(255,255,255,0.7)' }}>
-        <div style={{ width: 88, height: 88, borderRadius: 44, background: '#1F3A2A', margin: '0 auto 18px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid #E0D8C5' }}>
+        <div style={{ width: 88, height: 88, borderRadius: 44, background: '#1F3A2A', margin: '0 auto 16px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid #E0D8C5' }}>
           {profile.avatarUrl
             ? <img src={profile.avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 36, color: '#D9824D' }}>{initial}</span>
           }
         </div>
-        <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginBottom: 6 }}>
+
+        {/* Rank badge */}
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: rank.color + '18', border: `1px solid ${rank.color}40`, borderRadius: 999, padding: '4px 12px 4px 8px', marginBottom: 10 }}>
+          <ShieldIcon size={12} color={rank.color} />
+          <span style={{ fontSize: 11, fontWeight: 700, color: rank.color, letterSpacing: '0.04em', fontFamily: "'DM Sans', sans-serif" }}>{rank.name}</span>
+        </div>
+
+        <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginBottom: 16 }}>
           {profile.username ? `@${profile.username}` : 'No username'}
         </div>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 20 }}>
+
+        {/* Stats */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 16 }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em' }}>{profile.rankedPoints ?? 0}</div>
+            <div style={{ fontSize: 10, color: '#6B6857', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Points</div>
+          </div>
           {profile.handicapIndex != null && (
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em' }}>{profile.handicapIndex.toFixed(1)}</div>
+              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em' }}>{profile.handicapIndex.toFixed(1)}</div>
               <div style={{ fontSize: 10, color: '#6B6857', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Handicap</div>
             </div>
           )}
         </div>
+
+        {/* Win/loss record */}
+        {totalMatches > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+            {[
+              { value: profile.wins ?? 0,   label: 'W', color: '#5C7A4D', bg: 'rgba(92,122,77,0.12)' },
+              { value: profile.losses ?? 0, label: 'L', color: '#D9824D', bg: 'rgba(217,130,77,0.12)' },
+              { value: profile.ties ?? 0,   label: 'T', color: '#6B6857', bg: 'rgba(107,104,87,0.10)' },
+            ].map(s => (
+              <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4, background: s.bg, borderRadius: 8, padding: '4px 10px' }}>
+                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: s.color }}>{s.value}</span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: s.color, letterSpacing: '0.06em' }}>{s.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {profile.homeCourse && (
           <div style={{ fontSize: 13, color: '#6B6857', background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 10, padding: '8px 14px', marginBottom: 20 }}>
             Home: <strong style={{ color: '#1F1D17' }}>{profile.homeCourse}</strong>
@@ -35,7 +68,7 @@ function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onCl
         )}
         <button
           onClick={onClose}
-          style={{ width: '100%', background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '12px', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+          style={{ width: '100%', background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '12px', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginTop: profile.homeCourse ? 0 : 4 }}
         >
           Close
         </button>

@@ -143,6 +143,25 @@ export function BellIcon({ size = 22, color = 'currentColor' }: { size?: number;
   )
 }
 
+export function ToolsIcon({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="3" width="7" height="7" rx="1.5" stroke={color} strokeWidth="1.6" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" stroke={color} strokeWidth="1.6" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" stroke={color} strokeWidth="1.6" />
+      <rect x="14" y="14" width="7" height="7" rx="1.5" stroke={color} strokeWidth="1.6" />
+    </svg>
+  )
+}
+
+export function ShieldIcon({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path d="M12 2L4 6V12C4 16.42 7.42 20.57 12 22C16.58 20.57 20 16.42 20 12V6L12 2Z" stroke={color} strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export function PencilIcon({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">

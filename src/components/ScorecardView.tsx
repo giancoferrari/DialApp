@@ -385,16 +385,17 @@ interface Props {
   onRoundDeleted: (id: string) => void
   isMobile?: boolean
   homeCourse?: string | null
+  autoStart?: boolean
 }
 
 export default function ScorecardView({
   courses, rounds,
   onCourseAdded, onCourseDeleted,
   onRoundAdded, onRoundDeleted,
-  isMobile = false, homeCourse = null,
+  isMobile = false, homeCourse = null, autoStart = false,
 }: Props) {
   const { user } = useAuth()
-  const [phase, setPhase]         = useState<Phase>({ type: 'history' })
+  const [phase, setPhase]         = useState<Phase>(() => autoStart ? { type: 'round_start' } : { type: 'history' })
   const [saving, setSaving]       = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
 

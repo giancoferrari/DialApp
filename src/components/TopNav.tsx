@@ -1,32 +1,29 @@
 import { useEffect, useRef, useState } from 'react'
 import type { View } from '../types'
 import DialWordmark from './DialWordmark'
-import { PlusIcon, PersonIcon, HomeIcon, UsersIcon, TrophyIcon, BellIcon } from './Icons'
+import { PlusIcon, PersonIcon, HomeIcon, UsersIcon, TrophyIcon, BellIcon, ToolsIcon } from './Icons'
 
 const NAV_ITEMS: { id: View; label: string }[] = [
-  { id: 'dashboard',     label: 'Home'          },
-  { id: 'bag',           label: 'My Bag'        },
-  { id: 'dialin',        label: 'Dial In'       },
-  { id: 'rounds',        label: 'Rounds'        },
-  { id: 'practice',      label: 'Practice'      },
-  { id: 'friends',       label: 'Friends'       },
-  { id: 'matches',       label: 'Matches'       },
-  { id: 'notifications', label: 'Notifications' },
-  { id: 'profile',       label: 'Profile'       },
+  { id: 'dashboard', label: 'Home'    },
+  { id: 'friends',   label: 'Friends' },
+  { id: 'matches',   label: 'Matches' },
+  { id: 'tools',     label: 'Tools'   },
+  { id: 'profile',   label: 'Profile' },
 ]
 
 const BOTTOM_NAV: { id: View; label: string; Icon: React.ComponentType<{ size?: number; color?: string }> }[] = [
-  { id: 'dashboard',     label: 'Home',    Icon: HomeIcon    },
-  { id: 'friends',       label: 'Friends', Icon: UsersIcon   },
-  { id: 'matches',       label: 'Matches', Icon: TrophyIcon  },
-  { id: 'notifications', label: 'Alerts',  Icon: BellIcon    },
-  { id: 'profile',       label: 'Profile', Icon: PersonIcon  },
+  { id: 'dashboard', label: 'Home',    Icon: HomeIcon   },
+  { id: 'friends',   label: 'Friends', Icon: UsersIcon  },
+  { id: 'matches',   label: 'Matches', Icon: TrophyIcon },
+  { id: 'tools',     label: 'Tools',   Icon: ToolsIcon  },
+  { id: 'profile',   label: 'Profile', Icon: PersonIcon },
 ]
 
 interface Props {
   view: View
   onView: (v: View) => void
-  onLog: () => void
+  onLogRound: () => void
+  onNotif: () => void
   onProfile: () => void
   userEmail: string
   avatarUrl?: string | null
@@ -35,7 +32,7 @@ interface Props {
   notifCount?: number
 }
 
-export default function TopNav({ view, onView, onLog, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0 }: Props) {
+export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0 }: Props) {
   const [menuOpen, setMenuOpen] = useState(false)
   const avatarRef               = useRef<HTMLDivElement>(null)
   const initial = userEmail ? userEmail[0].toUpperCase() : 'G'
@@ -111,9 +108,44 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, avat
 
           <div style={{ flex: 1 }} />
 
-          {/* Log shot button — pill style on both mobile and desktop */}
+          {/* Bell notification button */}
           <button
-            onClick={onLog}
+            onClick={onNotif}
+            style={{
+              position: 'relative',
+              width: 38, height: 38, borderRadius: 19,
+              background: 'rgba(250,246,234,0.65)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.5)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', flexShrink: 0,
+              boxShadow: '0 2px 8px rgba(31,29,23,0.06), inset 0 1px 0 rgba(255,255,255,0.7)',
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.90)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.65)' }}
+            onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.94)' }}
+            onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+          >
+            <BellIcon size={17} color={view === 'notifications' ? '#D9824D' : '#1F3A2A'} />
+            {notifCount > 0 && (
+              <div style={{
+                position: 'absolute', top: -2, right: -2,
+                minWidth: 16, height: 16, borderRadius: 8,
+                background: '#D9824D', border: '1.5px solid rgba(237,232,212,0.92)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 9, fontWeight: 700, color: '#FAF6EA',
+                fontFamily: "'DM Sans', sans-serif", padding: '0 3px',
+              }}>
+                {notifCount > 9 ? '9+' : notifCount}
+              </div>
+            )}
+          </button>
+
+          {/* Log a round button */}
+          <button
+            onClick={onLogRound}
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
               background: '#1F3A2A', color: '#FAF6EA', border: 'none',
@@ -129,7 +161,7 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, avat
             onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
             onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
           >
-            Log a shot
+            {isMobile ? 'Log round' : 'Log a round'}
             <span style={{ width: 22, height: 22, borderRadius: 11, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <PlusIcon size={14} color="#FAF6EA" />
             </span>
@@ -236,7 +268,6 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, avat
         } as React.CSSProperties}>
           {BOTTOM_NAV.map(item => {
             const active = view === item.id
-            const showBadge = item.id === 'notifications' && notifCount > 0
             return (
               <button
                 key={item.id}
@@ -254,21 +285,7 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, avat
                   background: active ? 'rgba(31,58,42,0.10)' : 'transparent',
                   transition: 'background 0.22s ease',
                 }}>
-                  <div style={{ position: 'relative' }}>
-                    <item.Icon size={21} color={active ? '#1F3A2A' : '#6B6857'} />
-                    {showBadge && (
-                      <div style={{
-                        position: 'absolute', top: -3, right: -5,
-                        minWidth: 16, height: 16, borderRadius: 8,
-                        background: '#D9824D', border: '1.5px solid rgba(240,235,221,0.92)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 9, fontWeight: 700, color: '#FAF6EA',
-                        fontFamily: "'DM Sans', sans-serif", padding: '0 3px',
-                      }}>
-                        {notifCount > 9 ? '9+' : notifCount}
-                      </div>
-                    )}
-                  </div>
+                  <item.Icon size={21} color={active ? '#1F3A2A' : '#6B6857'} />
                   <span style={{
                     fontSize: 10, fontWeight: active ? 600 : 500,
                     fontFamily: "'DM Sans', sans-serif",

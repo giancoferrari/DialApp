@@ -3,7 +3,8 @@ import { upsertProfile, uploadAvatar } from '../lib/profile'
 import { supabase } from '../lib/supabase'
 import { CLUBS_DATA } from '../data'
 import type { UserProfile, EquipmentItem, Round } from '../types'
-import { CloseIcon, CheckIcon, CameraIcon, PencilIcon } from './Icons'
+import { CloseIcon, CheckIcon, CameraIcon, PencilIcon, ShieldIcon } from './Icons'
+import { getRank } from '../lib/points'
 
 interface Props {
   profile: UserProfile | null
@@ -148,6 +149,7 @@ export default function ProfileView({
   const goalScoreNum = goalScore ? parseInt(goalScore) : null
   const goalHcpNum   = goalHcp   ? parseFloat(goalHcp)  : null
   const hcpNum       = handicap  ? parseFloat(handicap) : null
+  const rank         = getRank(profile?.rankedPoints ?? 0)
 
   const goalScorePct = goalScoreNum && bestRound
     ? Math.min(100, Math.round((1 - (bestRound.score - goalScoreNum) / 20) * 100))
@@ -270,16 +272,31 @@ export default function ProfileView({
 
         <div style={{ fontSize: 13, color: '#B5AC95', marginBottom: 24 }}>{userEmail}</div>
 
+        {/* Rank badge */}
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          background: rank.color + '18',
+          border: `1px solid ${rank.color}40`,
+          borderRadius: 999, padding: '5px 14px 5px 10px',
+          marginBottom: 16,
+        }}>
+          <ShieldIcon size={14} color={rank.color} />
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 700, color: rank.color, letterSpacing: '0.04em' }}>
+            {rank.name}
+          </span>
+        </div>
+
         {/* Stats row */}
-        <div style={{ display: 'flex', gap: isMobile ? 32 : 48 }}>
+        <div style={{ display: 'flex', gap: isMobile ? 24 : 40 }}>
           {[
             { value: hcpNum != null ? hcpNum.toFixed(1) : '—', label: 'handicap' },
+            { value: profile?.rankedPoints ?? 0, label: 'points' },
             { value: friendsCount, label: 'friends' },
           ].map(s => (
             <div key={s.label} style={{ textAlign: 'center' }}>
               <div style={{
                 fontFamily: "'Bricolage Grotesque', sans-serif",
-                fontSize: 30, fontWeight: 700, color: '#1F1D17',
+                fontSize: 28, fontWeight: 700, color: '#1F1D17',
                 letterSpacing: '-0.04em', lineHeight: 1,
               }}>
                 {s.value}
@@ -293,6 +310,25 @@ export default function ProfileView({
             </div>
           ))}
         </div>
+
+        {/* Win/Loss record */}
+        {(profile?.wins ?? 0) + (profile?.losses ?? 0) + (profile?.ties ?? 0) > 0 && (
+          <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+            {[
+              { value: profile?.wins ?? 0,   label: 'W', color: '#5C7A4D', bg: 'rgba(92,122,77,0.12)' },
+              { value: profile?.losses ?? 0, label: 'L', color: '#D9824D', bg: 'rgba(217,130,77,0.12)' },
+              { value: profile?.ties ?? 0,   label: 'T', color: '#6B6857', bg: 'rgba(107,104,87,0.10)' },
+            ].map(s => (
+              <div key={s.label} style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                background: s.bg, borderRadius: 8, padding: '4px 10px',
+              }}>
+                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: s.color }}>{s.value}</span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: s.color, letterSpacing: '0.06em' }}>{s.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {savedFlash && (
           <div style={{
