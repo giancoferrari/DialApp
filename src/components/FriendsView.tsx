@@ -7,6 +7,15 @@ import {
 import { CloseIcon, PersonIcon, ShieldIcon } from './Icons'
 import { getRank } from '../lib/points'
 
+function profileLabel(profile?: PublicProfile | null): { primary: string; secondary: string | null } {
+  if (!profile) return { primary: 'Someone', secondary: null }
+  const name   = profile.firstName ?? null
+  const handle = profile.username  ? `@${profile.username}` : null
+  if (name && handle && name !== handle) return { primary: name, secondary: handle }
+  if (handle) return { primary: handle, secondary: null }
+  return { primary: 'No username', secondary: null }
+}
+
 function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onClose: () => void }) {
   const initial = profile.username?.[0]?.toUpperCase() ?? '?'
   const rank = getRank(profile.rankedPoints ?? 0)
@@ -22,12 +31,18 @@ function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onCl
         </div>
 
         {/* Rank badge */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: rank.color + '18', border: `1px solid ${rank.color}40`, borderRadius: 999, padding: '4px 12px 4px 8px', marginBottom: 10 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: rank.color + '18', border: `1px solid ${rank.color}40`, borderRadius: 999, padding: '4px 12px 4px 8px', marginBottom: 12 }}>
           <ShieldIcon size={12} color={rank.color} />
           <span style={{ fontSize: 11, fontWeight: 700, color: rank.color, letterSpacing: '0.04em', fontFamily: "'DM Sans', sans-serif" }}>{rank.name}</span>
         </div>
 
-        <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginBottom: 16 }}>
+        {/* Name + username */}
+        {profile.firstName && (
+          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 4 }}>
+            {profile.firstName}
+          </div>
+        )}
+        <div style={{ fontSize: profile.firstName ? 14 : 22, fontWeight: profile.firstName ? 500 : 700, color: profile.firstName ? '#6B6857' : '#1F1D17', fontFamily: profile.firstName ? "'DM Sans', sans-serif" : "'Bricolage Grotesque', sans-serif", letterSpacing: profile.firstName ? '-0.01em' : '-0.025em', marginBottom: 16 }}>
           {profile.username ? `@${profile.username}` : 'No username'}
         </div>
 
@@ -240,14 +255,18 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
             )}
             {searchResults.map(p => {
               const existing = friendshipWith(p.userId)
+              const lbl = profileLabel(p)
               return (
                 <div key={p.userId} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: '1px solid #F0EBDD' }}>
                   <Avatar profile={p} size={40} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
-                      @{p.username}
+                      {lbl.primary}
                     </div>
-                    {p.handicapIndex != null && (
+                    {lbl.secondary && (
+                      <div style={{ fontSize: 12, color: '#6B6857' }}>{lbl.secondary}</div>
+                    )}
+                    {!lbl.secondary && p.handicapIndex != null && (
                       <div style={{ fontSize: 12, color: '#6B6857' }}>HCP {p.handicapIndex.toFixed(1)}</div>
                     )}
                   </div>
@@ -287,8 +306,11 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
                   <Avatar profile={profile} size={44} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
-                      {profile?.username ? `@${profile.username}` : 'Someone'}
+                      {profileLabel(profile).primary}
                     </div>
+                    {profileLabel(profile).secondary && (
+                      <div style={{ fontSize: 12, color: '#B5AC95' }}>{profileLabel(profile).secondary}</div>
+                    )}
                     <div style={{ fontSize: 12, color: '#6B6857' }}>wants to connect</div>
                   </div>
                   <div style={{ display: 'flex', gap: 8 }}>
@@ -318,10 +340,13 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
               return (
                 <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', borderTop: i === 0 ? 'none' : '1px solid #F0EBDD' }}>
                   <Avatar profile={profile} size={44} />
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
-                      {profile?.username ? `@${profile.username}` : '—'}
+                      {profileLabel(profile).primary}
                     </div>
+                    {profileLabel(profile).secondary && (
+                      <div style={{ fontSize: 12, color: '#B5AC95' }}>{profileLabel(profile).secondary}</div>
+                    )}
                   </div>
                   <span style={{ fontSize: 12, color: '#B5AC95', fontWeight: 500, background: '#F0EBDD', borderRadius: 999, padding: '4px 10px' }}>Pending</span>
                 </div>
@@ -355,8 +380,11 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
                     <Avatar profile={profile} size={44} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
-                        {profile?.username ? `@${profile.username}` : friendId.slice(0, 8)}
+                        {profileLabel(profile).primary}
                       </div>
+                      {profileLabel(profile).secondary && (
+                        <div style={{ fontSize: 12, color: '#B5AC95' }}>{profileLabel(profile).secondary}</div>
+                      )}
                       {profile?.handicapIndex != null && (
                         <div style={{ fontSize: 12, color: '#6B6857' }}>HCP {profile.handicapIndex.toFixed(1)}</div>
                       )}

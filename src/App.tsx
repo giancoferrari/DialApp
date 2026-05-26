@@ -16,7 +16,6 @@ import BagView from './components/BagView'
 import DialInView from './components/DialInView'
 import ScorecardView from './components/ScorecardView'
 import PracticeView from './components/PracticeView'
-import ProfileView from './components/ProfileView'
 import FriendsView from './components/FriendsView'
 import MatchesView from './components/MatchesView'
 import NotificationsView from './components/NotificationsView'
@@ -214,8 +213,7 @@ function AppShell() {
     handleSetView('rounds')
   }
 
-  const handleNotif    = () => { handleSetView('notifications') }
-  const handleSettings = () => { handleSetView('settings') }
+  const handleNotif = () => { handleSetView('notifications') }
 
   const handleSetDistance = async (clubId: string, yardage: number) => {
     if (!user) return
@@ -267,7 +265,6 @@ function AppShell() {
         onLogRound={handleLogRound}
         onNotif={handleNotif}
         onProfile={() => handleSetView('profile')}
-        onSettings={handleSettings}
         userEmail={user?.email ?? ''}
         avatarUrl={profile?.avatarUrl ?? null}
         onSignOut={signOut}
@@ -317,14 +314,15 @@ function AppShell() {
               isMobile={isMobile}
             />
           )}
-          {view === 'profile' && (
-            <ProfileView
+          {(view === 'profile' || view === 'settings') && (
+            <SettingsView
               profile={profile}
               userEmail={user?.email ?? ''}
-              rounds={rounds}
               userId={user!.id}
               onProfileSaved={setProfile}
               onSignOut={signOut}
+              onShowLegal={setLegalDoc}
+              onNavigate={handleSetView}
               isMobile={isMobile}
             />
           )}
@@ -339,18 +337,6 @@ function AppShell() {
           )}
           {view === 'tools' && (
             <ToolsView onNavigate={handleSetView} isMobile={isMobile} />
-          )}
-          {view === 'settings' && (
-            <SettingsView
-              profile={profile}
-              userEmail={user?.email ?? ''}
-              userId={user!.id}
-              onProfileSaved={setProfile}
-              onSignOut={signOut}
-              onShowLegal={setLegalDoc}
-              onNavigate={handleSetView}
-              isMobile={isMobile}
-            />
           )}
         </div>
       </div>
