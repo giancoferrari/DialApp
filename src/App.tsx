@@ -276,14 +276,11 @@ function AppShell() {
         <div ref={pageRef}>
           {view === 'dashboard' && (
             <Dashboard
-              shots={shots}
-              loading={shotsLoading}
-              onOpenBag={() => handleSetView('bag')}
-              onLog={handleLog}
-              onLogFor={handleLogFor}
+              profile={profile}
+              userId={user!.id}
+              rounds={rounds}
               onNavigate={handleSetView}
               isMobile={isMobile}
-              userName={profile?.firstName ?? user?.user_metadata?.first_name ?? ''}
             />
           )}
           {view === 'bag' && (
