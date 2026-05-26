@@ -5,7 +5,7 @@ import {
   sendFriendRequest, updateFriendship, removeFriend,
 } from '../lib/friends'
 import { CloseIcon, PersonIcon, ShieldIcon } from './Icons'
-import { getRank } from '../lib/points'
+import { getRank, RANK_TIERS } from '../lib/points'
 
 function profileLabel(profile?: PublicProfile | null): { primary: string; secondary: string | null } {
   if (!profile) return { primary: 'Someone', secondary: null }
@@ -18,7 +18,13 @@ function profileLabel(profile?: PublicProfile | null): { primary: string; second
 
 function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onClose: () => void }) {
   const initial = (profile.firstName?.[0] ?? profile.username?.[0] ?? '?').toUpperCase()
-  const rank = getRank(profile.rankedPoints ?? 0)
+  const points  = profile.rankedPoints ?? 0
+  const rank    = getRank(points)
+  const rankIdx = RANK_TIERS.findIndex(t => t.name === rank.name)
+  const nextTier = rankIdx < RANK_TIERS.length - 1 ? RANK_TIERS[rankIdx + 1] : null
+  const progress = nextTier
+    ? Math.min(1, (points - rank.minPoints) / (nextTier.minPoints - rank.minPoints))
+    : 1
   const totalMatches = (profile.wins ?? 0) + (profile.losses ?? 0) + (profile.ties ?? 0)
   const label = profileLabel(profile)
 
@@ -95,22 +101,41 @@ function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onCl
           marginTop: -24,
           padding: '24px 24px 28px',
         }}>
-          {/* Rank badge */}
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: rank.color + '15', border: `1px solid ${rank.color}35`, borderRadius: 999, padding: '5px 14px 5px 10px' }}>
-              <ShieldIcon size={12} color={rank.color} />
-              <span style={{ fontSize: 12, fontWeight: 700, color: rank.color, letterSpacing: '0.04em', fontFamily: "'DM Sans', sans-serif" }}>{rank.name}</span>
+          {/* Rank + progress */}
+          <div style={{ background: '#F0EBDD', borderRadius: 16, padding: '14px 16px', marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: rank.color + '18', border: `1px solid ${rank.color}38`, borderRadius: 999, padding: '4px 12px 4px 8px' }}>
+                <ShieldIcon size={11} color={rank.color} />
+                <span style={{ fontSize: 11, fontWeight: 700, color: rank.color, letterSpacing: '0.04em', fontFamily: "'DM Sans', sans-serif" }}>{rank.name}</span>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em' }}>{points.toLocaleString()}</span>
+                <span style={{ fontSize: 10, color: '#B5AC95', fontWeight: 600, marginLeft: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>pts</span>
+              </div>
+            </div>
+            <div style={{ height: 5, background: 'rgba(31,58,42,0.08)', borderRadius: 3, overflow: 'hidden', marginBottom: 6 }}>
+              <div style={{ height: '100%', borderRadius: 3, background: nextTier ? rank.color : '#D9824D', width: `${Math.round(progress * 100)}%` }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 10.5, color: '#B5AC95', fontFamily: "'DM Sans', sans-serif" }}>{rank.name}</span>
+              {nextTier ? (
+                <span style={{ fontSize: 10.5, color: '#B5AC95', fontFamily: "'DM Sans', sans-serif" }}>
+                  {nextTier.minPoints - points} pts to <span style={{ color: nextTier.color, fontWeight: 600 }}>{nextTier.name}</span>
+                </span>
+              ) : (
+                <span style={{ fontSize: 10.5, color: '#D9824D', fontWeight: 600 }}>Max rank</span>
+              )}
             </div>
           </div>
 
           {/* Stats row */}
           <div style={{ display: 'flex', borderRadius: 16, overflow: 'hidden', border: '1px solid #E0D8C5', marginBottom: 16 }}>
             {[
-              { val: profile.rankedPoints ?? 0, label: 'Points' },
               ...(profile.handicapIndex != null ? [{ val: profile.handicapIndex.toFixed(1), label: 'Handicap' }] : []),
+              { val: `${profile.wins ?? 0}W ${profile.losses ?? 0}L`, label: 'Record' },
             ].map((s, i) => (
               <div key={s.label} style={{ flex: 1, textAlign: 'center', padding: '14px 8px', borderLeft: i > 0 ? '1px solid #E0D8C5' : 'none', background: i % 2 === 0 ? 'transparent' : 'rgba(224,216,197,0.25)' }}>
-                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1 }}>{s.val}</div>
+                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.03em', lineHeight: 1 }}>{s.val}</div>
                 <div style={{ fontSize: 10, color: '#B5AC95', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 4 }}>{s.label}</div>
               </div>
             ))}

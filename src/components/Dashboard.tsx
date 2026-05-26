@@ -1,14 +1,16 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
+import { useState, useEffect } from 'react'
 import type { UserProfile, Round, View } from '../types'
 import { getRank, RANK_TIERS } from '../lib/points'
-import { fetchFriendFeed, type FeedItem, type FeedActor } from '../lib/feed'
-import { ShieldIcon, UsersIcon, TrophyIcon } from './Icons'
+import { ShieldIcon, UsersIcon, TrophyIcon, ArrowRight } from './Icons'
 
 gsap.registerPlugin(useGSAP)
 
 // ── helpers ───────────────────────────────────────────────────────────────────
+
+const TZ = 'America/Panama'
 
 function useLiveDate() {
   const [date, setDate] = useState(new Date())
@@ -18,7 +20,10 @@ function useLiveDate() {
       const tomorrow = new Date(now)
       tomorrow.setDate(tomorrow.getDate() + 1)
       tomorrow.setHours(0, 0, 0, 0)
-      return setTimeout(() => { setDate(new Date()); setInterval(() => setDate(new Date()), 86_400_000) }, tomorrow.getTime() - now.getTime())
+      return setTimeout(
+        () => { setDate(new Date()); setInterval(() => setDate(new Date()), 86_400_000) },
+        tomorrow.getTime() - now.getTime()
+      )
     }
     const t = scheduleNext()
     return () => clearTimeout(t)
@@ -26,8 +31,12 @@ function useLiveDate() {
   return date
 }
 
+function panamaHour(): number {
+  return parseInt(new Intl.DateTimeFormat('en-US', { timeZone: TZ, hour: 'numeric', hour12: false }).format(new Date()), 10)
+}
+
 function greeting(name: string): string {
-  const h    = new Date().getHours()
+  const h    = panamaHour()
   const part = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening'
   return name ? `Good ${part}, ${name}.` : `Good ${part}.`
 }
@@ -35,17 +44,13 @@ function greeting(name: string): string {
 function relTime(ts: string): string {
   const diff = Date.now() - new Date(ts).getTime()
   const m = Math.floor(diff / 60000)
-  if (m < 1)  return 'just now'
+  if (m < 2)  return 'just now'
   if (m < 60) return `${m}m ago`
   const h = Math.floor(m / 60)
   if (h < 24) return `${h}h ago`
   const d = Math.floor(h / 24)
   if (d < 7)  return `${d}d ago`
-  return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-}
-
-function actorName(a: FeedActor): string {
-  return a.firstName || (a.username ? `@${a.username}` : 'Someone')
+  return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: TZ })
 }
 
 function toParLabel(diff: number | null | undefined): { text: string; color: string } {
@@ -53,31 +58,6 @@ function toParLabel(diff: number | null | undefined): { text: string; color: str
   if (diff === 0) return { text: 'E', color: '#6B6857' }
   if (diff < 0)  return { text: `${diff}`, color: '#5C7A4D' }
   return { text: `+${diff}`, color: '#C0603A' }
-}
-
-function modeLabel(m?: string): string {
-  const map: Record<string, string> = {
-    stroke: 'Stroke play', match_play: 'Match play', skins: 'Skins', wolf: 'Wolf',
-  }
-  return m ? (map[m] ?? m) : 'Match'
-}
-
-// ── Avatar ────────────────────────────────────────────────────────────────────
-
-function FeedAvatar({ actor, size = 38 }: { actor: FeedActor; size?: number }) {
-  const initial = (actor.firstName?.[0] ?? actor.username?.[0] ?? '?').toUpperCase()
-  return (
-    <div style={{
-      width: size, height: size, borderRadius: size / 2,
-      background: '#1F3A2A', overflow: 'hidden', flexShrink: 0,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
-      {actor.avatarUrl
-        ? <img src={actor.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: size * 0.4, color: '#D9824D' }}>{initial}</span>
-      }
-    </div>
-  )
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -92,22 +72,10 @@ interface Props {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function Dashboard({ profile, userId, rounds, onNavigate, isMobile = false }: Props) {
+export default function Dashboard({ profile, rounds, onNavigate, isMobile = false }: Props) {
   const containerRef = useRef<HTMLElement>(null)
-  const [feed,        setFeed]        = useState<FeedItem[]>([])
-  const [feedLoading, setFeedLoading] = useState(true)
-
   const date = useLiveDate()
   const px   = isMobile ? 20 : 40
-
-  useEffect(() => {
-    if (!userId) return
-    setFeedLoading(true)
-    fetchFriendFeed(userId)
-      .then(setFeed)
-      .catch(console.error)
-      .finally(() => setFeedLoading(false))
-  }, [userId])
 
   useGSAP(() => {
     const mm = gsap.matchMedia()
@@ -133,19 +101,21 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, isMobil
     : 1
 
   // ── Last round ──
-  const lastRound  = rounds[0] ?? null
-  const lastScore  = lastRound?.roundHoles.length
+  const lastRound = rounds[0] ?? null
+  const lastScore = lastRound?.roundHoles.length
     ? lastRound.roundHoles.reduce((s, h) => s + (h.score ?? 0), 0)
     : null
-  const lastPar    = lastRound?.roundHoles.length
+  const lastPar   = lastRound?.roundHoles.length
     ? lastRound.roundHoles.reduce((s, h) => s + h.par, 0)
     : null
-  const lastDiff   = lastScore !== null && lastPar !== null ? lastScore - lastPar : null
-  const lastDiffUI = toParLabel(lastDiff)
+  const lastDiff  = lastScore !== null && lastPar !== null ? lastScore - lastPar : null
 
   const displayName = profile?.firstName ?? profile?.username ?? ''
 
-  // ── Card style shared ──
+  // ── Recent rounds (last 4) ──
+  const recentRounds = rounds.slice(0, 4)
+
+  // ── Shared style ──
   const glassCard: React.CSSProperties = {
     background: 'rgba(250,246,234,0.65)',
     backdropFilter: 'blur(20px) saturate(160%)',
@@ -161,8 +131,26 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, isMobil
       style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 22 : 40}px ${px}px ${isMobile ? 112 : 64}px` }}
     >
 
+      {/* ── Date pill ──────────────────────────────────────── */}
+      <div style={{ marginBottom: 14 }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          background: 'rgba(250,246,234,0.65)',
+          backdropFilter: 'blur(16px) saturate(160%)',
+          WebkitBackdropFilter: 'blur(16px) saturate(160%)',
+          border: '1px solid rgba(255,255,255,0.55)',
+          borderRadius: 999, padding: '6px 14px',
+          fontSize: 12, fontWeight: 500, color: '#6B6857',
+          fontFamily: "'DM Sans', sans-serif",
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
+        }}>
+          <span style={{ width: 6, height: 6, borderRadius: 3, background: '#D9824D', flexShrink: 0 }} />
+          {date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: TZ })}
+        </div>
+      </div>
+
       {/* ── Greeting ───────────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 22 }}>
+      <div style={{ marginBottom: 24 }}>
         <h1 style={{
           fontFamily: "'Bricolage Grotesque', sans-serif",
           fontSize: isMobile ? 27 : 32, fontWeight: 700,
@@ -171,9 +159,6 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, isMobil
         }}>
           {greeting(displayName)}
         </h1>
-        <span style={{ fontSize: 12, color: '#B5AC95', fontFamily: "'DM Sans', sans-serif", fontWeight: 500, whiteSpace: 'nowrap', flexShrink: 0 }}>
-          {date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-        </span>
       </div>
 
       {/* ── Rank Card ──────────────────────────────────────── */}
@@ -183,7 +168,6 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, isMobil
         marginBottom: 14,
         boxShadow: '0 10px 36px rgba(31,58,42,0.24), inset 0 1px 0 rgba(255,255,255,0.07)',
       }}>
-        {/* Avatar + name + points */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 18 }}>
           <div style={{
             width: 46, height: 46, borderRadius: 23,
@@ -217,7 +201,6 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, isMobil
           </div>
         </div>
 
-        {/* Progress bar */}
         <div>
           <div style={{ height: 5, background: 'rgba(250,246,234,0.10)', borderRadius: 3, overflow: 'hidden', marginBottom: 7 }}>
             <div style={{
@@ -237,9 +220,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, isMobil
                 <span style={{ color: nextTier.color, fontWeight: 600 }}>{nextTier.name}</span>
               </span>
             ) : (
-              <span style={{ fontSize: 11, color: '#D9824D', fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>
-                Max rank
-              </span>
+              <span style={{ fontSize: 11, color: '#D9824D', fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>Max rank</span>
             )}
           </div>
         </div>
@@ -257,8 +238,8 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, isMobil
                   {lastScore}
                 </span>
                 {lastDiff !== null && (
-                  <span style={{ fontSize: 12.5, fontWeight: 700, color: lastDiffUI.color, lineHeight: 1 }}>
-                    {lastDiffUI.text}
+                  <span style={{ fontSize: 12.5, fontWeight: 700, color: toParLabel(lastDiff).color, lineHeight: 1 }}>
+                    {toParLabel(lastDiff).text}
                   </span>
                 )}
               </div>
@@ -285,131 +266,128 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, isMobil
           <div style={{ fontSize: 10.5, color: '#6B6857', marginTop: 2 }}>index</div>
         </div>
 
-        {/* W / L record */}
-        <div style={{ ...glassCard, padding: '15px 10px 13px', textAlign: 'center' }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.03em', lineHeight: 1.25 }}>
-            {profile?.wins ?? 0}
-            <span style={{ color: '#5C7A4D' }}>W</span>
-            {' '}
-            {profile?.losses ?? 0}
-            <span style={{ color: '#C0603A' }}>L</span>
+        {/* Record — flex-centered to fix alignment */}
+        <div style={{ ...glassCard, padding: '15px 10px 13px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, justifyContent: 'center' }}>
+            <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.03em', lineHeight: 1 }}>
+              {profile?.wins ?? 0}
+            </span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#5C7A4D', lineHeight: 1 }}>W</span>
+            <span style={{ fontSize: 8, color: '#C9C0A8' }}>·</span>
+            <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.03em', lineHeight: 1 }}>
+              {profile?.losses ?? 0}
+            </span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#C0603A', lineHeight: 1 }}>L</span>
           </div>
           {(profile?.ties ?? 0) > 0 && (
-            <div style={{ fontSize: 11, color: '#6B6857', lineHeight: 1 }}>
-              {profile!.ties}T
-            </div>
+            <div style={{ fontSize: 11, color: '#6B6857', marginTop: 2 }}>{profile!.ties}T</div>
           )}
-          <div style={{ fontSize: 9.5, color: '#B5AC95', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: (profile?.ties ?? 0) > 0 ? 4 : 6 }}>Record</div>
+          <div style={{ fontSize: 9.5, color: '#B5AC95', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Record</div>
         </div>
       </div>
 
-      {/* ── Friend Activity ────────────────────────────────── */}
+      {/* ── Recent Rounds ──────────────────────────────────── */}
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 12 }}>
-          Friend Activity
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: '#6B6857', textTransform: 'uppercase' }}>
+            Recent Rounds
+          </div>
+          {recentRounds.length > 0 && (
+            <button
+              onClick={() => onNavigate('rounds')}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 4,
+                background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                fontSize: 12, color: '#B5AC95', fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
+              }}
+            >
+              View all <ArrowRight size={13} color="#B5AC95" />
+            </button>
+          )}
         </div>
 
-        {feedLoading ? (
-          <div style={{ ...glassCard, padding: '40px 24px', textAlign: 'center' }}>
-            <div style={{ fontSize: 13, color: '#B5AC95' }}>Loading…</div>
-          </div>
-
-        ) : feed.length === 0 ? (
+        {recentRounds.length === 0 ? (
           <div style={{ ...glassCard, padding: '40px 24px', textAlign: 'center' }}>
             <div style={{
               width: 52, height: 52, borderRadius: 26, background: '#F0EBDD',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               margin: '0 auto 14px',
             }}>
-              <UsersIcon size={22} color="#C9C0A8" />
+              <TrophyIcon size={22} color="#C9C0A8" />
             </div>
             <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 17, fontWeight: 700, color: '#C9C0A8', marginBottom: 6 }}>
-              Nothing here yet
+              No rounds yet
             </div>
             <div style={{ fontSize: 13, color: '#B5AC95', marginBottom: 20, lineHeight: 1.5 }}>
-              Add friends to see their rounds and matches.
+              Log your first round and track your progress.
             </div>
             <button
-              onClick={() => onNavigate('friends')}
+              onClick={() => onNavigate('rounds')}
               style={{
                 background: '#1F3A2A', color: '#FAF6EA', border: 'none',
                 borderRadius: 999, padding: '10px 20px',
                 fontSize: 13, fontWeight: 500, cursor: 'pointer',
                 fontFamily: "'DM Sans', sans-serif",
-                display: 'inline-flex', alignItems: 'center', gap: 8,
               }}
             >
-              <UsersIcon size={14} color="#FAF6EA" /> Find Friends
+              Log a round
             </button>
           </div>
-
         ) : (
           <div style={{ ...glassCard, overflow: 'hidden' }}>
-            {feed.map((item, i) => {
-              const isRound = item.type === 'round'
-              const par     = toParLabel(item.scoreToPar)
+            {recentRounds.map((round, i) => {
+              const holes  = round.roundHoles
+              const score  = holes.length ? holes.reduce((s, h) => s + (h.score ?? 0), 0) : null
+              const par    = holes.length ? holes.reduce((s, h) => s + h.par, 0) : null
+              const diff   = score !== null && par !== null ? score - par : null
+              const parUI  = toParLabel(diff)
+              const played = new Date(round.playedAt)
+              const month  = played.toLocaleDateString('en-US', { month: 'short', timeZone: TZ })
+              const day    = played.toLocaleDateString('en-US', { day: 'numeric', timeZone: TZ })
+
               return (
                 <div
-                  key={item.id}
+                  key={round.id}
                   style={{
-                    display: 'flex', alignItems: 'flex-start', gap: 12,
+                    display: 'flex', alignItems: 'center', gap: 14,
                     padding: '13px 16px',
                     borderTop: i === 0 ? 'none' : '1px solid rgba(224,216,197,0.45)',
                   }}
                 >
-                  {/* Left: type indicator dot + avatar */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, paddingTop: 2 }}>
-                    <div style={{
-                      width: 7, height: 7, borderRadius: 4, flexShrink: 0,
-                      background: isRound
-                        ? '#5C7A4D'
-                        : item.isWin ? '#D9824D' : '#C9C0A8',
-                    }} />
-                    <FeedAvatar actor={item.actor} size={36} />
+                  {/* Date block */}
+                  <div style={{
+                    width: 38, flexShrink: 0, textAlign: 'center',
+                    background: '#F0EBDD', borderRadius: 10, padding: '6px 4px',
+                  }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: '#D9824D', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{month}</div>
+                    <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 17, fontWeight: 700, color: '#1F1D17', lineHeight: 1.1 }}>{day}</div>
                   </div>
 
-                  {/* Content */}
-                  <div style={{ flex: 1, minWidth: 0, paddingTop: 1 }}>
-                    {isRound ? (
-                      <>
-                        <div style={{ fontSize: 13.5, color: '#1F1D17', lineHeight: 1.3, fontFamily: "'DM Sans', sans-serif" }}>
-                          <span style={{ fontWeight: 700 }}>{actorName(item.actor)}</span>
-                          {item.totalScore !== null ? (
-                            <>
-                              {' shot a '}
-                              <span style={{ fontWeight: 700, color: '#1F3A2A' }}>{item.totalScore}</span>
-                              {item.scoreToPar !== null && (
-                                <span style={{ fontWeight: 600, color: par.color, marginLeft: 3 }}>({par.text})</span>
-                              )}
-                            </>
-                          ) : (
-                            <span style={{ color: '#6B6857' }}> logged a round</span>
-                          )}
-                        </div>
-                        <div style={{ fontSize: 11.5, color: '#B5AC95', marginTop: 3 }}>
-                          {item.holes}h · {item.courseName}
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div style={{ fontSize: 13.5, color: '#1F1D17', lineHeight: 1.3, fontFamily: "'DM Sans', sans-serif" }}>
-                          <span style={{ fontWeight: 700 }}>{actorName(item.actor)}</span>
-                          {' '}
-                          <span style={{ fontWeight: item.isWin ? 600 : 400, color: item.isWin ? '#5C7A4D' : '#6B6857' }}>
-                            {item.isWin ? 'won' : 'played'} a match
-                          </span>
-                        </div>
-                        <div style={{ fontSize: 11.5, color: '#B5AC95', marginTop: 3 }}>
-                          {modeLabel(item.gameMode)}{item.courseName ? ` · ${item.courseName}` : ''}
-                        </div>
-                      </>
-                    )}
+                  {/* Course info */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {round.courseName}
+                    </div>
+                    <div style={{ fontSize: 11.5, color: '#B5AC95', marginTop: 2 }}>
+                      {round.holes} holes · {relTime(round.playedAt)}
+                    </div>
                   </div>
 
-                  {/* Time */}
-                  <div style={{ fontSize: 11, color: '#C9C0A8', whiteSpace: 'nowrap', paddingTop: 2, flexShrink: 0 }}>
-                    {relTime(item.timestamp)}
-                  </div>
+                  {/* Score */}
+                  {score !== null ? (
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1 }}>
+                        {score}
+                      </div>
+                      {diff !== null && (
+                        <div style={{ fontSize: 11, fontWeight: 700, color: parUI.color, marginTop: 1 }}>
+                          {parUI.text}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 13, color: '#C9C0A8', fontStyle: 'italic' }}>—</div>
+                  )}
                 </div>
               )
             })}
