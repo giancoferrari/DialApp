@@ -159,7 +159,7 @@ export default function Dashboard({ shots, onNavigate, isMobile = false, userNam
             position: 'absolute', bottom: 24, left: -10,
             background: '#FAF6EA', border: '1px solid #E0D8C5',
             borderRadius: 18, padding: '14px 18px',
-            boxShadow: '0 12px 30px rgba(31,58,42,0.10)',
+            boxShadow: '0 16px 40px rgba(31,58,42,0.14), 0 4px 10px rgba(31,58,42,0.06)',
             display: 'flex', alignItems: 'center', gap: 12,
           }}>
             <div style={{
@@ -204,10 +204,22 @@ export default function Dashboard({ shots, onNavigate, isMobile = false, userNam
                 background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 18,
                 padding: isMobile ? '14px 10px' : '18px 14px',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-                cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center',
+                cursor: 'pointer', transition: 'all 0.18s ease', textAlign: 'center',
+                boxShadow: '0 2px 10px rgba(31,58,42,0.06)',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#F0EBDD'; e.currentTarget.style.borderColor = '#1F3A2A' }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#FAF6EA'; e.currentTarget.style.borderColor = '#E0D8C5' }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = '#F0EBDD'
+                e.currentTarget.style.borderColor = '#1F3A2A'
+                e.currentTarget.style.boxShadow = '0 8px 24px rgba(31,58,42,0.12)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = '#FAF6EA'
+                e.currentTarget.style.borderColor = '#E0D8C5'
+                e.currentTarget.style.transform = 'scale(1)'
+                e.currentTarget.style.boxShadow = '0 2px 10px rgba(31,58,42,0.06)'
+              }}
+              onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(31,58,42,0.06)' }}
+              onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(31,58,42,0.12)' }}
             >
               <item.Icon size={isMobile ? 20 : 22} color="#1F3A2A" />
               <div>

@@ -37,8 +37,8 @@ input, button, textarea { font-family: inherit; }
 button { cursor: pointer; }
 input:focus { outline: none; }
 
-/* Prevent 300ms tap delay on mobile */
-button, a { touch-action: manipulation; }
+/* Prevent 300ms tap delay and remove iOS tap highlight on mobile */
+button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 
 /* Safe-area padding for bottom content on iOS */
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }

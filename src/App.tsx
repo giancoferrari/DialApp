@@ -185,7 +185,7 @@ function AppShell() {
     if (!pageRef.current || prevView.current === view) return
     const mm = gsap.matchMedia()
     mm.add('(prefers-reduced-motion: no-preference)', () => {
-      gsap.fromTo(pageRef.current, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.32, ease: 'power2.out' })
+      gsap.fromTo(pageRef.current, { opacity: 0, scale: 0.97, y: 12 }, { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: 'power3.out' })
     })
     prevView.current = view
     return () => mm.revert()
@@ -231,7 +231,7 @@ function AppShell() {
     }
     if (pageRef.current) {
       gsap.to(pageRef.current, {
-        opacity: 0, y: -8, duration: 0.18, ease: 'power2.in',
+        opacity: 0, scale: 0.97, y: -6, duration: 0.16, ease: 'power2.in',
         onComplete: () => { setView(v); resetScroll() },
       })
     } else {

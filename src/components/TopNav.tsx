@@ -55,9 +55,9 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, avat
       {/* ── Top bar ── */}
       <div style={{
         position: isMobile ? 'relative' : 'sticky', top: isMobile ? undefined : 0, zIndex: 30,
-        background: 'rgba(240,235,221,0.92)',
-        backdropFilter: 'blur(20px) saturate(160%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(160%)',
+        background: 'rgba(240,235,221,0.90)',
+        backdropFilter: 'blur(28px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(28px) saturate(180%)',
         paddingTop: isMobile ? 'calc(env(safe-area-inset-top) + 12px)' : '20px',
         paddingBottom: isMobile ? '12px' : '20px',
         borderBottom: '1px solid rgba(31,58,42,0.06)',
@@ -223,13 +223,13 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, avat
       {isMobile && (
         <nav style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40,
-          background: 'rgba(240,235,221,0.97)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderTop: '1px solid rgba(31,58,42,0.08)',
+          background: 'rgba(240,235,221,0.92)',
+          backdropFilter: 'blur(28px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+          borderTop: '1px solid rgba(31,58,42,0.06)',
+          boxShadow: '0 -8px 32px rgba(31,29,23,0.07)',
           display: 'flex', alignItems: 'stretch',
           paddingBottom: 'env(safe-area-inset-bottom)',
-          // Force GPU compositing so Safari doesn't drop it on scroll
           transform: 'translateZ(0)',
           WebkitTransform: 'translateZ(0)',
         } as React.CSSProperties}>
@@ -243,36 +243,40 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, avat
                 style={{
                   flex: 1, background: 'none', border: 'none',
                   display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  justifyContent: 'center', gap: 3, padding: '10px 4px',
-                  cursor: 'pointer', color: active ? '#1F3A2A' : '#6B6857',
-                  transition: 'color 0.15s',
+                  justifyContent: 'center', padding: '6px 2px 8px',
+                  cursor: 'pointer',
                 }}
               >
-                <div style={{ position: 'relative' }}>
-                  <item.Icon size={21} color={active ? '#1F3A2A' : '#6B6857'} />
-                  {showBadge && (
-                    <div style={{
-                      position: 'absolute', top: -3, right: -5,
-                      minWidth: 16, height: 16, borderRadius: 8,
-                      background: '#D9824D', border: '1.5px solid rgba(240,235,221,0.97)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 9, fontWeight: 700, color: '#FAF6EA',
-                      fontFamily: "'DM Sans', sans-serif", padding: '0 3px',
-                    }}>
-                      {notifCount > 9 ? '9+' : notifCount}
-                    </div>
-                  )}
-                </div>
-                <span style={{
-                  fontSize: 10, fontWeight: active ? 600 : 500,
-                  fontFamily: "'DM Sans', sans-serif",
-                  letterSpacing: '-0.01em',
+                <div style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+                  padding: '5px 10px', borderRadius: 14,
+                  background: active ? 'rgba(31,58,42,0.10)' : 'transparent',
+                  transition: 'background 0.22s ease',
                 }}>
-                  {item.label}
-                </span>
-                {active && (
-                  <span style={{ width: 4, height: 4, borderRadius: 2, background: '#D9824D', marginTop: 1 }} />
-                )}
+                  <div style={{ position: 'relative' }}>
+                    <item.Icon size={21} color={active ? '#1F3A2A' : '#6B6857'} />
+                    {showBadge && (
+                      <div style={{
+                        position: 'absolute', top: -3, right: -5,
+                        minWidth: 16, height: 16, borderRadius: 8,
+                        background: '#D9824D', border: '1.5px solid rgba(240,235,221,0.92)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 9, fontWeight: 700, color: '#FAF6EA',
+                        fontFamily: "'DM Sans', sans-serif", padding: '0 3px',
+                      }}>
+                        {notifCount > 9 ? '9+' : notifCount}
+                      </div>
+                    )}
+                  </div>
+                  <span style={{
+                    fontSize: 10, fontWeight: active ? 600 : 500,
+                    fontFamily: "'DM Sans', sans-serif",
+                    letterSpacing: '-0.01em',
+                    color: active ? '#1F3A2A' : '#6B6857',
+                  }}>
+                    {item.label}
+                  </span>
+                </div>
               </button>
             )
           })}
