@@ -55,12 +55,13 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, avat
       {/* ── Top bar ── */}
       <div style={{
         position: isMobile ? 'relative' : 'sticky', top: isMobile ? undefined : 0, zIndex: 30,
-        background: 'rgba(240,235,221,0.90)',
-        backdropFilter: 'blur(28px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+        background: 'rgba(237,232,212,0.78)',
+        backdropFilter: 'blur(32px) saturate(200%)',
+        WebkitBackdropFilter: 'blur(32px) saturate(200%)',
         paddingTop: isMobile ? 'calc(env(safe-area-inset-top) + 12px)' : '20px',
         paddingBottom: isMobile ? '12px' : '20px',
-        borderBottom: '1px solid rgba(31,58,42,0.06)',
+        borderBottom: '1px solid rgba(255,255,255,0.45)',
+        boxShadow: '0 1px 0 rgba(255,255,255,0.6), 0 4px 20px rgba(31,29,23,0.06)',
       }}>
         <div style={{
           maxWidth: 1320, margin: '0 auto',
@@ -223,11 +224,11 @@ export default function TopNav({ view, onView, onLog, onProfile, userEmail, avat
       {isMobile && (
         <nav style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40,
-          background: 'rgba(240,235,221,0.92)',
-          backdropFilter: 'blur(28px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(28px) saturate(180%)',
-          borderTop: '1px solid rgba(31,58,42,0.06)',
-          boxShadow: '0 -8px 32px rgba(31,29,23,0.07)',
+          background: 'rgba(237,232,212,0.82)',
+          backdropFilter: 'blur(32px) saturate(200%)',
+          WebkitBackdropFilter: 'blur(32px) saturate(200%)',
+          borderTop: '1px solid rgba(255,255,255,0.5)',
+          boxShadow: '0 -1px 0 rgba(255,255,255,0.7), 0 -8px 32px rgba(31,29,23,0.07)',
           display: 'flex', alignItems: 'stretch',
           paddingBottom: 'env(safe-area-inset-bottom)',
           transform: 'translateZ(0)',

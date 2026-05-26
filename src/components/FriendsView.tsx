@@ -9,8 +9,8 @@ import { CloseIcon, PersonIcon } from './Icons'
 function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onClose: () => void }) {
   const initial = profile.username?.[0]?.toUpperCase() ?? '?'
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(31,29,23,0.55)', backdropFilter: 'blur(6px)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-      <div style={{ background: '#F0EBDD', borderRadius: 28, padding: '36px 28px', width: '100%', maxWidth: 340, textAlign: 'center', boxShadow: '0 24px 64px rgba(31,58,42,0.18)' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(31,29,23,0.50)', backdropFilter: 'blur(20px) saturate(140%)', WebkitBackdropFilter: 'blur(20px) saturate(140%)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div style={{ background: 'rgba(237,232,212,0.90)', backdropFilter: 'blur(28px) saturate(180%)', WebkitBackdropFilter: 'blur(28px) saturate(180%)', border: '1px solid rgba(255,255,255,0.55)', borderRadius: 28, padding: '36px 28px', width: '100%', maxWidth: 340, textAlign: 'center', boxShadow: '0 24px 64px rgba(31,58,42,0.18), inset 0 1px 0 rgba(255,255,255,0.7)' }}>
         <div style={{ width: 88, height: 88, borderRadius: 44, background: '#1F3A2A', margin: '0 auto 18px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid #E0D8C5' }}>
           {profile.avatarUrl
             ? <img src={profile.avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -149,7 +149,7 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
   }
 
   const px = isMobile ? 20 : 40
-  const card: React.CSSProperties = { background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 20, overflow: 'hidden' }
+  const card: React.CSSProperties = { background: 'rgba(250,246,234,0.62)', backdropFilter: 'blur(24px) saturate(160%)', WebkitBackdropFilter: 'blur(24px) saturate(160%)', border: '1px solid rgba(255,255,255,0.52)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 24px rgba(31,29,23,0.08), inset 0 1px 0 rgba(255,255,255,0.65)' }
 
   const btnSmall = (bg: string, color: string): React.CSSProperties => ({
     background: bg, color, border: 'none', borderRadius: 999,
@@ -185,8 +185,10 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
           placeholder="Search by username…"
           style={{
             width: '100%', boxSizing: 'border-box',
-            background: '#FAF6EA', border: '1px solid #E0D8C5',
+            background: 'rgba(250,246,234,0.68)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255,255,255,0.52)',
             borderRadius: 14, padding: '13px 16px 13px 44px',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.65)',
             fontSize: 14, color: '#1F1D17', outline: 'none',
             fontFamily: "'DM Sans', sans-serif",
             transition: 'border-color 0.15s',
@@ -199,7 +201,7 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
         </div>
 
         {(searchResults.length > 0 || searching) && (
-          <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, overflow: 'hidden', zIndex: 20, boxShadow: '0 8px 24px rgba(31,58,42,0.10)' }}>
+          <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, background: 'rgba(250,246,234,0.85)', backdropFilter: 'blur(24px) saturate(160%)', WebkitBackdropFilter: 'blur(24px) saturate(160%)', border: '1px solid rgba(255,255,255,0.55)', borderRadius: 16, overflow: 'hidden', zIndex: 20, boxShadow: '0 12px 32px rgba(31,58,42,0.14), inset 0 1px 0 rgba(255,255,255,0.7)' }}>
             {searching && (
               <div style={{ padding: '14px 16px', fontSize: 13, color: '#B5AC95' }}>Searching…</div>
             )}

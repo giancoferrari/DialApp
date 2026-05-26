@@ -78,10 +78,12 @@ export default function Dashboard({ shots, onNavigate, isMobile = false, userNam
           {/* Date chip */}
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: '#FAF6EA', border: '1px solid #E0D8C5',
+            background: 'rgba(250,246,234,0.65)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255,255,255,0.55)',
             borderRadius: 999, padding: '6px 14px',
             fontSize: 12, fontWeight: 500, color: '#6B6857', marginBottom: 28,
             fontFamily: "'DM Sans', sans-serif",
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
           }}>
             <span style={{ width: 6, height: 6, borderRadius: 3, background: '#D9824D', flexShrink: 0 }} />
             {today}
@@ -157,9 +159,10 @@ export default function Dashboard({ shots, onNavigate, isMobile = false, userNam
           <OrganicGraphic size={420} />
           <div style={{
             position: 'absolute', bottom: 24, left: -10,
-            background: '#FAF6EA', border: '1px solid #E0D8C5',
+            background: 'rgba(250,246,234,0.70)', backdropFilter: 'blur(24px) saturate(160%)', WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+            border: '1px solid rgba(255,255,255,0.55)',
             borderRadius: 18, padding: '14px 18px',
-            boxShadow: '0 16px 40px rgba(31,58,42,0.14), 0 4px 10px rgba(31,58,42,0.06)',
+            boxShadow: '0 16px 40px rgba(31,58,42,0.14), 0 4px 10px rgba(31,58,42,0.06), inset 0 1px 0 rgba(255,255,255,0.7)',
             display: 'flex', alignItems: 'center', gap: 12,
           }}>
             <div style={{
@@ -201,25 +204,27 @@ export default function Dashboard({ shots, onNavigate, isMobile = false, userNam
               key={item.view}
               onClick={() => onNavigate(item.view)}
               style={{
-                background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 18,
+                background: 'rgba(250,246,234,0.62)',
+                backdropFilter: 'blur(24px) saturate(160%)',
+                WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+                border: '1px solid rgba(255,255,255,0.52)',
+                borderRadius: 18,
                 padding: isMobile ? '14px 10px' : '18px 14px',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
                 cursor: 'pointer', transition: 'all 0.18s ease', textAlign: 'center',
-                boxShadow: '0 2px 10px rgba(31,58,42,0.06)',
+                boxShadow: '0 4px 16px rgba(31,29,23,0.07), inset 0 1px 0 rgba(255,255,255,0.7)',
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.background = '#F0EBDD'
-                e.currentTarget.style.borderColor = '#1F3A2A'
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(31,58,42,0.12)'
+                e.currentTarget.style.background = 'rgba(250,246,234,0.85)'
+                e.currentTarget.style.boxShadow = '0 10px 28px rgba(31,58,42,0.14), inset 0 1px 0 rgba(255,255,255,0.8)'
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.background = '#FAF6EA'
-                e.currentTarget.style.borderColor = '#E0D8C5'
+                e.currentTarget.style.background = 'rgba(250,246,234,0.62)'
                 e.currentTarget.style.transform = 'scale(1)'
-                e.currentTarget.style.boxShadow = '0 2px 10px rgba(31,58,42,0.06)'
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(31,29,23,0.07), inset 0 1px 0 rgba(255,255,255,0.7)'
               }}
-              onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(31,58,42,0.06)' }}
-              onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(31,58,42,0.12)' }}
+              onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(31,29,23,0.05)' }}
+              onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(31,58,42,0.14), inset 0 1px 0 rgba(255,255,255,0.8)' }}
             >
               <item.Icon size={isMobile ? 20 : 22} color="#1F3A2A" />
               <div>

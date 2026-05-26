@@ -149,8 +149,8 @@ function NewMatchModal({
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(31,29,23,0.6)', backdropFilter: 'blur(8px)', zIndex: 100, display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
-      <div style={{ background: '#F0EBDD', borderRadius: isMobile ? '28px 28px 0 0' : 28, width: '100%', maxWidth: 520, maxHeight: isMobile ? '92vh' : '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(31,29,23,0.50)', backdropFilter: 'blur(20px) saturate(140%)', WebkitBackdropFilter: 'blur(20px) saturate(140%)', zIndex: 100, display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
+      <div style={{ background: 'rgba(237,232,212,0.90)', backdropFilter: 'blur(28px) saturate(180%)', WebkitBackdropFilter: 'blur(28px) saturate(180%)', border: '1px solid rgba(255,255,255,0.52)', borderRadius: isMobile ? '28px 28px 0 0' : 28, width: '100%', maxWidth: 520, maxHeight: isMobile ? '92vh' : '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: isMobile ? '0 -16px 48px rgba(31,29,23,0.18), inset 0 1px 0 rgba(255,255,255,0.7)' : '0 32px 80px rgba(31,29,23,0.22), inset 0 1px 0 rgba(255,255,255,0.7)' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px 16px', borderBottom: '1px solid #E0D8C5', flexShrink: 0 }}>
           <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>New Match</div>
@@ -711,62 +711,74 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
       && match.players.length > 1
       && match.players.every(p => p.status !== 'invited')
 
+    const isDark = isActive || (isDone && iWon)
+
     return (
-      <div style={{ background: '#FAF6EA', border: `1px solid ${isActive ? '#1F3A2A' : '#E0D8C5'}`, borderRadius: 18, overflow: 'hidden' }}>
-        <div style={{ background: isActive ? '#1F3A2A' : isDone ? (iWon ? '#1F3A2A' : '#F0EBDD') : '#FAF6EA', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid rgba(31,58,42,0.08)' }}>
-          <TrophyIcon size={18} color={(isActive || (isDone && iWon)) ? '#D9824D' : '#6B6857'} />
+      <div style={{
+        background: isDark ? 'rgba(31,58,42,0.84)' : 'rgba(250,246,234,0.62)',
+        backdropFilter: 'blur(24px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+        border: isDark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(255,255,255,0.52)',
+        borderRadius: 20,
+        boxShadow: isDark
+          ? '0 8px 32px rgba(31,58,42,0.22), inset 0 1px 0 rgba(255,255,255,0.14)'
+          : '0 4px 24px rgba(31,29,23,0.08), inset 0 1px 0 rgba(255,255,255,0.65)',
+        overflow: 'hidden',
+      }}>
+        <div style={{ background: 'transparent', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(31,58,42,0.06)' }}>
+          <TrophyIcon size={18} color={isDark ? '#D9824D' : '#6B6857'} />
           <div style={{ flex: 1 }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: (isActive || (isDone && iWon)) ? '#FAF6EA' : '#1F1D17', letterSpacing: '-0.02em' }}>{match.courseName}</div>
-            <div style={{ fontSize: 12, color: (isActive || (isDone && iWon)) ? '#B5C29A' : '#6B6857', marginTop: 2 }}>
+            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: isDark ? '#FAF6EA' : '#1F1D17', letterSpacing: '-0.02em' }}>{match.courseName}</div>
+            <div style={{ fontSize: 12, color: isDark ? '#B5C29A' : '#6B6857', marginTop: 2 }}>
               {MODE_LABELS[match.gameMode]} · {match.holes} holes{match.wagerPerPlayer > 0 && ` · $${match.wagerPerPlayer} each`}
             </div>
           </div>
-          {isDone && iWon && <div style={{ fontSize: 12, fontWeight: 600, color: '#D9824D', background: 'rgba(217,130,77,0.15)', borderRadius: 999, padding: '4px 10px' }}>Won</div>}
-          {isDone && !iWon && match.winnerId && <div style={{ fontSize: 12, color: '#6B6857', background: '#E0D8C5', borderRadius: 999, padding: '4px 10px' }}>Lost</div>}
-          {isDone && !match.winnerId && <div style={{ fontSize: 12, color: '#6B6857', background: '#E0D8C5', borderRadius: 999, padding: '4px 10px' }}>Tie</div>}
+          {isDone && iWon && <div style={{ fontSize: 12, fontWeight: 600, color: '#D9824D', background: 'rgba(217,130,77,0.2)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 999, padding: '4px 10px' }}>Won</div>}
+          {isDone && !iWon && match.winnerId && <div style={{ fontSize: 12, color: '#6B6857', background: 'rgba(201,192,168,0.4)', border: '1px solid rgba(201,192,168,0.5)', borderRadius: 999, padding: '4px 10px' }}>Lost</div>}
+          {isDone && !match.winnerId && <div style={{ fontSize: 12, color: '#6B6857', background: 'rgba(201,192,168,0.4)', border: '1px solid rgba(201,192,168,0.5)', borderRadius: 999, padding: '4px 10px' }}>Tie</div>}
         </div>
 
-        <div style={{ padding: '12px 18px', display: 'flex', gap: 10, alignItems: 'center' }}>
+        <div style={{ padding: '12px 18px', display: 'flex', gap: 10, alignItems: 'center', background: isDark ? 'rgba(250,246,234,0.06)' : 'transparent' }}>
           {others.map(p => (
             <div key={p.userId} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Avatar profile={p.profile} size={28} />
-              <span style={{ fontSize: 13, color: '#1F1D17', fontWeight: 500 }}>{p.profile?.username ? `@${p.profile.username}` : 'Opponent'}</span>
+              <span style={{ fontSize: 13, color: isDark ? '#FAF6EA' : '#1F1D17', fontWeight: 500 }}>{p.profile?.username ? `@${p.profile.username}` : 'Opponent'}</span>
             </div>
           ))}
           {isActive && (
             <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.03em' }}>{myTotal || '—'}</div>
-              <div style={{ fontSize: 10, color: '#6B6857' }}>{holesPlayed}/{match.holes} holes</div>
+              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.03em' }}>{myTotal || '—'}</div>
+              <div style={{ fontSize: 10, color: '#B5C29A' }}>{holesPlayed}/{match.holes} holes</div>
             </div>
           )}
         </div>
 
-        <div style={{ padding: '0 18px 14px', display: 'flex', gap: 8 }}>
+        <div style={{ padding: '0 14px 14px', display: 'flex', gap: 8 }}>
           {isInvite && (
             <>
-              <button onClick={() => handleDecline(match.id)} style={{ flex: 1, background: '#F0EBDD', border: '1px solid #E0D8C5', borderRadius: 10, padding: '10px', fontSize: 13, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Decline</button>
-              <button onClick={() => handleAccept(match.id, match.wagerPerPlayer)} style={{ flex: 2, background: '#1F3A2A', border: 'none', borderRadius: 10, padding: '10px', fontSize: 13, fontWeight: 600, color: '#FAF6EA', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+              <button onClick={() => handleDecline(match.id)} style={{ flex: 1, background: 'rgba(240,235,221,0.7)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.45)', borderRadius: 12, padding: '10px', fontSize: 13, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Decline</button>
+              <button onClick={() => handleAccept(match.id, match.wagerPerPlayer)} style={{ flex: 2, background: 'rgba(31,58,42,0.88)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, padding: '10px', fontSize: 13, fontWeight: 600, color: '#FAF6EA', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
                 Accept{match.wagerPerPlayer > 0 ? ` · $${match.wagerPerPlayer}` : ''}
               </button>
             </>
           )}
           {isActive && (
             <>
-              <button onClick={() => setScoring(match)} style={{ flex: 2, background: '#1F3A2A', border: 'none', borderRadius: 10, padding: '10px', fontSize: 13, fontWeight: 600, color: '#FAF6EA', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Enter Scores →</button>
-              <button onClick={() => handleCancel(match)} style={{ flex: 1, background: 'transparent', border: '1px solid #E0D8C5', borderRadius: 10, padding: '10px', fontSize: 12, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
+              <button onClick={() => setScoring(match)} style={{ flex: 2, background: 'rgba(250,246,234,0.88)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.55)', borderRadius: 12, padding: '10px', fontSize: 13, fontWeight: 600, color: '#1F3A2A', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", boxShadow: '0 2px 8px rgba(31,29,23,0.06)' }}>Enter Scores →</button>
+              <button onClick={() => handleCancel(match)} style={{ flex: 1, background: 'rgba(250,246,234,0.25)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 12, padding: '10px', fontSize: 12, color: '#B5C29A', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
             </>
           )}
           {isDone && (
-            <button onClick={() => setScoring(match)} style={{ flex: 1, background: '#F0EBDD', border: '1px solid #E0D8C5', borderRadius: 10, padding: '10px', fontSize: 13, color: '#1F1D17', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>View Scorecard</button>
+            <button onClick={() => setScoring(match)} style={{ flex: 1, background: isDark ? 'rgba(250,246,234,0.88)' : 'rgba(240,235,221,0.8)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: isDark ? '1px solid rgba(255,255,255,0.5)' : '1px solid rgba(255,255,255,0.45)', borderRadius: 12, padding: '10px', fontSize: 13, fontWeight: 500, color: '#1F1D17', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", boxShadow: '0 2px 8px rgba(31,29,23,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>View Scorecard <span style={{ fontSize: 11, opacity: 0.5 }}>›</span></button>
           )}
           {canStart && (
             <>
-              <button onClick={() => handleStart(match)} style={{ flex: 2, background: '#5C7A4D', border: 'none', borderRadius: 10, padding: '10px', fontSize: 13, fontWeight: 600, color: '#FAF6EA', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Start Match →</button>
-              <button onClick={() => handleCancel(match)} style={{ flex: 1, background: 'transparent', border: '1px solid #E0D8C5', borderRadius: 10, padding: '10px', fontSize: 12, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
+              <button onClick={() => handleStart(match)} style={{ flex: 2, background: 'rgba(92,122,77,0.88)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, padding: '10px', fontSize: 13, fontWeight: 600, color: '#FAF6EA', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Start Match →</button>
+              <button onClick={() => handleCancel(match)} style={{ flex: 1, background: 'rgba(240,235,221,0.7)', border: '1px solid rgba(255,255,255,0.45)', borderRadius: 12, padding: '10px', fontSize: 12, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
             </>
           )}
           {match.status === 'pending' && me?.status === 'accepted' && !canStart && (
-            <button onClick={() => handleCancel(match)} style={{ flex: 1, background: '#F0EBDD', border: '1px solid #E0D8C5', borderRadius: 10, padding: '10px', fontSize: 13, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
+            <button onClick={() => handleCancel(match)} style={{ flex: 1, background: 'rgba(240,235,221,0.7)', border: '1px solid rgba(255,255,255,0.45)', borderRadius: 12, padding: '10px', fontSize: 13, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Cancel</button>
           )}
         </div>
       </div>
@@ -783,7 +795,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
         </h1>
 
         {wallet && (
-          <div style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, padding: '16px 20px' }}>
+          <div style={{ background: 'rgba(250,246,234,0.62)', backdropFilter: 'blur(24px) saturate(160%)', WebkitBackdropFilter: 'blur(24px) saturate(160%)', border: '1px solid rgba(255,255,255,0.52)', borderRadius: 20, padding: '16px 20px', boxShadow: '0 4px 24px rgba(31,29,23,0.08), inset 0 1px 0 rgba(255,255,255,0.65)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: walletAction ? 14 : 0 }}>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 4 }}>Wallet Balance</div>
@@ -815,9 +827,9 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
 
       <button
         onClick={() => setShowNew(true)}
-        style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', background: '#1F3A2A', border: 'none', borderRadius: 16, padding: '16px 20px', marginBottom: 28, cursor: 'pointer', transition: 'background 0.15s' }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#16271D' }}
-        onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A' }}
+        style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', background: 'rgba(31,58,42,0.84)', backdropFilter: 'blur(24px) saturate(140%)', WebkitBackdropFilter: 'blur(24px) saturate(140%)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 20, padding: '16px 20px', marginBottom: 28, cursor: 'pointer', transition: 'all 0.18s ease', boxShadow: '0 8px 32px rgba(31,58,42,0.22), inset 0 1px 0 rgba(255,255,255,0.14)' }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(31,58,42,0.96)' }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(31,58,42,0.84)' }}
       >
         <div style={{ width: 32, height: 32, borderRadius: 16, background: '#D9824D', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <PlusIcon size={16} color="#FAF6EA" />
@@ -865,7 +877,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
             </section>
           )}
           {matches.length === 0 && (
-            <div style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 20, padding: '48px 24px', textAlign: 'center' }}>
+            <div style={{ background: 'rgba(250,246,234,0.62)', backdropFilter: 'blur(24px) saturate(160%)', WebkitBackdropFilter: 'blur(24px) saturate(160%)', border: '1px solid rgba(255,255,255,0.52)', borderRadius: 20, padding: '48px 24px', textAlign: 'center', boxShadow: '0 4px 24px rgba(31,29,23,0.08), inset 0 1px 0 rgba(255,255,255,0.65)' }}>
               <TrophyIcon size={32} color="#C9C0A8" />
               <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, color: '#C9C0A8', marginTop: 12, marginBottom: 8 }}>No matches yet</div>
               <div style={{ fontSize: 13, color: '#B5AC95' }}>Start a match and challenge your friends.</div>

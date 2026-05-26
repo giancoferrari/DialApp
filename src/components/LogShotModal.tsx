@@ -95,7 +95,7 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
         style={{
           position: 'fixed', inset: 0, zIndex: 100,
           background: 'rgba(31,29,23,0.6)',
-          backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+          backdropFilter: 'blur(20px) saturate(140%)', WebkitBackdropFilter: 'blur(20px) saturate(140%)',
           display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
         }}
       >
@@ -103,10 +103,14 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
           ref={sheetRef}
           onClick={e => e.stopPropagation()}
           style={{
-            width: '100%', background: '#F0EBDD',
-            borderRadius: '24px 24px 0 0',
-            border: '1px solid #E0D8C5',
-            boxShadow: '0 -20px 60px rgba(0,0,0,0.25)',
+            width: '100%',
+            background: 'rgba(237,232,212,0.88)',
+            backdropFilter: 'blur(32px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+            borderRadius: '28px 28px 0 0',
+            border: '1px solid rgba(255,255,255,0.52)',
+            borderBottom: 'none',
+            boxShadow: '0 -16px 48px rgba(31,29,23,0.18), inset 0 1px 0 rgba(255,255,255,0.7)',
             maxHeight: '92vh',
             display: 'flex', flexDirection: 'column',
             overflow: 'hidden',
@@ -260,9 +264,12 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
         onClick={e => e.stopPropagation()}
         style={{
           width: '100%', maxWidth: 880,
-          background: '#F0EBDD', borderRadius: 28,
-          border: '1px solid #E0D8C5', overflow: 'hidden',
-          boxShadow: '0 40px 80px rgba(0,0,0,0.3)',
+          background: 'rgba(237,232,212,0.88)',
+          backdropFilter: 'blur(32px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+          borderRadius: 28,
+          border: '1px solid rgba(255,255,255,0.52)', overflow: 'hidden',
+          boxShadow: '0 32px 80px rgba(31,29,23,0.22), inset 0 1px 0 rgba(255,255,255,0.7)',
           display: 'flex', flexDirection: 'column',
           maxHeight: 'calc(100vh - 80px)',
         }}
