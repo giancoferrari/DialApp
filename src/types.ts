@@ -15,7 +15,7 @@ export interface Shot {
   note: string
 }
 
-export type View = 'dashboard' | 'bag' | 'dialin' | 'rounds' | 'practice' | 'profile' | 'friends' | 'matches' | 'notifications' | 'tools'
+export type View = 'dashboard' | 'bag' | 'dialin' | 'rounds' | 'practice' | 'profile' | 'friends' | 'matches' | 'notifications' | 'tools' | 'settings'
 
 // ── Course ──────────────────────────────────────────────
 export interface CourseHole {
@@ -89,6 +89,7 @@ export interface UserProfile {
   id: string
   userId: string
   username: string | null
+  firstName: string | null
   avatarUrl: string | null
   handicapIndex: number | null
   homeCourse: string | null

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { View } from '../types'
 import DialWordmark from './DialWordmark'
-import { PlusIcon, PersonIcon, HomeIcon, UsersIcon, TrophyIcon, BellIcon, ToolsIcon } from './Icons'
+import { PlusIcon, PersonIcon, HomeIcon, UsersIcon, TrophyIcon, BellIcon, ToolsIcon, GearIcon } from './Icons'
 
 const NAV_ITEMS: { id: View; label: string }[] = [
   { id: 'dashboard', label: 'Home'    },
@@ -25,6 +25,7 @@ interface Props {
   onLogRound: () => void
   onNotif: () => void
   onProfile: () => void
+  onSettings: () => void
   userEmail: string
   avatarUrl?: string | null
   onSignOut: () => void
@@ -32,7 +33,7 @@ interface Props {
   notifCount?: number
 }
 
-export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0 }: Props) {
+export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, onSettings, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0 }: Props) {
   const [menuOpen, setMenuOpen] = useState(false)
   const avatarRef               = useRef<HTMLDivElement>(null)
   const initial = userEmail ? userEmail[0].toUpperCase() : 'G'
@@ -226,6 +227,25 @@ export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, u
                 >
                   <PersonIcon size={16} color="#1F3A2A" />
                   Profile
+                </button>
+
+                {/* Settings */}
+                <button
+                  onClick={() => { setMenuOpen(false); onSettings() }}
+                  style={{
+                    width: '100%', background: 'transparent', border: 'none',
+                    borderRadius: 10, padding: '10px 14px',
+                    textAlign: 'left', cursor: 'pointer',
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: 13.5, fontWeight: 500, color: '#1F1D17',
+                    transition: 'background 0.12s',
+                    display: 'flex', alignItems: 'center', gap: 10,
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#F0EBDD' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                >
+                  <GearIcon size={16} color="#1F3A2A" />
+                  Settings
                 </button>
 
                 <div style={{ height: 1, background: '#ECE5D2', margin: '4px 8px' }} />

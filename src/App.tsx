@@ -21,6 +21,7 @@ import FriendsView from './components/FriendsView'
 import MatchesView from './components/MatchesView'
 import NotificationsView from './components/NotificationsView'
 import ToolsView from './components/ToolsView'
+import SettingsView from './components/SettingsView'
 import LogShotModal from './components/LogShotModal'
 import AuthScreen from './components/AuthScreen'
 import LegalModal from './components/LegalModal'
@@ -213,7 +214,8 @@ function AppShell() {
     handleSetView('rounds')
   }
 
-  const handleNotif = () => { handleSetView('notifications') }
+  const handleNotif    = () => { handleSetView('notifications') }
+  const handleSettings = () => { handleSetView('settings') }
 
   const handleSetDistance = async (clubId: string, yardage: number) => {
     if (!user) return
@@ -265,6 +267,7 @@ function AppShell() {
         onLogRound={handleLogRound}
         onNotif={handleNotif}
         onProfile={() => handleSetView('profile')}
+        onSettings={handleSettings}
         userEmail={user?.email ?? ''}
         avatarUrl={profile?.avatarUrl ?? null}
         onSignOut={signOut}
@@ -283,7 +286,7 @@ function AppShell() {
               onLogFor={handleLogFor}
               onNavigate={handleSetView}
               isMobile={isMobile}
-              userName={user?.user_metadata?.first_name ?? ''}
+              userName={profile?.firstName ?? user?.user_metadata?.first_name ?? ''}
             />
           )}
           {view === 'bag' && (
@@ -336,6 +339,18 @@ function AppShell() {
           )}
           {view === 'tools' && (
             <ToolsView onNavigate={handleSetView} isMobile={isMobile} />
+          )}
+          {view === 'settings' && (
+            <SettingsView
+              profile={profile}
+              userEmail={user?.email ?? ''}
+              userId={user!.id}
+              onProfileSaved={setProfile}
+              onSignOut={signOut}
+              onShowLegal={setLegalDoc}
+              onNavigate={handleSetView}
+              isMobile={isMobile}
+            />
           )}
         </div>
       </div>

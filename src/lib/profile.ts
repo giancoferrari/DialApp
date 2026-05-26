@@ -5,6 +5,7 @@ type DbProfile = {
   id: string
   user_id: string
   username: string | null
+  first_name: string | null
   avatar_url: string | null
   handicap_index: number | null
   home_course: string | null
@@ -25,6 +26,7 @@ function toProfile(r: DbProfile): UserProfile {
     id: r.id,
     userId: r.user_id,
     username: r.username ?? null,
+    firstName: r.first_name ?? null,
     avatarUrl: r.avatar_url ?? null,
     handicapIndex: r.handicap_index,
     homeCourse: r.home_course,
@@ -61,6 +63,7 @@ export async function upsertProfile(
     updated_at: new Date().toISOString(),
   }
   if ('username'      in updates) payload.username       = updates.username      ?? null
+  if ('firstName'     in updates) payload.first_name     = updates.firstName     ?? null
   if ('avatarUrl'     in updates) payload.avatar_url     = updates.avatarUrl     ?? null
   if ('handicapIndex' in updates) payload.handicap_index = updates.handicapIndex ?? null
   if ('homeCourse'    in updates) payload.home_course    = updates.homeCourse    ?? null
