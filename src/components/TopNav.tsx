@@ -290,18 +290,9 @@ export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, u
                 onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.88)' }}
                 onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
               >
-                {/* Orange dot indicator */}
-                <div style={{
-                  width: 4, height: 4, borderRadius: 2,
-                  background: '#D9824D',
-                  marginBottom: 4,
-                  opacity: active ? 1 : 0,
-                  transform: active ? 'scale(1)' : 'scale(0)',
-                  transition: 'all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                }} />
                 <div style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-                  padding: '5px 12px', borderRadius: 14,
+                  padding: '6px 12px 5px', borderRadius: 14,
                   background: active ? 'rgba(31,58,42,0.11)' : 'transparent',
                   transition: 'background 0.22s ease',
                 }}>
@@ -315,6 +306,14 @@ export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, u
                   }}>
                     {item.label}
                   </span>
+                  {/* Orange dot — bottom of pill */}
+                  <div style={{
+                    width: 4, height: 4, borderRadius: 2,
+                    background: '#D9824D',
+                    opacity: active ? 1 : 0,
+                    transform: active ? 'scale(1)' : 'scale(0)',
+                    transition: 'all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  }} />
                 </div>
               </button>
             )
