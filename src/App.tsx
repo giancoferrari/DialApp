@@ -260,11 +260,11 @@ function AppShell() {
       {/* Layer 0: blurred photo */}
       <div aria-hidden="true" style={{
         position: 'fixed',
-        top: '-80px', left: '-80px', right: '-80px', bottom: '-80px',
+        top: '-60px', left: '-60px', right: '-60px', bottom: '-60px',
         backgroundImage: 'url(/golf-bg.jpg)',
         backgroundSize: 'cover',
-        backgroundPosition: 'center 25%',
-        filter: 'blur(64px) saturate(0.88) brightness(1.02)',
+        backgroundPosition: 'center 30%',
+        filter: 'blur(28px) saturate(1.1) brightness(0.96)',
         zIndex: 0,
         pointerEvents: 'none',
       }} />
@@ -272,13 +272,10 @@ function AppShell() {
       <div aria-hidden="true" style={{
         position: 'fixed', inset: 0,
         background: `
-          radial-gradient(ellipse 170% 85% at 4% 98%,  rgba(52,82,37,0.28) 0%, transparent 58%),
-          radial-gradient(ellipse 120% 70% at 96% 4%,  rgba(130,155,100,0.18) 0%, transparent 52%),
-          radial-gradient(ellipse 95%  60% at 68% 88%, rgba(72,102,57,0.15) 0%, transparent 50%),
-          radial-gradient(ellipse 80%  55% at 12% 22%, rgba(165,185,138,0.12) 0%, transparent 46%),
-          radial-gradient(ellipse 85%  48% at 82% 32%, rgba(217,130,77,0.07) 0%, transparent 42%),
-          radial-gradient(ellipse 60%  40% at 45% 55%, rgba(92,122,77,0.06) 0%, transparent 38%),
-          rgba(237,232,212,0.58)
+          radial-gradient(ellipse 170% 85% at 4% 98%,  rgba(52,82,37,0.22) 0%, transparent 58%),
+          radial-gradient(ellipse 120% 70% at 96% 4%,  rgba(130,155,100,0.14) 0%, transparent 52%),
+          radial-gradient(ellipse 95%  60% at 68% 88%, rgba(72,102,57,0.12) 0%, transparent 50%),
+          rgba(237,232,212,0.45)
         `,
         backgroundAttachment: 'fixed',
         zIndex: 1,
