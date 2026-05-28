@@ -251,7 +251,7 @@ function AppShell() {
     : { minHeight: '100vh', position: 'relative' }
 
   const contentStyle: React.CSSProperties = isMobile
-    ? { flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never, paddingBottom: 'calc(env(safe-area-inset-bottom) + 64px)' }
+    ? { flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never, paddingBottom: 'calc(env(safe-area-inset-bottom) + 92px)' }
     : {}
 
   return (
@@ -264,18 +264,18 @@ function AppShell() {
         backgroundImage: 'url(/golf-bg.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center 30%',
-        filter: 'blur(28px) saturate(1.1) brightness(0.96)',
+        filter: 'blur(28px) saturate(1.25) brightness(0.94)',
         zIndex: 0,
         pointerEvents: 'none',
       }} />
-      {/* Layer 1: warm cream gradient overlay */}
+      {/* Layer 1: warm cream gradient overlay — keep thin so photo breathes through glass cards */}
       <div aria-hidden="true" style={{
         position: 'fixed', inset: 0,
         background: `
-          radial-gradient(ellipse 170% 85% at 4% 98%,  rgba(52,82,37,0.22) 0%, transparent 58%),
-          radial-gradient(ellipse 120% 70% at 96% 4%,  rgba(130,155,100,0.14) 0%, transparent 52%),
-          radial-gradient(ellipse 95%  60% at 68% 88%, rgba(72,102,57,0.12) 0%, transparent 50%),
-          rgba(237,232,212,0.45)
+          radial-gradient(ellipse 170% 85% at 4% 98%,  rgba(52,82,37,0.32) 0%, transparent 58%),
+          radial-gradient(ellipse 120% 70% at 96% 4%,  rgba(130,155,100,0.20) 0%, transparent 52%),
+          radial-gradient(ellipse 95%  60% at 68% 88%, rgba(72,102,57,0.18) 0%, transparent 50%),
+          rgba(237,232,212,0.14)
         `,
         backgroundAttachment: 'fixed',
         zIndex: 1,

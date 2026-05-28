@@ -260,18 +260,20 @@ export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, u
         </div>
       </div>
 
-      {/* ── Bottom tab bar (mobile only) ── */}
+      {/* ── Bottom tab bar (mobile only) — floating pill ── */}
       {isMobile && (
         <nav style={{
-          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40,
-          background: 'rgba(237,232,212,0.92)',
-          backdropFilter: 'blur(44px) saturate(220%)',
-          WebkitBackdropFilter: 'blur(44px) saturate(220%)',
-          borderTop: '1px solid rgba(255,255,255,0.65)',
-          borderRadius: '22px 22px 0 0',
-          boxShadow: '0 -2px 0 rgba(255,255,255,0.85), 0 -14px 44px rgba(31,29,23,0.09)',
+          position: 'fixed',
+          bottom: 'max(calc(env(safe-area-inset-bottom) + 10px), 18px)',
+          left: '12px', right: '12px',
+          zIndex: 40,
+          background: 'rgba(251,248,238,0.94)',
+          backdropFilter: 'blur(52px) saturate(200%)',
+          WebkitBackdropFilter: 'blur(52px) saturate(200%)',
+          border: '1px solid rgba(255,255,255,0.78)',
+          borderRadius: '22px',
+          boxShadow: '0 8px 32px rgba(31,29,23,0.16), inset 0 1px 0 rgba(255,255,255,0.95)',
           display: 'flex', alignItems: 'stretch',
-          paddingBottom: 'env(safe-area-inset-bottom)',
           transform: 'translateZ(0)',
           WebkitTransform: 'translateZ(0)',
         } as React.CSSProperties}>
@@ -284,39 +286,38 @@ export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, u
                 style={{
                   flex: 1, background: 'none', border: 'none',
                   display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  justifyContent: 'center', padding: '8px 2px 6px',
+                  justifyContent: 'center', padding: '10px 2px 8px',
                   cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
                   transition: 'transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1)',
                 }}
-                onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.88)' }}
+                onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.90)' }}
                 onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
-                onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.88)' }}
+                onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.90)' }}
                 onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
               >
                 <div style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-                  padding: '6px 12px 5px', borderRadius: 14,
-                  background: active ? 'rgba(31,58,42,0.11)' : 'transparent',
-                  transition: 'background 0.22s ease',
+                  padding: '5px 14px 4px', borderRadius: 14,
+                  background: 'transparent',
                 }}>
-                  <item.Icon size={22} color={active ? '#1F3A2A' : '#8B9078'} />
+                  <item.Icon size={23} color={active ? '#1F3A2A' : '#96907C'} />
                   <span style={{
-                    fontSize: 10, fontWeight: active ? 700 : 500,
+                    fontSize: 10.5, fontWeight: active ? 700 : 400,
                     fontFamily: "'DM Sans', sans-serif",
-                    letterSpacing: active ? '-0.01em' : '0',
-                    color: active ? '#1F3A2A' : '#8B9078',
-                    transition: 'all 0.22s ease',
+                    letterSpacing: active ? '-0.02em' : '0.01em',
+                    color: active ? '#1F1D17' : '#96907C',
+                    transition: 'color 0.2s ease, font-weight 0.2s ease',
                   }}>
                     {item.label}
                   </span>
-                  {/* Orange dot — bottom of pill */}
+                  {/* Orange dot indicator */}
                   <div style={{
                     width: 4, height: 4, borderRadius: 2,
                     background: '#D9824D',
                     opacity: active ? 1 : 0,
                     transform: active ? 'scale(1)' : 'scale(0)',
-                    transition: 'all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    transition: 'opacity 0.22s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)',
                   }} />
                 </div>
               </button>

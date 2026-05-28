@@ -117,12 +117,12 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
 
   // ── Shared style ──
   const glassCard: React.CSSProperties = {
-    background: 'rgba(250,246,234,0.70)',
-    backdropFilter: 'blur(36px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(36px) saturate(180%)',
-    border: '1px solid rgba(255,255,255,0.62)',
+    background: 'rgba(250,246,234,0.80)',
+    backdropFilter: 'blur(40px) saturate(190%)',
+    WebkitBackdropFilter: 'blur(40px) saturate(190%)',
+    border: '1px solid rgba(255,255,255,0.72)',
     borderRadius: 20,
-    boxShadow: '0 4px 20px rgba(31,29,23,0.07), inset 0 1px 0 rgba(255,255,255,0.82)',
+    boxShadow: '0 4px 24px rgba(31,29,23,0.10), inset 0 1px 0 rgba(255,255,255,0.90)',
   }
 
   return (
@@ -398,44 +398,64 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
 
       {/* ── Quick Actions ──────────────────────────────────── */}
       <div style={{ display: 'flex', gap: 10 }}>
+
+        {/* Friends — glass pill */}
         <button
           onClick={() => onNavigate('friends')}
           style={{
             flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            ...glassCard, border: '1px solid rgba(224,216,197,0.55)',
-            padding: '14px 10px', cursor: 'pointer',
-            fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500, color: '#1F1D17',
-            transition: 'all 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
+            ...glassCard, border: '1px solid rgba(255,255,255,0.72)',
+            padding: '17px 10px', cursor: 'pointer',
+            fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, color: '#1F3A2A',
+            transition: 'transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.92)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.70)'; e.currentTarget.style.transform = 'translateY(0)' }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(31,29,23,0.13), inset 0 1px 0 rgba(255,255,255,0.95)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(31,29,23,0.10), inset 0 1px 0 rgba(255,255,255,0.90)' }}
           onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
           onMouseUp={e => { e.currentTarget.style.transform = 'translateY(-1px)' }}
           onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
           onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
         >
-          <UsersIcon size={16} color="#1F3A2A" /> Friends
+          <UsersIcon size={17} color="#1F3A2A" />
+          <span>Friends</span>
         </button>
+
+        {/* Start a Match — dark premium CTA */}
         <button
           onClick={() => onNavigate('matches')}
           style={{
-            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            background: '#1F3A2A', color: '#FAF6EA',
-            border: 'none', borderRadius: 20,
-            padding: '14px 10px', cursor: 'pointer',
-            fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500,
-            transition: 'all 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
-            boxShadow: '0 6px 20px rgba(31,58,42,0.22)',
+            flex: 1.35,
+            display: 'flex', alignItems: 'center', gap: 10,
+            background: 'linear-gradient(145deg, rgba(35,68,46,1) 0%, rgba(26,50,33,1) 100%)',
+            color: '#FAF6EA',
+            border: '1px solid rgba(255,255,255,0.07)',
+            borderRadius: 20,
+            padding: '15px 16px 15px 14px',
+            cursor: 'pointer',
+            fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600,
+            transition: 'transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
+            boxShadow: '0 10px 28px rgba(31,58,42,0.30), inset 0 1px 0 rgba(255,255,255,0.10)',
+            letterSpacing: '-0.01em',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#16271D'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(31,58,42,0.28)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(31,58,42,0.22)' }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 14px 36px rgba(31,58,42,0.36), inset 0 1px 0 rgba(255,255,255,0.10)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(31,58,42,0.30), inset 0 1px 0 rgba(255,255,255,0.10)' }}
           onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
           onMouseUp={e => { e.currentTarget.style.transform = 'translateY(-1px)' }}
           onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
           onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
         >
-          <TrophyIcon size={16} color="#D9824D" /> Start a Match
+          {/* Orange icon circle */}
+          <span style={{
+            width: 32, height: 32, borderRadius: 16, flexShrink: 0,
+            background: '#D9824D',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(217,130,77,0.40)',
+          }}>
+            <TrophyIcon size={16} color="#FAF6EA" />
+          </span>
+          <span>Start a Match</span>
         </button>
+
       </div>
 
     </main>
