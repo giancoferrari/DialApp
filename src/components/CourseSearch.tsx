@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { searchCourses, type GolfCourse } from '../lib/golfCourseApi'
 
 interface Props {
-  value:       string
-  onChange:    (name: string) => void
-  onSelect:    (course: GolfCourse) => void
+  value:        string
+  onChange:     (name: string) => void
+  onSelect:     (course: GolfCourse) => void
   placeholder?: string
   inputStyle?:  React.CSSProperties
 }
@@ -13,12 +13,14 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
   const [results, setResults] = useState<GolfCourse[]>([])
   const [open,    setOpen]    = useState(false)
   const [loading, setLoading] = useState(false)
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const wrapRef  = useRef<HTMLDivElement>(null)
+  const timerRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const wrapRef   = useRef<HTMLDivElement>(null)
+  const skipRef   = useRef(false) // prevents re-search after a course is picked
 
   useEffect(() => {
+    if (skipRef.current) { skipRef.current = false; return }
     if (timerRef.current) clearTimeout(timerRef.current)
-    if (value.trim().length < 3) { setResults([]); setOpen(false); return }
+    if (value.trim().length < 3) { setResults([]); setOpen(false); setLoading(false); return }
     setLoading(true)
     timerRef.current = setTimeout(async () => {
       const res = await searchCourses(value)
@@ -38,10 +40,13 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
   }, [])
 
   function pick(course: GolfCourse) {
-    onChange(course.course_name)
-    onSelect(course)
+    if (timerRef.current) clearTimeout(timerRef.current)
+    skipRef.current = true
     setOpen(false)
     setResults([])
+    setLoading(false)
+    onChange(course.course_name)
+    onSelect(course)
   }
 
   const base: React.CSSProperties = {
@@ -89,8 +94,7 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
                 style={{
                   width: '100%', textAlign: 'left', background: 'none', border: 'none',
                   borderTop: i > 0 ? '1px solid rgba(224,216,197,0.4)' : 'none',
-                  padding: '12px 16px', cursor: 'pointer',
-                  transition: 'background 0.12s',
+                  padding: '12px 16px', cursor: 'pointer', transition: 'background 0.12s',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'rgba(31,58,42,0.05)' }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'none' }}

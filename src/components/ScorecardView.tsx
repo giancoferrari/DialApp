@@ -713,16 +713,19 @@ export default function ScorecardView({
               onSelect={course => {
                 setSelectedApiTee(null)
                 setCorrectionSaved(false)
+                // Set course immediately so tees render right away
+                setSelectedCourse(course)
                 const allTees = [...(course.tees.male ?? []), ...(course.tees.female ?? [])]
                 const h18 = allTees.filter(t => t.number_of_holes === 18)
                 const preferred = h18.length > 0 ? h18 : allTees
                 if (preferred.length > 0) setHoleCount(preferred[0].number_of_holes as 9 | 18)
-                // Apply any saved correction for this course
+                // Silently apply correction if one exists
                 fetchCorrection(course.id).then(correction => {
                   if (correction?.tees?.length) {
-                    setSelectedCourse({ ...course, tees: { male: correction.tees, female: [] } })
-                  } else {
-                    setSelectedCourse(course)
+                    setSelectedCourse(prev => prev?.id === course.id
+                      ? { ...course, tees: { male: correction.tees, female: [] } }
+                      : prev
+                    )
                   }
                 })
               }}
