@@ -129,8 +129,10 @@ function EditableRow({
   return (
     <div style={{ borderBottom: last ? 'none' : '1px solid rgba(224,216,197,0.5)' }}>
       <div
-        style={{ padding: '13px 18px', display: 'flex', alignItems: 'center', gap: 12, cursor: editing ? 'default' : 'pointer', minHeight: 52 }}
+        style={{ padding: '13px 18px', display: 'flex', alignItems: 'center', gap: 12, cursor: editing ? 'default' : 'pointer', minHeight: 52, transition: 'background 0.12s' }}
         onClick={() => { if (!editing) setEditing(true) }}
+        onMouseEnter={e => { if (!editing) e.currentTarget.style.background = 'rgba(31,58,42,0.04)' }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>{label}</div>

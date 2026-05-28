@@ -140,8 +140,8 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
               <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="#C9C0A8" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, color: '#C9C0A8', marginBottom: 8 }}>You're all caught up</div>
-          <div style={{ fontSize: 13, color: '#B5AC95' }}>Friend requests and match invites will appear here.</div>
+          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#C9C0A8', marginBottom: 8, letterSpacing: '-0.02em' }}>You're all caught up</div>
+          <div style={{ fontSize: 13, color: '#B5AC95', lineHeight: 1.5 }}>Friend requests and match invites appear here.</div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

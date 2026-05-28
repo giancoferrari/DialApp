@@ -229,7 +229,7 @@ export default function LegalModal({ doc, onClose }: Props) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', transition: 'background 0.15s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#E8DFC8' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#E0D8C5' }}
             onMouseLeave={e => { e.currentTarget.style.background = '#F0EBDD' }}
           >
             <CloseIcon size={16} color="#1F1D17" />

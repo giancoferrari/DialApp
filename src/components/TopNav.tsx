@@ -95,9 +95,13 @@ export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, u
                       fontFamily: "'DM Sans', sans-serif",
                       fontSize: 13.5, fontWeight: 500,
                       letterSpacing: '-0.005em',
-                      transition: 'all 0.18s ease',
+                      transition: 'all 0.15s cubic-bezier(0.22, 1, 0.36, 1)',
                       whiteSpace: 'nowrap',
                     }}
+                    onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(31,58,42,0.07)' }}
+                    onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent' }}
+                    onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
+                    onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
                   >
                     {item.label}
                   </button>

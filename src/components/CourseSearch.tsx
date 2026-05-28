@@ -83,6 +83,7 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
           border: '1px solid rgba(255,255,255,0.7)', borderRadius: 16,
           boxShadow: '0 8px 32px rgba(31,29,23,0.12), inset 0 1px 0 rgba(255,255,255,0.8)',
           overflow: 'hidden', maxHeight: 320, overflowY: 'auto',
+          animation: 'slideDown 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
         }}>
           {results.map((course, i) => {
             const loc = [course.location.city, course.location.state || course.location.country].filter(Boolean).join(', ')
