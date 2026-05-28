@@ -275,7 +275,28 @@ function AppShell() {
           radial-gradient(ellipse 170% 85% at 4% 98%,  rgba(52,82,37,0.32) 0%, transparent 58%),
           radial-gradient(ellipse 120% 70% at 96% 4%,  rgba(130,155,100,0.20) 0%, transparent 52%),
           radial-gradient(ellipse 95%  60% at 68% 88%, rgba(72,102,57,0.18) 0%, transparent 50%),
-          rgba(237,232,212,0.14)
+          rgba(237,232,212,0.10)
+        `,
+        backgroundAttachment: 'fixed',
+        zIndex: 1,
+        pointerEvents: 'none',
+      }} />
+
+      {/* Layer 2: reading scrim — cream fog veils the top reading zone for legibility,
+          a clear "photo window" survives at 62-78%, and a soft bottom haze grounds the floating tab bar */}
+      <div aria-hidden="true" style={{
+        position: 'fixed', inset: 0,
+        background: `
+          linear-gradient(180deg,
+            rgba(237,232,212,0.68) 0%,
+            rgba(237,232,212,0.54) 12%,
+            rgba(237,232,212,0.38) 26%,
+            rgba(237,232,212,0.22) 42%,
+            rgba(237,232,212,0.10) 56%,
+            rgba(237,232,212,0.03) 70%,
+            rgba(237,232,212,0.10) 86%,
+            rgba(237,232,212,0.26) 100%
+          )
         `,
         backgroundAttachment: 'fixed',
         zIndex: 1,
