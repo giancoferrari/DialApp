@@ -1,6 +1,3 @@
-const API_KEY = import.meta.env.VITE_GOLF_COURSE_API_KEY as string
-const BASE    = 'https://api.golfcourseapi.com/v1'
-
 export interface GolfHole {
   par:      number
   yardage:  number
@@ -34,11 +31,12 @@ export interface GolfCourse {
 
 export async function searchCourses(query: string): Promise<GolfCourse[]> {
   if (query.trim().length < 3) return []
-  const res = await fetch(
-    `${BASE}/search?search_query=${encodeURIComponent(query.trim())}`,
-    { headers: { Authorization: `Key ${API_KEY}` } }
-  )
-  if (!res.ok) return []
-  const data = await res.json()
-  return (data.courses ?? []) as GolfCourse[]
+  try {
+    const res = await fetch(`/api/golf-search?q=${encodeURIComponent(query.trim())}`)
+    if (!res.ok) return []
+    const data = await res.json()
+    return (data.courses ?? []) as GolfCourse[]
+  } catch {
+    return []
+  }
 }
