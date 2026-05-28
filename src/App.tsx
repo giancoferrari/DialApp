@@ -272,13 +272,13 @@ function AppShell() {
       <div aria-hidden="true" style={{
         position: 'fixed', inset: 0,
         background: `
-          radial-gradient(ellipse 170% 85% at 4% 98%,  rgba(52,82,37,0.32) 0%, transparent 58%),
-          radial-gradient(ellipse 120% 70% at 96% 4%,  rgba(130,155,100,0.22) 0%, transparent 52%),
-          radial-gradient(ellipse 95%  60% at 68% 88%, rgba(72,102,57,0.18) 0%, transparent 50%),
-          radial-gradient(ellipse 80%  55% at 12% 22%, rgba(165,185,138,0.16) 0%, transparent 46%),
-          radial-gradient(ellipse 85%  48% at 82% 32%, rgba(217,130,77,0.08) 0%, transparent 42%),
-          radial-gradient(ellipse 60%  40% at 45% 55%, rgba(92,122,77,0.07) 0%, transparent 38%),
-          rgba(237,232,212,0.78)
+          radial-gradient(ellipse 170% 85% at 4% 98%,  rgba(52,82,37,0.28) 0%, transparent 58%),
+          radial-gradient(ellipse 120% 70% at 96% 4%,  rgba(130,155,100,0.18) 0%, transparent 52%),
+          radial-gradient(ellipse 95%  60% at 68% 88%, rgba(72,102,57,0.15) 0%, transparent 50%),
+          radial-gradient(ellipse 80%  55% at 12% 22%, rgba(165,185,138,0.12) 0%, transparent 46%),
+          radial-gradient(ellipse 85%  48% at 82% 32%, rgba(217,130,77,0.07) 0%, transparent 42%),
+          radial-gradient(ellipse 60%  40% at 45% 55%, rgba(92,122,77,0.06) 0%, transparent 38%),
+          rgba(237,232,212,0.58)
         `,
         backgroundAttachment: 'fixed',
         zIndex: 1,
