@@ -6,6 +6,7 @@ import type { Course, Round, RoundHole } from '../types'
 import { CloseIcon, PlusIcon } from './Icons'
 import CourseSearch from './CourseSearch'
 import type { GolfCourse, GolfTee } from '../lib/golfCourseApi'
+import { fetchCorrection, saveCorrection } from '../lib/courseCorrections'
 
 const SANTA_MARIA_NAME = 'Santa Maria Golf & Country Club'
 const SANTA_MARIA_HOLES: { par: 3 | 4 | 5 }[] = [
@@ -404,11 +405,14 @@ export default function ScorecardView({
   const today = new Date().toISOString().split('T')[0]
   const [roundDate, setRoundDate] = useState(today)
 
-  const [courseName,     setCourseName]     = useState('')
-  const [selectedCourse, setSelectedCourse] = useState<GolfCourse | null>(null)
-  const [selectedApiTee, setSelectedApiTee] = useState<GolfTee | null>(null)
-  const [tee,            setTee]            = useState('white')
-  const [holeCount,      setHoleCount]      = useState<9 | 18>(18)
+  const [courseName,      setCourseName]      = useState('')
+  const [selectedCourse,  setSelectedCourse]  = useState<GolfCourse | null>(null)
+  const [selectedApiTee,  setSelectedApiTee]  = useState<GolfTee | null>(null)
+  const [tee,             setTee]             = useState('white')
+  const [holeCount,       setHoleCount]       = useState<9 | 18>(18)
+  const [apiOriginalHoles, setApiOriginalHoles] = useState<{ par: 3|4|5; yardage: string }[]>([])
+  const [savingCorrection, setSavingCorrection] = useState(false)
+  const [correctionSaved,  setCorrectionSaved]  = useState(false)
   const [holeSetup, setHoleSetup]   = useState<{ par: 3 | 4 | 5; yardage: string }[]>([])
 
   const px = isMobile ? 16 : 40
@@ -705,15 +709,22 @@ export default function ScorecardView({
             <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 8 }}>Course name</label>
             <CourseSearch
               value={courseName}
-              onChange={name => { setCourseName(name); setSelectedCourse(null); setSelectedApiTee(null) }}
+              onChange={name => { setCourseName(name); setSelectedCourse(null); setSelectedApiTee(null); setCorrectionSaved(false) }}
               onSelect={course => {
-                setSelectedCourse(course)
                 setSelectedApiTee(null)
+                setCorrectionSaved(false)
                 const allTees = [...(course.tees.male ?? []), ...(course.tees.female ?? [])]
                 const h18 = allTees.filter(t => t.number_of_holes === 18)
-                const h9  = allTees.filter(t => t.number_of_holes === 9)
-                const preferred = h18.length > 0 ? h18 : h9
+                const preferred = h18.length > 0 ? h18 : allTees
                 if (preferred.length > 0) setHoleCount(preferred[0].number_of_holes as 9 | 18)
+                // Apply any saved correction for this course
+                fetchCorrection(course.id).then(correction => {
+                  if (correction?.tees?.length) {
+                    setSelectedCourse({ ...course, tees: { male: correction.tees, female: [] } })
+                  } else {
+                    setSelectedCourse(course)
+                  }
+                })
               }}
             />
             {selectedCourse && (
@@ -778,10 +789,14 @@ export default function ScorecardView({
               setSaveError(null)
               if (selectedApiTee) {
                 const apiHoles = selectedApiTee.holes.slice(0, holeCount)
-                setHoleSetup(apiHoles.map(h => ({ par: h.par as 3|4|5, yardage: String(h.yardage) })))
+                const setup = apiHoles.map(h => ({ par: h.par as 3|4|5, yardage: String(h.yardage) }))
+                setHoleSetup(setup)
+                setApiOriginalHoles(setup)
               } else {
                 setHoleSetup(initHoleSetup(holeCount))
+                setApiOriginalHoles([])
               }
+              setCorrectionSaved(false)
               setPhase({ type: 'hole_setup', name: courseName.trim(), tee, holeCount })
             }}
             disabled={!courseName.trim() || (selectedCourse !== null && selectedApiTee === null)}
@@ -834,6 +849,56 @@ export default function ScorecardView({
             </div>
           ))}
         </div>
+
+        {/* Save corrections banner — shown when user changed API-provided data */}
+        {(() => {
+          const hasChanges = apiOriginalHoles.length > 0 && holeSetup.some((h, i) => {
+            const orig = apiOriginalHoles[i]
+            return orig && (h.par !== orig.par || h.yardage !== orig.yardage)
+          })
+          if (!hasChanges && !correctionSaved) return null
+          return (
+            <div style={{ background: correctionSaved ? 'rgba(92,122,77,0.10)' : 'rgba(217,130,77,0.10)', border: `1px solid ${correctionSaved ? 'rgba(92,122,77,0.30)' : 'rgba(217,130,77,0.30)'}`, borderRadius: 14, padding: '12px 16px', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: correctionSaved ? '#5C7A4D' : '#D9824D', fontFamily: "'DM Sans', sans-serif" }}>
+                  {correctionSaved ? '✓ Corrections saved for everyone' : 'You changed some hole data'}
+                </div>
+                {!correctionSaved && (
+                  <div style={{ fontSize: 11.5, color: '#6B6857', marginTop: 2, fontFamily: "'DM Sans', sans-serif" }}>
+                    Save to fix this course for all Dial users
+                  </div>
+                )}
+              </div>
+              {!correctionSaved && (
+                <button
+                  disabled={savingCorrection}
+                  onClick={async () => {
+                    if (!selectedCourse || !selectedApiTee) return
+                    setSavingCorrection(true)
+                    const correctedTee: GolfTee = {
+                      ...selectedApiTee,
+                      holes: holeSetup.map((h, i) => ({
+                        par:      h.par,
+                        yardage:  parseInt(h.yardage) || selectedApiTee.holes[i]?.yardage || 0,
+                        handicap: selectedApiTee.holes[i]?.handicap ?? i + 1,
+                      })),
+                    }
+                    const allTees = [...(selectedCourse.tees.male ?? []), ...(selectedCourse.tees.female ?? [])]
+                    const correctedTees = allTees.map(t =>
+                      t.tee_name === selectedApiTee.tee_name ? correctedTee : t
+                    )
+                    await saveCorrection(selectedCourse, correctedTees)
+                    setSavingCorrection(false)
+                    setCorrectionSaved(true)
+                  }}
+                  style={{ flexShrink: 0, background: '#D9824D', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '8px 16px', fontSize: 12, fontWeight: 600, cursor: savingCorrection ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: savingCorrection ? 0.6 : 1 }}
+                >
+                  {savingCorrection ? 'Saving…' : 'Save corrections'}
+                </button>
+              )}
+            </div>
+          )
+        })()}
 
         {saveError && <div style={errorBox}>{saveError}</div>}
         <button onClick={handleSaveNewCourse} disabled={saving}
