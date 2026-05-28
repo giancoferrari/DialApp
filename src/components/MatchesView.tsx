@@ -58,7 +58,7 @@ function ScoreCell({
 }) {
   const diff = score !== null ? score - par : null
   let bg = 'transparent'
-  let border = '1px dashed #C9C0A8'
+  let border = '1px dashed #8B8272'
   let borderRadius = 6
   let color = '#1F1D17'
   let boxShadow = 'none'
@@ -159,7 +159,7 @@ function NewMatchModal({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px 16px', borderBottom: '1px solid #E0D8C5', flexShrink: 0 }}>
           <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>New Match</div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <CloseIcon size={18} color="#6B6857" />
+            <CloseIcon size={18} color="#4A4235" />
           </button>
         </div>
 
@@ -173,7 +173,7 @@ function NewMatchModal({
 
           {/* Course search */}
           <div>
-            <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>Course</label>
+            <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>Course</label>
             <CourseSearch
               value={courseName}
               onChange={name => { setCourseName(name); setSelectedCourse(null) }}
@@ -190,7 +190,7 @@ function NewMatchModal({
 
           {/* Holes */}
           <div>
-            <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>Holes</label>
+            <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>Holes</label>
             <div style={{ display: 'flex', gap: 8 }}>
               {([9, 18] as const).map(h => (
                 <button key={h} onClick={() => setHoles(h)} style={{ flex: 1, padding: '10px', borderRadius: 10, border: '1px solid', cursor: 'pointer', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, transition: 'all 0.15s', background: holes === h ? '#1F3A2A' : 'transparent', color: holes === h ? '#FAF6EA' : '#1F1D17', borderColor: holes === h ? '#1F3A2A' : '#E0D8C5' }}>
@@ -202,7 +202,7 @@ function NewMatchModal({
 
           {/* Game mode */}
           <div>
-            <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>Format</label>
+            <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>Format</label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               {(['stroke', 'match_play', 'skins', 'wolf'] as GameMode[]).map(mode => {
                 const available = mode === 'stroke'
@@ -216,13 +216,13 @@ function NewMatchModal({
                       padding: '10px 8px', borderRadius: 10, border: '1px solid', cursor: available ? 'pointer' : 'default',
                       fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 500, transition: 'all 0.15s', textAlign: 'center',
                       background: active ? '#1F3A2A' : 'transparent',
-                      color: active ? '#FAF6EA' : available ? '#1F1D17' : '#B5AC95',
+                      color: active ? '#FAF6EA' : available ? '#1F1D17' : '#6B5F4E',
                       borderColor: active ? '#1F3A2A' : '#E0D8C5',
                       opacity: available ? 1 : 0.7,
                     }}
                   >
                     {MODE_LABELS[mode]}
-                    {!available && <div style={{ fontSize: 10, marginTop: 2, color: '#B5AC95' }}>Coming soon</div>}
+                    {!available && <div style={{ fontSize: 10, marginTop: 2, color: '#6B5F4E' }}>Coming soon</div>}
                   </button>
                 )
               })}
@@ -231,9 +231,9 @@ function NewMatchModal({
 
           {/* Wager */}
           <div>
-            <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>Wager per player (USD)</label>
+            <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>Wager per player (USD)</label>
             {wallet && (
-              <div style={{ fontSize: 12, color: '#B5AC95', marginBottom: 8 }}>
+              <div style={{ fontSize: 12, color: '#6B5F4E', marginBottom: 8 }}>
                 Your balance: <strong style={{ color: '#1F1D17' }}>${wallet.balance.toLocaleString()}</strong>
               </div>
             )}
@@ -245,18 +245,18 @@ function NewMatchModal({
               ))}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 14, color: '#6B6857', fontWeight: 500 }}>$</span>
+              <span style={{ fontSize: 14, color: '#4A4235', fontWeight: 500 }}>$</span>
               <input type="number" min="0" max="10000" value={customWager} onChange={e => { setCustomWager(e.target.value); setWager(0) }} placeholder="Custom amount (max $10,000)" style={{ ...inputStyle, padding: '10px 12px' }} onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }} onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }} />
             </div>
           </div>
 
           {/* Friends */}
           <div>
-            <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>
+            <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>
               Invite friends {selectedIds.length > 0 && `(${selectedIds.length} selected)`}
             </label>
             {friends.length === 0 ? (
-              <div style={{ fontSize: 13, color: '#B5AC95', padding: '12px 0' }}>Add friends first to invite them to a match.</div>
+              <div style={{ fontSize: 13, color: '#6B5F4E', padding: '12px 0' }}>Add friends first to invite them to a match.</div>
             ) : (
               <>
                 <input value={friendSearch} onChange={e => setFriendSearch(e.target.value)} placeholder="Search friends…" style={{ ...inputStyle, marginBottom: 10 }} onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }} onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }} />
@@ -271,17 +271,17 @@ function NewMatchModal({
                             {profile?.username ? `@${profile.username}` : friendId.slice(0, 8)}
                           </div>
                           {profile?.handicapIndex != null && (
-                            <div style={{ fontSize: 11, color: '#6B6857' }}>HCP {profile.handicapIndex.toFixed(1)}</div>
+                            <div style={{ fontSize: 11, color: '#4A4235' }}>HCP {profile.handicapIndex.toFixed(1)}</div>
                           )}
                         </div>
-                        <div style={{ width: 20, height: 20, borderRadius: 10, border: `2px solid ${selected ? '#1F3A2A' : '#C9C0A8'}`, background: selected ? '#1F3A2A' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <div style={{ width: 20, height: 20, borderRadius: 10, border: `2px solid ${selected ? '#1F3A2A' : '#8B8272'}`, background: selected ? '#1F3A2A' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           {selected && <div style={{ width: 8, height: 8, borderRadius: 4, background: '#FAF6EA' }} />}
                         </div>
                       </button>
                     )
                   })}
                   {filteredFriends.length === 0 && friendSearch && (
-                    <div style={{ fontSize: 13, color: '#B5AC95', padding: '8px 0' }}>No friends match "{friendSearch}"</div>
+                    <div style={{ fontSize: 13, color: '#6B5F4E', padding: '8px 0' }}>No friends match "{friendSearch}"</div>
                   )}
                 </div>
               </>
@@ -290,7 +290,7 @@ function NewMatchModal({
         </div>
 
         <div style={{ padding: '16px 24px', borderTop: '1px solid #E0D8C5', flexShrink: 0 }}>
-          <button onClick={handleCreate} disabled={loading} style={{ width: '100%', background: loading ? '#C9C0A8' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '14px', fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}>
+          <button onClick={handleCreate} disabled={loading} style={{ width: '100%', background: loading ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '14px', fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}>
             {loading ? 'Creating…' : 'Create & Invite'}
           </button>
         </div>
@@ -332,11 +332,11 @@ function ScorecardGrid({
 
       {/* PAR row */}
       <div style={{ ...cellStyle('#F0EBDD'), borderBottom: '1px solid #E0D8C5' }}>
-        <div style={{ fontSize: 8, fontWeight: 700, color: '#6B6857', textTransform: 'uppercase' }}>P</div>
+        <div style={{ fontSize: 8, fontWeight: 700, color: '#4A4235', textTransform: 'uppercase' }}>P</div>
         {holes.map((h, i) => (
-          <div key={h} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#6B6857', fontFamily: "'Bricolage Grotesque', sans-serif" }}>{pars[i]}</div>
+          <div key={h} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#4A4235', fontFamily: "'Bricolage Grotesque', sans-serif" }}>{pars[i]}</div>
         ))}
-        <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#6B6857', fontFamily: "'Bricolage Grotesque', sans-serif" }}>{parTotal}</div>
+        <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#4A4235', fontFamily: "'Bricolage Grotesque', sans-serif" }}>{parTotal}</div>
       </div>
 
       {/* Player rows */}
@@ -349,13 +349,13 @@ function ScorecardGrid({
             borderBottom: pi < players.length - 1 ? '1px solid #ECE5D2' : 'none',
             borderRadius: pi === players.length - 1 ? '0 0 10px 10px' : 0,
           }}>
-            <div style={{ fontSize: 8, fontWeight: 700, color: isMe ? '#1F3A2A' : '#6B6857', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: 8, fontWeight: 700, color: isMe ? '#1F3A2A' : '#4A4235', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {isMe ? 'YOU' : player.name.replace('@', '').slice(0, 3).toUpperCase()}
             </div>
             {holes.map((h, i) => (
               <ScoreCell key={h} score={player.scores[h] ?? null} par={pars[i]} isMe={isMe && status === 'active'} onClick={() => onCellTap(h)} />
             ))}
-            <div style={{ textAlign: 'center', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 11, fontWeight: 700, color: isMe ? '#1F3A2A' : '#6B6857' }}>
+            <div style={{ textAlign: 'center', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 11, fontWeight: 700, color: isMe ? '#1F3A2A' : '#4A4235' }}>
               {subtotal > 0 ? subtotal : '—'}
             </div>
           </div>
@@ -483,7 +483,7 @@ function ScoringModal({
                 {liveMatch.winnerId ? (isWinner ? 'You won!' : `${accepted.find(p => p.userId === liveMatch.winnerId)?.profile?.username ? `@${accepted.find(p => p.userId === liveMatch.winnerId)?.profile?.username}` : 'Opponent'} won`) : "It's a tie!"}
               </div>
               {liveMatch.wagerPerPlayer > 0 && liveMatch.winnerId && (
-                <div style={{ fontSize: 13, color: isWinner ? '#B5C29A' : '#6B6857' }}>
+                <div style={{ fontSize: 13, color: isWinner ? '#B5C29A' : '#4A4235' }}>
                   {isWinner ? `+$${liveMatch.wagerPerPlayer * accepted.length} credited to wallet` : `-$${liveMatch.wagerPerPlayer} wagered`}
                 </div>
               )}
@@ -555,7 +555,7 @@ function ScoringModal({
 
           {/* Tap hint */}
           {liveMatch.status === 'active' && (
-            <div style={{ textAlign: 'center', fontSize: 13, color: '#B5AC95', marginBottom: 20 }}>
+            <div style={{ textAlign: 'center', fontSize: 13, color: '#6B5F4E', marginBottom: 20 }}>
               Tap any score cell to type your result
             </div>
           )}
@@ -581,12 +581,12 @@ function ScoringModal({
               <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>
                 Hole {activeHole}
               </div>
-              <div style={{ fontSize: 12, color: '#6B6857', marginTop: 2 }}>
+              <div style={{ fontSize: 12, color: '#4A4235', marginTop: 2 }}>
                 Par {pars[activeHole - 1]}
               </div>
             </div>
             <button onClick={() => setActiveHole(null)} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 8, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <CloseIcon size={14} color="#6B6857" />
+              <CloseIcon size={14} color="#4A4235" />
             </button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 24, justifyContent: 'center', marginBottom: 18 }}>
@@ -609,7 +609,7 @@ function ScoringModal({
           <button
             onClick={handleSave}
             disabled={saving}
-            style={{ width: '100%', background: saving ? '#C9C0A8' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '14px', fontSize: 15, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+            style={{ width: '100%', background: saving ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '14px', fontSize: 15, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif" }}
           >
             {saving ? 'Saving…' : 'Save Score'}
           </button>
@@ -738,16 +738,16 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
       }}>
         {/* Header */}
         <div style={{ background: 'transparent', padding: '15px 18px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: isDark ? '1px solid rgba(255,255,255,0.09)' : '1px solid rgba(31,58,42,0.07)' }}>
-          <TrophyIcon size={18} color={isDark ? '#D9824D' : '#6B6857'} />
+          <TrophyIcon size={18} color={isDark ? '#D9824D' : '#4A4235'} />
           <div style={{ flex: 1 }}>
             <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: isDark ? '#FAF6EA' : '#1F1D17', letterSpacing: '-0.02em' }}>{match.courseName}</div>
-            <div style={{ fontSize: 12, color: isDark ? '#B5C29A' : '#6B6857', marginTop: 2 }}>
+            <div style={{ fontSize: 12, color: isDark ? '#B5C29A' : '#4A4235', marginTop: 2 }}>
               {MODE_LABELS[match.gameMode]} · {match.holes} holes{match.wagerPerPlayer > 0 && ` · $${match.wagerPerPlayer} each`}
             </div>
           </div>
           {isDone && iWon && <div style={{ fontSize: 11, fontWeight: 700, color: '#D9824D', background: 'rgba(217,130,77,0.22)', border: '1px solid rgba(217,130,77,0.32)', borderRadius: 999, padding: '4px 11px', letterSpacing: '0.02em' }}>Won</div>}
-          {isDone && !iWon && match.winnerId && <div style={{ fontSize: 11, fontWeight: 600, color: '#6B6857', background: 'rgba(201,192,168,0.35)', border: '1px solid rgba(201,192,168,0.45)', borderRadius: 999, padding: '4px 11px' }}>Lost</div>}
-          {isDone && !match.winnerId && <div style={{ fontSize: 11, fontWeight: 600, color: '#6B6857', background: 'rgba(201,192,168,0.35)', border: '1px solid rgba(201,192,168,0.45)', borderRadius: 999, padding: '4px 11px' }}>Tie</div>}
+          {isDone && !iWon && match.winnerId && <div style={{ fontSize: 11, fontWeight: 600, color: '#4A4235', background: 'rgba(201,192,168,0.35)', border: '1px solid rgba(201,192,168,0.45)', borderRadius: 999, padding: '4px 11px' }}>Lost</div>}
+          {isDone && !match.winnerId && <div style={{ fontSize: 11, fontWeight: 600, color: '#4A4235', background: 'rgba(201,192,168,0.35)', border: '1px solid rgba(201,192,168,0.45)', borderRadius: 999, padding: '4px 11px' }}>Tie</div>}
         </div>
 
         {/* Players inset */}
@@ -772,7 +772,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
             <>
               <button
                 onClick={() => handleDecline(match.id)}
-                style={{ flex: 1, background: 'rgba(240,235,221,0.72)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.5)', borderRadius: 13, padding: '11px', fontSize: 13, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'transform 0.12s ease' }}
+                style={{ flex: 1, background: 'rgba(240,235,221,0.72)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.5)', borderRadius: 13, padding: '11px', fontSize: 13, color: '#4A4235', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'transform 0.12s ease' }}
                 onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
                 onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
               >Decline</button>
@@ -818,7 +818,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
               >Start Match →</button>
               <button
                 onClick={() => handleCancel(match)}
-                style={{ flex: 1, background: 'rgba(240,235,221,0.72)', border: '1px solid rgba(255,255,255,0.50)', borderRadius: 13, padding: '11px', fontSize: 12, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'transform 0.12s ease' }}
+                style={{ flex: 1, background: 'rgba(240,235,221,0.72)', border: '1px solid rgba(255,255,255,0.50)', borderRadius: 13, padding: '11px', fontSize: 12, color: '#4A4235', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'transform 0.12s ease' }}
                 onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
                 onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
               >Cancel</button>
@@ -827,7 +827,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
           {match.status === 'pending' && me?.status === 'accepted' && !canStart && (
             <button
               onClick={() => handleCancel(match)}
-              style={{ flex: 1, background: 'rgba(240,235,221,0.72)', border: '1px solid rgba(255,255,255,0.50)', borderRadius: 13, padding: '11px', fontSize: 13, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'transform 0.12s ease' }}
+              style={{ flex: 1, background: 'rgba(240,235,221,0.72)', border: '1px solid rgba(255,255,255,0.50)', borderRadius: 13, padding: '11px', fontSize: 13, color: '#4A4235', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'transform 0.12s ease' }}
               onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
               onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
             >Cancel</button>
@@ -850,14 +850,14 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
           <div style={{ background: 'rgba(250,246,234,0.70)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 22, padding: '16px 20px', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.80)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: walletAction ? 14 : 0 }}>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 4 }}>Wallet Balance</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 4 }}>Wallet Balance</div>
                 <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 30, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.04em', lineHeight: 1 }}>
-                  ${wallet.balance.toLocaleString()}<span style={{ fontSize: 13, color: '#6B6857', fontWeight: 400, marginLeft: 4 }}>USD</span>
+                  ${wallet.balance.toLocaleString()}<span style={{ fontSize: 13, color: '#4A4235', fontWeight: 400, marginLeft: 4 }}>USD</span>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => setWalletAction(walletAction === 'add' ? null : 'add')} style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 10, padding: '8px 14px', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>+ Add</button>
-                <button onClick={() => setWalletAction(walletAction === 'withdraw' ? null : 'withdraw')} style={{ background: 'transparent', color: '#6B6857', border: '1px solid #E0D8C5', borderRadius: 10, padding: '8px 14px', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Withdraw</button>
+                <button onClick={() => setWalletAction(walletAction === 'withdraw' ? null : 'withdraw')} style={{ background: 'transparent', color: '#4A4235', border: '1px solid #E0D8C5', borderRadius: 10, padding: '8px 14px', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Withdraw</button>
               </div>
             </div>
             {walletAction && (
@@ -900,7 +900,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
       </button>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '48px', fontSize: 14, color: '#B5AC95' }}>Loading…</div>
+        <div style={{ textAlign: 'center', padding: '48px', fontSize: 14, color: '#6B5F4E' }}>Loading…</div>
       ) : (
         <>
           {myInvites.length > 0 && (
@@ -921,7 +921,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
           )}
           {myPending.length > 0 && (
             <section style={{ marginBottom: 28 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 12 }}>Waiting for players</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 12 }}>Waiting for players</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {myPending.map(m => <MatchCard key={m.id} match={m} />)}
               </div>
@@ -929,7 +929,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
           )}
           {completed.length > 0 && (
             <section>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 12 }}>Completed</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 12 }}>Completed</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {completed.map(m => <MatchCard key={m.id} match={m} />)}
               </div>
@@ -937,9 +937,9 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
           )}
           {matches.length === 0 && (
             <div style={{ background: 'rgba(250,246,234,0.70)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 22, padding: '48px 24px', textAlign: 'center', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.80)' }}>
-              <TrophyIcon size={32} color="#C9C0A8" />
-              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, color: '#C9C0A8', marginTop: 12, marginBottom: 8 }}>No matches yet</div>
-              <div style={{ fontSize: 13, color: '#B5AC95' }}>Start a match and challenge your friends.</div>
+              <TrophyIcon size={32} color="#8B8272" />
+              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, color: '#8B8272', marginTop: 12, marginBottom: 8 }}>No matches yet</div>
+              <div style={{ fontSize: 13, color: '#6B5F4E' }}>Start a match and challenge your friends.</div>
             </div>
           )}
         </>
@@ -965,3 +965,4 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
     </div>
   )
 }
+

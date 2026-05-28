@@ -169,7 +169,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
 
   const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: 11, fontWeight: 600,
-    letterSpacing: '0.08em', color: '#6B6857',
+    letterSpacing: '0.08em', color: '#4A4235',
     textTransform: 'uppercase', marginBottom: 6,
   }
 
@@ -186,7 +186,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
           <DialWordmark size={36} />
           <p style={{
             fontFamily: "'DM Sans', sans-serif", fontSize: 15,
-            color: '#6B6857', marginTop: 8, marginBottom: 0,
+            color: '#4A4235', marginTop: 8, marginBottom: 0,
           }}>
             Your personal yardage book.
           </p>
@@ -228,12 +228,12 @@ export default function AuthScreen({ onShowLegal }: Props) {
               }}>
                 Confirm your email
               </div>
-              <p style={{ fontSize: 14, color: '#6B6857', lineHeight: 1.6, marginBottom: 20 }}>
+              <p style={{ fontSize: 14, color: '#4A4235', lineHeight: 1.6, marginBottom: 20 }}>
                 We sent a verification link to{' '}
                 <strong style={{ color: '#1F1D17' }}>{email}</strong>.
                 Click it to activate your account, then come back here to sign in.
               </p>
-              <p style={{ fontSize: 12, color: '#B5AC95' }}>
+              <p style={{ fontSize: 12, color: '#6B5F4E' }}>
                 Don't see it? Check your spam folder.
               </p>
               <button
@@ -265,7 +265,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                         flex: 1, border: 'none', borderRadius: 999,
                         padding: '9px 0', cursor: 'pointer',
                         background: mode === m ? '#1F3A2A' : 'transparent',
-                        color: mode === m ? '#FAF6EA' : '#6B6857',
+                        color: mode === m ? '#FAF6EA' : '#4A4235',
                         fontFamily: "'DM Sans', sans-serif",
                         fontSize: 13.5, fontWeight: 500,
                         transition: 'all 0.18s ease',
@@ -286,14 +286,14 @@ export default function AuthScreen({ onShowLegal }: Props) {
                   <div>
                     <button
                       onClick={() => switchMode('signin')}
-                      style={{ background: 'none', border: 'none', color: '#6B6857', fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginBottom: 20, padding: 0 }}
+                      style={{ background: 'none', border: 'none', color: '#4A4235', fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginBottom: 20, padding: 0 }}
                     >
                       ← Back to sign in
                     </button>
                     <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginBottom: 8 }}>
                       Reset password
                     </div>
-                    <p style={{ fontSize: 14, color: '#6B6857', lineHeight: 1.55, marginBottom: 24 }}>
+                    <p style={{ fontSize: 14, color: '#4A4235', lineHeight: 1.55, marginBottom: 24 }}>
                       Enter your email and we'll send you a link to reset your password. The link expires in 30 minutes.
                     </p>
                     {resetSent ? (
@@ -329,7 +329,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                         <button
                           type="submit"
                           disabled={loading || cooldown > 0}
-                          style={{ width: '100%', background: (loading || cooldown > 0) ? '#C9C0A8' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px 24px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer', transition: 'all 0.15s' }}
+                          style={{ width: '100%', background: (loading || cooldown > 0) ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px 24px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer', transition: 'all 0.15s' }}
                           onMouseEnter={e => { if (!loading && !cooldown) e.currentTarget.style.background = '#16271D' }}
                           onMouseLeave={e => { if (!loading && !cooldown) e.currentTarget.style.background = '#1F3A2A' }}
                         >
@@ -381,7 +381,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                         onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
                         onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
                       />
-                      <div style={{ fontSize: 11, color: '#B5AC95', marginTop: 5 }}>
+                      <div style={{ fontSize: 11, color: '#6B5F4E', marginTop: 5 }}>
                         Used to find you on Dial. Min. 3 characters, no spaces.
                       </div>
                     </div>
@@ -455,7 +455,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                         ].map(req => (
                           <div key={req.text} style={{
                             display: 'flex', alignItems: 'center', gap: 6,
-                            fontSize: 11.5, color: req.ok ? '#5C7A4D' : '#B5AC95',
+                            fontSize: 11.5, color: req.ok ? '#5C7A4D' : '#6B5F4E',
                           }}>
                             <svg width="10" height="10" viewBox="0 0 10 10">
                               {req.ok
@@ -525,7 +525,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                             onClick={item.onChange}
                             style={{
                               width: 18, height: 18, borderRadius: 5, flexShrink: 0,
-                              border: `1.5px solid ${item.checked ? '#1F3A2A' : '#C9C0A8'}`,
+                              border: `1.5px solid ${item.checked ? '#1F3A2A' : '#8B8272'}`,
                               background: item.checked ? '#1F3A2A' : 'transparent',
                               display: 'flex', alignItems: 'center', justifyContent: 'center',
                               transition: 'all 0.15s', cursor: 'pointer',
@@ -537,7 +537,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                               </svg>
                             )}
                           </div>
-                          <span style={{ fontSize: 13, color: '#6B6857', lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif" }}>
+                          <span style={{ fontSize: 13, color: '#4A4235', lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif" }}>
                             {item.label}
                           </span>
                         </label>
@@ -561,7 +561,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                     type="submit"
                     disabled={loading || cooldown > 0}
                     style={{
-                      width: '100%', background: (loading || cooldown > 0) ? '#C9C0A8' : '#1F3A2A',
+                      width: '100%', background: (loading || cooldown > 0) ? '#8B8272' : '#1F3A2A',
                       color: '#FAF6EA', border: 'none', borderRadius: 999,
                       padding: '14px 24px', fontFamily: "'DM Sans', sans-serif",
                       fontSize: 14, fontWeight: 500, cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer',
@@ -585,11 +585,11 @@ export default function AuthScreen({ onShowLegal }: Props) {
         {/* Legal footer — sign-in only */}
         {mode !== 'signup' && (
           <p style={{
-            textAlign: 'center', fontSize: 12, color: '#B5AC95',
+            textAlign: 'center', fontSize: 12, color: '#6B5F4E',
             marginTop: 20, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.6,
           }}>
             <button onClick={() => onShowLegal('terms')} style={{
-              background: 'none', border: 'none', color: '#6B6857', fontSize: 12,
+              background: 'none', border: 'none', color: '#4A4235', fontSize: 12,
               cursor: 'pointer', textDecoration: 'underline', padding: 0,
               fontFamily: "'DM Sans', sans-serif",
             }}>
@@ -597,7 +597,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
             </button>
             {' '}·{' '}
             <button onClick={() => onShowLegal('privacy')} style={{
-              background: 'none', border: 'none', color: '#6B6857', fontSize: 12,
+              background: 'none', border: 'none', color: '#4A4235', fontSize: 12,
               cursor: 'pointer', textDecoration: 'underline', padding: 0,
               fontFamily: "'DM Sans', sans-serif",
             }}>
@@ -609,3 +609,4 @@ export default function AuthScreen({ onShowLegal }: Props) {
     </div>
   )
 }
+

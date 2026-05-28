@@ -84,7 +84,7 @@ export default function ToolsView({ onNavigate, isMobile = false }: Props) {
               }}>
                 {item.label}
               </div>
-              <div style={{ fontSize: 12, color: '#6B6857', fontWeight: 500 }}>
+              <div style={{ fontSize: 12, color: '#4A4235', fontWeight: 500 }}>
                 {item.sub}
               </div>
             </div>
@@ -94,3 +94,4 @@ export default function ToolsView({ onNavigate, isMobile = false }: Props) {
     </div>
   )
 }
+

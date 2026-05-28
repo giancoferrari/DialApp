@@ -64,3 +64,4 @@ export async function deleteRound(id: string): Promise<void> {
   const { error } = await supabase.from('rounds').delete().eq('id', id)
   if (error) throw error
 }
+

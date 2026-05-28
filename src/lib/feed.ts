@@ -133,3 +133,4 @@ export async function fetchFriendFeed(userId: string): Promise<FeedItem[]> {
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
     .slice(0, 25)
 }
+

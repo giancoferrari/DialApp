@@ -83,3 +83,4 @@ export const timeAgo = (ts: number): string => {
   const days = Math.floor(diff / 86_400_000)
   return days === 1 ? 'Yesterday' : `${days} days ago`
 }
+

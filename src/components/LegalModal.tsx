@@ -15,7 +15,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       }}>
         {title}
       </h2>
-      <div style={{ fontSize: 14, color: '#6B6857', lineHeight: 1.75 }}>{children}</div>
+      <div style={{ fontSize: 14, color: '#4A4235', lineHeight: 1.75 }}>{children}</div>
     </div>
   )
 }
@@ -23,9 +23,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function PrivacyPolicy() {
   return (
     <>
-      <p style={{ fontSize: 13, color: '#B5AC95', marginBottom: 24 }}>Effective date: {EFFECTIVE_DATE}</p>
+      <p style={{ fontSize: 13, color: '#6B5F4E', marginBottom: 24 }}>Effective date: {EFFECTIVE_DATE}</p>
 
-      <p style={{ fontSize: 14, color: '#6B6857', lineHeight: 1.75, marginBottom: 24 }}>
+      <p style={{ fontSize: 14, color: '#4A4235', lineHeight: 1.75, marginBottom: 24 }}>
         This Privacy Policy explains how {COMPANY_NAME} ("we," "us," or "our") collects, uses, and protects your personal information when you use the {SITE_NAME} web application (the "Service"). By using the Service, you agree to the practices described in this policy.
       </p>
 
@@ -97,9 +97,9 @@ function PrivacyPolicy() {
 function TermsOfService() {
   return (
     <>
-      <p style={{ fontSize: 13, color: '#B5AC95', marginBottom: 24 }}>Effective date: {EFFECTIVE_DATE}</p>
+      <p style={{ fontSize: 13, color: '#6B5F4E', marginBottom: 24 }}>Effective date: {EFFECTIVE_DATE}</p>
 
-      <p style={{ fontSize: 14, color: '#6B6857', lineHeight: 1.75, marginBottom: 24 }}>
+      <p style={{ fontSize: 14, color: '#4A4235', lineHeight: 1.75, marginBottom: 24 }}>
         These Terms of Service ("Terms") govern your access to and use of the {SITE_NAME} web application (the "Service") provided by {COMPANY_NAME} ("we," "us," or "our"). Please read these Terms carefully before using the Service. By creating an account or using the Service, you agree to be bound by these Terms.
       </p>
 
@@ -244,3 +244,4 @@ export default function LegalModal({ doc, onClose }: Props) {
     </div>
   )
 }
+

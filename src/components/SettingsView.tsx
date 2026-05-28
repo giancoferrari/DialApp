@@ -53,7 +53,7 @@ const PW_RULES = [
 // ── Primitives ──────────────────────────────────────────────
 function SectionLabel({ label }: { label: string }) {
   return (
-    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: '#6B6857', textTransform: 'uppercase', margin: '28px 0 8px 4px' }}>
+    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase', margin: '28px 0 8px 4px' }}>
       {label}
     </div>
   )
@@ -72,7 +72,7 @@ function Row({ label, description, last, children }: { label: string; descriptio
     <div style={{ padding: '13px 18px', borderBottom: last ? 'none' : '1px solid rgba(224,216,197,0.5)', display: 'flex', alignItems: 'center', gap: 12, minHeight: 52 }}>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>{label}</div>
-        {description && <div style={{ fontSize: 11.5, color: '#B5AC95', marginTop: 2 }}>{description}</div>}
+        {description && <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2 }}>{description}</div>}
       </div>
       {children}
     </div>
@@ -83,7 +83,7 @@ function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) =>
   return (
     <button
       onClick={() => onChange(!value)}
-      style={{ width: 44, height: 26, borderRadius: 13, background: value ? '#1F3A2A' : '#C9C0A8', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.22s ease', padding: 0, flexShrink: 0 }}
+      style={{ width: 44, height: 26, borderRadius: 13, background: value ? '#1F3A2A' : '#8B8272', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.22s ease', padding: 0, flexShrink: 0 }}
     >
       <div style={{ width: 20, height: 20, borderRadius: 10, background: '#FAF6EA', position: 'absolute', top: 3, left: value ? 21 : 3, transition: 'left 0.22s ease', boxShadow: '0 1px 4px rgba(0,0,0,0.18)' }} />
     </button>
@@ -94,7 +94,7 @@ function Segment({ options, value, onChange }: { options: string[]; value: strin
   return (
     <div style={{ display: 'flex', background: '#EDE8D4', borderRadius: 10, padding: 3, gap: 2, flexShrink: 0 }}>
       {options.map(opt => (
-        <button key={opt} onClick={() => onChange(opt)} style={{ padding: '5px 13px', borderRadius: 7, border: 'none', background: value === opt ? '#FAF6EA' : 'transparent', color: value === opt ? '#1F1D17' : '#6B6857', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s', boxShadow: value === opt ? '0 1px 4px rgba(31,29,23,0.10)' : 'none', fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap' }}>
+        <button key={opt} onClick={() => onChange(opt)} style={{ padding: '5px 13px', borderRadius: 7, border: 'none', background: value === opt ? '#FAF6EA' : 'transparent', color: value === opt ? '#1F1D17' : '#4A4235', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s', boxShadow: value === opt ? '0 1px 4px rgba(31,29,23,0.10)' : 'none', fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap' }}>
           {opt}
         </button>
       ))}
@@ -136,20 +136,20 @@ function EditableRow({
       >
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>{label}</div>
-          {description && <div style={{ fontSize: 11.5, color: '#B5AC95', marginTop: 2 }}>{description}</div>}
+          {description && <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2 }}>{description}</div>}
         </div>
         {!editing && (
           <>
-            <div style={{ fontSize: 13.5, color: value ? '#6B6857' : '#C9C0A8', fontFamily: "'DM Sans', sans-serif", maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: 13.5, color: value ? '#4A4235' : '#8B8272', fontFamily: "'DM Sans', sans-serif", maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {value ? `${prefix ?? ''}${value}` : (placeholder ?? '—')}
             </div>
-            <ChevronRightIcon size={15} color="#C9C0A8" />
+            <ChevronRightIcon size={15} color="#8B8272" />
           </>
         )}
       </div>
       {editing && (
         <div style={{ padding: '0 18px 14px', display: 'flex', gap: 8, alignItems: 'center' }}>
-          {prefix && <span style={{ fontSize: 14, color: '#6B6857', fontFamily: "'DM Sans', sans-serif", flexShrink: 0 }}>{prefix}</span>}
+          {prefix && <span style={{ fontSize: 14, color: '#4A4235', fontFamily: "'DM Sans', sans-serif", flexShrink: 0 }}>{prefix}</span>}
           <input
             ref={inputRef}
             type={type}
@@ -162,7 +162,7 @@ function EditableRow({
             <CheckIcon size={14} color="#FAF6EA" />
           </button>
           <button onClick={cancel} style={{ width: 34, height: 34, borderRadius: 10, background: '#EDE8D4', border: '1px solid #E0D8C5', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
-            <CloseIcon size={12} color="#6B6857" />
+            <CloseIcon size={12} color="#4A4235" />
           </button>
         </div>
       )}
@@ -344,7 +344,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       <SectionLabel label="Security" />
       <Card>
         <Row label="Email" description="Your sign-in address" last>
-          <div style={{ fontSize: 13.5, color: '#6B6857', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userEmail}</div>
+          <div style={{ fontSize: 13.5, color: '#4A4235', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userEmail}</div>
         </Row>
       </Card>
 
@@ -356,10 +356,10 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
           >
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>Change password</div>
-              {!showPw && <div style={{ fontSize: 11.5, color: '#B5AC95', marginTop: 2 }}>Update your account password</div>}
+              {!showPw && <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2 }}>Update your account password</div>}
             </div>
             <div style={{ transform: showPw ? 'rotate(90deg)' : 'none', transition: 'transform 0.18s ease' }}>
-              <ChevronRightIcon size={15} color="#C9C0A8" />
+              <ChevronRightIcon size={15} color="#8B8272" />
             </div>
           </div>
 
@@ -392,8 +392,8 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
                       {PW_RULES.map(r => {
                         const ok = r.test(pwNew)
                         return (
-                          <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: ok ? '#5C7A4D' : '#B5AC95', fontWeight: 500 }}>
-                            <div style={{ width: 6, height: 6, borderRadius: 3, background: ok ? '#5C7A4D' : '#C9C0A8' }} />
+                          <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: ok ? '#5C7A4D' : '#6B5F4E', fontWeight: 500 }}>
+                            <div style={{ width: 6, height: 6, borderRadius: 3, background: ok ? '#5C7A4D' : '#8B8272' }} />
                             {r.label}
                           </div>
                         )
@@ -406,7 +406,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
                   <button
                     onClick={handlePasswordSave}
                     disabled={pwSaving || !pwNew || !pwConfirm}
-                    style={{ background: pwSaving || !pwNew || !pwConfirm ? '#C9C0A8' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 12, padding: '11px', fontSize: 13.5, fontWeight: 500, cursor: pwSaving || !pwNew || !pwConfirm ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'background 0.15s' }}
+                    style={{ background: pwSaving || !pwNew || !pwConfirm ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 12, padding: '11px', fontSize: 13.5, fontWeight: 500, cursor: pwSaving || !pwNew || !pwConfirm ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'background 0.15s' }}
                   >
                     {pwSaving ? 'Updating…' : 'Update password'}
                   </button>
@@ -501,7 +501,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       <SectionLabel label="About" />
       <Card>
         <Row label="Version" last={false}>
-          <span style={{ fontSize: 13.5, color: '#B5AC95', fontFamily: "'DM Sans', sans-serif" }}>1.0.0</span>
+          <span style={{ fontSize: 13.5, color: '#6B5F4E', fontFamily: "'DM Sans', sans-serif" }}>1.0.0</span>
         </Row>
         <div
           onClick={() => onShowLegal('privacy')}
@@ -510,7 +510,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
         >
           <div style={{ flex: 1, fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>Privacy Policy</div>
-          <ChevronRightIcon size={15} color="#C9C0A8" />
+          <ChevronRightIcon size={15} color="#8B8272" />
         </div>
         <div
           onClick={() => onShowLegal('terms')}
@@ -519,7 +519,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
         >
           <div style={{ flex: 1, fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>Terms of Service</div>
-          <ChevronRightIcon size={15} color="#C9C0A8" />
+          <ChevronRightIcon size={15} color="#8B8272" />
         </div>
       </Card>
 
@@ -537,3 +537,4 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
     </div>
   )
 }
+

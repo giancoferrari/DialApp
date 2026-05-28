@@ -37,3 +37,4 @@ export async function deletePracticeSession(id: string): Promise<void> {
   const { error } = await supabase.from('practice_sessions').delete().eq('id', id)
   if (error) throw error
 }
+

@@ -128,3 +128,4 @@ export async function refundWager(userId: string, matchId: string, amount: numbe
 
   return toWallet(data)
 }
+

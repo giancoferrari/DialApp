@@ -230,3 +230,4 @@ export async function fetchMatchRealtime(matchId: string): Promise<Match> {
   if (error) throw new Error(error.message)
   return hydrateMatch(data)
 }
+

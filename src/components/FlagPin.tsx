@@ -12,3 +12,4 @@ export default function FlagPin({ size = 14, color = '#D9824D' }: { size?: numbe
     </svg>
   )
 }
+

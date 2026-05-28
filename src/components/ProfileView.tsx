@@ -245,7 +245,7 @@ export default function ProfileView({
               onClick={() => setEditingUsername(false)}
               style={{ background: '#F0EBDD', border: '1px solid #E0D8C5', borderRadius: 8, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
             >
-              <CloseIcon size={12} color="#6B6857" />
+              <CloseIcon size={12} color="#4A4235" />
             </button>
           </div>
         ) : (
@@ -261,16 +261,16 @@ export default function ProfileView({
           >
             <span style={{
               fontFamily: "'Bricolage Grotesque', sans-serif",
-              fontSize: 22, fontWeight: 700, color: profile?.username ? '#1F1D17' : '#B5AC95',
+              fontSize: 22, fontWeight: 700, color: profile?.username ? '#1F1D17' : '#6B5F4E',
               letterSpacing: '-0.02em',
             }}>
               {displayName}
             </span>
-            <PencilIcon size={14} color="#B5AC95" />
+            <PencilIcon size={14} color="#6B5F4E" />
           </button>
         )}
 
-        <div style={{ fontSize: 13, color: '#B5AC95', marginBottom: 24 }}>{userEmail}</div>
+        <div style={{ fontSize: 13, color: '#6B5F4E', marginBottom: 24 }}>{userEmail}</div>
 
         {/* Rank badge */}
         <div style={{
@@ -302,7 +302,7 @@ export default function ProfileView({
                 {s.value}
               </div>
               <div style={{
-                fontSize: 10, color: '#6B6857', fontWeight: 600,
+                fontSize: 10, color: '#4A4235', fontWeight: 600,
                 textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 5,
               }}>
                 {s.label}
@@ -317,7 +317,7 @@ export default function ProfileView({
             {[
               { value: profile?.wins ?? 0,   label: 'W', color: '#5C7A4D', bg: 'rgba(92,122,77,0.12)' },
               { value: profile?.losses ?? 0, label: 'L', color: '#D9824D', bg: 'rgba(217,130,77,0.12)' },
-              { value: profile?.ties ?? 0,   label: 'T', color: '#6B6857', bg: 'rgba(107,104,87,0.10)' },
+              { value: profile?.ties ?? 0,   label: 'T', color: '#4A4235', bg: 'rgba(107,104,87,0.10)' },
             ].map(s => (
               <div key={s.label} style={{
                 display: 'flex', alignItems: 'center', gap: 5,
@@ -397,7 +397,7 @@ export default function ProfileView({
             { label: 'Avg score',  value: avgScore ? String(avgScore) : '—' },
           ].map(s => (
             <div key={s.label} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 14, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 13, color: '#6B6857', fontWeight: 500 }}>{s.label}</span>
+              <span style={{ fontSize: 13, color: '#4A4235', fontWeight: 500 }}>{s.label}</span>
               <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>{s.value}</span>
             </div>
           ))}
@@ -410,7 +410,7 @@ export default function ProfileView({
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 20 }}>
 
           <div>
-            <div style={{ fontSize: 13, color: '#6B6857', marginBottom: 10 }}>Score to break</div>
+            <div style={{ fontSize: 13, color: '#4A4235', marginBottom: 10 }}>Score to break</div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
               {GOAL_PRESETS.map(g => (
                 <button
@@ -432,7 +432,7 @@ export default function ProfileView({
             </div>
             {goalScorePct !== null && bestRound && (
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#6B6857', marginBottom: 6 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#4A4235', marginBottom: 6 }}>
                   <span>Best: <strong style={{ color: '#1F1D17' }}>{bestRound.score}</strong></span>
                   <span>Goal: <strong style={{ color: '#1F3A2A' }}>break {goalScoreNum}</strong></span>
                 </div>
@@ -447,7 +447,7 @@ export default function ProfileView({
           </div>
 
           <div>
-            <div style={{ fontSize: 13, color: '#6B6857', marginBottom: 10 }}>Target handicap</div>
+            <div style={{ fontSize: 13, color: '#4A4235', marginBottom: 10 }}>Target handicap</div>
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               <input
                 type="number" step="0.1" min="0" max="54" placeholder="e.g. 10.0"
@@ -467,7 +467,7 @@ export default function ProfileView({
             </div>
             {hcpNum != null && goalHcpNum != null && (
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#6B6857', marginBottom: 6 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#4A4235', marginBottom: 6 }}>
                   <span>Current: <strong style={{ color: '#1F1D17' }}>{hcpNum.toFixed(1)}</strong></span>
                   <span>Target: <strong style={{ color: '#1F3A2A' }}>{goalHcpNum.toFixed(1)}</strong></span>
                 </div>
@@ -487,7 +487,7 @@ export default function ProfileView({
         </div>
 
         <div style={{ marginTop: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 8 }}>Notes & intentions</div>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 8 }}>Notes & intentions</div>
           <textarea
             value={goalNotes}
             onChange={e => setGoalNotes(e.target.value)}
@@ -504,7 +504,7 @@ export default function ProfileView({
       <div style={{ ...card, marginBottom: 20 }}>
         <SectionHeader label="Home Course" />
         <div>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 6 }}>Home course</div>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 6 }}>Home course</div>
           <input
             type="text"
             value={homeCourse}
@@ -531,7 +531,7 @@ export default function ProfileView({
               <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid #F0EBDD' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>{c.name}</div>
-                  <div style={{ fontSize: 12, color: '#6B6857', marginTop: 2 }}>
+                  <div style={{ fontSize: 12, color: '#4A4235', marginTop: 2 }}>
                     {c.count} {c.count === 1 ? 'round' : 'rounds'}
                     {homeCourse === c.name && <span style={{ marginLeft: 8, fontSize: 11, color: '#5C7A4D', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>Home</span>}
                   </div>
@@ -539,7 +539,7 @@ export default function ProfileView({
                 {c.bestScore && (
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.03em' }}>{c.bestScore}</div>
-                    <div style={{ fontSize: 11, color: '#6B6857' }}>best</div>
+                    <div style={{ fontSize: 11, color: '#4A4235' }}>best</div>
                   </div>
                 )}
               </div>
@@ -556,7 +556,7 @@ export default function ProfileView({
             onClick={saveEquipment}
             disabled={saving}
             style={{
-              background: saving ? '#C9C0A8' : '#1F3A2A', color: '#FAF6EA', border: 'none',
+              background: saving ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none',
               borderRadius: 999, padding: '8px 18px', fontSize: 13, fontWeight: 500,
               cursor: saving ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif",
             }}
@@ -569,7 +569,7 @@ export default function ProfileView({
           const clubsInCat = CLUBS_DATA.filter(c => c.cat === cat.id)
           return (
             <div key={cat.id} style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 11, color: '#B5AC95', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+              <div style={{ fontSize: 11, color: '#6B5F4E', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
                 {cat.label}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -619,7 +619,7 @@ export default function ProfileView({
         <SectionHeader label="Account" />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <div style={{ fontSize: 11, color: '#B5AC95', fontWeight: 500, marginBottom: 2 }}>Signed in as</div>
+            <div style={{ fontSize: 11, color: '#6B5F4E', fontWeight: 500, marginBottom: 2 }}>Signed in as</div>
             <div style={{ fontSize: 14, color: '#1F1D17', fontWeight: 500 }}>{userEmail}</div>
           </div>
           <button
@@ -640,3 +640,4 @@ export default function ProfileView({
     </div>
   )
 }
+

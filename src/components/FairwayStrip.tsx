@@ -67,3 +67,4 @@ export default function FairwayStrip({ height = 140 }: { height?: number }) {
     </div>
   )
 }
+

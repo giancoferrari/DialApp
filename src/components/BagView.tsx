@@ -61,7 +61,7 @@ function AddClubModal({ onAdd, onClose, isMobile = false }: AddClubModalProps) {
         <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginBottom: 6 }}>
           Add a club
         </div>
-        <p style={{ fontSize: 14, color: '#6B6857', marginBottom: 24, lineHeight: 1.5, marginTop: 0 }}>
+        <p style={{ fontSize: 14, color: '#4A4235', marginBottom: 24, lineHeight: 1.5, marginTop: 0 }}>
           Add any club not in the standard list.
         </p>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -96,7 +96,7 @@ function AddClubModal({ onAdd, onClose, isMobile = false }: AddClubModalProps) {
           <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
             <button
               type="button" onClick={onClose}
-              style={{ flex: 1, background: 'transparent', border: '1px solid #E0D8C5', borderRadius: 999, padding: '13px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: 'pointer', color: '#6B6857' }}
+              style={{ flex: 1, background: 'transparent', border: '1px solid #E0D8C5', borderRadius: 999, padding: '13px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: 'pointer', color: '#4A4235' }}
             >
               Cancel
             </button>
@@ -180,7 +180,7 @@ function ClubDistanceCard({ club, distance, isCustom = false, onSave, onDelete, 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{
             fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
-            color: '#6B6857', textTransform: 'uppercase',
+            color: '#4A4235', textTransform: 'uppercase',
             background: '#F0EBDD', padding: '4px 10px', borderRadius: 999,
           }}>
             {CAT_LABELS[club.cat]}
@@ -193,7 +193,7 @@ function ClubDistanceCard({ club, distance, isCustom = false, onSave, onDelete, 
                 width: 22, height: 22, borderRadius: '50%', border: 'none',
                 background: '#F0EBDD', cursor: 'pointer', padding: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#B5AC95', fontSize: 15, lineHeight: 1, transition: 'all 0.15s',
+                color: '#6B5F4E', fontSize: 15, lineHeight: 1, transition: 'all 0.15s',
               }}
             >
               ×
@@ -235,23 +235,23 @@ function ClubDistanceCard({ club, distance, isCustom = false, onSave, onDelete, 
                 color: '#1F3A2A', letterSpacing: '-0.04em', outline: 'none', padding: 0,
               }}
             />
-            <span style={{ fontSize: 13, color: '#6B6857', paddingBottom: isMobile ? 5 : 8, fontWeight: 500 }}>yds</span>
+            <span style={{ fontSize: 13, color: '#4A4235', paddingBottom: isMobile ? 5 : 8, fontWeight: 500 }}>yds</span>
           </>
         ) : distance != null ? (
           <>
             <span style={{
               fontFamily: "'Bricolage Grotesque', sans-serif",
               fontSize: isMobile ? 36 : 52, fontWeight: 700, lineHeight: 0.9,
-              color: saving ? '#B5AC95' : '#1F3A2A', letterSpacing: '-0.04em',
+              color: saving ? '#6B5F4E' : '#1F3A2A', letterSpacing: '-0.04em',
               transition: 'color 0.15s',
             }}>
               {saving ? '…' : distance}
             </span>
-            <span style={{ fontSize: 13, color: '#6B6857', paddingBottom: isMobile ? 5 : 8, fontWeight: 500 }}>yds</span>
+            <span style={{ fontSize: 13, color: '#4A4235', paddingBottom: isMobile ? 5 : 8, fontWeight: 500 }}>yds</span>
           </>
         ) : (
           <div style={{ paddingBottom: 4 }}>
-            <div style={{ fontSize: isMobile ? 12 : 14, color: '#B5AC95', fontWeight: 400, fontFamily: "'DM Sans', sans-serif" }}>
+            <div style={{ fontSize: isMobile ? 12 : 14, color: '#6B5F4E', fontWeight: 400, fontFamily: "'DM Sans', sans-serif" }}>
               Tap to set distance
             </div>
           </div>
@@ -391,7 +391,7 @@ export default function BagView({ shots, onSetDistance, isMobile = false }: Prop
             <span style={{ color: '#1F3A2A' }}> yard.</span>
           </h1>
           <p style={{
-            fontSize: 16, lineHeight: 1.5, color: '#6B6857',
+            fontSize: 16, lineHeight: 1.5, color: '#4A4235',
             maxWidth: 480, fontWeight: 400, margin: 0,
             fontFamily: "'DM Sans', sans-serif",
           }}>
@@ -426,7 +426,7 @@ export default function BagView({ shots, onSetDistance, isMobile = false }: Prop
               onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
             >
               {label}
-              <span style={{ fontSize: 11, color: active ? '#B5C29A' : '#6B6857', fontWeight: 500 }}>
+              <span style={{ fontSize: 11, color: active ? '#B5C29A' : '#4A4235', fontWeight: 500 }}>
                 {catCount(cat)}
               </span>
             </button>
@@ -471,3 +471,4 @@ export default function BagView({ shots, onSetDistance, isMobile = false }: Prop
     </main>
   )
 }
+

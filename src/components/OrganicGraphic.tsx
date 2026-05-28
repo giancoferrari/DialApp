@@ -88,3 +88,4 @@ export default function OrganicGraphic({ size = 360 }: { size?: number }) {
     </div>
   )
 }
+

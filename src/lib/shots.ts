@@ -67,3 +67,4 @@ export async function setClubDistance(
   if (delError) throw delError
   return insertShot(userId, { clubId, yardage, ts: Date.now(), note: '' })
 }
+

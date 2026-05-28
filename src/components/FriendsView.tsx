@@ -156,7 +156,7 @@ function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onCl
             ].map(s => (
               <div key={s.label} style={{ flex: 1, textAlign: 'center', background: 'rgba(250,246,234,0.72)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.60)', borderRadius: 16, padding: '13px 8px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.80)' }}>
                 <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.03em', lineHeight: 1 }}>{s.val}</div>
-                <div style={{ fontSize: 10, color: '#B5AC95', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 4 }}>{s.label}</div>
+                <div style={{ fontSize: 10, color: '#6B5F4E', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 4 }}>{s.label}</div>
               </div>
             ))}
           </div>
@@ -167,7 +167,7 @@ function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onCl
               {[
                 { value: profile.wins ?? 0,   label: 'Wins',   color: '#5C7A4D', bg: 'rgba(92,122,77,0.12)'  },
                 { value: profile.losses ?? 0, label: 'Losses', color: '#C0603A', bg: 'rgba(192,96,58,0.12)'  },
-                { value: profile.ties ?? 0,   label: 'Ties',   color: '#6B6857', bg: 'rgba(107,104,87,0.10)' },
+                { value: profile.ties ?? 0,   label: 'Ties',   color: '#4A4235', bg: 'rgba(107,104,87,0.10)' },
               ].map(s => (
                 <div key={s.label} style={{ flex: 1, textAlign: 'center', background: s.bg, border: '1px solid rgba(255,255,255,0.40)', borderRadius: 14, padding: '10px 4px' }}>
                   <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: s.color, letterSpacing: '-0.03em' }}>{s.value}</div>
@@ -179,8 +179,8 @@ function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onCl
 
           {/* Home course */}
           {profile.homeCourse && (
-            <div style={{ fontSize: 13, color: '#6B6857', background: 'rgba(250,246,234,0.72)', border: '1px solid rgba(255,255,255,0.55)', borderRadius: 12, padding: '9px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <PersonIcon size={13} color="#B5AC95" />
+            <div style={{ fontSize: 13, color: '#4A4235', background: 'rgba(250,246,234,0.72)', border: '1px solid rgba(255,255,255,0.55)', borderRadius: 12, padding: '9px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <PersonIcon size={13} color="#6B5F4E" />
               <span>{profile.homeCourse}</span>
             </div>
           )}
@@ -363,13 +363,13 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
           onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
         />
         <div style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-          <PersonIcon size={16} color="#B5AC95" />
+          <PersonIcon size={16} color="#6B5F4E" />
         </div>
 
         {(searchResults.length > 0 || searching) && (
           <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, background: 'rgba(250,246,234,0.92)', backdropFilter: 'blur(40px) saturate(200%)', WebkitBackdropFilter: 'blur(40px) saturate(200%)', border: '1px solid rgba(255,255,255,0.68)', borderRadius: 18, overflow: 'hidden', zIndex: 20, boxShadow: '0 16px 40px rgba(31,58,42,0.16), inset 0 1px 0 rgba(255,255,255,0.85)' }}>
             {searching && (
-              <div style={{ padding: '14px 16px', fontSize: 13, color: '#B5AC95' }}>Searching…</div>
+              <div style={{ padding: '14px 16px', fontSize: 13, color: '#6B5F4E' }}>Searching…</div>
             )}
             {searchResults.map(p => {
               const existing = friendshipWith(p.userId)
@@ -382,10 +382,10 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
                       {lbl.primary}
                     </div>
                     {lbl.secondary && (
-                      <div style={{ fontSize: 12, color: '#6B6857' }}>{lbl.secondary}</div>
+                      <div style={{ fontSize: 12, color: '#4A4235' }}>{lbl.secondary}</div>
                     )}
                     {!lbl.secondary && p.handicapIndex != null && (
-                      <div style={{ fontSize: 12, color: '#6B6857' }}>HCP {p.handicapIndex.toFixed(1)}</div>
+                      <div style={{ fontSize: 12, color: '#4A4235' }}>HCP {p.handicapIndex.toFixed(1)}</div>
                     )}
                   </div>
                   {!existing ? (
@@ -397,7 +397,7 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
                       {actionLoading === p.userId ? '…' : '+ Add'}
                     </button>
                   ) : existing.status === 'pending' ? (
-                    <span style={{ fontSize: 12, color: '#B5AC95', fontWeight: 500 }}>
+                    <span style={{ fontSize: 12, color: '#6B5F4E', fontWeight: 500 }}>
                       {existing.requesterId === userId ? 'Sent' : 'Incoming'}
                     </span>
                   ) : (
@@ -413,7 +413,7 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
       {/* Incoming Requests */}
       {incomingRequests.length > 0 && (
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 12 }}>
             Requests ({incomingRequests.length})
           </div>
           <div style={card}>
@@ -427,12 +427,12 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
                       {profileLabel(profile).primary}
                     </div>
                     {profileLabel(profile).secondary && (
-                      <div style={{ fontSize: 12, color: '#B5AC95' }}>{profileLabel(profile).secondary}</div>
+                      <div style={{ fontSize: 12, color: '#6B5F4E' }}>{profileLabel(profile).secondary}</div>
                     )}
-                    <div style={{ fontSize: 12, color: '#6B6857' }}>wants to connect</div>
+                    <div style={{ fontSize: 12, color: '#4A4235' }}>wants to connect</div>
                   </div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={() => handleDecline(f.id)} disabled={!!actionLoading} style={btnSmall('#F0EBDD', '#6B6857')}>
+                    <button onClick={() => handleDecline(f.id)} disabled={!!actionLoading} style={btnSmall('#F0EBDD', '#4A4235')}>
                       Decline
                     </button>
                     <button onClick={() => handleAccept(f.id)} disabled={!!actionLoading} style={btnSmall('#1F3A2A', '#FAF6EA')}>
@@ -449,7 +449,7 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
       {/* Outgoing pending */}
       {outgoingRequests.length > 0 && (
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 12 }}>
             Pending ({outgoingRequests.length})
           </div>
           <div style={card}>
@@ -463,10 +463,10 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
                       {profileLabel(profile).primary}
                     </div>
                     {profileLabel(profile).secondary && (
-                      <div style={{ fontSize: 12, color: '#B5AC95' }}>{profileLabel(profile).secondary}</div>
+                      <div style={{ fontSize: 12, color: '#6B5F4E' }}>{profileLabel(profile).secondary}</div>
                     )}
                   </div>
-                  <span style={{ fontSize: 12, color: '#B5AC95', fontWeight: 500, background: '#F0EBDD', borderRadius: 999, padding: '4px 10px' }}>Pending</span>
+                  <span style={{ fontSize: 12, color: '#6B5F4E', fontWeight: 500, background: '#F0EBDD', borderRadius: 999, padding: '4px 10px' }}>Pending</span>
                 </div>
               )
             })}
@@ -476,16 +476,16 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
 
       {/* Friends list */}
       <div>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 12 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 12 }}>
           Your friends ({myFriendships.length})
         </div>
 
         {loading ? (
-          <div style={{ ...card, padding: '32px', textAlign: 'center', fontSize: 14, color: '#B5AC95' }}>Loading…</div>
+          <div style={{ ...card, padding: '32px', textAlign: 'center', fontSize: 14, color: '#6B5F4E' }}>Loading…</div>
         ) : myFriendships.length === 0 ? (
           <div style={{ ...card, padding: '40px 24px', textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, color: '#C9C0A8', marginBottom: 8 }}>No friends yet</div>
-            <div style={{ fontSize: 13, color: '#B5AC95' }}>Search by username to add your playing partners.</div>
+            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, color: '#8B8272', marginBottom: 8 }}>No friends yet</div>
+            <div style={{ fontSize: 13, color: '#6B5F4E' }}>Search by username to add your playing partners.</div>
           </div>
         ) : (
           <div style={card}>
@@ -501,10 +501,10 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
                         {profileLabel(profile).primary}
                       </div>
                       {profileLabel(profile).secondary && (
-                        <div style={{ fontSize: 12, color: '#B5AC95' }}>{profileLabel(profile).secondary}</div>
+                        <div style={{ fontSize: 12, color: '#6B5F4E' }}>{profileLabel(profile).secondary}</div>
                       )}
                       {profile?.handicapIndex != null && (
-                        <div style={{ fontSize: 12, color: '#6B6857' }}>HCP {profile.handicapIndex.toFixed(1)}</div>
+                        <div style={{ fontSize: 12, color: '#4A4235' }}>HCP {profile.handicapIndex.toFixed(1)}</div>
                       )}
                     </div>
                   </div>
@@ -515,7 +515,7 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
                     onMouseEnter={e => { e.currentTarget.style.opacity = '1' }}
                     onMouseLeave={e => { e.currentTarget.style.opacity = '0.4' }}
                   >
-                    <CloseIcon size={14} color="#6B6857" />
+                    <CloseIcon size={14} color="#4A4235" />
                   </button>
                 </div>
               )
@@ -528,3 +528,4 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
     </div>
   )
 }
+

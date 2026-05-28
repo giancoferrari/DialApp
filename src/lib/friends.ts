@@ -81,3 +81,4 @@ export async function removeFriend(id: string): Promise<void> {
   const { error } = await supabase.from('friendships').delete().eq('id', id)
   if (error) throw error
 }
+

@@ -132,16 +132,16 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
       )}
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '48px', fontSize: 14, color: '#B5AC95' }}>Loading…</div>
+        <div style={{ textAlign: 'center', padding: '48px', fontSize: 14, color: '#6B5F4E' }}>Loading…</div>
       ) : total === 0 ? (
         <div style={{ background: 'rgba(250,246,234,0.70)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 22, padding: '48px 24px', textAlign: 'center', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.80)' }}>
           <div style={{ width: 56, height: 56, borderRadius: 28, background: '#F0EBDD', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="#C9C0A8" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="#8B8272" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#C9C0A8', marginBottom: 8, letterSpacing: '-0.02em' }}>You're all caught up</div>
-          <div style={{ fontSize: 13, color: '#B5AC95', lineHeight: 1.5 }}>Friend requests and match invites appear here.</div>
+          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#8B8272', marginBottom: 8, letterSpacing: '-0.02em' }}>You're all caught up</div>
+          <div style={{ fontSize: 13, color: '#6B5F4E', lineHeight: 1.5 }}>Friend requests and match invites appear here.</div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -157,7 +157,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
                 <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>
                   {f.profile?.username ? `@${f.profile.username}` : 'Someone'}
                 </div>
-                <div style={{ fontSize: 12, color: '#B5AC95', marginTop: 2 }}>wants to be friends</div>
+                <div style={{ fontSize: 12, color: '#6B5F4E', marginTop: 2 }}>wants to be friends</div>
               </div>
               <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                 <button
@@ -170,7 +170,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
                   onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.88)' }}
                   onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
                 >
-                  <CloseIcon size={14} color="#6B6857" />
+                  <CloseIcon size={14} color="#4A4235" />
                 </button>
                 <button
                   onClick={() => handleFriendAccept(f)}
@@ -233,3 +233,4 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
     </div>
   )
 }
+

@@ -80,7 +80,7 @@ function SetNewPasswordModal() {
             <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: '#1F1D17', marginBottom: 10 }}>
               Password updated!
             </div>
-            <p style={{ fontSize: 14, color: '#6B6857', marginBottom: 24 }}>You're all set. Continue using the app.</p>
+            <p style={{ fontSize: 14, color: '#4A4235', marginBottom: 24 }}>You're all set. Continue using the app.</p>
             <button
               onClick={clearPasswordRecovery}
               style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '12px 28px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
@@ -93,7 +93,7 @@ function SetNewPasswordModal() {
             <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginTop: 20, marginBottom: 6 }}>
               Set new password
             </div>
-            <p style={{ fontSize: 14, color: '#6B6857', marginBottom: 24, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 14, color: '#4A4235', marginBottom: 24, lineHeight: 1.5 }}>
               Choose a strong password for your account.
             </p>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -118,7 +118,7 @@ function SetNewPasswordModal() {
               )}
               <button
                 type="submit" disabled={loading}
-                style={{ background: loading ? '#C9C0A8' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}
+                style={{ background: loading ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}
               >
                 {loading ? 'Saving…' : 'Update password'}
               </button>
@@ -264,7 +264,7 @@ function AppShell() {
         backgroundImage: 'url(/golf-bg.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center 30%',
-        filter: 'blur(28px) saturate(1.25) brightness(0.94)',
+        filter: 'blur(28px) saturate(1.1) brightness(0.96) sepia(22%)',
         zIndex: 0,
         pointerEvents: 'none',
       }} />
@@ -282,20 +282,20 @@ function AppShell() {
         pointerEvents: 'none',
       }} />
 
-      {/* Layer 2: reading scrim — cream fog veils the top reading zone for legibility,
-          a clear "photo window" survives at 62-78%, and a soft bottom haze grounds the floating tab bar */}
+      {/* Layer 2: reading scrim — top zone heavily backed for titles/labels, minimal at photo window,
+          haze at bottom anchors floating tab bar. Min 0.38 ensures #4A4235 passes 4.5:1 everywhere */}
       <div aria-hidden="true" style={{
         position: 'fixed', inset: 0,
         background: `
           linear-gradient(180deg,
-            rgba(237,232,212,0.68) 0%,
-            rgba(237,232,212,0.54) 12%,
-            rgba(237,232,212,0.38) 26%,
-            rgba(237,232,212,0.22) 42%,
-            rgba(237,232,212,0.10) 56%,
-            rgba(237,232,212,0.03) 70%,
-            rgba(237,232,212,0.10) 86%,
-            rgba(237,232,212,0.26) 100%
+            rgba(237,232,212,0.78) 0%,
+            rgba(237,232,212,0.64) 15%,
+            rgba(237,232,212,0.52) 30%,
+            rgba(237,232,212,0.40) 46%,
+            rgba(237,232,212,0.28) 60%,
+            rgba(237,232,212,0.18) 74%,
+            rgba(237,232,212,0.24) 87%,
+            rgba(237,232,212,0.36) 100%
           )
         `,
         backgroundAttachment: 'fixed',
@@ -417,3 +417,4 @@ export default function App() {
 
   return <AppShell />
 }
+

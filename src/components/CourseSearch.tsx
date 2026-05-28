@@ -71,7 +71,7 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
       />
 
       {loading && (
-        <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#B5AC95', fontFamily: "'DM Sans', sans-serif" }}>
+        <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#6B5F4E', fontFamily: "'DM Sans', sans-serif" }}>
           Searching…
         </div>
       )}
@@ -103,7 +103,7 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
                 <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
                   {course.course_name}
                 </div>
-                <div style={{ fontSize: 11.5, color: '#B5AC95', marginTop: 2, display: 'flex', gap: 8 }}>
+                <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2, display: 'flex', gap: 8 }}>
                   <span>{loc}</span>
                   {teeCount > 0 && <span style={{ color: '#D9824D' }}>{teeCount} tee{teeCount !== 1 ? 's' : ''}</span>}
                 </div>
@@ -115,3 +115,4 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
     </div>
   )
 }
+

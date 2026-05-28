@@ -187,3 +187,4 @@ export function PencilIcon({ size = 22, color = 'currentColor' }: { size?: numbe
     </svg>
   )
 }
+

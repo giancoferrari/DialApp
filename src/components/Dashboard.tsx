@@ -54,8 +54,8 @@ function relTime(ts: string): string {
 }
 
 function toParLabel(diff: number | null | undefined): { text: string; color: string } {
-  if (diff === null || diff === undefined) return { text: '', color: '#6B6857' }
-  if (diff === 0) return { text: 'E', color: '#6B6857' }
+  if (diff === null || diff === undefined) return { text: '', color: '#4A4235' }
+  if (diff === 0) return { text: 'E', color: '#4A4235' }
   if (diff < 0)  return { text: `${diff}`, color: '#5C7A4D' }
   return { text: `+${diff}`, color: '#C0603A' }
 }
@@ -140,7 +140,7 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
           WebkitBackdropFilter: 'blur(16px) saturate(160%)',
           border: '1px solid rgba(255,255,255,0.55)',
           borderRadius: 999, padding: '6px 14px',
-          fontSize: 12, fontWeight: 500, color: '#6B6857',
+          fontSize: 12, fontWeight: 500, color: '#4A4235',
           fontFamily: "'DM Sans', sans-serif",
           boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
         }}>
@@ -244,16 +244,16 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
                   </span>
                 )}
               </div>
-              <div style={{ fontSize: 9.5, color: '#B5AC95', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Last round</div>
-              <div style={{ fontSize: 10.5, color: '#6B6857', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '0 4px' }}>
+              <div style={{ fontSize: 9.5, color: '#6B5F4E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Last round</div>
+              <div style={{ fontSize: 10.5, color: '#4A4235', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '0 4px' }}>
                 {lastRound!.courseName.split(' ').slice(0, 3).join(' ')}
               </div>
             </>
           ) : (
             <>
-              <div style={{ fontSize: 22, color: '#C9C0A8', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700 }}>—</div>
-              <div style={{ fontSize: 9.5, color: '#B5AC95', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Last round</div>
-              <div style={{ fontSize: 10.5, color: '#C9C0A8', marginTop: 2 }}>None yet</div>
+              <div style={{ fontSize: 22, color: '#8B8272', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700 }}>—</div>
+              <div style={{ fontSize: 9.5, color: '#6B5F4E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Last round</div>
+              <div style={{ fontSize: 10.5, color: '#8B8272', marginTop: 2 }}>None yet</div>
             </>
           )}
         </div>
@@ -263,8 +263,8 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
           <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1 }}>
             {profile?.handicapIndex != null ? profile.handicapIndex.toFixed(1) : '—'}
           </div>
-          <div style={{ fontSize: 9.5, color: '#B5AC95', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Handicap</div>
-          <div style={{ fontSize: 10.5, color: '#6B6857', marginTop: 2 }}>index</div>
+          <div style={{ fontSize: 9.5, color: '#6B5F4E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Handicap</div>
+          <div style={{ fontSize: 10.5, color: '#4A4235', marginTop: 2 }}>index</div>
         </div>
 
         {/* Record — flex-centered to fix alignment */}
@@ -274,23 +274,23 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
               {profile?.wins ?? 0}
             </span>
             <span style={{ fontSize: 13, fontWeight: 700, color: '#5C7A4D', lineHeight: 1 }}>W</span>
-            <span style={{ fontSize: 8, color: '#C9C0A8' }}>·</span>
+            <span style={{ fontSize: 8, color: '#8B8272' }}>·</span>
             <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.03em', lineHeight: 1 }}>
               {profile?.losses ?? 0}
             </span>
             <span style={{ fontSize: 13, fontWeight: 700, color: '#C0603A', lineHeight: 1 }}>L</span>
           </div>
           {(profile?.ties ?? 0) > 0 && (
-            <div style={{ fontSize: 11, color: '#6B6857', marginTop: 2 }}>{profile!.ties}T</div>
+            <div style={{ fontSize: 11, color: '#4A4235', marginTop: 2 }}>{profile!.ties}T</div>
           )}
-          <div style={{ fontSize: 9.5, color: '#B5AC95', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Record</div>
+          <div style={{ fontSize: 9.5, color: '#6B5F4E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Record</div>
         </div>
       </div>
 
       {/* ── Recent Rounds ──────────────────────────────────── */}
       <div style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: '#6B6857', textTransform: 'uppercase' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase' }}>
             Recent Rounds
           </div>
           {recentRounds.length > 0 && (
@@ -299,10 +299,10 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
               style={{
                 display: 'flex', alignItems: 'center', gap: 4,
                 background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                fontSize: 12, color: '#B5AC95', fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
+                fontSize: 12, color: '#6B5F4E', fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
               }}
             >
-              View all <ArrowRight size={13} color="#B5AC95" />
+              View all <ArrowRight size={13} color="#6B5F4E" />
             </button>
           )}
         </div>
@@ -314,12 +314,12 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               margin: '0 auto 14px',
             }}>
-              <TrophyIcon size={22} color="#C9C0A8" />
+              <TrophyIcon size={22} color="#8B8272" />
             </div>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 17, fontWeight: 700, color: '#C9C0A8', marginBottom: 6 }}>
+            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 17, fontWeight: 700, color: '#8B8272', marginBottom: 6 }}>
               No rounds yet
             </div>
-            <div style={{ fontSize: 13, color: '#B5AC95', marginBottom: 20, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 13, color: '#6B5F4E', marginBottom: 20, lineHeight: 1.5 }}>
               Log your first round and track your progress.
             </div>
             <button
@@ -369,7 +369,7 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
                     <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {round.courseName}
                     </div>
-                    <div style={{ fontSize: 11.5, color: '#B5AC95', marginTop: 2 }}>
+                    <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2 }}>
                       {round.holes} holes · {relTime(round.playedAt)}
                     </div>
                   </div>
@@ -387,7 +387,7 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
                       )}
                     </div>
                   ) : (
-                    <div style={{ fontSize: 13, color: '#C9C0A8', fontStyle: 'italic' }}>—</div>
+                    <div style={{ fontSize: 13, color: '#8B8272', fontStyle: 'italic' }}>—</div>
                   )}
                 </div>
               )
@@ -461,3 +461,4 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
     </main>
   )
 }
+

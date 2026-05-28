@@ -98,7 +98,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
 
   const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em',
-    color: '#6B6857', textTransform: 'uppercase', marginBottom: 10,
+    color: '#4A4235', textTransform: 'uppercase', marginBottom: 10,
   }
 
   const inputStyle: React.CSSProperties = {
@@ -159,7 +159,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
           <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', marginBottom: 8 }}>
             No sessions yet
           </div>
-          <p style={{ fontSize: 14, color: '#6B6857', margin: 0 }}>Log your first range session to start tracking your practice.</p>
+          <p style={{ fontSize: 14, color: '#4A4235', margin: 0 }}>Log your first range session to start tracking your practice.</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -179,11 +179,11 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
                   <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>
                     {focusLabel(s.focusArea)}
                   </span>
-                  <span style={{ fontSize: 12, color: '#B5AC95' }}>·</span>
-                  <span style={{ fontSize: 12, color: '#6B6857' }}>{formatDate(s.sessionDate)}</span>
+                  <span style={{ fontSize: 12, color: '#6B5F4E' }}>·</span>
+                  <span style={{ fontSize: 12, color: '#4A4235' }}>{formatDate(s.sessionDate)}</span>
                 </div>
                 {s.notes && (
-                  <div style={{ fontSize: 13, color: '#6B6857', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.notes}</div>
+                  <div style={{ fontSize: 13, color: '#4A4235', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.notes}</div>
                 )}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
@@ -233,7 +233,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
             {/* Mobile drag handle */}
             {isMobile && (
               <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12, paddingBottom: 2, flexShrink: 0 }}>
-                <div style={{ width: 40, height: 4, borderRadius: 2, background: '#C9C0A8' }} />
+                <div style={{ width: 40, height: 4, borderRadius: 2, background: '#8B8272' }} />
               </div>
             )}
 
@@ -280,7 +280,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
                           borderColor: active ? FOCUS_COLORS[f.id] : '#E0D8C5',
                           boxShadow: active ? `0 4px 12px ${FOCUS_COLORS[f.id]}30` : 'none',
                         }}
-                        onMouseEnter={e => { if (!active) { e.currentTarget.style.borderColor = '#C9C0A8'; e.currentTarget.style.background = '#F5F0E4' } }}
+                        onMouseEnter={e => { if (!active) { e.currentTarget.style.borderColor = '#8B8272'; e.currentTarget.style.background = '#F5F0E4' } }}
                         onMouseLeave={e => { if (!active) { e.currentTarget.style.borderColor = '#E0D8C5'; e.currentTarget.style.background = '#FAF6EA' } }}
                       >
                         {f.label}
@@ -310,7 +310,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
 
               {/* Notes */}
               <div>
-                <label style={labelStyle}>Notes <span style={{ textTransform: 'none', fontWeight: 400, letterSpacing: 0, color: '#B5AC95' }}>(optional)</span></label>
+                <label style={labelStyle}>Notes <span style={{ textTransform: 'none', fontWeight: 400, letterSpacing: 0, color: '#6B5F4E' }}>(optional)</span></label>
                 <textarea
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
@@ -338,7 +338,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
                 onClick={handleSave}
                 disabled={saving}
                 style={{
-                  width: '100%', background: saving ? '#C9C0A8' : '#1F3A2A',
+                  width: '100%', background: saving ? '#8B8272' : '#1F3A2A',
                   color: '#FAF6EA', border: 'none', borderRadius: 999,
                   padding: '15px', fontSize: 15, fontWeight: 500,
                   cursor: saving ? 'not-allowed' : 'pointer',
@@ -356,3 +356,4 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
     </div>
   )
 }
+

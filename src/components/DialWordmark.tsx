@@ -24,3 +24,4 @@ export default function DialWordmark({ size = 28 }: { size?: number }) {
     </span>
   )
 }
+

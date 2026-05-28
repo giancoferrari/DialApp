@@ -37,3 +37,4 @@ export default function ClubBadge({ abbr, size = 44, variant = 'default' }: Prop
     </div>
   )
 }
+

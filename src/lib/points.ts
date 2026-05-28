@@ -11,7 +11,7 @@ export interface RankTier {
 }
 
 export const RANK_TIERS: RankTier[] = [
-  { name: 'Newcomer', minPoints: 0,    color: '#B5AC95' },
+  { name: 'Newcomer', minPoints: 0,    color: '#C9C0A8' },
   { name: 'Bronze',   minPoints: 100,  color: '#C8844A' },
   { name: 'Silver',   minPoints: 300,  color: '#8CA0A8' },
   { name: 'Gold',     minPoints: 600,  color: '#C8A84B' },
@@ -68,3 +68,4 @@ export async function awardPoints(winnerId: string | null, acceptedPlayerIds: st
     }
   }
 }
+

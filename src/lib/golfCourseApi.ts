@@ -40,3 +40,4 @@ export async function searchCourses(query: string): Promise<GolfCourse[]> {
     return []
   }
 }
+

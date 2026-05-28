@@ -39,3 +39,4 @@ export async function saveCorrection(
       updated_at: new Date().toISOString(),
     }, { onConflict: 'api_course_id' })
 }
+

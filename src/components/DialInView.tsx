@@ -64,7 +64,7 @@ export default function DialInView({ shots, isMobile }: Props) {
 
   const labelStyle: React.CSSProperties = {
     fontSize: 11, fontWeight: 600, letterSpacing: '0.08em',
-    color: '#6B6857', textTransform: 'uppercase', marginBottom: 10, display: 'block',
+    color: '#4A4235', textTransform: 'uppercase', marginBottom: 10, display: 'block',
   }
 
   return (
@@ -78,7 +78,7 @@ export default function DialInView({ shots, isMobile }: Props) {
         <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 28 : 38, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: 0 }}>
           Dial in.
         </h1>
-        <p style={{ fontSize: 14, color: '#6B6857', marginTop: 8 }}>
+        <p style={{ fontSize: 14, color: '#4A4235', marginTop: 8 }}>
           Enter your target distance and wind conditions — we'll find your club.
         </p>
       </div>
@@ -87,7 +87,7 @@ export default function DialInView({ shots, isMobile }: Props) {
         <div style={{ ...card, textAlign: 'center', padding: '48px 28px' }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>⛳</div>
           <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', marginBottom: 8 }}>No shot data yet</div>
-          <p style={{ fontSize: 14, color: '#6B6857' }}>Log shots in My Bag first so we can recommend clubs based on your real averages.</p>
+          <p style={{ fontSize: 14, color: '#4A4235' }}>Log shots in My Bag first so we can recommend clubs based on your real averages.</p>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 16 : 24, maxWidth: isMobile ? '100%' : 820 }}>
@@ -111,7 +111,7 @@ export default function DialInView({ shots, isMobile }: Props) {
                 onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
                 onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
               />
-              <span style={{ fontSize: 15, color: '#6B6857', fontWeight: 500 }}>yds</span>
+              <span style={{ fontSize: 15, color: '#4A4235', fontWeight: 500 }}>yds</span>
             </div>
           </div>
 
@@ -172,7 +172,7 @@ export default function DialInView({ shots, isMobile }: Props) {
               onClick={handleFind}
               disabled={!target}
               style={{
-                width: '100%', background: target ? '#1F3A2A' : '#C9C0A8',
+                width: '100%', background: target ? '#1F3A2A' : '#8B8272',
                 color: '#FAF6EA', border: 'none', borderRadius: 999,
                 padding: '15px 24px', fontSize: 15, fontWeight: 600,
                 cursor: target ? 'pointer' : 'not-allowed',
@@ -197,16 +197,16 @@ export default function DialInView({ shots, isMobile }: Props) {
                   <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: 8,
                     background: '#F0EBDD', borderRadius: 999, padding: '6px 14px',
-                    fontSize: 12.5, color: '#6B6857', marginBottom: 20,
+                    fontSize: 12.5, color: '#4A4235', marginBottom: 20,
                   }}>
                     <span>Playing distance after wind:</span>
                     <strong style={{ color: '#1F1D17' }}>{adjusted} yds</strong>
-                    <span style={{ color: '#B5AC95' }}>({windAdjustment(dir, str) > 0 ? '+' : ''}{windAdjustment(dir, str)} yds)</span>
+                    <span style={{ color: '#6B5F4E' }}>({windAdjustment(dir, str) > 0 ? '+' : ''}{windAdjustment(dir, str)} yds)</span>
                   </div>
                 )}
 
                 {result.length === 0 ? (
-                  <p style={{ color: '#6B6857', fontSize: 14 }}>No club data available. Log more shots in My Bag.</p>
+                  <p style={{ color: '#4A4235', fontSize: 14 }}>No club data available. Log more shots in My Bag.</p>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {result.map((s, i) => (
@@ -233,7 +233,7 @@ export default function DialInView({ shots, isMobile }: Props) {
                             {i === 0 && <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#D9824D', display: 'block', marginBottom: 2 }}>Best match</span>}
                             {s.name}
                           </div>
-                          <div style={{ fontSize: 13, color: i === 0 ? 'rgba(250,246,234,0.65)' : '#6B6857', marginTop: 2 }}>
+                          <div style={{ fontSize: 13, color: i === 0 ? 'rgba(250,246,234,0.65)' : '#4A4235', marginTop: 2 }}>
                             Your average: {s.avg} yds
                           </div>
                         </div>
@@ -255,3 +255,4 @@ export default function DialInView({ shots, isMobile }: Props) {
     </div>
   )
 }
+

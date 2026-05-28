@@ -211,7 +211,7 @@ export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, u
               }}>
                 {/* Email */}
                 <div style={{ padding: '10px 14px 8px', borderBottom: '1px solid #ECE5D2', marginBottom: 4 }}>
-                  <div style={{ fontSize: 11, color: '#B5AC95', fontWeight: 500 }}>Signed in as</div>
+                  <div style={{ fontSize: 11, color: '#6B5F4E', fontWeight: 500 }}>Signed in as</div>
                   <div style={{ fontSize: 13, color: '#1F1D17', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 160 }}>
                     {userEmail}
                   </div>
@@ -301,12 +301,12 @@ export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, u
                   padding: '5px 14px 4px', borderRadius: 14,
                   background: 'transparent',
                 }}>
-                  <item.Icon size={23} color={active ? '#1F3A2A' : '#96907C'} />
+                  <item.Icon size={23} color={active ? '#1F3A2A' : '#4A4235'} />
                   <span style={{
                     fontSize: 10.5, fontWeight: active ? 700 : 400,
                     fontFamily: "'DM Sans', sans-serif",
                     letterSpacing: active ? '-0.02em' : '0.01em',
-                    color: active ? '#1F1D17' : '#96907C',
+                    color: active ? '#1F1D17' : '#4A4235',
                     transition: 'color 0.2s ease, font-weight 0.2s ease',
                   }}>
                     {item.label}
@@ -328,3 +328,4 @@ export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, u
     </>
   )
 }
+

@@ -118,7 +118,7 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
         >
           {/* Handle */}
           <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12, paddingBottom: 4, flexShrink: 0 }}>
-            <div style={{ width: 40, height: 4, borderRadius: 2, background: '#C9C0A8' }} />
+            <div style={{ width: 40, height: 4, borderRadius: 2, background: '#8B8272' }} />
           </div>
 
           {/* Header */}
@@ -143,17 +143,17 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
               <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 56, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1 }}>
                 {yardage} <span style={{ fontSize: 24, color: '#D9824D' }}>yds</span>
               </div>
-              <p style={{ fontSize: 14, color: '#6B6857', marginTop: 10 }}>{club?.name} · Nice strike.</p>
+              <p style={{ fontSize: 14, color: '#4A4235', marginTop: 10 }}>{club?.name} · Nice strike.</p>
             </div>
           ) : (
             <div style={{ overflowY: 'auto', flex: 1, WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
               {/* Yardage display */}
               <div style={{ padding: '0 20px 16px' }}>
                 <div style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 20, padding: '20px 16px', textAlign: 'center', marginBottom: 12 }}>
-                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 72, fontWeight: 700, lineHeight: 1, letterSpacing: '-0.04em', color: yardage ? '#1F3A2A' : '#C9C0A8' }}>
+                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 72, fontWeight: 700, lineHeight: 1, letterSpacing: '-0.04em', color: yardage ? '#1F3A2A' : '#8B8272' }}>
                     {yardage || '0'}<span style={{ fontSize: 24, color: '#D9824D' }}>.</span>
                   </div>
-                  <div style={{ fontSize: 11, color: '#6B6857', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginTop: 4 }}>yards</div>
+                  <div style={{ fontSize: 11, color: '#4A4235', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginTop: 4 }}>yards</div>
                 </div>
 
                 {/* Numpad */}
@@ -163,9 +163,9 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
                       {n}
                     </button>
                   ))}
-                  <button onClick={() => setYardage(y => y.slice(0, -1))} style={{ height: 52, borderRadius: 14, background: '#F0EBDD', border: '1px solid #E0D8C5', fontSize: 13, fontWeight: 500, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Del</button>
+                  <button onClick={() => setYardage(y => y.slice(0, -1))} style={{ height: 52, borderRadius: 14, background: '#F0EBDD', border: '1px solid #E0D8C5', fontSize: 13, fontWeight: 500, color: '#4A4235', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Del</button>
                   <button onClick={() => stepNum(0)} style={{ height: 52, borderRadius: 14, background: '#FAF6EA', border: '1px solid #E0D8C5', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 600, color: '#1F1D17', cursor: 'pointer' }}>0</button>
-                  <button onClick={() => setYardage('')} style={{ height: 52, borderRadius: 14, background: '#F0EBDD', border: '1px solid #E0D8C5', fontSize: 13, fontWeight: 500, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Clear</button>
+                  <button onClick={() => setYardage('')} style={{ height: 52, borderRadius: 14, background: '#F0EBDD', border: '1px solid #E0D8C5', fontSize: 13, fontWeight: 500, color: '#4A4235', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Clear</button>
                 </div>
 
                 {/* Note */}
@@ -180,7 +180,7 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
 
               {/* Club picker */}
               <div style={{ padding: '0 20px', borderTop: '1px solid #E0D8C5', paddingTop: 16 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 10 }}>Pick a club</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 10 }}>Pick a club</div>
 
                 {/* Category filter */}
                 <div style={{ display: 'flex', gap: 6, overflowX: 'auto', marginBottom: 12, paddingBottom: 2, WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
@@ -229,7 +229,7 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
                 onClick={handleSave}
                 disabled={!isValid}
                 style={{
-                  width: '100%', background: isValid ? '#1F3A2A' : '#C9C0A8',
+                  width: '100%', background: isValid ? '#1F3A2A' : '#8B8272',
                   color: '#FAF6EA', border: 'none', borderRadius: 999,
                   padding: '15px', fontSize: 15, fontWeight: 500,
                   cursor: isValid ? 'pointer' : 'not-allowed',
@@ -303,13 +303,13 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
             <h3 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 64, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1, margin: 0 }}>
               {yardage} <span style={{ fontSize: 28, color: '#D9824D' }}>yds</span>
             </h3>
-            <p style={{ fontSize: 15, color: '#6B6857', marginTop: 12 }}>{club?.name} · Nice strike.</p>
+            <p style={{ fontSize: 15, color: '#4A4235', marginTop: 12 }}>{club?.name} · Nice strike.</p>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', flex: 1, overflow: 'hidden' }}>
             {/* Club picker */}
             <div style={{ padding: '28px 32px', borderRight: '1px solid #E0D8C5', overflowY: 'auto' }}>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 16 }}>Pick a club</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 16 }}>Pick a club</div>
               {(['woods', 'hybrids', 'irons', 'wedges'] as const).map(cat => (
                 <div key={cat} style={{ marginBottom: 18 }}>
                   <div style={{ fontSize: 11, color: '#8B8470', marginBottom: 8, fontWeight: 500, letterSpacing: '0.04em' }}>{CAT_LABELS[cat]}</div>
@@ -341,12 +341,12 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
 
             {/* Yardage input */}
             <div style={{ padding: '28px 32px', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 16 }}>Yardage</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 16 }}>Yardage</div>
               <div style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 20, padding: '28px 24px', textAlign: 'center', marginBottom: 16 }}>
-                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 88, fontWeight: 700, lineHeight: 1, letterSpacing: '-0.04em', color: yardage ? '#1F3A2A' : '#C9C0A8', transition: 'color 0.15s' }}>
+                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 88, fontWeight: 700, lineHeight: 1, letterSpacing: '-0.04em', color: yardage ? '#1F3A2A' : '#8B8272', transition: 'color 0.15s' }}>
                   {yardage || '0'}<span style={{ fontSize: 28, color: '#D9824D' }}>.</span>
                 </div>
-                <div style={{ fontSize: 12, color: '#6B6857', marginTop: 6, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' }}>yards</div>
+                <div style={{ fontSize: 12, color: '#4A4235', marginTop: 6, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' }}>yards</div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginBottom: 14 }}>
@@ -355,9 +355,9 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
                     {n}
                   </button>
                 ))}
-                <button onClick={() => setYardage(y => y.slice(0, -1))} style={{ height: 44, borderRadius: 14, background: '#F0EBDD', border: '1px solid #E0D8C5', fontSize: 13, fontWeight: 500, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Delete</button>
+                <button onClick={() => setYardage(y => y.slice(0, -1))} style={{ height: 44, borderRadius: 14, background: '#F0EBDD', border: '1px solid #E0D8C5', fontSize: 13, fontWeight: 500, color: '#4A4235', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Delete</button>
                 <button onClick={() => stepNum(0)} style={{ height: 44, borderRadius: 14, background: '#FAF6EA', border: '1px solid #E0D8C5', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 600, color: '#1F1D17', cursor: 'pointer' }}>0</button>
-                <button onClick={() => setYardage('')} style={{ height: 44, borderRadius: 14, background: '#F0EBDD', border: '1px solid #E0D8C5', fontSize: 13, fontWeight: 500, color: '#6B6857', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Clear</button>
+                <button onClick={() => setYardage('')} style={{ height: 44, borderRadius: 14, background: '#F0EBDD', border: '1px solid #E0D8C5', fontSize: 13, fontWeight: 500, color: '#4A4235', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Clear</button>
               </div>
 
               <input type="text" value={note} onChange={e => setNote(e.target.value)} placeholder="Add a note (optional)…" style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 14, padding: '11px 16px', fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: '#1F1D17', outline: 'none', marginBottom: 16, width: '100%', transition: 'border-color 0.15s' }} onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }} onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }} />
@@ -365,7 +365,7 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
               <button
                 onClick={handleSave}
                 disabled={!isValid}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: isValid ? '#1F3A2A' : '#C9C0A8', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px 24px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: isValid ? 'pointer' : 'not-allowed', transition: 'all 0.15s' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: isValid ? '#1F3A2A' : '#8B8272', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px 24px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: isValid ? 'pointer' : 'not-allowed', transition: 'all 0.15s' }}
                 onMouseEnter={e => { if (isValid) e.currentTarget.style.background = '#16271D' }}
                 onMouseLeave={e => { if (isValid) e.currentTarget.style.background = '#1F3A2A' }}
               >
@@ -378,3 +378,4 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
     </div>
   )
 }
+
