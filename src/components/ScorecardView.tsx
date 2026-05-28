@@ -1257,7 +1257,7 @@ export default function ScorecardView({
         </div>
 
         {struggle.length > 0 && (
-          <div style={{ background: 'rgba(217,130,77,0.08)', border: '1px solid rgba(217,130,77,0.25)', borderRadius: 20, padding: '20px 24px' }}>
+          <div style={{ background: 'rgba(217,130,77,0.08)', border: '1px solid rgba(217,130,77,0.25)', borderRadius: 20, padding: '20px 24px', marginBottom: 20 }}>
             <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 12 }}>Holes to work on</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {struggle.map(s => (
@@ -1271,6 +1271,26 @@ export default function ScorecardView({
             </div>
           </div>
         )}
+
+        <button
+          onClick={() => setPhase({ type: 'history' })}
+          style={{
+            width: '100%', background: '#1F3A2A', color: '#FAF6EA',
+            border: 'none', borderRadius: 999, padding: '15px',
+            fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 600,
+            cursor: 'pointer', letterSpacing: '-0.005em',
+            boxShadow: '0 4px 14px rgba(31,58,42,0.22)',
+            transition: 'all 0.15s cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#16271D'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(31,58,42,0.30)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(31,58,42,0.22)' }}
+          onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
+          onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+          onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
+          onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
+        >
+          Done
+        </button>
       </div>
     )
   }
