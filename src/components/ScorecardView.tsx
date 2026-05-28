@@ -752,7 +752,10 @@ export default function ScorecardView({
           <div>
             <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 10 }}>Tee</label>
             {selectedCourse ? (() => {
-              const allTees = [...(selectedCourse.tees.male ?? []), ...(selectedCourse.tees.female ?? [])].filter(t => t.number_of_holes === holeCount)
+              const seen = new Set<string>()
+              const allTees = [...(selectedCourse.tees.male ?? []), ...(selectedCourse.tees.female ?? [])]
+                .filter(t => t.number_of_holes === holeCount)
+                .filter(t => { if (seen.has(t.tee_name)) return false; seen.add(t.tee_name); return true })
               return allTees.length > 0 ? (
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {allTees.map(t => {
