@@ -255,9 +255,9 @@ function AppShell() {
     : {}
 
   return (
-    <div style={shellStyle}>
-      {/* ── Background layers ───────────────────────────────── */}
-      {/* Layer 1: blurred photo */}
+    <>
+      {/* ── Background layers (painted above html fallback, below all content) ── */}
+      {/* Layer 0: blurred photo */}
       <div aria-hidden="true" style={{
         position: 'fixed',
         top: '-80px', left: '-80px', right: '-80px', bottom: '-80px',
@@ -265,10 +265,10 @@ function AppShell() {
         backgroundSize: 'cover',
         backgroundPosition: 'center 25%',
         filter: 'blur(64px) saturate(0.88) brightness(1.02)',
-        zIndex: -2,
+        zIndex: 0,
         pointerEvents: 'none',
       }} />
-      {/* Layer 2: warm cream gradient overlay */}
+      {/* Layer 1: warm cream gradient overlay */}
       <div aria-hidden="true" style={{
         position: 'fixed', inset: 0,
         background: `
@@ -281,10 +281,12 @@ function AppShell() {
           rgba(237,232,212,0.78)
         `,
         backgroundAttachment: 'fixed',
-        zIndex: -1,
+        zIndex: 1,
         pointerEvents: 'none',
       }} />
 
+      {/* ── All app content at z-index 2+ ───────────────────── */}
+      <div style={{ ...shellStyle, position: 'relative', zIndex: 2 }}>
       {isPasswordRecovery && <SetNewPasswordModal />}
       <TopNav
         view={view}
@@ -375,10 +377,8 @@ function AppShell() {
       />
 
       {legalDoc && <LegalModal doc={legalDoc} onClose={() => setLegalDoc(null)} />}
-
-      <div style={{ position: 'fixed', bottom: -120, left: -80, width: 320, height: 320, background: '#B5C29A', opacity: 0.15, borderRadius: '58% 42% 62% 38% / 47% 56% 44% 53%', zIndex: -1, pointerEvents: 'none' }} />
-      <div style={{ position: 'fixed', top: '40%', right: -180, width: 380, height: 380, background: '#D9824D', opacity: 0.06, borderRadius: '60% 40% 55% 45% / 50% 52% 48% 50%', zIndex: -1, pointerEvents: 'none' }} />
-    </div>
+      </div>
+    </>
   )
 }
 

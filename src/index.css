@@ -8,7 +8,7 @@
 html { scroll-behavior: smooth; }
 
 html {
-  background: #EDE8D4; /* solid fallback if photo/JS hasn't loaded */
+  background: #EDE8D4; /* pre-React fallback, covered by photo layer once JS loads */
 }
 
 body {
@@ -16,7 +16,7 @@ body {
   font-family: 'DM Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: transparent; /* layers are rendered in React */
+  background: transparent;
   color: #1F1D17;
   min-height: 100vh;
   -webkit-text-size-adjust: 100%;
