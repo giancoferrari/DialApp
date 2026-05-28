@@ -188,6 +188,18 @@ function ScorecardHalf({ holes, label, mode, editingHole, activeHole, onCellClic
             <td style={{ ...totalCell, fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: 'rgba(250,246,234,0.4)', padding: '8px 0' }}>{label}</td>
           </tr>
 
+          <tr style={{ background: '#F5F0E6' }}>
+            <td style={{ ...labelCell, padding: '5px 0 5px 14px' }}>YDS</td>
+            {holes.map(h => (
+              <td key={h.holeNumber} style={{ ...cellBase, fontSize: 11, color: '#B5AC95', padding: '5px 0' }}>
+                {h.yardage ?? '—'}
+              </td>
+            ))}
+            <td style={{ ...totalCell, fontSize: 12, fontWeight: 600, color: '#B5AC95', padding: '5px 0' }}>
+              {holes.some(h => h.yardage) ? holes.reduce((s, h) => s + (h.yardage ?? 0), 0) : '—'}
+            </td>
+          </tr>
+
           <tr style={{ background: '#EEE9DA' }}>
             <td style={{ ...labelCell, padding: '7px 0 7px 14px' }}>PAR</td>
             {holes.map(h => (
@@ -405,11 +417,12 @@ export default function ScorecardView({
   const today = new Date().toISOString().split('T')[0]
   const [roundDate, setRoundDate] = useState(today)
 
-  const [courseName,      setCourseName]      = useState('')
-  const [selectedCourse,  setSelectedCourse]  = useState<GolfCourse | null>(null)
-  const [selectedApiTee,  setSelectedApiTee]  = useState<GolfTee | null>(null)
-  const [tee,             setTee]             = useState('white')
-  const [holeCount,       setHoleCount]       = useState<9 | 18>(18)
+  const [courseName,       setCourseName]       = useState('')
+  const [selectedCourse,   setSelectedCourse]   = useState<GolfCourse | null>(null)
+  const [selectedApiTee,   setSelectedApiTee]   = useState<GolfTee | null>(null)
+  const [tee,              setTee]              = useState('white')
+  const [holeCount,        setHoleCount]        = useState<9 | 18>(18)
+  const [nineSection,      setNineSection]      = useState<'front' | 'back'>('front')
   const [apiOriginalHoles, setApiOriginalHoles] = useState<{ par: 3|4|5; yardage: string }[]>([])
   const [savingCorrection, setSavingCorrection] = useState(false)
   const [correctionSaved,  setCorrectionSaved]  = useState(false)
@@ -719,13 +732,16 @@ export default function ScorecardView({
                 const h18 = allTees.filter(t => t.number_of_holes === 18)
                 const preferred = h18.length > 0 ? h18 : allTees
                 if (preferred.length > 0) setHoleCount(preferred[0].number_of_holes as 9 | 18)
-                // Silently apply correction if one exists
+                // Silently apply correction if one exists (tees + name)
                 fetchCorrection(course.id).then(correction => {
-                  if (correction?.tees?.length) {
-                    setSelectedCourse(prev => prev?.id === course.id
-                      ? { ...course, tees: { male: correction.tees, female: [] } }
-                      : prev
-                    )
+                  if (correction) {
+                    if (correction.course_name) setCourseName(correction.course_name)
+                    if (correction.tees?.length) {
+                      setSelectedCourse(prev => prev?.id === course.id
+                        ? { ...course, course_name: correction.course_name ?? course.course_name, tees: { male: correction.tees, female: [] } }
+                        : prev
+                      )
+                    }
                   }
                 })
               }}
@@ -756,8 +772,10 @@ export default function ScorecardView({
             <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 10 }}>Tee</label>
             {selectedCourse ? (() => {
               const seen = new Set<string>()
+              // For 9-hole play, show 18-hole tees (user picks front/back) — fall back to 9-hole if they exist
+              const has9 = [...(selectedCourse.tees.male ?? []), ...(selectedCourse.tees.female ?? [])].some(t => t.number_of_holes === 9)
               const allTees = [...(selectedCourse.tees.male ?? []), ...(selectedCourse.tees.female ?? [])]
-                .filter(t => t.number_of_holes === holeCount)
+                .filter(t => holeCount === 9 ? (has9 ? t.number_of_holes === 9 : t.number_of_holes === 18) : t.number_of_holes === 18)
                 .filter(t => { if (seen.has(t.tee_name)) return false; seen.add(t.tee_name); return true })
               return allTees.length > 0 ? (
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -774,9 +792,7 @@ export default function ScorecardView({
                     )
                   })}
                 </div>
-              ) : (
-                <div style={{ fontSize: 13, color: '#B5AC95' }}>No tees found for {holeCount} holes.</div>
-              )
+              ) : null
             })() : (
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {TEE_COLORS.map(t => (
@@ -790,11 +806,29 @@ export default function ScorecardView({
             )}
           </div>
 
+          {/* Front / Back 9 selector — only when playing 9 holes from an 18-hole tee */}
+          {holeCount === 9 && selectedApiTee && selectedApiTee.number_of_holes === 18 && (
+            <div>
+              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 10 }}>Nine holes</label>
+              <div style={{ display: 'flex', gap: 10 }}>
+                {(['front', 'back'] as const).map(s => (
+                  <button key={s} onClick={() => setNineSection(s)}
+                    style={{ flex: 1, border: '1px solid', borderRadius: 14, padding: '12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, background: nineSection === s ? '#1F3A2A' : 'transparent', color: nineSection === s ? '#FAF6EA' : '#1F1D17', borderColor: nineSection === s ? '#1F3A2A' : '#E0D8C5', transition: 'all 0.15s' }}>
+                    {s === 'front' ? 'Front 9 (1–9)' : 'Back 9 (10–18)'}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <button
             onClick={() => {
               setSaveError(null)
               if (selectedApiTee) {
-                const apiHoles = selectedApiTee.holes.slice(0, holeCount)
+                const is9from18 = holeCount === 9 && selectedApiTee.number_of_holes === 18
+                const apiHoles = is9from18
+                  ? selectedApiTee.holes.slice(nineSection === 'front' ? 0 : 9, nineSection === 'front' ? 9 : 18)
+                  : selectedApiTee.holes.slice(0, holeCount)
                 const setup = apiHoles.map(h => ({ par: h.par as 3|4|5, yardage: String(h.yardage) }))
                 setHoleSetup(setup)
                 setApiOriginalHoles(setup)
