@@ -4,6 +4,8 @@ import { saveCourse, deleteCourse } from '../lib/courses'
 import { createRound, upsertRoundHoles, deleteRound } from '../lib/rounds'
 import type { Course, Round, RoundHole } from '../types'
 import { CloseIcon, PlusIcon } from './Icons'
+import CourseSearch from './CourseSearch'
+import type { GolfCourse, GolfTee } from '../lib/golfCourseApi'
 
 const SANTA_MARIA_NAME = 'Santa Maria Golf & Country Club'
 const SANTA_MARIA_HOLES: { par: 3 | 4 | 5 }[] = [
@@ -402,9 +404,11 @@ export default function ScorecardView({
   const today = new Date().toISOString().split('T')[0]
   const [roundDate, setRoundDate] = useState(today)
 
-  const [courseName, setCourseName] = useState('')
-  const [tee, setTee]               = useState('white')
-  const [holeCount, setHoleCount]   = useState<9 | 18>(18)
+  const [courseName,     setCourseName]     = useState('')
+  const [selectedCourse, setSelectedCourse] = useState<GolfCourse | null>(null)
+  const [selectedApiTee, setSelectedApiTee] = useState<GolfTee | null>(null)
+  const [tee,            setTee]            = useState('white')
+  const [holeCount,      setHoleCount]      = useState<9 | 18>(18)
   const [holeSetup, setHoleSetup]   = useState<{ par: 3 | 4 | 5; yardage: string }[]>([])
 
   const px = isMobile ? 16 : 40
@@ -696,19 +700,36 @@ export default function ScorecardView({
         </h1>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {/* Course search */}
           <div>
             <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 8 }}>Course name</label>
-            <input type="text" value={courseName} onChange={e => setCourseName(e.target.value)} placeholder="Course name" style={inputStyle}
-              onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-              onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+            <CourseSearch
+              value={courseName}
+              onChange={name => { setCourseName(name); setSelectedCourse(null); setSelectedApiTee(null) }}
+              onSelect={course => {
+                setSelectedCourse(course)
+                setSelectedApiTee(null)
+                const allTees = [...(course.tees.male ?? []), ...(course.tees.female ?? [])]
+                const h18 = allTees.filter(t => t.number_of_holes === 18)
+                const h9  = allTees.filter(t => t.number_of_holes === 9)
+                const preferred = h18.length > 0 ? h18 : h9
+                if (preferred.length > 0) setHoleCount(preferred[0].number_of_holes as 9 | 18)
+              }}
             />
+            {selectedCourse && (
+              <div style={{ marginTop: 8, fontSize: 12, color: '#5C7A4D', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span>✓</span>
+                <span>{[selectedCourse.location.city, selectedCourse.location.state || selectedCourse.location.country].filter(Boolean).join(', ')}</span>
+              </div>
+            )}
           </div>
 
+          {/* Holes — auto-detected from API or manual */}
           <div>
             <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 10 }}>Holes</label>
             <div style={{ display: 'flex', gap: 10 }}>
               {([9, 18] as (9|18)[]).map(n => (
-                <button key={n} onClick={() => setHoleCount(n)}
+                <button key={n} onClick={() => { setHoleCount(n); setSelectedApiTee(null) }}
                   style={{ flex: 1, border: '1px solid', borderRadius: 14, padding: '12px', cursor: 'pointer', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, background: holeCount === n ? '#1F3A2A' : 'transparent', color: holeCount === n ? '#FAF6EA' : '#1F1D17', borderColor: holeCount === n ? '#1F3A2A' : '#E0D8C5', transition: 'all 0.15s', letterSpacing: '-0.02em' }}>
                   {n}
                 </button>
@@ -716,27 +737,59 @@ export default function ScorecardView({
             </div>
           </div>
 
+          {/* Tee — API tees when course selected, otherwise manual */}
           <div>
             <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', marginBottom: 10 }}>Tee</label>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {TEE_COLORS.map(t => (
-                <button key={t.id} onClick={() => setTee(t.id)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 7, border: '1px solid', borderRadius: 999, padding: '8px 16px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 500, background: tee === t.id ? '#1F3A2A' : 'transparent', color: tee === t.id ? '#FAF6EA' : '#1F1D17', borderColor: tee === t.id ? '#1F3A2A' : '#E0D8C5', transition: 'all 0.15s' }}>
-                  <span style={{ width: 10, height: 10, borderRadius: 5, background: t.color, border: t.id === 'white' ? '1px solid #ccc' : 'none', flexShrink: 0 }} />
-                  {t.label}
-                </button>
-              ))}
-            </div>
+            {selectedCourse ? (() => {
+              const allTees = [...(selectedCourse.tees.male ?? []), ...(selectedCourse.tees.female ?? [])].filter(t => t.number_of_holes === holeCount)
+              return allTees.length > 0 ? (
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {allTees.map(t => {
+                    const isActive = selectedApiTee?.tee_name === t.tee_name
+                    const teeColor = TEE_COLORS.find(tc => tc.label.toLowerCase() === t.tee_name.toLowerCase())
+                    return (
+                      <button key={t.tee_name} onClick={() => { setSelectedApiTee(t); setTee(t.tee_name.toLowerCase()) }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 7, border: '1px solid', borderRadius: 999, padding: '8px 16px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 500, background: isActive ? '#1F3A2A' : 'transparent', color: isActive ? '#FAF6EA' : '#1F1D17', borderColor: isActive ? '#1F3A2A' : '#E0D8C5', transition: 'all 0.15s' }}>
+                        {teeColor && <span style={{ width: 10, height: 10, borderRadius: 5, background: teeColor.color, border: teeColor.id === 'white' ? '1px solid #ccc' : 'none', flexShrink: 0 }} />}
+                        {t.tee_name}
+                        <span style={{ fontSize: 11, opacity: 0.6 }}>{t.par_total}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              ) : (
+                <div style={{ fontSize: 13, color: '#B5AC95' }}>No tees found for {holeCount} holes.</div>
+              )
+            })() : (
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {TEE_COLORS.map(t => (
+                  <button key={t.id} onClick={() => setTee(t.id)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 7, border: '1px solid', borderRadius: 999, padding: '8px 16px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 500, background: tee === t.id ? '#1F3A2A' : 'transparent', color: tee === t.id ? '#FAF6EA' : '#1F1D17', borderColor: tee === t.id ? '#1F3A2A' : '#E0D8C5', transition: 'all 0.15s' }}>
+                    <span style={{ width: 10, height: 10, borderRadius: 5, background: t.color, border: t.id === 'white' ? '1px solid #ccc' : 'none', flexShrink: 0 }} />
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <button
-            onClick={() => { setHoleSetup(initHoleSetup(holeCount)); setSaveError(null); setPhase({ type: 'hole_setup', name: courseName.trim(), tee, holeCount }) }}
-            disabled={!courseName.trim()}
-            style={{ ...primaryBtn(!courseName.trim()), marginTop: 8 }}
+            onClick={() => {
+              setSaveError(null)
+              if (selectedApiTee) {
+                const apiHoles = selectedApiTee.holes.slice(0, holeCount)
+                setHoleSetup(apiHoles.map(h => ({ par: h.par as 3|4|5, yardage: String(h.yardage) })))
+              } else {
+                setHoleSetup(initHoleSetup(holeCount))
+              }
+              setPhase({ type: 'hole_setup', name: courseName.trim(), tee, holeCount })
+            }}
+            disabled={!courseName.trim() || (selectedCourse !== null && selectedApiTee === null)}
+            style={{ ...primaryBtn(!courseName.trim() || (selectedCourse !== null && selectedApiTee === null)), marginTop: 8 }}
             onMouseEnter={e => { if (courseName.trim()) e.currentTarget.style.background = '#16271D' }}
             onMouseLeave={e => { if (courseName.trim()) e.currentTarget.style.background = '#1F3A2A' }}
           >
-            Set up holes →
+            {selectedApiTee ? 'Continue →' : 'Set up holes →'}
           </button>
         </div>
       </div>

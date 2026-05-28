@@ -5,6 +5,8 @@ import { fetchOrCreateWallet, topUpWallet, withdrawFromWallet } from '../lib/wal
 import { fetchFriendships, fetchProfilesForIds } from '../lib/friends'
 import { supabase } from '../lib/supabase'
 import { CloseIcon, TrophyIcon, PlusIcon } from './Icons'
+import CourseSearch from './CourseSearch'
+import type { GolfCourse } from '../lib/golfCourseApi'
 
 interface Props {
   userId: string
@@ -104,17 +106,18 @@ function NewMatchModal({
   onCreate: (match: Match) => void
   isMobile: boolean
 }) {
-  const [holes,        setHoles]        = useState<9 | 18>(18)
-  const [gameMode,     setGameMode]     = useState<GameMode>('stroke')
-  const [wager,        setWager]        = useState(0)
-  const [customWager,  setCustomWager]  = useState('')
-  const [selectedIds,  setSelectedIds]  = useState<string[]>([])
-  const [friendSearch, setFriendSearch] = useState('')
-  const [loading,      setLoading]      = useState(false)
-  const [error,        setError]        = useState<string | null>(null)
+  const [holes,          setHoles]          = useState<9 | 18>(18)
+  const [gameMode,       setGameMode]       = useState<GameMode>('stroke')
+  const [wager,          setWager]          = useState(0)
+  const [customWager,    setCustomWager]    = useState('')
+  const [selectedIds,    setSelectedIds]    = useState<string[]>([])
+  const [friendSearch,   setFriendSearch]   = useState('')
+  const [loading,        setLoading]        = useState(false)
+  const [error,          setError]          = useState<string | null>(null)
+  const [courseName,     setCourseName]     = useState('')
+  const [selectedCourse, setSelectedCourse] = useState<GolfCourse | null>(null)
 
   const WAGER_OPTS = [0, 10, 25, 50, 100]
-  const courseName = SANTA_MARIA.name
 
   const filteredFriends = friends.filter(({ profile }) =>
     !friendSearch.trim() || profile?.username?.toLowerCase().includes(friendSearch.toLowerCase())
@@ -126,6 +129,7 @@ function NewMatchModal({
   const effectiveWager = customWager !== '' ? Math.min(10000, Math.max(0, parseInt(customWager) || 0)) : wager
 
   const handleCreate = async () => {
+    if (!courseName.trim()) { setError('Please select a course.'); return }
     if (selectedIds.length === 0) { setError('Invite at least one friend.'); return }
     if (effectiveWager > 0 && wallet && wallet.balance < effectiveWager) {
       setError(`Not enough funds. Your balance: $${wallet.balance.toLocaleString()}`)
@@ -133,7 +137,7 @@ function NewMatchModal({
     }
     setLoading(true); setError(null)
     try {
-      const match = await createMatch(userId, { courseName, holes, gameMode, wagerPerPlayer: effectiveWager }, selectedIds)
+      const match = await createMatch(userId, { courseName: courseName.trim(), holes, gameMode, wagerPerPlayer: effectiveWager }, selectedIds)
       onCreate(match)
       onClose()
     } catch (e: unknown) {
@@ -167,16 +171,21 @@ function NewMatchModal({
             </div>
           )}
 
-          {/* Course — Santa Maria only */}
+          {/* Course search */}
           <div>
             <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B6857', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>Course</label>
-            <div style={{ background: '#1F3A2A', borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 10, height: 10, borderRadius: 5, background: SANTA_MARIA.teeColor, flexShrink: 0 }} />
-              <div>
-                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em' }}>{SANTA_MARIA.name}</div>
-                <div style={{ fontSize: 12, color: '#B5C29A', marginTop: 2 }}>{SANTA_MARIA.tee} · Par {SANTA_MARIA.par} · 18 holes</div>
+            <CourseSearch
+              value={courseName}
+              onChange={name => { setCourseName(name); setSelectedCourse(null) }}
+              onSelect={course => { setSelectedCourse(course); setCourseName(course.course_name) }}
+              placeholder="Search any golf course…"
+            />
+            {selectedCourse && (
+              <div style={{ marginTop: 8, fontSize: 12, color: '#5C7A4D', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span>✓</span>
+                <span>{[selectedCourse.location.city, selectedCourse.location.state || selectedCourse.location.country].filter(Boolean).join(', ')}</span>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Holes */}
