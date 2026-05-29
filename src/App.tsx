@@ -256,50 +256,16 @@ function AppShell() {
 
   return (
     <>
-      {/* ── Background layers (painted above html fallback, below all content) ── */}
-      {/* Layer 0: blurred photo */}
+      {/* ── Background: solid cream with very subtle green depth corners ── */}
       <div aria-hidden="true" style={{
-        position: 'fixed',
-        top: '-60px', left: '-60px', right: '-60px', bottom: '-60px',
-        backgroundImage: 'url(/golf-bg.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center 30%',
-        filter: 'blur(28px) saturate(1.1) brightness(0.96) sepia(22%)',
+        position: 'fixed', inset: 0,
+        background: `
+          radial-gradient(ellipse 130% 70% at 5% 100%, rgba(52,82,37,0.13) 0%, transparent 55%),
+          radial-gradient(ellipse 100% 55% at 95% 0%,  rgba(90,115,65,0.09) 0%, transparent 50%),
+          #EDE8D4
+        `,
+        backgroundAttachment: 'fixed',
         zIndex: 0,
-        pointerEvents: 'none',
-      }} />
-      {/* Layer 1: warm cream gradient overlay — keep thin so photo breathes through glass cards */}
-      <div aria-hidden="true" style={{
-        position: 'fixed', inset: 0,
-        background: `
-          radial-gradient(ellipse 170% 85% at 4% 98%,  rgba(52,82,37,0.32) 0%, transparent 58%),
-          radial-gradient(ellipse 120% 70% at 96% 4%,  rgba(130,155,100,0.20) 0%, transparent 52%),
-          radial-gradient(ellipse 95%  60% at 68% 88%, rgba(72,102,57,0.18) 0%, transparent 50%),
-          rgba(237,232,212,0.10)
-        `,
-        backgroundAttachment: 'fixed',
-        zIndex: 1,
-        pointerEvents: 'none',
-      }} />
-
-      {/* Layer 2: reading scrim — top zone heavily backed for titles/labels, minimal at photo window,
-          haze at bottom anchors floating tab bar. Min 0.38 ensures #4A4235 passes 4.5:1 everywhere */}
-      <div aria-hidden="true" style={{
-        position: 'fixed', inset: 0,
-        background: `
-          linear-gradient(180deg,
-            rgba(237,232,212,0.78) 0%,
-            rgba(237,232,212,0.64) 15%,
-            rgba(237,232,212,0.52) 30%,
-            rgba(237,232,212,0.40) 46%,
-            rgba(237,232,212,0.28) 60%,
-            rgba(237,232,212,0.18) 74%,
-            rgba(237,232,212,0.24) 87%,
-            rgba(237,232,212,0.36) 100%
-          )
-        `,
-        backgroundAttachment: 'fixed',
-        zIndex: 1,
         pointerEvents: 'none',
       }} />
 
