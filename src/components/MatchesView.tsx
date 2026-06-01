@@ -47,50 +47,80 @@ const MODE_LABELS: Record<GameMode, string> = {
   stroke: 'Stroke Play', match_play: 'Match Play', skins: 'Skins', wolf: 'Wolf',
 }
 
-// ── Score cell with golf notation ─────────────────────────────────────
-function ScoreCell({
-  score, par, isMe, onClick,
-}: {
+// ── Score decoration matching the round scorecard style ───────────────
+function MatchScoreDecoration({ score, par, isMe, onClick }: {
   score: number | null
   par: number
   isMe: boolean
   onClick?: () => void
 }) {
-  const diff = score !== null ? score - par : null
-  let bg = 'transparent'
-  let border = '1px dashed #8B8272'
-  let borderRadius = 6
-  let color = '#1F1D17'
-  let boxShadow = 'none'
+  const base: React.CSSProperties = {
+    width: 28, height: 28,
+    cursor: isMe ? 'pointer' : 'default',
+    margin: '0 auto',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+  }
+  const num = (sz: number, col: string): React.CSSProperties => ({
+    fontFamily: "'Bricolage Grotesque', sans-serif",
+    fontSize: sz, fontWeight: 700, color: col, lineHeight: 1,
+  })
 
-  if (score !== null) {
-    border = 'none'
-    if (diff !== null && diff <= -2) {
-      bg = '#1F3A2A'; color = '#FAF6EA'; borderRadius = 999; boxShadow = '0 0 0 1.5px #1F3A2A'
-    } else if (diff === -1) {
-      bg = 'transparent'; border = '1.5px solid #1F3A2A'; borderRadius = 999; color = '#1F3A2A'
-    } else if (diff === 0) {
-      bg = 'transparent'; color = '#1F1D17'
-    } else if (diff === 1) {
-      bg = 'transparent'; border = '1.5px solid #D9824D'; borderRadius = 3; color = '#D9824D'
-    } else {
-      bg = 'transparent'; border = '1.5px solid #C0392B'; borderRadius = 3; color = '#C0392B'
-    }
+  if (score === null) {
+    return (
+      <div onClick={isMe ? onClick : undefined}
+        style={{ ...base, borderRadius: 6, border: isMe ? '1.5px dashed #1F3A2A' : '1.5px dashed #D1C9B8' }}>
+        <span style={{ color: '#8B8272', fontSize: 14 }}>·</span>
+      </div>
+    )
   }
 
+  const d = score - par
+
+  if (d <= -2) {
+    return (
+      <div onClick={isMe ? onClick : undefined}
+        style={{ ...base, borderRadius: '50%', border: '1.5px solid #C8A84B' }}>
+        <div style={{ width: 19, height: 19, borderRadius: '50%', border: '1.5px solid #C8A84B', background: '#FFFBEB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={num(9, '#92400E')}>{score}</span>
+        </div>
+      </div>
+    )
+  }
+
+  if (d === -1) {
+    return (
+      <div onClick={isMe ? onClick : undefined}
+        style={{ ...base, borderRadius: '50%', border: '2px solid #5C7A4D', background: '#F0FDF4' }}>
+        <span style={num(12, '#166534')}>{score}</span>
+      </div>
+    )
+  }
+
+  if (d === 0) {
+    return (
+      <div onClick={isMe ? onClick : undefined}
+        style={{ ...base, borderRadius: 5, background: '#F0EBDD' }}>
+        <span style={num(12, '#1F1D17')}>{score}</span>
+      </div>
+    )
+  }
+
+  if (d === 1) {
+    return (
+      <div onClick={isMe ? onClick : undefined}
+        style={{ ...base, border: '2px solid #D9824D', background: '#FFF7ED' }}>
+        <span style={num(12, '#9A3412')}>{score}</span>
+      </div>
+    )
+  }
+
+  const c = d >= 3 ? '#991B1B' : '#C0392B'
   return (
-    <div
-      onClick={isMe ? onClick : undefined}
-      style={{
-        width: '100%', aspectRatio: '1',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: bg, border, borderRadius, color, boxShadow,
-        fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 11, fontWeight: 700,
-        cursor: isMe ? 'pointer' : 'default',
-        transition: 'all 0.12s', userSelect: 'none',
-      }}
-    >
-      {score ?? ''}
+    <div onClick={isMe ? onClick : undefined}
+      style={{ ...base, border: `1.5px solid ${c}` }}>
+      <div style={{ width: 18, height: 18, border: `1.5px solid ${c}`, background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={num(9, c)}>{score}</span>
+      </div>
     </div>
   )
 }
@@ -299,7 +329,7 @@ function NewMatchModal({
   )
 }
 
-// ── Scorecard Grid — mobile-first, no horizontal scroll, with subtotal ─
+// ── Scorecard Grid — table layout matching round scorecard style ───────
 function ScorecardGrid({
   holes, pars, players, userId, onCellTap, status,
 }: {
@@ -312,55 +342,61 @@ function ScorecardGrid({
 }) {
   const subtotalLabel = holes[0] === 1 ? 'OUT' : 'IN'
   const parTotal = pars.reduce((a, b) => a + b, 0)
-  // label | holes... | subtotal — all fluid, fits any screen width
-  const cols = `26px repeat(${holes.length}, 1fr) 30px`
-  const cellStyle = (bg: string): React.CSSProperties => ({
-    display: 'grid', gridTemplateColumns: cols,
-    background: bg, padding: '5px 6px', gap: 2, alignItems: 'center',
-  })
+
+  const C = 33
+  const L = 52
+  const T = 44
+
+  const cellBase: React.CSSProperties = { width: C, minWidth: C, textAlign: 'center', padding: 0, border: 'none', verticalAlign: 'middle' }
+  const labelCell: React.CSSProperties = { width: L, minWidth: L, textAlign: 'left', paddingLeft: 14, border: 'none', verticalAlign: 'middle', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B5F4E' }
+  const totalCell: React.CSSProperties = { width: T, minWidth: T, textAlign: 'center', border: 'none', verticalAlign: 'middle' }
 
   return (
-    <div style={{ width: '100%' }}>
-      {/* HOLE header */}
-      <div style={{ ...cellStyle('#1F3A2A'), borderRadius: '10px 10px 0 0' }}>
-        <div style={{ fontSize: 8, fontWeight: 700, color: '#B5C29A', letterSpacing: '0.06em', textTransform: 'uppercase' }}>H</div>
-        {holes.map(h => (
-          <div key={h} style={{ textAlign: 'center', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 11, fontWeight: 700, color: '#FAF6EA' }}>{h}</div>
-        ))}
-        <div style={{ textAlign: 'center', fontSize: 8, fontWeight: 700, color: '#B5C29A', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{subtotalLabel}</div>
-      </div>
-
-      {/* PAR row */}
-      <div style={{ ...cellStyle('#F0EBDD'), borderBottom: '1px solid #E0D8C5' }}>
-        <div style={{ fontSize: 8, fontWeight: 700, color: '#4A4235', textTransform: 'uppercase' }}>P</div>
-        {holes.map((h, i) => (
-          <div key={h} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#4A4235', fontFamily: "'Bricolage Grotesque', sans-serif" }}>{pars[i]}</div>
-        ))}
-        <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#4A4235', fontFamily: "'Bricolage Grotesque', sans-serif" }}>{parTotal}</div>
-      </div>
-
-      {/* Player rows */}
-      {players.map((player, pi) => {
-        const isMe = player.userId === userId
-        const subtotal = holes.reduce((sum, h) => sum + (player.scores[h] ?? 0), 0)
-        return (
-          <div key={player.userId} style={{
-            ...cellStyle(pi % 2 === 0 ? '#FAF6EA' : '#F5F0E5'),
-            borderBottom: pi < players.length - 1 ? '1px solid #ECE5D2' : 'none',
-            borderRadius: pi === players.length - 1 ? '0 0 10px 10px' : 0,
-          }}>
-            <div style={{ fontSize: 8, fontWeight: 700, color: isMe ? '#1F3A2A' : '#4A4235', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {isMe ? 'YOU' : player.name.replace('@', '').slice(0, 3).toUpperCase()}
-            </div>
-            {holes.map((h, i) => (
-              <ScoreCell key={h} score={player.scores[h] ?? null} par={pars[i]} isMe={isMe && status === 'active'} onClick={() => onCellTap(h)} />
+    <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' as React.CSSProperties['WebkitOverflowScrolling'] }}>
+      <table style={{ borderCollapse: 'collapse', tableLayout: 'fixed', width: '100%', minWidth: L + holes.length * C + T }}>
+        <tbody>
+          <tr style={{ background: '#1F3A2A' }}>
+            <td style={{ ...labelCell, color: 'rgba(250,246,234,0.4)', padding: '8px 0 8px 14px' }}>HOLE</td>
+            {holes.map(h => (
+              <td key={h} style={{ ...cellBase, fontSize: 12, fontWeight: 700, color: '#FAF6EA', fontFamily: "'Bricolage Grotesque', sans-serif", padding: '8px 0' }}>{h}</td>
             ))}
-            <div style={{ textAlign: 'center', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 11, fontWeight: 700, color: isMe ? '#1F3A2A' : '#4A4235' }}>
-              {subtotal > 0 ? subtotal : '—'}
-            </div>
-          </div>
-        )
-      })}
+            <td style={{ ...totalCell, fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: 'rgba(250,246,234,0.4)', padding: '8px 0' }}>{subtotalLabel}</td>
+          </tr>
+
+          <tr style={{ background: '#EEE9DA' }}>
+            <td style={{ ...labelCell, padding: '7px 0 7px 14px' }}>PAR</td>
+            {holes.map((h, i) => (
+              <td key={h} style={{ ...cellBase, fontSize: 13, fontWeight: 600, color: '#4A4235', padding: '7px 0' }}>{pars[i]}</td>
+            ))}
+            <td style={{ ...totalCell, fontSize: 14, fontWeight: 700, color: '#1F1D17', fontFamily: "'Bricolage Grotesque', sans-serif", padding: '7px 0' }}>{parTotal}</td>
+          </tr>
+
+          {players.map((player, pi) => {
+            const isMe = player.userId === userId
+            const subtotal = holes.reduce((sum, h) => sum + (player.scores[h] ?? 0), 0)
+            const hasAnyScore = holes.some(h => player.scores[h] != null)
+            const shortName = isMe ? 'YOU' : player.name.replace('@', '').slice(0, 3).toUpperCase()
+            return (
+              <tr key={player.userId} style={{ background: pi % 2 === 0 ? '#FAF6EA' : '#F5F0E5' }}>
+                <td style={{ ...labelCell, padding: '4px 0 4px 14px', color: isMe ? '#1F3A2A' : '#6B5F4E' }}>{shortName}</td>
+                {holes.map((h, i) => (
+                  <td key={h} style={{ ...cellBase, padding: '4px 2px' }}>
+                    <MatchScoreDecoration
+                      score={player.scores[h] ?? null}
+                      par={pars[i]}
+                      isMe={isMe && status === 'active'}
+                      onClick={() => isMe && onCellTap(h)}
+                    />
+                  </td>
+                ))}
+                <td style={{ ...totalCell, fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#1F1D17', padding: '4px 0' }}>
+                  {hasAnyScore ? subtotal : '—'}
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </div>
   )
 }
