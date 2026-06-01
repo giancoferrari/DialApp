@@ -8,11 +8,13 @@
 html { scroll-behavior: smooth; }
 
 html {
+  height: 100%;
   background: #EDE8D4; /* pre-React fallback, covered by photo layer once JS loads */
 }
 
 body {
   margin: 0;
+  height: 100%;
   font-family: 'DM Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -23,7 +25,10 @@ body {
   text-size-adjust: 100%;
 }
 
+/* Lets the mobile app-shell's height:100% resolve to the viewport so its
+   inner area scrolls correctly under the fixed bottom tab bar. */
 #root {
+  height: 100%;
   min-height: 100vh;
 }
 

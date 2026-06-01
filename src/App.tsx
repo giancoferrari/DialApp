@@ -241,7 +241,7 @@ function AppShell() {
 
   const handleMessages = () => { setMessageUserId(null); handleSetView('messages') }
 
-  const handleMessageUser = (uid: string) => { setMessageUserId(uid); handleSetView('messages', { force: true }) }
+  const handleMessageUser = (uid: string) => { setMessageUserId(uid); handleSetView('messages', { force: true, keepMessageTarget: true }) }
 
   const handleViewProfile = (uid: string) => { handleSetView('profile', { profileUserId: uid }) }
 
@@ -261,10 +261,12 @@ function AppShell() {
     }
   }
 
-  const handleSetView = (v: View, opts?: { profileUserId?: string; force?: boolean }) => {
+  const handleSetView = (v: View, opts?: { profileUserId?: string; force?: boolean; keepMessageTarget?: boolean }) => {
     if (v === view && v !== 'profile' && v !== 'messages' && !opts?.force) return
     // 'profile' nav resets to own profile unless a specific user was requested
     if (v === 'profile') setProfileUserId(opts?.profileUserId ?? null)
+    // 'messages' nav resets to the inbox unless opening a specific thread
+    if (v === 'messages' && !opts?.keepMessageTarget) setMessageUserId(null)
     try { localStorage.setItem('dial_view', v) } catch { /* */ }
     const resetScroll = () => {
       if (contentRef.current) contentRef.current.scrollTop = 0
@@ -290,28 +292,16 @@ function AppShell() {
 
   return (
     <>
-      {/* ── Background layer 1: soft blurred golf photo ── */}
-      <div aria-hidden="true" style={{
-        position: 'fixed', inset: -32,
-        backgroundImage: 'url(/golf-bg.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center 30%',
-        filter: 'blur(14px) saturate(108%) brightness(1.05)',
-        zIndex: 0,
-        pointerEvents: 'none',
-      }} />
-      {/* ── Background layer 2: warm cream wash (top-weighted for legibility) ── */}
+      {/* ── Background: solid cream with very subtle green depth corners ── */}
       <div aria-hidden="true" style={{
         position: 'fixed', inset: 0,
         background: `
-          radial-gradient(ellipse 120% 60% at 50% 0%, rgba(250,246,234,0.50) 0%, transparent 58%),
-          linear-gradient(180deg,
-            rgba(237,232,212,0.80) 0%,
-            rgba(237,232,212,0.58) 30%,
-            rgba(234,228,206,0.52) 58%,
-            rgba(237,232,212,0.68) 100%)
+          radial-gradient(ellipse 130% 70% at 5% 100%, rgba(52,82,37,0.13) 0%, transparent 55%),
+          radial-gradient(ellipse 100% 55% at 95% 0%,  rgba(90,115,65,0.09) 0%, transparent 50%),
+          #EDE8D4
         `,
-        zIndex: 1,
+        backgroundAttachment: 'fixed',
+        zIndex: 0,
         pointerEvents: 'none',
       }} />
 
@@ -342,6 +332,7 @@ function AppShell() {
               userId={user!.id}
               rounds={rounds}
               onNavigate={handleSetView}
+              onViewProfile={handleViewProfile}
               isMobile={isMobile}
             />
           )}

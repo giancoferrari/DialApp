@@ -5,6 +5,7 @@ import {
   sendFriendRequest, updateFriendship, removeFriend,
 } from '../lib/friends'
 import { CloseIcon, PersonIcon, ShieldIcon } from './Icons'
+import Portal from './Portal'
 import { getRank, RANK_TIERS } from '../lib/points'
 
 function profileLabel(profile?: PublicProfile | null): { primary: string; secondary: string | null } {
@@ -528,7 +529,7 @@ export default function FriendsView({ userId, isMobile = false, onMessage, onVie
         )}
       </div>
 
-      {viewProfile && <FriendProfileModal profile={viewProfile} onClose={() => setViewProfile(null)} onMessage={onMessage} onViewProfile={onViewProfile} />}
+      {viewProfile && <Portal><FriendProfileModal profile={viewProfile} onClose={() => setViewProfile(null)} onMessage={onMessage} onViewProfile={onViewProfile} /></Portal>}
     </div>
   )
 }

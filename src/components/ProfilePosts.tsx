@@ -5,6 +5,7 @@ import {
 } from '../lib/posts'
 import type { Post, PostComment, PublicProfile } from '../types'
 import { CloseIcon, HeartIcon, ChatIcon, PlusIcon, CameraIcon } from './Icons'
+import Portal from './Portal'
 
 interface Props {
   targetUserId: string
@@ -102,7 +103,7 @@ function Composer({ meId, isMobile, onClose, onCreated }: {
 }
 
 // ── Post detail (likes + comments) ────────────────────────────────────────
-function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onClose, onChanged, onDelete }: {
+export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onClose, onChanged, onDelete }: {
   post: Post; meId: string; isMobile: boolean; authorProfile?: PublicProfile | null
   canDelete?: boolean; onClose: () => void; onChanged: () => void; onDelete?: () => void
 }) {
@@ -282,15 +283,17 @@ export default function ProfilePosts({ targetUserId, meId, isMobile = false, can
         </div>
       )}
 
-      {composer && <Composer meId={meId} isMobile={isMobile} onClose={() => setComposer(false)} onCreated={load} />}
+      {composer && <Portal><Composer meId={meId} isMobile={isMobile} onClose={() => setComposer(false)} onCreated={load} /></Portal>}
       {active && (
-        <PostDetail
-          post={active} meId={meId} isMobile={isMobile} authorProfile={authorProfile}
-          canDelete={canPost && active.userId === meId}
-          onClose={() => setActive(null)}
-          onChanged={load}
-          onDelete={() => removePost(active)}
-        />
+        <Portal>
+          <PostDetail
+            post={active} meId={meId} isMobile={isMobile} authorProfile={authorProfile}
+            canDelete={canPost && active.userId === meId}
+            onClose={() => setActive(null)}
+            onChanged={load}
+            onDelete={() => removePost(active)}
+          />
+        </Portal>
       )}
     </div>
   )

@@ -7,6 +7,7 @@ import {
 } from '../lib/messages'
 import type { Conversation, DirectMessage, PublicProfile } from '../types'
 import { CloseIcon, SendIcon, PlusIcon, ChatIcon } from './Icons'
+import Portal from './Portal'
 
 interface Props {
   userId: string
@@ -371,8 +372,8 @@ export default function MessagesView({ userId, isMobile = false, startUserId = n
         </div>
       )}
 
-      {active && <Thread conversation={active} userId={userId} isMobile={isMobile} onClose={closeThread} onActivity={() => { load(); onUnreadChange?.() }} />}
-      {showNew && <NewMessageSheet userId={userId} isMobile={isMobile} onPick={openWith} onClose={() => setShowNew(false)} />}
+      {active && <Portal><Thread conversation={active} userId={userId} isMobile={isMobile} onClose={closeThread} onActivity={() => { load(); onUnreadChange?.() }} /></Portal>}
+      {showNew && <Portal><NewMessageSheet userId={userId} isMobile={isMobile} onPick={openWith} onClose={() => setShowNew(false)} /></Portal>}
     </div>
   )
 }

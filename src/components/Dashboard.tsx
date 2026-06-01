@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import type { UserProfile, Round, View } from '../types'
 import { getRank, RANK_TIERS } from '../lib/points'
 import { ShieldIcon, UsersIcon, TrophyIcon, ArrowRight } from './Icons'
+import Feed from './Feed'
 
 gsap.registerPlugin(useGSAP)
 
@@ -67,12 +68,13 @@ interface Props {
   userId: string
   rounds: Round[]
   onNavigate: (v: View) => void
+  onViewProfile?: (userId: string) => void
   isMobile?: boolean
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function Dashboard({ profile, rounds, onNavigate, isMobile = false }: Props) {
+export default function Dashboard({ profile, userId, rounds, onNavigate, onViewProfile, isMobile = false }: Props) {
   const containerRef = useRef<HTMLElement>(null)
   const date = useLiveDate()
   const px   = isMobile ? 20 : 40
@@ -285,6 +287,14 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
           )}
           <div style={{ fontSize: 9.5, color: '#6B5F4E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Record</div>
         </div>
+      </div>
+
+      {/* ── Clubhouse feed ─────────────────────────────────── */}
+      <div style={{ marginBottom: 26 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 12 }}>
+          From the clubhouse
+        </div>
+        <Feed userId={userId} isMobile={isMobile} onViewProfile={onViewProfile} />
       </div>
 
       {/* ── Recent Rounds ──────────────────────────────────── */}

@@ -6,6 +6,7 @@ import { fetchFriendships, fetchProfilesForIds } from '../lib/friends'
 import { supabase } from '../lib/supabase'
 import { CloseIcon, TrophyIcon, PlusIcon } from './Icons'
 import CourseSearch from './CourseSearch'
+import Portal from './Portal'
 import type { GolfCourse } from '../lib/golfCourseApi'
 
 interface Props {
@@ -982,21 +983,25 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
       )}
 
       {showNew && (
-        <NewMatchModal userId={userId} wallet={wallet} friends={friends} onClose={() => setShowNew(false)} onCreate={m => setMatches(prev => [m, ...prev])} isMobile={isMobile} />
+        <Portal>
+          <NewMatchModal userId={userId} wallet={wallet} friends={friends} onClose={() => setShowNew(false)} onCreate={m => setMatches(prev => [m, ...prev])} isMobile={isMobile} />
+        </Portal>
       )}
 
       {scoring && (
-        <ScoringModal
-          match={scoring}
-          userId={userId}
-          onClose={() => setScoring(null)}
-          onMatchUpdated={updated => {
-            setMatches(prev => prev.map(m => m.id === updated.id ? updated : m))
-            setScoring(updated)
-            if (updated.status === 'completed') fetchOrCreateWallet(userId).then(setWallet)
-          }}
-          isMobile={isMobile}
-        />
+        <Portal>
+          <ScoringModal
+            match={scoring}
+            userId={userId}
+            onClose={() => setScoring(null)}
+            onMatchUpdated={updated => {
+              setMatches(prev => prev.map(m => m.id === updated.id ? updated : m))
+              setScoring(updated)
+              if (updated.status === 'completed') fetchOrCreateWallet(userId).then(setWallet)
+            }}
+            isMobile={isMobile}
+          />
+        </Portal>
       )}
     </div>
   )
