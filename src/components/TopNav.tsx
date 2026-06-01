@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { View } from '../types'
 import DialWordmark from './DialWordmark'
-import { PlusIcon, PersonIcon, HomeIcon, UsersIcon, TrophyIcon, BellIcon, ToolsIcon } from './Icons'
+import { PlusIcon, PersonIcon, HomeIcon, UsersIcon, TrophyIcon, BellIcon, ToolsIcon, TargetIcon, ScorecardIcon } from './Icons'
 
 const NAV_ITEMS: { id: View; label: string }[] = [
   { id: 'dashboard', label: 'Home'    },
@@ -22,6 +22,7 @@ const BOTTOM_NAV: { id: View; label: string; Icon: React.ComponentType<{ size?: 
 interface Props {
   view: View
   onView: (v: View) => void
+  onLogShot: () => void
   onLogRound: () => void
   onNotif: () => void
   onProfile: () => void
@@ -32,19 +33,24 @@ interface Props {
   notifCount?: number
 }
 
-export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0 }: Props) {
-  const [menuOpen, setMenuOpen] = useState(false)
+export default function TopNav({ view, onView, onLogShot, onLogRound, onNotif, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0 }: Props) {
+  const [menuOpen, setMenuOpen]     = useState(false)
+  const [createOpen, setCreateOpen] = useState(false)
   const avatarRef               = useRef<HTMLDivElement>(null)
+  const createRef               = useRef<HTMLDivElement>(null)
   const initial = userEmail ? userEmail[0].toUpperCase() : 'G'
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
-        setMenuOpen(false)
-      }
+      if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) setMenuOpen(false)
+      if (createRef.current && !createRef.current.contains(e.target as Node)) setCreateOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setMenuOpen(false); setCreateOpen(false) }
     }
     document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
+    document.addEventListener('keydown', onKey)
+    return () => { document.removeEventListener('mousedown', handler); document.removeEventListener('keydown', onKey) }
   }, [])
 
   return (
@@ -147,33 +153,86 @@ export default function TopNav({ view, onView, onLogRound, onNotif, onProfile, u
             )}
           </button>
 
-          {/* Log a round button */}
-          <button
-            onClick={onLogRound}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              background: '#1F3A2A', color: '#FAF6EA', border: 'none',
-              borderRadius: 999,
-              padding: isMobile ? '9px 10px 9px 16px' : '10px 18px 10px 20px',
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: isMobile ? 13 : 13.5, fontWeight: 500,
-              cursor: 'pointer', letterSpacing: '-0.005em',
-              transition: 'all 0.15s cubic-bezier(0.22, 1, 0.36, 1)',
-              whiteSpace: 'nowrap', flexShrink: 0,
-              boxShadow: '0 4px 14px rgba(31,58,42,0.20)',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#16271D'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(31,58,42,0.28)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(31,58,42,0.20)' }}
-            onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
-            onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-            onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
-            onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
-          >
-            {isMobile ? 'Log round' : 'Log a round'}
-            <span style={{ width: 22, height: 22, borderRadius: 11, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <PlusIcon size={14} color="#FAF6EA" />
-            </span>
-          </button>
+          {/* Quick-create button + menu */}
+          <div ref={createRef} style={{ position: 'relative', flexShrink: 0 }}>
+            <button
+              onClick={() => setCreateOpen(v => !v)}
+              aria-expanded={createOpen}
+              aria-haspopup="menu"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                background: createOpen ? '#16271D' : '#1F3A2A', color: '#FAF6EA', border: 'none',
+                borderRadius: 999,
+                padding: isMobile ? '9px 10px 9px 16px' : '10px 18px 10px 20px',
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: isMobile ? 13 : 13.5, fontWeight: 500,
+                cursor: 'pointer', letterSpacing: '-0.005em',
+                transition: 'all 0.15s cubic-bezier(0.22, 1, 0.36, 1)',
+                whiteSpace: 'nowrap',
+                boxShadow: '0 4px 14px rgba(31,58,42,0.20)',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#16271D'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(31,58,42,0.28)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = createOpen ? '#16271D' : '#1F3A2A'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(31,58,42,0.20)' }}
+              onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
+              onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+              onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
+              onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
+            >
+              Log
+              <span style={{ width: 22, height: 22, borderRadius: 11, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transform: createOpen ? 'rotate(45deg)' : 'rotate(0deg)', transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
+                <PlusIcon size={14} color="#FAF6EA" />
+              </span>
+            </button>
+
+            {createOpen && (
+              <div
+                role="menu"
+                style={{
+                  position: 'absolute', top: 'calc(100% + 10px)', right: 0,
+                  background: '#FAF6EA', border: '1px solid #E0D8C5',
+                  borderRadius: 16, padding: '6px',
+                  boxShadow: '0 12px 32px rgba(31,58,42,0.16)',
+                  minWidth: 232, zIndex: 50,
+                  animation: 'fadeIn 0.15s ease',
+                }}
+              >
+                {[
+                  { Icon: TargetIcon,    title: 'Log a shot',   sub: 'Quick club distance',  accent: true,  action: onLogShot },
+                  { Icon: ScorecardIcon, title: 'Start a round', sub: 'Full scorecard',       accent: false, action: onLogRound },
+                  { Icon: TrophyIcon,    title: 'New match',     sub: 'Challenge a friend',   accent: false, action: () => onView('matches') },
+                ].map((item, i) => (
+                  <button
+                    key={item.title}
+                    role="menuitem"
+                    onClick={() => { setCreateOpen(false); item.action() }}
+                    style={{
+                      width: '100%', background: 'transparent', border: 'none',
+                      borderRadius: 12, padding: '10px 12px',
+                      marginTop: i === 0 ? 0 : 2,
+                      textAlign: 'left', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: 12,
+                      transition: 'background 0.12s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#F0EBDD' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                  >
+                    <span style={{
+                      width: 34, height: 34, borderRadius: 11, flexShrink: 0,
+                      background: item.accent ? '#1F3A2A' : '#F0EBDD',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: item.accent ? '0 2px 8px rgba(31,58,42,0.22)' : 'none',
+                    }}>
+                      <item.Icon size={17} color={item.accent ? '#D9824D' : '#1F3A2A'} />
+                    </span>
+                    <div>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, color: '#1F1D17', letterSpacing: '-0.01em' }}>{item.title}</div>
+                      <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 1 }}>{item.sub}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Avatar + dropdown */}
           <div ref={avatarRef} style={{ position: 'relative' }}>

@@ -349,11 +349,15 @@ export default function Dashboard({ profile, rounds, onNavigate, isMobile = fals
               return (
                 <div
                   key={round.id}
+                  onClick={() => onNavigate('rounds')}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 14,
-                    padding: '13px 16px',
+                    padding: '13px 16px', cursor: 'pointer',
                     borderTop: i === 0 ? 'none' : '1px solid rgba(224,216,197,0.45)',
+                    transition: 'background 0.12s',
                   }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(240,235,221,0.55)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
                 >
                   {/* Date block */}
                   <div style={{

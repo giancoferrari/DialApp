@@ -183,6 +183,17 @@ function AppShell() {
     refreshNotifCount()
   }, [user, refreshNotifCount])
 
+  // Keep the top-bar badge live: react to incoming friend requests & match invites
+  useEffect(() => {
+    if (!user) return
+    const ch = supabase
+      .channel(`app-badge-${user.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships', filter: `addressee_id=eq.${user.id}` }, refreshNotifCount)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'match_players', filter: `user_id=eq.${user.id}` }, refreshNotifCount)
+      .subscribe()
+    return () => { supabase.removeChannel(ch) }
+  }, [user, refreshNotifCount])
+
   useGSAP(() => {
     if (!pageRef.current || prevView.current === view) return
     const mm = gsap.matchMedia()
@@ -205,6 +216,8 @@ function AppShell() {
   }
 
   const handleCloseLog = () => { setLogOpen(false); setLogPreclub(null) }
+
+  const handleLogShot = () => { setLogPreclub(null); setLogOpen(true) }
 
   const handleLogRound = () => {
     setRoundAutoKey(k => k + 1)
@@ -287,6 +300,7 @@ function AppShell() {
       <TopNav
         view={view}
         onView={handleSetView}
+        onLogShot={handleLogShot}
         onLogRound={handleLogRound}
         onNotif={handleNotif}
         onProfile={() => handleSetView('profile')}
