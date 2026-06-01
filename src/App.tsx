@@ -7,6 +7,7 @@ import { fetchCourses } from './lib/courses'
 import { fetchRounds } from './lib/rounds'
 import { fetchPracticeSessions } from './lib/practice'
 import { fetchProfile } from './lib/profile'
+import { fetchUnreadTotal } from './lib/messages'
 import { supabase } from './lib/supabase'
 import { useIsMobile } from './hooks/useIsMobile'
 import type { Shot, View, Club, Course, Round, PracticeSession, UserProfile } from './types'
@@ -21,6 +22,8 @@ import MatchesView from './components/MatchesView'
 import NotificationsView from './components/NotificationsView'
 import ToolsView from './components/ToolsView'
 import SettingsView from './components/SettingsView'
+import ProfileView from './components/ProfileView'
+import MessagesView from './components/MessagesView'
 import LogShotModal from './components/LogShotModal'
 import AuthScreen from './components/AuthScreen'
 import LegalModal from './components/LegalModal'
@@ -147,6 +150,9 @@ function AppShell() {
   const [logPreclub, setLogPreclub]   = useState<Club | null>(null)
   const [legalDoc, setLegalDoc]       = useState<'privacy' | 'terms' | null>(null)
   const [notifCount, setNotifCount]   = useState(0)
+  const [msgUnread, setMsgUnread]     = useState(0)
+  const [profileUserId, setProfileUserId] = useState<string | null>(null)
+  const [messageUserId, setMessageUserId] = useState<string | null>(null)
   const [roundAutoKey, setRoundAutoKey] = useState(0)
 
   const pageRef    = useRef<HTMLDivElement>(null)
@@ -162,6 +168,11 @@ function AppShell() {
         .eq('user_id', user.id).eq('status', 'invited'),
     ])
     setNotifCount((fc ?? 0) + (mc ?? 0))
+  }, [user])
+
+  const refreshMsgUnread = useCallback(async () => {
+    if (!user) return
+    try { setMsgUnread(await fetchUnreadTotal(user.id)) } catch { /* table may not exist yet */ }
   }, [user])
 
   useEffect(() => {
@@ -181,18 +192,20 @@ function AppShell() {
       .catch(console.error)
       .finally(() => setShotsLoading(false))
     refreshNotifCount()
-  }, [user, refreshNotifCount])
+    refreshMsgUnread()
+  }, [user, refreshNotifCount, refreshMsgUnread])
 
-  // Keep the top-bar badge live: react to incoming friend requests & match invites
+  // Keep the top-bar badges live: friend requests, match invites & new messages
   useEffect(() => {
     if (!user) return
     const ch = supabase
       .channel(`app-badge-${user.id}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships', filter: `addressee_id=eq.${user.id}` }, refreshNotifCount)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'match_players', filter: `user_id=eq.${user.id}` }, refreshNotifCount)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, refreshMsgUnread)
       .subscribe()
     return () => { supabase.removeChannel(ch) }
-  }, [user, refreshNotifCount])
+  }, [user, refreshNotifCount, refreshMsgUnread])
 
   useGSAP(() => {
     if (!pageRef.current || prevView.current === view) return
@@ -226,6 +239,12 @@ function AppShell() {
 
   const handleNotif = () => { handleSetView('notifications') }
 
+  const handleMessages = () => { setMessageUserId(null); handleSetView('messages') }
+
+  const handleMessageUser = (uid: string) => { setMessageUserId(uid); handleSetView('messages', { force: true }) }
+
+  const handleViewProfile = (uid: string) => { handleSetView('profile', { profileUserId: uid }) }
+
   const handleSetDistance = async (clubId: string, yardage: number) => {
     if (!user) return
     const tempId = -Date.now()
@@ -242,8 +261,10 @@ function AppShell() {
     }
   }
 
-  const handleSetView = (v: View) => {
-    if (v === view) return
+  const handleSetView = (v: View, opts?: { profileUserId?: string; force?: boolean }) => {
+    if (v === view && v !== 'profile' && v !== 'messages' && !opts?.force) return
+    // 'profile' nav resets to own profile unless a specific user was requested
+    if (v === 'profile') setProfileUserId(opts?.profileUserId ?? null)
     try { localStorage.setItem('dial_view', v) } catch { /* */ }
     const resetScroll = () => {
       if (contentRef.current) contentRef.current.scrollTop = 0
@@ -303,12 +324,14 @@ function AppShell() {
         onLogShot={handleLogShot}
         onLogRound={handleLogRound}
         onNotif={handleNotif}
+        onMessages={handleMessages}
         onProfile={() => handleSetView('profile')}
         userEmail={user?.email ?? ''}
         avatarUrl={profile?.avatarUrl ?? null}
         onSignOut={signOut}
         isMobile={isMobile}
         notifCount={notifCount}
+        msgUnread={msgUnread}
       />
 
       <div ref={contentRef} style={contentStyle}>
@@ -350,7 +373,18 @@ function AppShell() {
               isMobile={isMobile}
             />
           )}
-          {(view === 'profile' || view === 'settings') && (
+          {view === 'profile' && (
+            <ProfileView
+              profile={profile}
+              meId={user!.id}
+              viewUserId={profileUserId ?? user!.id}
+              userEmail={user?.email ?? ''}
+              isMobile={isMobile}
+              onNavigate={handleSetView}
+              onMessage={handleMessageUser}
+            />
+          )}
+          {view === 'settings' && (
             <SettingsView
               profile={profile}
               userEmail={user?.email ?? ''}
@@ -362,8 +396,17 @@ function AppShell() {
               isMobile={isMobile}
             />
           )}
+          {view === 'messages' && (
+            <MessagesView
+              key={messageUserId ?? 'inbox'}
+              userId={user!.id}
+              isMobile={isMobile}
+              startUserId={messageUserId}
+              onUnreadChange={refreshMsgUnread}
+            />
+          )}
           {view === 'friends' && (
-            <FriendsView userId={user!.id} isMobile={isMobile} />
+            <FriendsView userId={user!.id} isMobile={isMobile} onMessage={handleMessageUser} onViewProfile={handleViewProfile} />
           )}
           {view === 'matches' && (
             <MatchesView userId={user!.id} isMobile={isMobile} />

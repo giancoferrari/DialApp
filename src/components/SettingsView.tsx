@@ -182,7 +182,7 @@ interface Props {
   isMobile?: boolean
 }
 
-export default function SettingsView({ profile, userEmail, userId, onProfileSaved, onSignOut, onShowLegal, isMobile = false }: Props) {
+export default function SettingsView({ profile, userEmail, userId, onProfileSaved, onSignOut, onShowLegal, onNavigate, isMobile = false }: Props) {
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [savedFlash, setSavedFlash] = useState<string | null>(null)
@@ -254,9 +254,15 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
     <div style={{ maxWidth: 640, margin: '0 auto', padding: `${isMobile ? 28 : 48}px ${px}px ${isMobile ? 120 : 80}px` }}>
 
       {/* ── Page title ── */}
+      <button
+        onClick={() => onNavigate('profile')}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: '#4A4235', padding: 0, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}
+      >
+        <span style={{ fontSize: 18, lineHeight: 1 }}>‹</span> Profile
+      </button>
       <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 8 }}>Your account</div>
       <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: '0 0 28px', lineHeight: 1 }}>
-        Profile
+        Settings
       </h1>
 
       {/* ── Flash messages ── */}

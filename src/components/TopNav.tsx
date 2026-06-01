@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { View } from '../types'
 import DialWordmark from './DialWordmark'
-import { PlusIcon, PersonIcon, HomeIcon, UsersIcon, TrophyIcon, BellIcon, ToolsIcon, TargetIcon, ScorecardIcon } from './Icons'
+import { PlusIcon, PersonIcon, HomeIcon, UsersIcon, TrophyIcon, BellIcon, ToolsIcon, TargetIcon, ScorecardIcon, ChatIcon } from './Icons'
 
 const NAV_ITEMS: { id: View; label: string }[] = [
   { id: 'dashboard', label: 'Home'    },
@@ -25,15 +25,17 @@ interface Props {
   onLogShot: () => void
   onLogRound: () => void
   onNotif: () => void
+  onMessages: () => void
   onProfile: () => void
   userEmail: string
   avatarUrl?: string | null
   onSignOut: () => void
   isMobile: boolean
   notifCount?: number
+  msgUnread?: number
 }
 
-export default function TopNav({ view, onView, onLogShot, onLogRound, onNotif, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0 }: Props) {
+export default function TopNav({ view, onView, onLogShot, onLogRound, onNotif, onMessages, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0, msgUnread = 0 }: Props) {
   const [menuOpen, setMenuOpen]     = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
   const avatarRef               = useRef<HTMLDivElement>(null)
@@ -117,6 +119,41 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onNotif, o
           )}
 
           <div style={{ flex: 1 }} />
+
+          {/* Messages button */}
+          <button
+            onClick={onMessages}
+            style={{
+              position: 'relative',
+              width: 38, height: 38, borderRadius: 19,
+              background: 'rgba(250,246,234,0.65)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.5)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', flexShrink: 0,
+              boxShadow: '0 2px 8px rgba(31,29,23,0.06), inset 0 1px 0 rgba(255,255,255,0.7)',
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.90)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.65)' }}
+            onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.94)' }}
+            onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+          >
+            <ChatIcon size={17} color={view === 'messages' ? '#D9824D' : '#1F3A2A'} />
+            {msgUnread > 0 && (
+              <div style={{
+                position: 'absolute', top: -2, right: -2,
+                minWidth: 16, height: 16, borderRadius: 8,
+                background: '#D9824D', border: '1.5px solid rgba(237,232,212,0.92)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 9, fontWeight: 700, color: '#FAF6EA',
+                fontFamily: "'DM Sans', sans-serif", padding: '0 3px',
+              }}>
+                {msgUnread > 9 ? '9+' : msgUnread}
+              </div>
+            )}
+          </button>
 
           {/* Bell notification button */}
           <button

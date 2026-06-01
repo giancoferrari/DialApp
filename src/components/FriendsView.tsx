@@ -16,7 +16,7 @@ function profileLabel(profile?: PublicProfile | null): { primary: string; second
   return { primary: 'No username', secondary: null }
 }
 
-function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onClose: () => void }) {
+function FriendProfileModal({ profile, onClose, onMessage, onViewProfile }: { profile: PublicProfile; onClose: () => void; onMessage?: (id: string) => void; onViewProfile?: (id: string) => void }) {
   const initial = (profile.firstName?.[0] ?? profile.username?.[0] ?? '?').toUpperCase()
   const points  = profile.rankedPoints ?? 0
   const rank    = getRank(points)
@@ -185,25 +185,27 @@ function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onCl
             </div>
           )}
 
-          <button
-            onClick={onClose}
-            style={{
-              width: '100%', background: '#1F3A2A', color: '#FAF6EA',
-              border: 'none', borderRadius: 16, padding: '13px',
-              fontSize: 14, fontWeight: 600, cursor: 'pointer',
-              fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em',
-              transition: 'all 0.15s cubic-bezier(0.22, 1, 0.36, 1)',
-              boxShadow: '0 4px 14px rgba(31,58,42,0.24)',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#16271D'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(31,58,42,0.30)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(31,58,42,0.24)' }}
-            onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
-            onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-            onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
-            onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
-          >
-            Close
-          </button>
+          <div style={{ display: 'flex', gap: 10 }}>
+            {onViewProfile && (
+              <button
+                onClick={() => { onViewProfile(profile.userId); onClose() }}
+                style={{ flex: 1, background: 'rgba(250,246,234,0.72)', color: '#1F3A2A', border: '1px solid rgba(255,255,255,0.6)', borderRadius: 16, padding: '13px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}
+              >
+                View profile
+              </button>
+            )}
+            {onMessage && (
+              <button
+                onClick={() => { onMessage(profile.userId); onClose() }}
+                style={{ flex: 1, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 16, padding: '13px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em', boxShadow: '0 4px 14px rgba(31,58,42,0.24)' }}
+              >
+                Message
+              </button>
+            )}
+            {!onMessage && !onViewProfile && (
+              <button onClick={onClose} style={{ flex: 1, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 16, padding: '13px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Close</button>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -213,6 +215,8 @@ function FriendProfileModal({ profile, onClose }: { profile: PublicProfile; onCl
 interface Props {
   userId: string
   isMobile?: boolean
+  onMessage?: (userId: string) => void
+  onViewProfile?: (userId: string) => void
 }
 
 function Avatar({ profile, size = 44 }: { profile?: PublicProfile; size?: number }) {
@@ -227,7 +231,7 @@ function Avatar({ profile, size = 44 }: { profile?: PublicProfile; size?: number
   )
 }
 
-export default function FriendsView({ userId, isMobile = false }: Props) {
+export default function FriendsView({ userId, isMobile = false, onMessage, onViewProfile }: Props) {
   const [friendships,    setFriendships]   = useState<Friendship[]>([])
   const [friendProfiles, setFriendProfiles] = useState<PublicProfile[]>([])
   const [loading,        setLoading]       = useState(true)
@@ -524,7 +528,7 @@ export default function FriendsView({ userId, isMobile = false }: Props) {
         )}
       </div>
 
-      {viewProfile && <FriendProfileModal profile={viewProfile} onClose={() => setViewProfile(null)} />}
+      {viewProfile && <FriendProfileModal profile={viewProfile} onClose={() => setViewProfile(null)} onMessage={onMessage} onViewProfile={onViewProfile} />}
     </div>
   )
 }

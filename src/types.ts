@@ -15,7 +15,7 @@ export interface Shot {
   note: string
 }
 
-export type View = 'dashboard' | 'bag' | 'dialin' | 'rounds' | 'practice' | 'profile' | 'friends' | 'matches' | 'notifications' | 'tools' | 'settings'
+export type View = 'dashboard' | 'bag' | 'dialin' | 'rounds' | 'practice' | 'profile' | 'friends' | 'matches' | 'notifications' | 'tools' | 'settings' | 'messages'
 
 // ── Course ──────────────────────────────────────────────
 export interface CourseHole {
@@ -140,6 +140,47 @@ export interface Wallet {
 }
 
 export type WalletTxType = 'top_up' | 'wager_placed' | 'wager_won' | 'wager_refund'
+
+// ── Direct Messages ───────────────────────────────────────
+export interface Conversation {
+  id: string
+  otherUserId: string
+  otherProfile?: PublicProfile
+  lastMessage: string | null
+  lastMessageAt: string | null
+  unread: number
+}
+
+export interface DirectMessage {
+  id: string
+  conversationId: string
+  senderId: string
+  body: string
+  createdAt: string
+  readAt: string | null
+}
+
+// ── Profile Posts (social feed) ───────────────────────────
+export interface Post {
+  id: string
+  userId: string
+  imageUrl: string
+  caption: string | null
+  createdAt: string
+  likeCount: number
+  commentCount: number
+  likedByMe: boolean
+  author?: PublicProfile
+}
+
+export interface PostComment {
+  id: string
+  postId: string
+  userId: string
+  body: string
+  createdAt: string
+  author?: PublicProfile
+}
 
 // ── Matches ───────────────────────────────────────────────
 export type GameMode    = 'stroke' | 'match_play' | 'skins' | 'wolf'

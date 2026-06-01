@@ -1,0 +1,378 @@
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { supabase } from '../lib/supabase'
+import { fetchFriendships, fetchProfilesForIds, searchUsers } from '../lib/friends'
+import {
+  fetchConversations, getOrCreateConversation, fetchMessages,
+  sendMessage, markConversationRead,
+} from '../lib/messages'
+import type { Conversation, DirectMessage, PublicProfile } from '../types'
+import { CloseIcon, SendIcon, PlusIcon, ChatIcon } from './Icons'
+
+interface Props {
+  userId: string
+  isMobile?: boolean
+  startUserId?: string | null
+  onUnreadChange?: () => void
+}
+
+function Avatar({ profile, size = 46 }: { profile?: PublicProfile | null; size?: number }) {
+  const initial = profile?.username?.[0]?.toUpperCase() ?? profile?.firstName?.[0]?.toUpperCase() ?? '?'
+  return (
+    <div style={{ width: size, height: size, borderRadius: size / 2, background: '#1F3A2A', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {profile?.avatarUrl
+        ? <img src={profile.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: size * 0.4, color: '#D9824D' }}>{initial}</span>}
+    </div>
+  )
+}
+
+function relTime(ts: string | null): string {
+  if (!ts) return ''
+  const diff = Date.now() - new Date(ts).getTime()
+  const m = Math.floor(diff / 60000)
+  if (m < 1)  return 'now'
+  if (m < 60) return `${m}m`
+  const h = Math.floor(m / 60)
+  if (h < 24) return `${h}h`
+  const d = Math.floor(h / 24)
+  if (d < 7)  return `${d}d`
+  return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+function name(p?: PublicProfile | null): string {
+  if (!p) return 'Golfer'
+  return p.username ? `@${p.username}` : (p.firstName ?? 'Golfer')
+}
+
+// ── Chat thread (full-screen overlay) ──────────────────────────────────
+function Thread({ conversation, userId, isMobile, onClose, onActivity }: {
+  conversation: Conversation
+  userId: string
+  isMobile: boolean
+  onClose: () => void
+  onActivity: () => void
+}) {
+  const [messages, setMessages] = useState<DirectMessage[]>([])
+  const [input, setInput]       = useState('')
+  const [sending, setSending]   = useState(false)
+  const [loading, setLoading]   = useState(true)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = () => {
+    requestAnimationFrame(() => {
+      if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    })
+  }
+
+  useEffect(() => {
+    let alive = true
+    fetchMessages(conversation.id)
+      .then(m => { if (alive) { setMessages(m); setLoading(false); scrollToBottom() } })
+      .catch(() => { if (alive) setLoading(false) })
+    markConversationRead(conversation.id, userId).then(onActivity).catch(() => {})
+
+    const ch = supabase
+      .channel(`thread-${conversation.id}`)
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversation.id}` },
+        payload => {
+          const r = payload.new as Record<string, unknown>
+          setMessages(prev => {
+            if (prev.some(m => m.id === r.id)) return prev
+            return [...prev, {
+              id: r.id as string, conversationId: r.conversation_id as string,
+              senderId: r.sender_id as string, body: r.body as string,
+              createdAt: r.created_at as string, readAt: (r.read_at as string) ?? null,
+            }]
+          })
+          scrollToBottom()
+          if (r.sender_id !== userId) markConversationRead(conversation.id, userId).then(onActivity).catch(() => {})
+        })
+      .subscribe()
+    return () => { alive = false; supabase.removeChannel(ch) }
+  }, [conversation.id, userId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleSend = async () => {
+    const text = input.trim()
+    if (!text || sending) return
+    setInput('')
+    setSending(true)
+    // Optimistic
+    const optimistic: DirectMessage = {
+      id: `tmp-${Date.now()}`, conversationId: conversation.id, senderId: userId,
+      body: text, createdAt: new Date().toISOString(), readAt: null,
+    }
+    setMessages(prev => [...prev, optimistic])
+    scrollToBottom()
+    try {
+      const saved = await sendMessage(conversation.id, userId, text)
+      setMessages(prev => prev.map(m => m.id === optimistic.id ? saved : m))
+      onActivity()
+    } catch {
+      setMessages(prev => prev.filter(m => m.id !== optimistic.id))
+      setInput(text)
+    } finally { setSending(false) }
+  }
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: '#F0EBDD', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ width: '100%', maxWidth: isMobile ? '100%' : 560, height: '100%', display: 'flex', flexDirection: 'column', background: 'rgba(245,240,230,0.96)', boxShadow: isMobile ? 'none' : '0 0 60px rgba(31,29,23,0.18)' }}>
+
+        {/* Header */}
+        <div style={{ background: '#1F3A2A', color: '#FAF6EA', padding: `${isMobile ? 'calc(env(safe-area-inset-top) + 12px)' : '14px'} 16px 12px`, display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+          <button onClick={onClose} style={{ background: 'rgba(250,246,234,0.14)', border: 'none', borderRadius: 10, width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+            <span style={{ fontSize: 20, color: '#FAF6EA', lineHeight: 1 }}>‹</span>
+          </button>
+          <Avatar profile={conversation.otherProfile} size={38} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {name(conversation.otherProfile)}
+            </div>
+            {conversation.otherProfile?.handicapIndex != null && (
+              <div style={{ fontSize: 11.5, color: '#B5C29A' }}>HCP {conversation.otherProfile.handicapIndex.toFixed(1)}</div>
+            )}
+          </div>
+        </div>
+
+        {/* Messages */}
+        <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never, padding: '16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {loading ? (
+            <div style={{ textAlign: 'center', color: '#6B5F4E', fontSize: 13, marginTop: 24 }}>Loading…</div>
+          ) : messages.length === 0 ? (
+            <div style={{ textAlign: 'center', color: '#6B5F4E', fontSize: 13, marginTop: 40 }}>
+              Say hello to {name(conversation.otherProfile)} 👋
+            </div>
+          ) : messages.map((m, i) => {
+            const mine = m.senderId === userId
+            const prev = messages[i - 1]
+            const showGap = !prev || prev.senderId !== m.senderId
+            return (
+              <div key={m.id} style={{ display: 'flex', justifyContent: mine ? 'flex-end' : 'flex-start', marginTop: showGap ? 6 : 0 }}>
+                <div style={{
+                  maxWidth: '78%', padding: '9px 13px', borderRadius: 18,
+                  borderBottomRightRadius: mine ? 5 : 18, borderBottomLeftRadius: mine ? 18 : 5,
+                  background: mine ? '#1F3A2A' : '#FFFFFF',
+                  color: mine ? '#FAF6EA' : '#1F1D17',
+                  border: mine ? 'none' : '1px solid #E0D8C5',
+                  fontSize: 14.5, lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif",
+                  boxShadow: '0 1px 2px rgba(31,29,23,0.06)', wordBreak: 'break-word',
+                }}>
+                  {m.body}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Composer */}
+        <div style={{ padding: `12px 12px ${isMobile ? 'calc(env(safe-area-inset-bottom) + 12px)' : '12px'}`, borderTop: '1px solid #E0D8C5', background: '#F5F0E6', display: 'flex', gap: 8, alignItems: 'flex-end', flexShrink: 0 }}>
+          <textarea
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
+            placeholder="Message…"
+            rows={1}
+            style={{ flex: 1, resize: 'none', maxHeight: 120, background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 20, padding: '11px 16px', fontSize: 14.5, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4 }}
+            onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
+            onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+          />
+          <button
+            onClick={handleSend}
+            disabled={!input.trim() || sending}
+            style={{ width: 44, height: 44, borderRadius: 22, flexShrink: 0, background: input.trim() ? '#1F3A2A' : '#C9C0A8', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: input.trim() ? 'pointer' : 'default', transition: 'background 0.15s' }}
+          >
+            <SendIcon size={18} color="#FAF6EA" />
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── New conversation picker ─────────────────────────────────────────────
+function NewMessageSheet({ userId, isMobile, onPick, onClose }: {
+  userId: string
+  isMobile: boolean
+  onPick: (otherId: string) => void
+  onClose: () => void
+}) {
+  const [friends, setFriends] = useState<PublicProfile[]>([])
+  const [query, setQuery]     = useState('')
+  const [results, setResults] = useState<PublicProfile[]>([])
+  const [searching, setSearching] = useState(false)
+
+  useEffect(() => {
+    (async () => {
+      const fs = await fetchFriendships(userId)
+      const accepted = fs.filter(f => f.status === 'accepted')
+      const ids = accepted.map(f => f.requesterId === userId ? f.addresseeId : f.requesterId)
+      setFriends(await fetchProfilesForIds(ids))
+    })().catch(() => {})
+  }, [userId])
+
+  useEffect(() => {
+    if (!query.trim()) { setResults([]); return }
+    let alive = true
+    setSearching(true)
+    const t = setTimeout(async () => {
+      try { const r = await searchUsers(query, userId); if (alive) setResults(r) }
+      catch { /* ignore */ }
+      finally { if (alive) setSearching(false) }
+    }, 280)
+    return () => { alive = false; clearTimeout(t) }
+  }, [query, userId])
+
+  const list = query.trim() ? results : friends
+
+  return (
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 210, background: 'rgba(31,29,23,0.5)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 480, maxHeight: isMobile ? '85vh' : '80vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 20px 14px', borderBottom: '1px solid #E0D8C5', flexShrink: 0 }}>
+          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>New message</div>
+          <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <CloseIcon size={14} color="#4A4235" />
+          </button>
+        </div>
+        <div style={{ padding: '14px 20px 8px', flexShrink: 0 }}>
+          <input
+            value={query} onChange={e => setQuery(e.target.value)} autoFocus
+            placeholder="Search players by username…"
+            style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 12, padding: '11px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif" }}
+            onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
+            onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+          />
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '6px 12px 16px' }}>
+          {!query.trim() && (
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B5F4E', textTransform: 'uppercase', padding: '8px 8px 6px' }}>Friends</div>
+          )}
+          {searching && <div style={{ textAlign: 'center', color: '#6B5F4E', fontSize: 13, padding: 16 }}>Searching…</div>}
+          {!searching && list.length === 0 && (
+            <div style={{ textAlign: 'center', color: '#6B5F4E', fontSize: 13, padding: 24 }}>
+              {query.trim() ? 'No players found.' : 'Add friends to start chatting, or search above.'}
+            </div>
+          )}
+          {list.map(p => (
+            <button key={p.userId} onClick={() => onPick(p.userId)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, background: 'transparent', border: 'none', borderRadius: 12, padding: '10px 8px', cursor: 'pointer', textAlign: 'left', transition: 'background 0.12s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#EDE6D6' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
+              <Avatar profile={p} size={42} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>{name(p)}</div>
+                {p.handicapIndex != null && <div style={{ fontSize: 12, color: '#6B5F4E' }}>HCP {p.handicapIndex.toFixed(1)}</div>}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Main view ────────────────────────────────────────────────────────────
+export default function MessagesView({ userId, isMobile = false, startUserId = null, onUnreadChange }: Props) {
+  const [conversations, setConversations] = useState<Conversation[]>([])
+  const [loading, setLoading] = useState(true)
+  const [active, setActive]   = useState<Conversation | null>(null)
+  const [showNew, setShowNew] = useState(false)
+
+  const load = useCallback(async () => {
+    try { setConversations(await fetchConversations(userId)) }
+    catch { /* ignore */ }
+    finally { setLoading(false) }
+  }, [userId])
+
+  useEffect(() => { load() }, [load])
+
+  // Open a conversation directly (e.g. tapped "Message" on someone's profile)
+  useEffect(() => {
+    if (!startUserId) return
+    (async () => {
+      const convId = await getOrCreateConversation(userId, startUserId)
+      const profiles = await fetchProfilesForIds([startUserId])
+      setActive({ id: convId, otherUserId: startUserId, otherProfile: profiles[0], lastMessage: null, lastMessageAt: null, unread: 0 })
+    })().catch(() => {})
+  }, [startUserId, userId])
+
+  // Refresh list when a new message lands in any of my conversations
+  useEffect(() => {
+    const ch = supabase
+      .channel(`convs-${userId}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => { load(); onUnreadChange?.() })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'conversations' }, load)
+      .subscribe()
+    return () => { supabase.removeChannel(ch) }
+  }, [userId, load, onUnreadChange])
+
+  const openWith = async (otherId: string) => {
+    setShowNew(false)
+    const existing = conversations.find(c => c.otherUserId === otherId)
+    if (existing) { setActive(existing); return }
+    const convId = await getOrCreateConversation(userId, otherId)
+    const profiles = await fetchProfilesForIds([otherId])
+    setActive({ id: convId, otherUserId: otherId, otherProfile: profiles[0], lastMessage: null, lastMessageAt: null, unread: 0 })
+  }
+
+  const closeThread = () => { setActive(null); load(); onUnreadChange?.() }
+
+  const px = isMobile ? 20 : 40
+
+  return (
+    <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 28 : 48}px ${px}px ${isMobile ? 120 : 80}px` }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 24 }}>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 8 }}>Inbox</div>
+          <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: 0, lineHeight: 1 }}>Messages</h1>
+        </div>
+        <button onClick={() => setShowNew(true)} style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 16px 10px 18px', fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap', boxShadow: '0 4px 14px rgba(31,58,42,0.20)' }}>
+          New
+          <span style={{ width: 20, height: 20, borderRadius: 10, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+            <PlusIcon size={13} color="#FAF6EA" />
+          </span>
+        </button>
+      </div>
+
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: 48, fontSize: 14, color: '#6B5F4E' }}>Loading…</div>
+      ) : conversations.length === 0 ? (
+        <div style={{ background: 'rgba(250,246,234,0.72)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 22, padding: '48px 24px', textAlign: 'center', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.80)' }}>
+          <div style={{ width: 56, height: 56, borderRadius: 28, background: '#F0EBDD', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+            <ChatIcon size={24} color="#8B8272" />
+          </div>
+          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#8B8272', marginBottom: 8, letterSpacing: '-0.02em' }}>No messages yet</div>
+          <div style={{ fontSize: 13, color: '#6B5F4E', lineHeight: 1.5, marginBottom: 20 }}>Start a conversation with a friend or any player.</div>
+          <button onClick={() => setShowNew(true)} style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 22px', fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Start a chat</button>
+        </div>
+      ) : (
+        <div style={{ background: 'rgba(250,246,234,0.78)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.66)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.82)' }}>
+          {conversations.map((c, i) => (
+            <button key={c.id} onClick={() => setActive(c)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 13, background: 'transparent', border: 'none', borderTop: i === 0 ? 'none' : '1px solid rgba(224,216,197,0.5)', padding: '14px 16px', cursor: 'pointer', textAlign: 'left', transition: 'background 0.12s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(240,235,221,0.6)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
+              <Avatar profile={c.otherProfile} size={48} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                  <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name(c.otherProfile)}</span>
+                  <span style={{ fontSize: 11, color: '#8B8272', flexShrink: 0 }}>{relTime(c.lastMessageAt)}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 3 }}>
+                  <span style={{ fontSize: 13, color: c.unread > 0 ? '#1F1D17' : '#6B5F4E', fontWeight: c.unread > 0 ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {c.lastMessage ?? 'No messages yet'}
+                  </span>
+                  {c.unread > 0 && (
+                    <span style={{ flexShrink: 0, minWidth: 18, height: 18, borderRadius: 9, background: '#D9824D', color: '#FAF6EA', fontSize: 10.5, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', fontFamily: "'DM Sans', sans-serif" }}>
+                      {c.unread > 9 ? '9+' : c.unread}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {active && <Thread conversation={active} userId={userId} isMobile={isMobile} onClose={closeThread} onActivity={() => { load(); onUnreadChange?.() }} />}
+      {showNew && <NewMessageSheet userId={userId} isMobile={isMobile} onPick={openWith} onClose={() => setShowNew(false)} />}
+    </div>
+  )
+}
