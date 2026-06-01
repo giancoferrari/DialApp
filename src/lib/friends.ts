@@ -6,6 +6,7 @@ function toPublicProfile(r: Record<string, unknown>): PublicProfile {
     userId: r.user_id as string,
     username: (r.username as string) ?? null,
     avatarUrl: (r.avatar_url as string) ?? null,
+    country: (r.country as string) ?? null,
     handicapIndex: (r.handicap_index as number) ?? null,
     homeCourse: (r.home_course as string) ?? null,
     firstName: (r.first_name as string) ?? null,
@@ -16,7 +17,7 @@ function toPublicProfile(r: Record<string, unknown>): PublicProfile {
   }
 }
 
-const PROFILE_SELECT = 'user_id, username, first_name, avatar_url, handicap_index, home_course, ranked_points, wins, losses, ties'
+const PROFILE_SELECT = 'user_id, username, first_name, avatar_url, country, handicap_index, home_course, ranked_points, wins, losses, ties'
 
 export async function searchUsers(query: string, currentUserId: string): Promise<PublicProfile[]> {
   if (!query.trim()) return []

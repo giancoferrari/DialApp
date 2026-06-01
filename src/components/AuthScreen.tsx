@@ -3,6 +3,7 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { useAuth } from '../contexts/AuthContext'
 import DialWordmark from './DialWordmark'
+import CountryPicker from './CountryPicker'
 
 type Mode = 'signin' | 'signup' | 'forgot'
 
@@ -31,6 +32,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName]   = useState('')
   const [username, setUsername]   = useState('')
+  const [country, setCountry]     = useState<string | null>(null)
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm]   = useState('')
@@ -90,7 +92,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduced) {
       setMode(next); setError(null); setEmail(''); setPassword(''); setConfirm('')
-      setFirstName(''); setLastName(''); setUsername(''); setShowPwHints(false); setResetSent(false)
+      setFirstName(''); setLastName(''); setUsername(''); setCountry(null); setShowPwHints(false); setResetSent(false)
       setAgreeTerms(false); setAgreePrivacy(false); setAgreeAge(false)
       return
     }
@@ -98,7 +100,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
       opacity: 0, y: 6, duration: 0.15, ease: 'power2.in',
       onComplete: () => {
         setMode(next); setError(null); setEmail(''); setPassword(''); setConfirm('')
-        setFirstName(''); setLastName(''); setUsername(''); setShowPwHints(false); setResetSent(false)
+        setFirstName(''); setLastName(''); setUsername(''); setCountry(null); setShowPwHints(false); setResetSent(false)
         setAgreeTerms(false); setAgreePrivacy(false); setAgreeAge(false)
         gsap.fromTo(formRef.current, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out' })
       },
@@ -146,7 +148,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
     setLoading(true)
     const { error: err } = mode === 'signin'
       ? await signIn(email, password)
-      : await signUp(email, password, firstName.trim(), lastName.trim(), username.trim())
+      : await signUp(email, password, firstName.trim(), lastName.trim(), username.trim(), country ?? '')
     setLoading(false)
 
     if (err) {
@@ -383,6 +385,17 @@ export default function AuthScreen({ onShowLegal }: Props) {
                       />
                       <div style={{ fontSize: 11, color: '#6B5F4E', marginTop: 5 }}>
                         Used to find you on Dial. Min. 3 characters, no spaces.
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Country — signup only */}
+                  {mode === 'signup' && (
+                    <div style={{ marginBottom: 14 }}>
+                      <label style={labelStyle}>Country</label>
+                      <CountryPicker value={country} onChange={setCountry} />
+                      <div style={{ fontSize: 11, color: '#6B5F4E', marginTop: 5 }}>
+                        Your flag appears on your profile. You can change this later.
                       </div>
                     </div>
                   )}

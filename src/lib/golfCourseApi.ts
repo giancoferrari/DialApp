@@ -29,6 +29,18 @@ export interface GolfCourse {
   }
 }
 
+// The API's `course_name` is sometimes a generic label (e.g. "Panama Golf
+// Course") while `club_name` holds the real venue name. Prefer club_name, with
+// explicit overrides for known local clubs so they read exactly right.
+const COURSE_NAME_OVERRIDES: Record<number, string> = {
+  14916: 'Club de Golf de Panama',          // API course_name: "Panama Golf Course"
+  25374: 'Santa Maria Golf & Country Club', // API course_name: "Santa Maria Golf Course"
+}
+
+export function courseDisplayName(course: { id: number; club_name?: string; course_name?: string }): string {
+  return COURSE_NAME_OVERRIDES[course.id] ?? course.club_name ?? course.course_name ?? ''
+}
+
 export async function searchCourses(query: string): Promise<GolfCourse[]> {
   if (query.trim().length < 3) return []
   try {

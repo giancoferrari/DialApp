@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { View } from '../types'
 import DialWordmark from './DialWordmark'
-import { PlusIcon, PersonIcon, HomeIcon, TrophyIcon, BellIcon, ToolsIcon, TargetIcon, ScorecardIcon, ChatIcon } from './Icons'
+import { PlusIcon, PersonIcon, HomeIcon, TrophyIcon, BellIcon, ToolsIcon, TargetIcon, ScorecardIcon, ChatIcon, CameraIcon } from './Icons'
 
 const NAV_ITEMS: { id: View; label: string }[] = [
   { id: 'dashboard', label: 'Home'    },
@@ -24,6 +24,7 @@ interface Props {
   onView: (v: View) => void
   onLogShot: () => void
   onLogRound: () => void
+  onPost: () => void
   onNotif: () => void
   onMessages: () => void
   onProfile: () => void
@@ -35,7 +36,7 @@ interface Props {
   msgUnread?: number
 }
 
-export default function TopNav({ view, onView, onLogShot, onLogRound, onNotif, onMessages, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0, msgUnread = 0 }: Props) {
+export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, onNotif, onMessages, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0, msgUnread = 0 }: Props) {
   const [menuOpen, setMenuOpen]     = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
   const avatarRef               = useRef<HTMLDivElement>(null)
@@ -236,7 +237,8 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onNotif, o
                 }}
               >
                 {[
-                  { Icon: TargetIcon,    title: 'Log a shot',   sub: 'Quick club distance',  accent: true,  action: onLogShot },
+                  { Icon: CameraIcon,    title: 'Share a post',  sub: 'Photo to your feed',   accent: true,  action: onPost },
+                  { Icon: TargetIcon,    title: 'Log a shot',    sub: 'Quick club distance',  accent: false, action: onLogShot },
                   { Icon: ScorecardIcon, title: 'Start a round', sub: 'Full scorecard',       accent: false, action: onLogRound },
                   { Icon: TrophyIcon,    title: 'New match',     sub: 'Challenge a friend',   accent: false, action: () => onView('matches') },
                 ].map((item, i) => (

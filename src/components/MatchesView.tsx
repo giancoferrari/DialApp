@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase'
 import { CloseIcon, TrophyIcon, PlusIcon } from './Icons'
 import CourseSearch from './CourseSearch'
 import Portal from './Portal'
-import type { GolfCourse } from '../lib/golfCourseApi'
+import { courseDisplayName, type GolfCourse } from '../lib/golfCourseApi'
 
 interface Props {
   userId: string
@@ -208,7 +208,7 @@ function NewMatchModal({
             <CourseSearch
               value={courseName}
               onChange={name => { setCourseName(name); setSelectedCourse(null) }}
-              onSelect={course => { setSelectedCourse(course); setCourseName(course.course_name) }}
+              onSelect={course => { setSelectedCourse(course); setCourseName(courseDisplayName(course)) }}
               placeholder="Search any golf course…"
             />
             {selectedCourse && (

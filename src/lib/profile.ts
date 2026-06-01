@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { compressImage } from './imageCompress'
 import type { UserProfile, EquipmentItem } from '../types'
 
 type DbProfile = {
@@ -7,6 +8,7 @@ type DbProfile = {
   username: string | null
   first_name: string | null
   avatar_url: string | null
+  country: string | null
   handicap_index: number | null
   home_course: string | null
   goal_score: number | null
@@ -28,6 +30,7 @@ function toProfile(r: DbProfile): UserProfile {
     username: r.username ?? null,
     firstName: r.first_name ?? null,
     avatarUrl: r.avatar_url ?? null,
+    country: r.country ?? null,
     handicapIndex: r.handicap_index,
     homeCourse: r.home_course,
     goalScore: r.goal_score,
@@ -65,6 +68,7 @@ export async function upsertProfile(
   if ('username'      in updates) payload.username       = updates.username      ?? null
   if ('firstName'     in updates) payload.first_name     = updates.firstName     ?? null
   if ('avatarUrl'     in updates) payload.avatar_url     = updates.avatarUrl     ?? null
+  if ('country'       in updates) payload.country        = updates.country       ?? null
   if ('handicapIndex' in updates) payload.handicap_index = updates.handicapIndex ?? null
   if ('homeCourse'    in updates) payload.home_course    = updates.homeCourse    ?? null
   if ('goalScore'     in updates) payload.goal_score     = updates.goalScore     ?? null
@@ -82,11 +86,11 @@ export async function upsertProfile(
 }
 
 export async function uploadAvatar(userId: string, file: File): Promise<string> {
-  const ext = file.name.split('.').pop() ?? 'jpg'
-  const path = `${userId}/avatar.${ext}`
+  const compressed = await compressImage(file, 512, 0.85) // avatars don't need to be large
+  const path = `${userId}/avatar.jpg`
   const { error } = await supabase.storage
     .from('avatars')
-    .upload(path, file, { upsert: true, contentType: file.type })
+    .upload(path, compressed, { upsert: true, contentType: compressed.type })
   if (error) throw error
   const { data } = supabase.storage.from('avatars').getPublicUrl(path)
   return `${data.publicUrl}?t=${Date.now()}`

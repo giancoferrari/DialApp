@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import { fetchProfilesForIds } from '../lib/friends'
 import type { UserProfile, PublicProfile, View } from '../types'
 import { getRank, RANK_TIERS } from '../lib/points'
+import { flagEmoji, countryName } from '../lib/countries'
 import { ShieldIcon, ChatIcon, GearIcon, CameraIcon } from './Icons'
 import ProfilePosts from './ProfilePosts'
 
@@ -13,10 +14,11 @@ interface Props {
   userEmail: string
   isMobile?: boolean
   onNavigate: (v: View) => void
+  onBack?: () => void
   onMessage: (userId: string) => void
 }
 
-export default function ProfileView({ profile, meId, viewUserId, userEmail, isMobile = false, onNavigate, onMessage }: Props) {
+export default function ProfileView({ profile, meId, viewUserId, userEmail, isMobile = false, onNavigate, onBack, onMessage }: Props) {
   const isOwn = viewUserId === meId
   const [other, setOther] = useState<PublicProfile | null>(null)
   const [friendsCount, setFriendsCount] = useState(0)
@@ -40,6 +42,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
   const username    = isOwn ? profile?.username    : other?.username
   const firstName   = isOwn ? profile?.firstName   : other?.firstName
   const handicap    = isOwn ? profile?.handicapIndex : other?.handicapIndex
+  const country     = isOwn ? profile?.country : other?.country
   const points      = (isOwn ? profile?.rankedPoints : other?.rankedPoints) ?? 0
   const wins        = (isOwn ? profile?.wins   : other?.wins)   ?? 0
   const losses      = (isOwn ? profile?.losses : other?.losses) ?? 0
@@ -72,7 +75,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
           </>
         ) : (
           <button
-            onClick={() => onNavigate('friends')}
+            onClick={() => (onBack ? onBack() : onNavigate('friends'))}
             style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: '#4A4235', padding: 0, display: 'flex', alignItems: 'center', gap: 6 }}
           >
             <span style={{ fontSize: 18, lineHeight: 1 }}>‹</span> Back
@@ -100,6 +103,12 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
           {displayName}
         </div>
         {handle && <div style={{ fontSize: 13, color: '#6B5F4E', marginTop: 3 }}>{handle}</div>}
+        {country && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 7, fontSize: 13, color: '#4A4235', fontFamily: "'DM Sans', sans-serif" }}>
+            <span style={{ fontSize: 17, lineHeight: 1 }}>{flagEmoji(country)}</span>
+            {countryName(country)}
+          </div>
+        )}
 
         {/* Rank badge */}
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: rank.color + '20', border: `1px solid ${rank.color}44`, borderRadius: 999, padding: '5px 14px 5px 10px', marginTop: 12 }}>
@@ -169,7 +178,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
         isMobile={isMobile}
         canPost={isOwn}
         authorProfile={isOwn
-          ? { userId: meId, username: username ?? null, avatarUrl: avatarUrl ?? null, firstName: firstName ?? null, handicapIndex: handicap ?? null, homeCourse: null, rankedPoints: points, wins, losses, ties }
+          ? { userId: meId, username: username ?? null, avatarUrl: avatarUrl ?? null, country: country ?? null, firstName: firstName ?? null, handicapIndex: handicap ?? null, homeCourse: null, rankedPoints: points, wins, losses, ties }
           : other}
       />
     </div>

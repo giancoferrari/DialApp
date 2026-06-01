@@ -4,6 +4,7 @@ import { upsertProfile, uploadAvatar } from '../lib/profile'
 import type { UserProfile, View } from '../types'
 import { getRank } from '../lib/points'
 import { CameraIcon, CheckIcon, CloseIcon, ShieldIcon, ChevronRightIcon } from './Icons'
+import CountryPicker from './CountryPicker'
 
 // ── Local preferences (no DB needed) ──────────────────────
 type Prefs = {
@@ -179,10 +180,11 @@ interface Props {
   onSignOut: () => void
   onShowLegal: (doc: 'privacy' | 'terms') => void
   onNavigate: (v: View) => void
+  onBack?: () => void
   isMobile?: boolean
 }
 
-export default function SettingsView({ profile, userEmail, userId, onProfileSaved, onSignOut, onShowLegal, onNavigate, isMobile = false }: Props) {
+export default function SettingsView({ profile, userEmail, userId, onProfileSaved, onSignOut, onShowLegal, onNavigate, onBack, isMobile = false }: Props) {
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [savedFlash, setSavedFlash] = useState<string | null>(null)
@@ -255,10 +257,10 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
 
       {/* ── Page title ── */}
       <button
-        onClick={() => onNavigate('profile')}
+        onClick={() => (onBack ? onBack() : onNavigate('profile'))}
         style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: '#4A4235', padding: 0, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}
       >
-        <span style={{ fontSize: 18, lineHeight: 1 }}>‹</span> Profile
+        <span style={{ fontSize: 18, lineHeight: 1 }}>‹</span> Back
       </button>
       <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 8 }}>Your account</div>
       <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: '0 0 28px', lineHeight: 1 }}>
@@ -344,6 +346,16 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
           onSave={v => save({ username: v.toLowerCase().replace(/[^a-z0-9_.]/g, '').slice(0, 20) || null })}
           last
         />
+      </Card>
+
+      {/* ── LOCATION ── */}
+      <SectionLabel label="Location" />
+      <Card>
+        <div style={{ padding: '14px 18px' }}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif", marginBottom: 4 }}>Country</div>
+          <div style={{ fontSize: 11.5, color: '#6B5F4E', marginBottom: 10 }}>Your flag shows on your profile</div>
+          <CountryPicker value={profile?.country ?? null} onChange={code => save({ country: code })} isMobile={isMobile} />
+        </div>
       </Card>
 
       {/* ── SECURITY ── */}

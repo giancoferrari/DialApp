@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import { fetchProfilesForIds } from './friends'
+import { compressImage } from './imageCompress'
 import type { Post, PostComment } from '../types'
 
 function toPost(r: Record<string, unknown>): Omit<Post, 'likeCount' | 'commentCount' | 'likedByMe'> {
@@ -13,11 +14,12 @@ function toPost(r: Record<string, unknown>): Omit<Post, 'likeCount' | 'commentCo
 }
 
 export async function uploadPostImage(userId: string, file: File): Promise<string> {
-  const ext  = (file.name.split('.').pop() || 'jpg').toLowerCase()
+  const compressed = await compressImage(file)
+  const ext  = (compressed.name.split('.').pop() || 'jpg').toLowerCase()
   const path = `${userId}/${Date.now()}.${ext}`
   const { error } = await supabase.storage
     .from('post-images')
-    .upload(path, file, { upsert: false, contentType: file.type })
+    .upload(path, compressed, { upsert: false, contentType: compressed.type })
   if (error) throw error
   const { data } = supabase.storage.from('post-images').getPublicUrl(path)
   return data.publicUrl

@@ -91,6 +91,7 @@ export interface UserProfile {
   username: string | null
   firstName: string | null
   avatarUrl: string | null
+  country: string | null
   handicapIndex: number | null
   homeCourse: string | null
   goalScore: number | null
@@ -110,6 +111,7 @@ export interface PublicProfile {
   userId: string
   username: string | null
   avatarUrl: string | null
+  country: string | null
   handicapIndex: number | null
   homeCourse: string | null
   firstName: string | null

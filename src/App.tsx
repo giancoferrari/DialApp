@@ -24,6 +24,8 @@ import ToolsView from './components/ToolsView'
 import SettingsView from './components/SettingsView'
 import ProfileView from './components/ProfileView'
 import MessagesView from './components/MessagesView'
+import Portal from './components/Portal'
+import { Composer } from './components/ProfilePosts'
 import LogShotModal from './components/LogShotModal'
 import AuthScreen from './components/AuthScreen'
 import LegalModal from './components/LegalModal'
@@ -136,10 +138,8 @@ function SetNewPasswordModal() {
 function AppShell() {
   const { user, signOut, isPasswordRecovery } = useAuth()
   const isMobile = useIsMobile()
-  const [view, setView]               = useState<View>(() => {
-    try { return (localStorage.getItem('dial_view') as View | null) ?? 'dashboard' }
-    catch { return 'dashboard' }
-  })
+  // Always open on Home (the main page) on load/reload.
+  const [view, setView]               = useState<View>('dashboard')
   const [shots, setShots]             = useState<Shot[]>([])
   const [courses, setCourses]         = useState<Course[]>([])
   const [rounds, setRounds]           = useState<Round[]>([])
@@ -153,11 +153,13 @@ function AppShell() {
   const [msgUnread, setMsgUnread]     = useState(0)
   const [profileUserId, setProfileUserId] = useState<string | null>(null)
   const [messageUserId, setMessageUserId] = useState<string | null>(null)
+  const [composing, setComposing]     = useState(false)
   const [roundAutoKey, setRoundAutoKey] = useState(0)
 
   const pageRef    = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const prevView   = useRef<View>(view)
+  const navStack   = useRef<{ view: View; profileUserId: string | null; messageUserId: string | null }[]>([])
 
   const refreshNotifCount = useCallback(async () => {
     if (!user) return
@@ -245,6 +247,8 @@ function AppShell() {
 
   const handleViewProfile = (uid: string) => { handleSetView('profile', { profileUserId: uid }) }
 
+  const handlePost = () => setComposing(true)
+
   const handleSetDistance = async (clubId: string, yardage: number) => {
     if (!user) return
     const tempId = -Date.now()
@@ -261,13 +265,7 @@ function AppShell() {
     }
   }
 
-  const handleSetView = (v: View, opts?: { profileUserId?: string; force?: boolean; keepMessageTarget?: boolean }) => {
-    if (v === view && v !== 'profile' && v !== 'messages' && !opts?.force) return
-    // 'profile' nav resets to own profile unless a specific user was requested
-    if (v === 'profile') setProfileUserId(opts?.profileUserId ?? null)
-    // 'messages' nav resets to the inbox unless opening a specific thread
-    if (v === 'messages' && !opts?.keepMessageTarget) setMessageUserId(null)
-    try { localStorage.setItem('dial_view', v) } catch { /* */ }
+  const applyView = (v: View) => {
     const resetScroll = () => {
       if (contentRef.current) contentRef.current.scrollTop = 0
       else window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
@@ -280,6 +278,29 @@ function AppShell() {
     } else {
       setView(v); resetScroll()
     }
+  }
+
+  const handleSetView = (v: View, opts?: { profileUserId?: string; force?: boolean; keepMessageTarget?: boolean; isBack?: boolean }) => {
+    if (v === view && v !== 'profile' && v !== 'messages' && !opts?.force) return
+    // Record where we came from so a back arrow can return there.
+    if (!opts?.isBack) {
+      navStack.current = [...navStack.current, { view, profileUserId, messageUserId }].slice(-25)
+    }
+    // 'profile' nav resets to own profile unless a specific user was requested
+    if (v === 'profile') setProfileUserId(opts?.profileUserId ?? null)
+    // 'messages' nav resets to the inbox unless opening a specific thread
+    if (v === 'messages' && !opts?.keepMessageTarget) setMessageUserId(null)
+    applyView(v)
+  }
+
+  const goBack = () => {
+    const stack = navStack.current
+    if (!stack.length) { setProfileUserId(null); setMessageUserId(null); applyView('dashboard'); return }
+    const prev = stack[stack.length - 1]
+    navStack.current = stack.slice(0, -1)
+    setProfileUserId(prev.profileUserId)
+    setMessageUserId(prev.messageUserId)
+    applyView(prev.view)
   }
 
   const shellStyle: React.CSSProperties = isMobile
@@ -313,6 +334,7 @@ function AppShell() {
         onView={handleSetView}
         onLogShot={handleLogShot}
         onLogRound={handleLogRound}
+        onPost={handlePost}
         onNotif={handleNotif}
         onMessages={handleMessages}
         onProfile={() => handleSetView('profile')}
@@ -372,6 +394,7 @@ function AppShell() {
               userEmail={user?.email ?? ''}
               isMobile={isMobile}
               onNavigate={handleSetView}
+              onBack={goBack}
               onMessage={handleMessageUser}
             />
           )}
@@ -384,6 +407,7 @@ function AppShell() {
               onSignOut={signOut}
               onShowLegal={setLegalDoc}
               onNavigate={handleSetView}
+              onBack={goBack}
               isMobile={isMobile}
             />
           )}
@@ -394,10 +418,11 @@ function AppShell() {
               isMobile={isMobile}
               startUserId={messageUserId}
               onUnreadChange={refreshMsgUnread}
+              onViewProfile={handleViewProfile}
             />
           )}
           {view === 'friends' && (
-            <FriendsView userId={user!.id} isMobile={isMobile} onMessage={handleMessageUser} onViewProfile={handleViewProfile} />
+            <FriendsView userId={user!.id} isMobile={isMobile} onViewProfile={handleViewProfile} />
           )}
           {view === 'matches' && (
             <MatchesView userId={user!.id} isMobile={isMobile} />
@@ -421,6 +446,17 @@ function AppShell() {
       />
 
       {legalDoc && <LegalModal doc={legalDoc} onClose={() => setLegalDoc(null)} />}
+
+      {composing && (
+        <Portal>
+          <Composer
+            meId={user!.id}
+            isMobile={isMobile}
+            onClose={() => setComposing(false)}
+            onCreated={() => { setComposing(false); handleSetView('profile') }}
+          />
+        </Portal>
+      )}
       </div>
     </>
   )

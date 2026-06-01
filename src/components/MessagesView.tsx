@@ -14,6 +14,20 @@ interface Props {
   isMobile?: boolean
   startUserId?: string | null
   onUnreadChange?: () => void
+  onViewProfile?: (userId: string) => void
+}
+
+function msgTime(ts: string): string {
+  return new Date(ts).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+}
+
+function dayLabel(ts: string): string {
+  const d = new Date(ts)
+  const today = new Date()
+  const yest = new Date(); yest.setDate(today.getDate() - 1)
+  if (d.toDateString() === today.toDateString()) return 'Today'
+  if (d.toDateString() === yest.toDateString()) return 'Yesterday'
+  return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
 }
 
 function Avatar({ profile, size = 46 }: { profile?: PublicProfile | null; size?: number }) {
@@ -46,18 +60,35 @@ function name(p?: PublicProfile | null): string {
 }
 
 // ── Chat thread (full-screen overlay) ──────────────────────────────────
-function Thread({ conversation, userId, isMobile, onClose, onActivity }: {
+function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewProfile }: {
   conversation: Conversation
   userId: string
   isMobile: boolean
   onClose: () => void
   onActivity: () => void
+  onViewProfile?: (userId: string) => void
 }) {
   const [messages, setMessages] = useState<DirectMessage[]>([])
   const [input, setInput]       = useState('')
   const [sending, setSending]   = useState(false)
   const [loading, setLoading]   = useState(true)
+  const [viewportH, setViewportH] = useState<number | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Instagram-style keyboard behaviour: track the visual viewport so the
+  // header stays pinned and only the chat area shrinks when the keyboard opens.
+  useEffect(() => {
+    const vv = window.visualViewport
+    if (!vv) return
+    const onResize = () => {
+      setViewportH(vv.height)
+      requestAnimationFrame(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight })
+    }
+    onResize()
+    vv.addEventListener('resize', onResize)
+    vv.addEventListener('scroll', onResize)
+    return () => { vv.removeEventListener('resize', onResize); vv.removeEventListener('scroll', onResize) }
+  }, [])
 
   const scrollToBottom = () => {
     requestAnimationFrame(() => {
@@ -116,27 +147,32 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity }: {
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: '#F0EBDD', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: viewportH != null ? `${viewportH}px` : '100%', zIndex: 200, background: '#F0EBDD', display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden' }}>
       <div style={{ width: '100%', maxWidth: isMobile ? '100%' : 560, height: '100%', display: 'flex', flexDirection: 'column', background: 'rgba(245,240,230,0.96)', boxShadow: isMobile ? 'none' : '0 0 60px rgba(31,29,23,0.18)' }}>
 
-        {/* Header */}
-        <div style={{ background: '#1F3A2A', color: '#FAF6EA', padding: `${isMobile ? 'calc(env(safe-area-inset-top) + 12px)' : '14px'} 16px 12px`, display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+        {/* Header (stays pinned when keyboard opens) */}
+        <div style={{ background: '#1F3A2A', color: '#FAF6EA', padding: `${isMobile ? 'calc(env(safe-area-inset-top) + 12px)' : '14px'} 16px 12px`, display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
           <button onClick={onClose} style={{ background: 'rgba(250,246,234,0.14)', border: 'none', borderRadius: 10, width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
-            <span style={{ fontSize: 20, color: '#FAF6EA', lineHeight: 1 }}>‹</span>
+            <span style={{ fontSize: 22, color: '#FAF6EA', lineHeight: 1 }}>‹</span>
           </button>
-          <Avatar profile={conversation.otherProfile} size={38} />
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {name(conversation.otherProfile)}
+          <button
+            onClick={() => onViewProfile?.(conversation.otherUserId)}
+            style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: onViewProfile ? 'pointer' : 'default', padding: 0, textAlign: 'left' }}
+          >
+            <Avatar profile={conversation.otherProfile} size={38} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {name(conversation.otherProfile)}
+              </div>
+              <div style={{ fontSize: 11.5, color: '#B5C29A' }}>
+                {conversation.otherProfile?.handicapIndex != null ? `HCP ${conversation.otherProfile.handicapIndex.toFixed(1)} · ` : ''}View profile
+              </div>
             </div>
-            {conversation.otherProfile?.handicapIndex != null && (
-              <div style={{ fontSize: 11.5, color: '#B5C29A' }}>HCP {conversation.otherProfile.handicapIndex.toFixed(1)}</div>
-            )}
-          </div>
+          </button>
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never, padding: '16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never, padding: '16px', display: 'flex', flexDirection: 'column', gap: 3 }}>
           {loading ? (
             <div style={{ textAlign: 'center', color: '#6B5F4E', fontSize: 13, marginTop: 24 }}>Loading…</div>
           ) : messages.length === 0 ? (
@@ -146,19 +182,34 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity }: {
           ) : messages.map((m, i) => {
             const mine = m.senderId === userId
             const prev = messages[i - 1]
-            const showGap = !prev || prev.senderId !== m.senderId
+            const next = messages[i + 1]
+            const newDay = !prev || new Date(prev.createdAt).toDateString() !== new Date(m.createdAt).toDateString()
+            const startGroup = newDay || !prev || prev.senderId !== m.senderId
+            const endGroup   = !next || next.senderId !== m.senderId || new Date(next.createdAt).toDateString() !== new Date(m.createdAt).toDateString()
             return (
-              <div key={m.id} style={{ display: 'flex', justifyContent: mine ? 'flex-end' : 'flex-start', marginTop: showGap ? 6 : 0 }}>
-                <div style={{
-                  maxWidth: '78%', padding: '9px 13px', borderRadius: 18,
-                  borderBottomRightRadius: mine ? 5 : 18, borderBottomLeftRadius: mine ? 18 : 5,
-                  background: mine ? '#1F3A2A' : '#FFFFFF',
-                  color: mine ? '#FAF6EA' : '#1F1D17',
-                  border: mine ? 'none' : '1px solid #E0D8C5',
-                  fontSize: 14.5, lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif",
-                  boxShadow: '0 1px 2px rgba(31,29,23,0.06)', wordBreak: 'break-word',
-                }}>
-                  {m.body}
+              <div key={m.id}>
+                {newDay && (
+                  <div style={{ textAlign: 'center', margin: '14px 0 10px' }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#8B8272', background: 'rgba(224,216,197,0.5)', borderRadius: 999, padding: '4px 12px', letterSpacing: '0.02em' }}>{dayLabel(m.createdAt)}</span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: mine ? 'flex-end' : 'flex-start', marginTop: startGroup ? 8 : 2 }}>
+                  <div style={{
+                    maxWidth: '80%', padding: '8px 13px 6px', borderRadius: 20,
+                    borderBottomRightRadius: mine && endGroup ? 5 : 20,
+                    borderBottomLeftRadius: !mine && endGroup ? 5 : 20,
+                    background: mine ? '#1F3A2A' : '#FFFFFF',
+                    color: mine ? '#FAF6EA' : '#1F1D17',
+                    border: mine ? 'none' : '1px solid #E0D8C5',
+                    fontSize: 14.5, lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif",
+                    boxShadow: '0 1px 2px rgba(31,29,23,0.06)', wordBreak: 'break-word',
+                    display: 'flex', flexDirection: 'column',
+                  }}>
+                    <span>{m.body}</span>
+                    <span style={{ fontSize: 9.5, alignSelf: 'flex-end', marginTop: 2, color: mine ? 'rgba(250,246,234,0.55)' : '#A89F8C' }}>
+                      {msgTime(m.createdAt)}
+                    </span>
+                  </div>
                 </div>
               </div>
             )
@@ -271,7 +322,7 @@ function NewMessageSheet({ userId, isMobile, onPick, onClose }: {
 }
 
 // ── Main view ────────────────────────────────────────────────────────────
-export default function MessagesView({ userId, isMobile = false, startUserId = null, onUnreadChange }: Props) {
+export default function MessagesView({ userId, isMobile = false, startUserId = null, onUnreadChange, onViewProfile }: Props) {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [loading, setLoading] = useState(true)
   const [active, setActive]   = useState<Conversation | null>(null)
@@ -372,7 +423,7 @@ export default function MessagesView({ userId, isMobile = false, startUserId = n
         </div>
       )}
 
-      {active && <Portal><Thread conversation={active} userId={userId} isMobile={isMobile} onClose={closeThread} onActivity={() => { load(); onUnreadChange?.() }} /></Portal>}
+      {active && <Portal><Thread conversation={active} userId={userId} isMobile={isMobile} onClose={closeThread} onActivity={() => { load(); onUnreadChange?.() }} onViewProfile={onViewProfile} /></Portal>}
       {showNew && <Portal><NewMessageSheet userId={userId} isMobile={isMobile} onPick={openWith} onClose={() => setShowNew(false)} /></Portal>}
     </div>
   )

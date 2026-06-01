@@ -103,7 +103,7 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
 
           {/* Image */}
           <button onClick={() => setActive(post)} style={{ display: 'block', width: '100%', padding: 0, border: 'none', background: '#000', cursor: 'pointer' }}>
-            <img src={post.imageUrl} alt="" style={{ width: '100%', display: 'block', maxHeight: isMobile ? 440 : 520, objectFit: 'cover' }} />
+            <img src={post.imageUrl} alt="" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', maxHeight: isMobile ? 440 : 520, objectFit: 'cover' }} />
           </button>
 
           {/* Actions */}

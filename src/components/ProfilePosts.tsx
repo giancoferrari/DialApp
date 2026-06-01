@@ -28,7 +28,7 @@ function timeAgo(ts: string): string {
 }
 
 // ── Composer ─────────────────────────────────────────────────────────────
-function Composer({ meId, isMobile, onClose, onCreated }: {
+export function Composer({ meId, isMobile, onClose, onCreated }: {
   meId: string; isMobile: boolean; onClose: () => void; onCreated: () => void
 }) {
   const [file, setFile]       = useState<File | null>(null)
@@ -151,7 +151,7 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto' }}>
-          <img src={post.imageUrl} alt="" style={{ width: '100%', display: 'block', background: '#000' }} />
+          <img src={post.imageUrl} alt="" decoding="async" style={{ width: '100%', display: 'block', background: '#000' }} />
 
           <div style={{ padding: '12px 16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
@@ -271,7 +271,7 @@ export default function ProfilePosts({ targetUserId, meId, isMobile = false, can
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
           {posts.map(p => (
             <button key={p.id} onClick={() => setActive(p)} style={{ aspectRatio: '1', padding: 0, border: 'none', borderRadius: 4, overflow: 'hidden', cursor: 'pointer', background: '#000', position: 'relative' }}>
-              <img src={p.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              <img src={p.imageUrl} alt="" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
               {(p.likeCount > 0 || p.commentCount > 0) && (
                 <div style={{ position: 'absolute', bottom: 4, left: 4, display: 'flex', gap: 8, fontSize: 10.5, fontWeight: 700, color: '#FFF', textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>
                   {p.likeCount > 0 && <span>♥ {p.likeCount}</span>}

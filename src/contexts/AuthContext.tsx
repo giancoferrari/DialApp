@@ -9,7 +9,7 @@ interface AuthContextType {
   loading: boolean
   isPasswordRecovery: boolean
   signIn: (emailOrUsername: string, password: string) => Promise<{ error: string | null }>
-  signUp: (email: string, password: string, firstName: string, lastName: string, username: string) => Promise<{ error: string | null }>
+  signUp: (email: string, password: string, firstName: string, lastName: string, username: string, country: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
   resetPasswordForEmail: (email: string) => Promise<{ error: string | null }>
   updatePassword: (newPassword: string) => Promise<{ error: string | null }>
@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error: error?.message ?? null }
   }
 
-  const signUp = async (email: string, password: string, firstName: string, lastName: string, username: string) => {
+  const signUp = async (email: string, password: string, firstName: string, lastName: string, username: string, country: string) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -79,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
     if (error) return { error: error.message }
     if (data.user) {
-      try { await upsertProfile(data.user.id, { username }) } catch { /* non-fatal */ }
+      try { await upsertProfile(data.user.id, { username, country: country || null }) } catch { /* non-fatal */ }
     }
     return { error: null }
   }

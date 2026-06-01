@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { searchCourses, type GolfCourse } from '../lib/golfCourseApi'
+import { searchCourses, courseDisplayName, type GolfCourse } from '../lib/golfCourseApi'
 
 interface Props {
   value:        string
@@ -45,7 +45,7 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
     setOpen(false)
     setResults([])
     setLoading(false)
-    onChange(course.course_name)
+    onChange(courseDisplayName(course))
     onSelect(course)
   }
 
@@ -101,7 +101,7 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
                 onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
               >
                 <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
-                  {course.course_name}
+                  {courseDisplayName(course)}
                 </div>
                 <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2, display: 'flex', gap: 8 }}>
                   <span>{loc}</span>
