@@ -72,16 +72,17 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewPro
   const [input, setInput]       = useState('')
   const [sending, setSending]   = useState(false)
   const [loading, setLoading]   = useState(true)
-  const [viewportH, setViewportH] = useState<number | null>(null)
+  const [vp, setVp] = useState<{ h: number; top: number } | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  // Instagram-style keyboard behaviour: track the visual viewport so the
-  // header stays pinned and only the chat area shrinks when the keyboard opens.
+  // Instagram-style keyboard behaviour: pin the overlay to the *visual*
+  // viewport so the header stays put and only the chat area shrinks when the
+  // keyboard opens. Tracking offsetTop keeps it aligned if the page nudges.
   useEffect(() => {
     const vv = window.visualViewport
     if (!vv) return
     const onResize = () => {
-      setViewportH(vv.height)
+      setVp({ h: vv.height, top: vv.offsetTop })
       requestAnimationFrame(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight })
     }
     onResize()
@@ -147,7 +148,7 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewPro
   }
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: viewportH != null ? `${viewportH}px` : '100%', zIndex: 200, background: '#F0EBDD', display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden' }}>
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: vp != null ? `${vp.h}px` : '100%', transform: vp != null ? `translateY(${vp.top}px)` : undefined, zIndex: 200, background: '#F0EBDD', display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden' }}>
       <div style={{ width: '100%', maxWidth: isMobile ? '100%' : 560, height: '100%', display: 'flex', flexDirection: 'column', background: 'rgba(245,240,230,0.96)', boxShadow: isMobile ? 'none' : '0 0 60px rgba(31,29,23,0.18)' }}>
 
         {/* Header (stays pinned when keyboard opens) */}
@@ -224,7 +225,7 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewPro
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
             placeholder="Message…"
             rows={1}
-            style={{ flex: 1, resize: 'none', maxHeight: 120, background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 20, padding: '11px 16px', fontSize: 14.5, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4 }}
+            style={{ flex: 1, resize: 'none', maxHeight: 120, background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 20, padding: '11px 16px', fontSize: 16, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4 }}
             onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
             onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
           />

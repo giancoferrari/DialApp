@@ -32,16 +32,6 @@ function useLiveDate() {
   return date
 }
 
-function panamaHour(): number {
-  return parseInt(new Intl.DateTimeFormat('en-US', { timeZone: TZ, hour: 'numeric', hour12: false }).format(new Date()), 10)
-}
-
-function greeting(name: string): string {
-  const h    = panamaHour()
-  const part = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening'
-  return name ? `Good ${part}, ${name}.` : `Good ${part}.`
-}
-
 function relTime(ts: string): string {
   const diff = Date.now() - new Date(ts).getTime()
   const m = Math.floor(diff / 60000)
@@ -112,8 +102,6 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
     : null
   const lastDiff  = lastScore !== null && lastPar !== null ? lastScore - lastPar : null
 
-  const displayName = profile?.firstName ?? profile?.username ?? ''
-
   // ── Recent rounds (last 4) ──
   const recentRounds = rounds.slice(0, 4)
 
@@ -134,7 +122,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
     >
 
       {/* ── Date pill ──────────────────────────────────────── */}
-      <div style={{ marginBottom: 14 }}>
+      <div style={{ marginBottom: 20 }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
           background: 'rgba(250,246,234,0.65)',
@@ -149,18 +137,6 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
           <span style={{ width: 6, height: 6, borderRadius: 3, background: '#D9824D', flexShrink: 0 }} />
           {date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: TZ })}
         </div>
-      </div>
-
-      {/* ── Greeting ───────────────────────────────────────── */}
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{
-          fontFamily: "'Bricolage Grotesque', sans-serif",
-          fontSize: isMobile ? 27 : 32, fontWeight: 700,
-          color: '#1F1D17', margin: 0,
-          letterSpacing: '-0.03em', lineHeight: 1.1,
-        }}>
-          {greeting(displayName)}
-        </h1>
       </div>
 
       {/* ── Rank Card ──────────────────────────────────────── */}
