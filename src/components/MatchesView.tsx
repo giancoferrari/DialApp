@@ -721,7 +721,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
   }
 
   const handleCancel = async (match: Match) => {
-    try { await cancelMatch(match, userId); await load() }
+    try { await cancelMatch(match); await load() }
     catch { setError('Failed to cancel.') }
   }
 

@@ -19,7 +19,7 @@ function loadCustomClubs(): Club[] {
 }
 
 function saveCustomClubs(clubs: Club[]): void {
-  try { localStorage.setItem(CUSTOM_CLUBS_KEY, JSON.stringify(clubs)) } catch {}
+  try { localStorage.setItem(CUSTOM_CLUBS_KEY, JSON.stringify(clubs)) } catch { /* storage unavailable (private mode) */ }
 }
 
 // ── Add Club Modal ────────────────────────────────────────────────────────────
@@ -142,7 +142,7 @@ function ClubDistanceCard({ club, distance, isCustom = false, onSave, onDelete, 
     const val = parseInt(inputVal, 10)
     if (!isNaN(val) && val > 0 && val <= 500) {
       setSaving(true)
-      try { await onSave(val) } catch {}
+      try { await onSave(val) } catch { /* keep editing state; surfaced upstream */ }
       setSaving(false)
     }
     setEditing(false)

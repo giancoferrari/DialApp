@@ -207,7 +207,7 @@ export async function completeMatch(match: Match): Promise<string | null> {
   return winnerId
 }
 
-export async function cancelMatch(match: Match, _userId: string): Promise<void> {
+export async function cancelMatch(match: Match): Promise<void> {
   await supabase
     .from('matches')
     .update({ status: 'cancelled', updated_at: new Date().toISOString() })

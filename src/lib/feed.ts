@@ -92,7 +92,7 @@ export async function fetchFriendFeed(userId: string): Promise<FeedItem[]> {
 
   // Match feed items
   const matchIds = [...new Set((mpRes.data ?? []).map(mp => mp.match_id as string))]
-  let matchItems: FeedItem[] = []
+  const matchItems: FeedItem[] = []
 
   if (matchIds.length) {
     const { data: matchesData } = await supabase
