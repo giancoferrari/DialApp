@@ -163,6 +163,7 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis (`flagEm
 - The native app (`DialApp-Native`) is far behind the web app.
 - `react-hooks/set-state-in-effect` lint messages are intentional/accepted.
 - Every modal must use `<Portal>`.
+- **iOS app plan:** see `IOS_APP_MORPH.md` — how to ship Dial to the App Store with exact parity via **Capacitor** (wrap the existing web build). Not started yet; planned.
 
 ---
 
