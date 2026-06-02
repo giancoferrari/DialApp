@@ -21,6 +21,51 @@ storage all work from a native app over HTTPS/WebSockets exactly as they do toda
 
 ---
 
+## ✅ STATUS: Capacitor is set up (done from the web side)
+
+Everything that can be done off a Mac is complete — the repo is iOS-ready:
+- Installed `@capacitor/core`, `@capacitor/cli`, `@capacitor/ios` (v8) and plugins:
+  `status-bar`, `keyboard`, `splash-screen`, `app`, `haptics`.
+- **`capacitor.config.ts`** — appId `xyz.dialgolf.app`, appName **Dial**, `webDir: dist`,
+  splash + keyboard config.
+- **`src/lib/native.ts`** — `initNative()` sets status-bar style, disables keyboard
+  webview-scroll (we handle the chat ourselves), hides the splash, and exposes a
+  `tapHaptic()` helper. Everything is guarded by `Capacitor.isNativePlatform()`, so it is a
+  **no-op on the web** — Vercel and the PWA are completely unaffected.
+- Wired `initNative()` into `src/main.tsx`. `npm run build` verified working.
+
+## ▶️ REMAINING: run these on a Mac (Xcode + Apple Developer account, $99/yr)
+
+```bash
+# on a Mac, after pulling the repo:
+cd dial-app
+npm install
+npm run build
+npx cap add ios       # generates the native ios/ project (needs CocoaPods: sudo gem install cocoapods)
+npx cap sync ios
+npx cap open ios      # opens Xcode
+```
+In Xcode: select your **Signing Team**, set display name/version/build, then **Run** on a
+device or **Product → Archive → Distribute** to App Store Connect.
+
+**After any web change**, re-sync the native shell:
+```bash
+npm run build && npx cap sync ios
+```
+
+### App icon & splash (on the Mac)
+Put a 1024×1024 PNG at `resources/icon.png` (optional `resources/splash.png`), then:
+```bash
+npm i -D @capacitor/assets
+npx @capacitor/assets generate --ios
+```
+
+### Commit the native project
+After `npx cap add ios`, commit the generated `ios/` folder (Capacitor adds its own
+`.gitignore` for build artifacts/Pods).
+
+---
+
 ## Option A — Capacitor ⭐ (recommended for "replicate EXACTLY")
 
 [capacitorjs.com](https://capacitorjs.com) wraps the **existing `dial-app` build, unchanged**,

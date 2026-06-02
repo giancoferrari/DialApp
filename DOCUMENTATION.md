@@ -164,7 +164,7 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis (`flagEm
 - The native app (`DialApp-Native`) is far behind the web app.
 - `react-hooks/set-state-in-effect` lint messages are intentional/accepted.
 - Every modal must use `<Portal>`.
-- **iOS app plan:** see `IOS_APP_MORPH.md` — how to ship Dial to the App Store with exact parity via **Capacitor** (wrap the existing web build). Not started yet; planned.
+- **iOS app (Capacitor):** **set up** — `@capacitor/*` v8 installed, `capacitor.config.ts` (appId `xyz.dialgolf.app`, appName Dial, webDir `dist`), and `src/lib/native.ts` (`initNative()` for status bar/keyboard/splash/haptics, all guarded by `Capacitor.isNativePlatform()` so the web is unaffected). The native `ios/` project + Xcode build/submit must be done **on a Mac** (`npx cap add ios` → `npx cap open ios`). Full steps in `IOS_APP_MORPH.md`.
 
 ---
 
