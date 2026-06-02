@@ -62,7 +62,7 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
     setPosts(prev => prev.map(p => p.id === post.id
       ? { ...p, likedByMe: !wasLiked, likeCount: p.likeCount + (wasLiked ? -1 : 1) }
       : p))
-    try { await toggleLike(post.id, userId, wasLiked) }
+    try { await toggleLike(post.id, post.userId, userId, wasLiked) }
     catch {
       setPosts(prev => prev.map(p => p.id === post.id
         ? { ...p, likedByMe: wasLiked, likeCount: p.likeCount + (wasLiked ? 1 : -1) }

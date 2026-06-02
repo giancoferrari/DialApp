@@ -62,7 +62,7 @@ Supabase Postgres, all tables have **Row Level Security**. The live DB has been 
 - **`course_corrections`** — community fixes for API course data.
 - **`conversations`** (`user_a` < `user_b`, `last_message`, `last_message_at`) / **`messages`** (`conversation_id`, `sender_id`, `body`, `read_at`).
 - **`posts`** (`user_id`, `image_url`, `caption`) / **`post_likes`** / **`post_comments`** / **`post_comment_likes`** / **`post_tags`** (tagged players) / **`reposts`** (user_id = reposter).
-- **`notifications`** — `user_id` (recipient), `type` ('post_tag' | 'repost'), `actor_id`, `post_id`, `read_at`.
+- **`notifications`** — `user_id` (recipient), `type` ('post_tag' | 'repost' | 'like' | 'comment'), `actor_id`, `post_id`, `read_at`. (`type` is free text, so new kinds need no migration.) Created by `lib/notifications.createNotification` from `posts.ts` (like/comment/repost/tag).
 - **Storage buckets:** `avatars`, `post-images` (both public read; write scoped to `{userId}/...`).
 
 ---
@@ -139,7 +139,7 @@ Conversation list (avatar, last-message preview, time, unread badge) + **chat th
 Back arrow. Sections: Account (first name, username), **Location (CountryPicker)**, Security (email, change password), Golf Profile (handicap, home course, preferred tee), Game Defaults, Goals, Privacy toggles, About (legal links via `LegalModal`), Sign out. Saves via `upsertProfile`. Avatar upload here + on ProfileView.
 
 ### Notifications — `components/NotificationsView.tsx`, `lib/notifications.ts`
-Friend requests + match invites with accept/decline, **plus a tag/repost activity feed** (from the `notifications` table — "@X tagged you in a post", "@X reposted your post", with post thumbnail). Realtime. Opening the page marks notifications read. The bell badge (`notifCount` in App) = pending friend requests + match invites + unread notifications.
+Friend requests + match invites with accept/decline, **plus an activity feed** from the `notifications` table — "@X tagged you in a post / reposted your post / **liked your post** / **commented on your post**", with post thumbnail. A notification is created on every post like (`toggleLike`), comment (`addComment`), repost, and tag (recipient ≠ actor). Realtime. Opening the page marks notifications read. The bell badge (`notifCount` in App) = pending friend requests + match invites + unread notifications.
 
 ### Tagging & reposts — `lib/posts.ts`, `lib/notifications.ts`
 **Composer** has a "Tag players" friend-multiselect → `createPost(..., taggedIds)` inserts `post_tags` + a `post_tag` notification to each. **Feed** cards (and the feed query `fetchFeedPosts`) include **reposts**: a card shows "↻ @X reposted" and posts have a **Repost** button (`toggleRepost`) that adds a `reposts` row + a `repost` notification to the original author. Reposts surface in friends' Home feeds attributed to the original poster.
@@ -175,4 +175,4 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis (`flagEm
 
 ---
 
-_Last updated: 2026-06-02 — added comment likes/replies, tappable friends count, DM error banner, post tagging + reposts + notifications system. Pending SQL: SOCIAL_V2.sql, SOCIAL_V3.sql._
+_Last updated: 2026-06-02 — comment likes/replies, tappable friends count, DM error banner, post tagging + reposts, full notifications (tags, reposts, likes, comments). Pending SQL: SOCIAL_V2.sql, SOCIAL_V3.sql._

@@ -151,13 +151,14 @@ export async function fetchFeedPosts(userIds: string[], meId: string): Promise<P
   })
 }
 
-export async function toggleLike(postId: string, meId: string, liked: boolean): Promise<void> {
+export async function toggleLike(postId: string, ownerId: string, meId: string, liked: boolean): Promise<void> {
   if (liked) {
     const { error } = await supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', meId)
     if (error) throw error
   } else {
     const { error } = await supabase.from('post_likes').insert({ post_id: postId, user_id: meId })
     if (error) throw error
+    await createNotification(ownerId, meId, 'like', postId)
   }
 }
 
@@ -207,13 +208,14 @@ export async function toggleCommentLike(commentId: string, meId: string, liked: 
   }
 }
 
-export async function addComment(postId: string, meId: string, body: string): Promise<void> {
+export async function addComment(postId: string, ownerId: string, meId: string, body: string): Promise<void> {
   const text = body.trim()
   if (!text) return
   const { error } = await supabase
     .from('post_comments')
     .insert({ post_id: postId, user_id: meId, body: text })
   if (error) throw error
+  await createNotification(ownerId, meId, 'comment', postId)
 }
 
 export async function deleteComment(commentId: string): Promise<void> {

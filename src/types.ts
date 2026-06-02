@@ -179,7 +179,7 @@ export interface Post {
 
 export interface AppNotification {
   id: string
-  type: 'post_tag' | 'repost'
+  type: 'post_tag' | 'repost' | 'like' | 'comment'
   actorId: string
   postId: string | null
   createdAt: string

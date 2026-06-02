@@ -249,7 +249,10 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
 
           {notifs.map(n => {
             const nm = n.actor?.username ? `@${n.actor.username}` : (n.actor?.firstName ?? 'A player')
-            const text = n.type === 'post_tag' ? 'tagged you in a post' : 'reposted your post'
+            const text = n.type === 'post_tag' ? 'tagged you in a post'
+              : n.type === 'repost'  ? 'reposted your post'
+              : n.type === 'like'    ? 'liked your post'
+              : 'commented on your post'
             return (
               <div key={n.id} style={{ background: 'rgba(250,246,234,0.70)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 20, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 13, boxShadow: '0 6px 24px rgba(31,29,23,0.08), inset 0 1px 0 rgba(255,255,255,0.80)' }}>
                 <Avatar profile={n.actor ?? null} size={42} />

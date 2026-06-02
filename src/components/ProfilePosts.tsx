@@ -158,7 +158,7 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
   const onLike = async () => {
     const wasLiked = liked
     setLiked(!wasLiked); setLikeCount(c => c + (wasLiked ? -1 : 1))
-    try { await toggleLike(post.id, meId, wasLiked); onChanged() }
+    try { await toggleLike(post.id, post.userId, meId, wasLiked); onChanged() }
     catch { setLiked(wasLiked); setLikeCount(c => c + (wasLiked ? 1 : -1)) }
   }
 
@@ -179,7 +179,7 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
     const body = text.trim()
     if (!body || busy) return
     setBusy(true); setText('')
-    try { await addComment(post.id, meId, body); setComments(await fetchComments(post.id, meId)); onChanged() }
+    try { await addComment(post.id, post.userId, meId, body); setComments(await fetchComments(post.id, meId)); onChanged() }
     catch { setText(body) }
     finally { setBusy(false) }
   }
