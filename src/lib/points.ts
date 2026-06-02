@@ -1,7 +1,7 @@
 import { supabase } from './supabase'
 
 export const POINTS_WIN  = 25
-export const POINTS_LOSS = 15
+export const POINTS_LOSS = 10
 export const POINTS_TIE  = 5
 
 export interface RankTier {
