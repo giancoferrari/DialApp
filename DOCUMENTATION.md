@@ -48,6 +48,7 @@ Supabase Postgres, all tables have **Row Level Security**. The live DB has been 
 - **`SOCIAL_SCHEMA.sql`** — social layer: `conversations`, `messages`, `posts`, `post_likes`, `post_comments` (+ RLS), adds `messages`/`conversations` to the `supabase_realtime` publication, and creates the public **`post-images`** storage bucket + policies.
 - **`MORE_SCHEMA.sql`** — adds `user_profiles.country` (text, ISO alpha-2) and renames mis-saved course rows. ⚠️ `lib/friends.ts` `PROFILE_SELECT` lists `country`, so **if this isn't run, profile-loading queries (friends, matches, messages, feed) error.**
 - **`SOCIAL_V2.sql`** — adds `post_comment_likes` (likes on individual comments).
+- **`SOCIAL_V3.sql`** — adds `post_tags` (players tagged in a post), `reposts`, and `notifications` (+ realtime). Powers post tagging, reposts, and tag/repost notifications.
 
 ### Tables (key columns)
 - **`user_profiles`** — `user_id`, `username`, `first_name`, `avatar_url`, `country`, `handicap_index`, `home_course`, `goal_score`, `goal_handicap`, `goal_notes`, `equipment` (jsonb), `ranked_points`, `wins`, `losses`, `ties`.
@@ -60,7 +61,8 @@ Supabase Postgres, all tables have **Row Level Security**. The live DB has been 
 - **`wallets`** / **`wallet_transactions`** — virtual USD balance.
 - **`course_corrections`** — community fixes for API course data.
 - **`conversations`** (`user_a` < `user_b`, `last_message`, `last_message_at`) / **`messages`** (`conversation_id`, `sender_id`, `body`, `read_at`).
-- **`posts`** (`user_id`, `image_url`, `caption`) / **`post_likes`** (post_id+user_id) / **`post_comments`**.
+- **`posts`** (`user_id`, `image_url`, `caption`) / **`post_likes`** / **`post_comments`** / **`post_comment_likes`** / **`post_tags`** (tagged players) / **`reposts`** (user_id = reposter).
+- **`notifications`** — `user_id` (recipient), `type` ('post_tag' | 'repost'), `actor_id`, `post_id`, `read_at`.
 - **Storage buckets:** `avatars`, `post-images` (both public read; write scoped to `{userId}/...`).
 
 ---
@@ -136,8 +138,11 @@ Conversation list (avatar, last-message preview, time, unread badge) + **chat th
 ### Settings — `components/SettingsView.tsx`
 Back arrow. Sections: Account (first name, username), **Location (CountryPicker)**, Security (email, change password), Golf Profile (handicap, home course, preferred tee), Game Defaults, Goals, Privacy toggles, About (legal links via `LegalModal`), Sign out. Saves via `upsertProfile`. Avatar upload here + on ProfileView.
 
-### Notifications — `components/NotificationsView.tsx`
-Friend requests + match invites with accept/decline; realtime; reports unread count up to the bell badge.
+### Notifications — `components/NotificationsView.tsx`, `lib/notifications.ts`
+Friend requests + match invites with accept/decline, **plus a tag/repost activity feed** (from the `notifications` table — "@X tagged you in a post", "@X reposted your post", with post thumbnail). Realtime. Opening the page marks notifications read. The bell badge (`notifCount` in App) = pending friend requests + match invites + unread notifications.
+
+### Tagging & reposts — `lib/posts.ts`, `lib/notifications.ts`
+**Composer** has a "Tag players" friend-multiselect → `createPost(..., taggedIds)` inserts `post_tags` + a `post_tag` notification to each. **Feed** cards (and the feed query `fetchFeedPosts`) include **reposts**: a card shows "↻ @X reposted" and posts have a **Repost** button (`toggleRepost`) that adds a `reposts` row + a `repost` notification to the original author. Reposts surface in friends' Home feeds attributed to the original poster.
 
 ### Country picker — `components/CountryPicker.tsx`, `lib/countries.ts`
 Searchable modal sheet (Portal) listing ~195 countries with flag emojis (`flagEmoji(code)` builds the emoji from the ISO alpha-2 code). Used in signup + settings. Flags shown on profiles.
@@ -146,7 +151,7 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis (`flagEm
 
 ## 7. Data layer conventions (`src/lib/`)
 - **DB is snake_case, TS is camelCase.** Each lib has `toX(row)` converter functions mapping rows → typed objects.
-- Files: `supabase.ts`, `profile.ts`, `friends.ts`, `rounds.ts`, `courses.ts`, `courseCorrections.ts`, `shots.ts`, `practice.ts`, `matches.ts`, `wallet.ts`, `points.ts`, `feed.ts` (the **round/match activity feed** — distinct from the posts `Feed.tsx`), `messages.ts`, `posts.ts`, `golfCourseApi.ts`, `countries.ts`, `imageCompress.ts`.
+- Files: `supabase.ts`, `profile.ts`, `friends.ts`, `rounds.ts`, `courses.ts`, `courseCorrections.ts`, `shots.ts`, `practice.ts`, `matches.ts`, `wallet.ts`, `points.ts`, `feed.ts` (the **round/match activity feed** — distinct from the posts `Feed.tsx`), `messages.ts`, `posts.ts`, `notifications.ts` (tag/repost notifications), `golfCourseApi.ts`, `countries.ts`, `imageCompress.ts`.
 - **Image uploads are auto-compressed** client-side via `imageCompress.compressImage()` (canvas downscale + JPEG re-encode) in `uploadAvatar` (≤512px) and `uploadPostImage` (≤1440px) to save storage.
 - **Course naming:** golfcourseapi.com sometimes returns a generic `course_name`; `golfCourseApi.courseDisplayName()` prefers `club_name` plus explicit overrides — **14916 → "Club de Golf de Panama"**, **25374 → "Santa Maria Golf & Country Club"**. Used in `CourseSearch` and `MatchesView`.
 
@@ -170,4 +175,4 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis (`flagEm
 
 ---
 
-_Last updated: 2026-06-02 — social layer (DMs + posts), full-page profiles, country/flags, mobile keyboard fix, ~195-country list, Home feed, auto-push policy._
+_Last updated: 2026-06-02 — added comment likes/replies, tappable friends count, DM error banner, post tagging + reposts + notifications system. Pending SQL: SOCIAL_V2.sql, SOCIAL_V3.sql._

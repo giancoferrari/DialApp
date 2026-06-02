@@ -173,6 +173,19 @@ export interface Post {
   commentCount: number
   likedByMe: boolean
   author?: PublicProfile
+  repostedBy?: PublicProfile | null   // set when this feed item is a repost
+  repostedByMe?: boolean
+}
+
+export interface AppNotification {
+  id: string
+  type: 'post_tag' | 'repost'
+  actorId: string
+  postId: string | null
+  createdAt: string
+  readAt: string | null
+  actor?: PublicProfile
+  postImageUrl?: string | null
 }
 
 export interface PostComment {

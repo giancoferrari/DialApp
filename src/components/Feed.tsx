@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { fetchFriendships } from '../lib/friends'
-import { fetchFeedPosts, toggleLike, deletePost } from '../lib/posts'
+import { fetchFeedPosts, toggleLike, deletePost, toggleRepost } from '../lib/posts'
 import type { Post, PublicProfile } from '../types'
 import { HeartIcon, ChatIcon } from './Icons'
 import Portal from './Portal'
@@ -70,6 +70,13 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
     }
   }
 
+  const handleRepost = async (post: Post) => {
+    const was = !!post.repostedByMe
+    setPosts(prev => prev.map(p => p.id === post.id ? { ...p, repostedByMe: !was } : p))
+    try { await toggleRepost(post.id, post.userId, userId, was) }
+    catch { setPosts(prev => prev.map(p => p.id === post.id ? { ...p, repostedByMe: was } : p)) }
+  }
+
   if (loading) {
     return <div style={{ textAlign: 'center', padding: 28, fontSize: 13, color: '#6B5F4E' }}>Loading the clubhouse…</div>
   }
@@ -86,7 +93,12 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {posts.map(post => (
-        <div key={post.id} style={{ background: 'rgba(250,246,234,0.82)', backdropFilter: 'blur(28px) saturate(170%)', WebkitBackdropFilter: 'blur(28px) saturate(170%)', border: '1px solid rgba(255,255,255,0.7)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 22px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.85)' }}>
+        <div key={`${post.id}-${post.repostedBy?.userId ?? 'orig'}`} style={{ background: 'rgba(250,246,234,0.82)', backdropFilter: 'blur(28px) saturate(170%)', WebkitBackdropFilter: 'blur(28px) saturate(170%)', border: '1px solid rgba(255,255,255,0.7)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 22px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.85)' }}>
+          {post.repostedBy && (
+            <div style={{ padding: '9px 14px 0', fontSize: 12, color: '#6B5F4E', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
+              <span style={{ fontSize: 14, lineHeight: 1 }}>↻</span> {authorName(post.repostedBy)} reposted
+            </div>
+          )}
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px' }}>
             <Avatar profile={post.author} size={38} onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined} />
@@ -115,6 +127,10 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
             <button onClick={() => setActive(post)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <ChatIcon size={21} color="#1F1D17" />
               <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17' }}>{post.commentCount}</span>
+            </button>
+            <button onClick={() => handleRepost(post)} style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <span style={{ fontSize: 19, lineHeight: 1, color: post.repostedByMe ? '#5C7A4D' : '#1F1D17' }}>↻</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, fontWeight: 600, color: post.repostedByMe ? '#5C7A4D' : '#6B5F4E' }}>{post.repostedByMe ? 'Reposted' : 'Repost'}</span>
             </button>
           </div>
 

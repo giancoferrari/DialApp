@@ -8,6 +8,7 @@ import { fetchRounds } from './lib/rounds'
 import { fetchPracticeSessions } from './lib/practice'
 import { fetchProfile } from './lib/profile'
 import { fetchUnreadTotal } from './lib/messages'
+import { fetchNotificationUnread } from './lib/notifications'
 import { supabase } from './lib/supabase'
 import { useIsMobile } from './hooks/useIsMobile'
 import type { Shot, View, Club, Course, Round, PracticeSession, UserProfile } from './types'
@@ -163,13 +164,14 @@ function AppShell() {
 
   const refreshNotifCount = useCallback(async () => {
     if (!user) return
-    const [{ count: fc }, { count: mc }] = await Promise.all([
+    const [{ count: fc }, { count: mc }, nUnread] = await Promise.all([
       supabase.from('friendships').select('id', { count: 'exact', head: true })
         .eq('addressee_id', user.id).eq('status', 'pending'),
       supabase.from('match_players').select('id', { count: 'exact', head: true })
         .eq('user_id', user.id).eq('status', 'invited'),
+      fetchNotificationUnread(user.id).catch(() => 0),
     ])
-    setNotifCount((fc ?? 0) + (mc ?? 0))
+    setNotifCount((fc ?? 0) + (mc ?? 0) + nUnread)
   }, [user])
 
   const refreshMsgUnread = useCallback(async () => {
@@ -204,6 +206,7 @@ function AppShell() {
       .channel(`app-badge-${user.id}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships', filter: `addressee_id=eq.${user.id}` }, refreshNotifCount)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'match_players', filter: `user_id=eq.${user.id}` }, refreshNotifCount)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` }, refreshNotifCount)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, refreshMsgUnread)
       .subscribe()
     return () => { supabase.removeChannel(ch) }

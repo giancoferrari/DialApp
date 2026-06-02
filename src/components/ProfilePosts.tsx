@@ -3,6 +3,7 @@ import {
   fetchUserPosts, uploadPostImage, createPost, deletePost,
   toggleLike, fetchComments, addComment, deleteComment, toggleCommentLike,
 } from '../lib/posts'
+import { fetchFriendships, fetchProfilesForIds } from '../lib/friends'
 import type { Post, PostComment, PublicProfile } from '../types'
 import { CloseIcon, HeartIcon, ChatIcon, PlusIcon, CameraIcon } from './Icons'
 import Portal from './Portal'
@@ -36,7 +37,19 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
   const [caption, setCaption] = useState('')
   const [busy, setBusy]       = useState(false)
   const [error, setError]     = useState<string | null>(null)
+  const [friends, setFriends] = useState<PublicProfile[]>([])
+  const [tagged, setTagged]   = useState<string[]>([])
   const fileRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const fs = await fetchFriendships(meId)
+        const ids = fs.filter(f => f.status === 'accepted').map(f => f.requesterId === meId ? f.addresseeId : f.requesterId)
+        setFriends(await fetchProfilesForIds(ids))
+      } catch { /* ignore */ }
+    })()
+  }, [meId])
 
   const pick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]
@@ -46,12 +59,14 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
     setError(null)
   }
 
+  const toggleTag = (id: string) => setTagged(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
+
   const share = async () => {
     if (!file) { fileRef.current?.click(); return }
     setBusy(true); setError(null)
     try {
       const url = await uploadPostImage(meId, file)
-      await createPost(meId, url, caption)
+      await createPost(meId, url, caption, tagged)
       onCreated()
       onClose()
     } catch (e: unknown) {
@@ -89,6 +104,30 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
             onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
             onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
           />
+
+          {friends.length > 0 && (
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 8 }}>
+                Tag players {tagged.length > 0 && `(${tagged.length})`}
+              </div>
+              <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
+                {friends.map(f => {
+                  const sel = tagged.includes(f.userId)
+                  const nm = f.username ? `@${f.username}` : (f.firstName ?? 'Golfer')
+                  return (
+                    <button key={f.userId} onClick={() => toggleTag(f.userId)}
+                      style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0, background: sel ? '#1F3A2A' : '#FAF6EA', color: sel ? '#FAF6EA' : '#1F1D17', border: `1px solid ${sel ? '#1F3A2A' : '#E0D8C5'}`, borderRadius: 999, padding: '6px 12px 6px 6px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, fontWeight: 500, whiteSpace: 'nowrap' }}>
+                      <span style={{ width: 22, height: 22, borderRadius: 11, overflow: 'hidden', background: sel ? '#2A4D39' : '#F0EBDD', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {f.avatarUrl ? <img src={f.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 10, color: '#D9824D' }}>{nm[0]?.replace('@', '').toUpperCase()}</span>}
+                      </span>
+                      {nm}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
           {error && <div style={{ background: 'rgba(217,130,77,0.10)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#D9824D', marginBottom: 14 }}>{error}</div>}
           <button
             onClick={share} disabled={busy}

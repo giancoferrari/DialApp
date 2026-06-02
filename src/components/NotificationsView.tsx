@@ -2,8 +2,18 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { fetchFriendships, fetchProfilesForIds, updateFriendship } from '../lib/friends'
 import { fetchMatches, acceptMatchInvite, declineMatchInvite } from '../lib/matches'
-import type { PublicProfile, Friendship, Match } from '../types'
+import { fetchNotifications, markNotificationsRead } from '../lib/notifications'
+import type { PublicProfile, Friendship, Match, AppNotification } from '../types'
 import { CheckIcon, CloseIcon, TrophyIcon, UsersIcon } from './Icons'
+
+function notifAgo(ts: string): string {
+  const m = Math.floor((Date.now() - new Date(ts).getTime()) / 60000)
+  if (m < 1) return 'now'
+  if (m < 60) return `${m}m`
+  const h = Math.floor(m / 60); if (h < 24) return `${h}h`
+  const d = Math.floor(h / 24); if (d < 7) return `${d}d`
+  return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
 
 interface Props {
   userId: string
@@ -30,6 +40,7 @@ const MODE_LABELS: Record<string, string> = {
 export default function NotificationsView({ userId, isMobile = false, onCountChange }: Props) {
   const [friendReqs, setFriendReqs] = useState<(Friendship & { profile?: PublicProfile })[]>([])
   const [matchInvites, setMatchInvites] = useState<Match[]>([])
+  const [notifs, setNotifs] = useState<AppNotification[]>([])
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -56,6 +67,13 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
       })
       setMatchInvites(invites)
 
+      // Tag/repost notifications (degrade gracefully if the table isn't there yet)
+      try {
+        const ns = await fetchNotifications(userId)
+        setNotifs(ns)
+        markNotificationsRead(userId).catch(() => {})
+      } catch { /* notifications table not set up */ }
+
       onCountChange(pendingForMe.length + invites.length)
     } catch { setError('Failed to load notifications.') }
     finally { setLoading(false) }
@@ -69,6 +87,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
       .channel(`notifs-${userId}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'match_players', filter: `user_id=eq.${userId}` }, load)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'friendships', filter: `addressee_id=eq.${userId}` }, load)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` }, load)
       .subscribe()
     return () => { supabase.removeChannel(ch) }
   }, [userId, load])
@@ -115,7 +134,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
   }
 
   const px = isMobile ? 20 : 40
-  const total = friendReqs.length + matchInvites.length
+  const total = friendReqs.length + matchInvites.length + notifs.length
 
   return (
     <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 28 : 48}px ${px}px ${isMobile ? 120 : 80}px` }}>
@@ -224,6 +243,25 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
                     </button>
                   </div>
                 </div>
+              </div>
+            )
+          })}
+
+          {notifs.map(n => {
+            const nm = n.actor?.username ? `@${n.actor.username}` : (n.actor?.firstName ?? 'A player')
+            const text = n.type === 'post_tag' ? 'tagged you in a post' : 'reposted your post'
+            return (
+              <div key={n.id} style={{ background: 'rgba(250,246,234,0.70)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 20, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 13, boxShadow: '0 6px 24px rgba(31,29,23,0.08), inset 0 1px 0 rgba(255,255,255,0.80)' }}>
+                <Avatar profile={n.actor ?? null} size={42} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14, color: '#1F1D17', lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif" }}>
+                    <strong style={{ fontWeight: 700 }}>{nm}</strong> {text}
+                  </div>
+                  <div style={{ fontSize: 11.5, color: '#8B8272', marginTop: 2 }}>{notifAgo(n.createdAt)}</div>
+                </div>
+                {n.postImageUrl && (
+                  <img src={n.postImageUrl} alt="" loading="lazy" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
+                )}
               </div>
             )
           })}

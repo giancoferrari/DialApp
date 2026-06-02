@@ -1,6 +1,7 @@
 import { supabase } from './supabase'
 import { fetchProfilesForIds } from './friends'
 import { compressImage } from './imageCompress'
+import { createNotification } from './notifications'
 import type { Post, PostComment } from '../types'
 
 function toPost(r: Record<string, unknown>): Omit<Post, 'likeCount' | 'commentCount' | 'likedByMe'> {
@@ -25,11 +26,30 @@ export async function uploadPostImage(userId: string, file: File): Promise<strin
   return data.publicUrl
 }
 
-export async function createPost(userId: string, imageUrl: string, caption: string): Promise<void> {
-  const { error } = await supabase
+export async function createPost(userId: string, imageUrl: string, caption: string, taggedIds: string[] = []): Promise<void> {
+  const { data, error } = await supabase
     .from('posts')
     .insert({ user_id: userId, image_url: imageUrl, caption: caption.trim() || null })
+    .select('id')
+    .single()
   if (error) throw error
+  const postId = data.id as string
+  const tags = taggedIds.filter(id => id && id !== userId)
+  if (tags.length) {
+    await supabase.from('post_tags').insert(tags.map(uid => ({ post_id: postId, user_id: uid })))
+    await Promise.all(tags.map(uid => createNotification(uid, userId, 'post_tag', postId)))
+  }
+}
+
+export async function toggleRepost(postId: string, ownerId: string, meId: string, reposted: boolean): Promise<void> {
+  if (reposted) {
+    const { error } = await supabase.from('reposts').delete().eq('post_id', postId).eq('user_id', meId)
+    if (error) throw error
+  } else {
+    const { error } = await supabase.from('reposts').insert({ post_id: postId, user_id: meId })
+    if (error) throw error
+    await createNotification(ownerId, meId, 'repost', postId)
+  }
 }
 
 export async function deletePost(postId: string): Promise<void> {
@@ -81,19 +101,54 @@ export async function fetchUserPosts(targetUserId: string, meId: string): Promis
   return hydratePosts(data ?? [], meId)
 }
 
-// Feed: most recent posts from a set of users (e.g. me + friends).
+// Feed: recent original posts + reposts from a set of users (me + friends).
 export async function fetchFeedPosts(userIds: string[], meId: string): Promise<Post[]> {
   if (!userIds.length) return []
-  const { data, error } = await supabase
-    .from('posts')
-    .select('*')
-    .in('user_id', userIds)
-    .order('created_at', { ascending: false })
-    .limit(40)
-  if (error) throw error
-  const posts = await hydratePosts(data ?? [], meId)
-  const authors = await fetchProfilesForIds([...new Set(posts.map(p => p.userId))])
-  return posts.map(p => ({ ...p, author: authors.find(a => a.userId === p.userId) }))
+
+  const [{ data: orig }, { data: rrows }] = await Promise.all([
+    supabase.from('posts').select('*').in('user_id', userIds).order('created_at', { ascending: false }).limit(40),
+    supabase.from('reposts').select('post_id, user_id, created_at').in('user_id', userIds).order('created_at', { ascending: false }).limit(40),
+  ])
+
+  // Load the posts referenced by reposts (their authors may be anyone).
+  const repostIds = [...new Set((rrows ?? []).map(r => r.post_id as string))]
+  let repostRows: Record<string, unknown>[] = []
+  if (repostIds.length) {
+    const { data } = await supabase.from('posts').select('*').in('id', repostIds)
+    repostRows = data ?? []
+  }
+
+  const uniqueRows = Array.from(new Map([...(orig ?? []), ...repostRows].map(r => [r.id as string, r])).values())
+  const hydrated = await hydratePosts(uniqueRows, meId)
+  const byId = new Map(hydrated.map(p => [p.id, p]))
+
+  // Which of these have I reposted (for button state)?
+  const { data: mine } = byId.size
+    ? await supabase.from('reposts').select('post_id').eq('user_id', meId).in('post_id', [...byId.keys()])
+    : { data: [] as { post_id: string }[] }
+  const myReposts = new Set((mine ?? []).map(r => r.post_id as string))
+
+  // Build feed entries (original + repost), sorted by their effective time.
+  const entries: { ts: number; postId: string; reposterId: string | null }[] = []
+  for (const p of (orig ?? [])) entries.push({ ts: new Date(p.created_at as string).getTime(), postId: p.id as string, reposterId: null })
+  for (const r of (rrows ?? [])) entries.push({ ts: new Date(r.created_at as string).getTime(), postId: r.post_id as string, reposterId: r.user_id as string })
+  entries.sort((a, b) => b.ts - a.ts)
+  const top = entries.slice(0, 40)
+
+  const profileIds = new Set<string>()
+  top.forEach(e => { const hp = byId.get(e.postId); if (hp) profileIds.add(hp.userId); if (e.reposterId) profileIds.add(e.reposterId) })
+  const profiles = await fetchProfilesForIds([...profileIds])
+
+  return top.flatMap(e => {
+    const hp = byId.get(e.postId)
+    if (!hp) return []
+    return [{
+      ...hp,
+      author: profiles.find(a => a.userId === hp.userId),
+      repostedBy: e.reposterId ? (profiles.find(a => a.userId === e.reposterId) ?? null) : null,
+      repostedByMe: myReposts.has(hp.id),
+    }]
+  })
 }
 
 export async function toggleLike(postId: string, meId: string, liked: boolean): Promise<void> {
