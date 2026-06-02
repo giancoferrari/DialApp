@@ -110,7 +110,7 @@ All modals/sheets/overlays must render through **`src/components/Portal.tsx`** (
 Email/password. Sign-in accepts email **or** `@username` (resolved via `get_email_by_username` RPC). Email confirmation on signup; password reset + recovery (`SetNewPasswordModal` in App). **Signup collects:** first name, last name, username, **country** (CountryPicker), password (strength meter), legal/age agreement. `signUp(...)` then `upsertProfile({ username, country })`.
 
 ### Home / Dashboard — `components/Dashboard.tsx`
-Date pill, **rank card** (avatar, tier, points, progress to next tier), **quick stats** (last round score vs par, handicap, W/L/T record), **Clubhouse Feed** (`Feed.tsx`), recent rounds (tappable → rounds), quick actions (Friends pill, Start a Match CTA). (The "Good morning" greeting was removed per request.)
+Date pill, **rank card** (avatar, tier, points, progress to next tier), **quick stats** (last round score vs par, handicap, W/L/T record), **Clubhouse Feed** (`Feed.tsx`), recent rounds (tappable → rounds), quick actions (Friends pill, Start a Match CTA). (The "Good morning" greeting was removed per request.) The **rank card is tappable → `RanksModal`** showing all tiers (with your current one highlighted) and the **points per match** (Win +25 / Tie +5 / Loss −15). Motion: points **count up** and the rank **bar fills** on mount (GSAP), card has press/hover feedback, modal tiers stagger in — all gated behind `prefers-reduced-motion`.
 
 ### Clubhouse Feed — `components/Feed.tsx`
 Full-width post cards from **you + accepted friends** (`fetchFeedPosts`). Inline like (heart, optimistic), comment count, tap image/comment → shared `PostDetail`. Tap author → their profile (`onViewProfile`). Images `loading="lazy"`.
