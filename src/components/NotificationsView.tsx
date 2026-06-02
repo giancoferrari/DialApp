@@ -160,7 +160,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
             </svg>
           </div>
           <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#8B8272', marginBottom: 8, letterSpacing: '-0.02em' }}>You're all caught up</div>
-          <div style={{ fontSize: 13, color: '#6B5F4E', lineHeight: 1.5 }}>Friend requests and match invites appear here.</div>
+          <div style={{ fontSize: 13, color: '#6B5F4E', lineHeight: 1.5 }}>Friend requests, match invites, tags and reposts appear here.</div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
