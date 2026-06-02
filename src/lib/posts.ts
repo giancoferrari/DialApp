@@ -222,3 +222,8 @@ export async function deleteComment(commentId: string): Promise<void> {
   const { error } = await supabase.from('post_comments').delete().eq('id', commentId)
   if (error) throw error
 }
+
+export async function reportPost(postId: string, reporterId: string, reason: string): Promise<void> {
+  const { error } = await supabase.from('post_reports').insert({ post_id: postId, reporter_id: reporterId, reason })
+  if (error) throw error
+}

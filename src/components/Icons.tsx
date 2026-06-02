@@ -215,6 +215,16 @@ export function GridIcon({ size = 22, color = 'currentColor' }: { size?: number;
   )
 }
 
+export function MoreIcon({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+      <circle cx="5" cy="12" r="1.9" />
+      <circle cx="12" cy="12" r="1.9" />
+      <circle cx="19" cy="12" r="1.9" />
+    </svg>
+  )
+}
+
 export function SendIcon({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">

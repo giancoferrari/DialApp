@@ -49,6 +49,7 @@ Supabase Postgres, all tables have **Row Level Security**. The live DB has been 
 - **`MORE_SCHEMA.sql`** — adds `user_profiles.country` (text, ISO alpha-2) and renames mis-saved course rows. ⚠️ `lib/friends.ts` `PROFILE_SELECT` lists `country`, so **if this isn't run, profile-loading queries (friends, matches, messages, feed) error.**
 - **`SOCIAL_V2.sql`** — adds `post_comment_likes` (likes on individual comments).
 - **`SOCIAL_V3.sql`** — adds `post_tags` (players tagged in a post), `reposts`, and `notifications` (+ realtime). Powers post tagging, reposts, and tag/repost notifications.
+- **`SOCIAL_V4.sql`** — adds `post_reports` (reporting posts with a reason).
 
 ### Tables (key columns)
 - **`user_profiles`** — `user_id`, `username`, `first_name`, `avatar_url`, `country`, `handicap_index`, `home_course`, `goal_score`, `goal_handicap`, `goal_notes`, `equipment` (jsonb), `ranked_points`, `wins`, `losses`, `ties`.
@@ -133,7 +134,7 @@ Search users by username, send/accept/decline/remove requests, friends list. **T
 Conversation list (avatar, last-message preview, time, unread badge) + **chat thread** (`Thread`): realtime delivery, optimistic send, read receipts, **per-message timestamps + day separators**, grouped bubbles. **Mobile keyboard:** the thread pins to `window.visualViewport` (tracks height + offsetTop) so the header stays fixed and only the chat shifts — Instagram-style; input is 16px to avoid iOS zoom. **Header is tappable → opens the other player's profile.** New-message picker searches friends + any user. Conversations keyed by sorted user pair (`lib/messages.ts pair()`). Failed sends show an inline **error banner** above the composer (no more silent failures). Friends is also reachable from the avatar dropdown menu.
 
 ### Profile — `components/ProfileView.tsx`, `components/ProfilePosts.tsx`
-**Full page** (own + other users). Header: avatar, name, `@username`, **country + flag**, rank badge, stats (handicap / points / friends), W/L/T, rank progress. **Own:** "Edit profile" gear → Settings; tap avatar → Settings. **Other:** back arrow (`onBack`/goBack) + **Message** button. The **friends stat is tappable** → own profile goes to the Friends view; another user's opens a `FriendsListModal` of their friends. Below: **`ProfilePosts`** — 3-col posts grid; composer (image + caption, own only); `PostDetail` modal (big image, like, comments, delete own). **Comments support likes (heart) and Reply** (Reply prefills `@username` into the comment box and focuses it). `PostDetail` and `Composer` are **exported** for reuse (Feed + global post button).
+**Full page** (own + other users). Header: avatar, name, `@username`, **country + flag**, rank badge, stats (handicap / points / friends), W/L/T, rank progress. **Own:** "Edit profile" gear → Settings; tap avatar → Settings. **Other:** back arrow (`onBack`/goBack) + **Message** button. The **friends stat is tappable** → own profile goes to the Friends view; another user's opens a `FriendsListModal` of their friends. Below: **`ProfilePosts`** — 3-col posts grid; composer (image + caption, own only); `PostDetail` modal (big image, like, comments, delete own). **Comments support likes (heart) and Reply** (Reply prefills `@username` into the comment box and focuses it). The post detail has a **3-dot (`MoreIcon`) menu**: **Delete post** on your own posts, **Report post** on others' → a `ReportSheet` with reasons (`reportPost` → `post_reports`). `PostDetail` and `Composer` are **exported** for reuse (Feed + global post button).
 
 ### Settings — `components/SettingsView.tsx`
 Back arrow. Sections: Account (first name, username), **Location (CountryPicker)**, Security (email, change password), Golf Profile (handicap, home course, preferred tee), Game Defaults, Goals, Privacy toggles, About (legal links via `LegalModal`), Sign out. Saves via `upsertProfile`. Avatar upload here + on ProfileView.
@@ -176,4 +177,4 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis (`flagEm
 
 ---
 
-_Last updated: 2026-06-02 — comment likes/replies, tappable friends count, DM error banner, post tagging + reposts, full notifications (tags, reposts, likes, comments). Pending SQL: SOCIAL_V2.sql, SOCIAL_V3.sql._
+_Last updated: 2026-06-02 — comment likes/replies, tappable friends count, DM error banner, post tagging + reposts, full notifications (tags/reposts/likes/comments), 3-dot post menu with Delete + Report, and expanded Terms/Privacy. Pending SQL: SOCIAL_V2.sql, SOCIAL_V3.sql, SOCIAL_V4.sql._

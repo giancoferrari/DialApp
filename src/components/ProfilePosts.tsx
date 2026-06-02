@@ -1,12 +1,74 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   fetchUserPosts, uploadPostImage, createPost, deletePost,
-  toggleLike, fetchComments, addComment, deleteComment, toggleCommentLike,
+  toggleLike, fetchComments, addComment, deleteComment, toggleCommentLike, reportPost,
 } from '../lib/posts'
 import { fetchFriendships, fetchProfilesForIds } from '../lib/friends'
 import type { Post, PostComment, PublicProfile } from '../types'
-import { CloseIcon, HeartIcon, ChatIcon, PlusIcon, CameraIcon } from './Icons'
+import { CloseIcon, HeartIcon, ChatIcon, PlusIcon, CameraIcon, MoreIcon } from './Icons'
 import Portal from './Portal'
+
+const REPORT_REASONS = [
+  'Spam or misleading',
+  'Nudity or sexual content',
+  'Hate speech or symbols',
+  'Harassment or bullying',
+  'Violence or dangerous content',
+  'False information',
+  'Scam or fraud',
+  'Intellectual property violation',
+  'Something else',
+]
+
+// ── Report a post (reason picker) ──────────────────────────────────────
+function ReportSheet({ postId, meId, isMobile, onClose }: {
+  postId: string; meId: string; isMobile: boolean; onClose: () => void
+}) {
+  const [done, setDone] = useState(false)
+  const [busy, setBusy] = useState(false)
+
+  const submit = async (reason: string) => {
+    if (busy) return
+    setBusy(true)
+    try { await reportPost(postId, meId, reason) } catch { /* still acknowledge */ }
+    setBusy(false)
+    setDone(true)
+  }
+
+  return (
+    <Portal>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 240, background: 'rgba(31,29,23,0.55)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
+        <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, maxHeight: isMobile ? '80vh' : '70vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 18px 12px', borderBottom: '1px solid #E0D8C5' }}>
+            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 17, fontWeight: 700, color: '#1F1D17' }}>{done ? 'Report received' : 'Report post'}</div>
+            <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <CloseIcon size={13} color="#4A4235" />
+            </button>
+          </div>
+          {done ? (
+            <div style={{ padding: '28px 24px 32px', textAlign: 'center' }}>
+              <div style={{ fontSize: 15, color: '#1F1D17', fontWeight: 600, marginBottom: 8, fontFamily: "'DM Sans', sans-serif" }}>Thanks for letting us know.</div>
+              <div style={{ fontSize: 13.5, color: '#6B5F4E', lineHeight: 1.5, marginBottom: 20 }}>Our team will review this post against our Community Guidelines. We won't notify the person you reported.</div>
+              <button onClick={onClose} style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '11px 26px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Done</button>
+            </div>
+          ) : (
+            <div style={{ flex: 1, overflowY: 'auto', padding: '8px 10px 16px' }}>
+              <div style={{ fontSize: 12.5, color: '#6B5F4E', padding: '6px 12px 10px' }}>Why are you reporting this post?</div>
+              {REPORT_REASONS.map(r => (
+                <button key={r} onClick={() => submit(r)} disabled={busy}
+                  style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', borderRadius: 10, padding: '13px 12px', cursor: busy ? 'default' : 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, color: '#1F1D17', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                  onMouseEnter={e => { if (!busy) e.currentTarget.style.background = '#EDE6D6' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
+                  {r}<span style={{ color: '#8B8272', fontSize: 16 }}>›</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </Portal>
+  )
+}
 
 interface Props {
   targetUserId: string
@@ -151,7 +213,10 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
   const [comments, setComments] = useState<PostComment[]>([])
   const [text, setText]         = useState('')
   const [busy, setBusy]         = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [reporting, setReporting] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const isMine = post.userId === meId
 
   useEffect(() => { fetchComments(post.id, meId).then(setComments).catch(() => {}) }, [post.id, meId])
 
@@ -191,12 +256,31 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
       <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, maxHeight: isMobile ? '94vh' : '90vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid #E0D8C5', flexShrink: 0 }}>
           <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>{authorName}</div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            {canDelete && (
-              <button onClick={onDelete} style={{ background: 'rgba(192,57,43,0.10)', border: '1px solid rgba(192,57,43,0.3)', borderRadius: 16, height: 30, padding: '0 12px', display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: 12.5, fontWeight: 600, color: '#C0392B', fontFamily: "'DM Sans', sans-serif" }}>
-                Delete
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ position: 'relative' }}>
+              <button onClick={() => setMenuOpen(v => !v)} aria-label="More options" style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                <MoreIcon size={16} color="#4A4235" />
               </button>
-            )}
+              {menuOpen && (
+                <>
+                  <div onClick={() => setMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 5 }} />
+                  <div style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 14, padding: 6, boxShadow: '0 12px 32px rgba(31,58,42,0.18)', minWidth: 170, zIndex: 10 }}>
+                    {canDelete && onDelete && (
+                      <button onClick={() => { setMenuOpen(false); onDelete() }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', borderRadius: 10, padding: '10px 12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 600, color: '#C0392B' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = '#F6E9E5' }} onMouseLeave={e => { e.currentTarget.style.background = 'none' }}>
+                        Delete post
+                      </button>
+                    )}
+                    {!isMine && (
+                      <button onClick={() => { setMenuOpen(false); setReporting(true) }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', borderRadius: 10, padding: '10px 12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500, color: '#1F1D17' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = '#F0EBDD' }} onMouseLeave={e => { e.currentTarget.style.background = 'none' }}>
+                        Report post
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
             <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <CloseIcon size={13} color="#4A4235" />
             </button>
@@ -273,6 +357,7 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
           </button>
         </div>
       </div>
+      {reporting && <ReportSheet postId={post.id} meId={meId} isMobile={isMobile} onClose={() => setReporting(false)} />}
     </div>
   )
 }
