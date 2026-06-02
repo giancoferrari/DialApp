@@ -106,7 +106,7 @@ export async function toggleLike(postId: string, meId: string, liked: boolean): 
   }
 }
 
-export async function fetchComments(postId: string): Promise<PostComment[]> {
+export async function fetchComments(postId: string, meId: string): Promise<PostComment[]> {
   const { data, error } = await supabase
     .from('post_comments')
     .select('*')
@@ -114,7 +114,22 @@ export async function fetchComments(postId: string): Promise<PostComment[]> {
     .order('created_at', { ascending: true })
   if (error) throw error
   const rows = data ?? []
-  const authors = await fetchProfilesForIds([...new Set(rows.map(r => r.user_id as string))])
+  const ids  = rows.map(r => r.id as string)
+
+  const [authors, likesRes] = await Promise.all([
+    fetchProfilesForIds([...new Set(rows.map(r => r.user_id as string))]),
+    ids.length
+      ? supabase.from('post_comment_likes').select('comment_id, user_id').in('comment_id', ids)
+      : Promise.resolve({ data: [] as { comment_id: string; user_id: string }[] }),
+  ])
+  const likeCount: Record<string, number>  = {}
+  const likedByMe: Record<string, boolean> = {}
+  for (const l of likesRes.data ?? []) {
+    const cid = l.comment_id as string
+    likeCount[cid] = (likeCount[cid] ?? 0) + 1
+    if (l.user_id === meId) likedByMe[cid] = true
+  }
+
   return rows.map(r => ({
     id:        r.id as string,
     postId:    r.post_id as string,
@@ -122,7 +137,19 @@ export async function fetchComments(postId: string): Promise<PostComment[]> {
     body:      r.body as string,
     createdAt: r.created_at as string,
     author:    authors.find(a => a.userId === r.user_id),
+    likeCount: likeCount[r.id as string] ?? 0,
+    likedByMe: likedByMe[r.id as string] ?? false,
   }))
+}
+
+export async function toggleCommentLike(commentId: string, meId: string, liked: boolean): Promise<void> {
+  if (liked) {
+    const { error } = await supabase.from('post_comment_likes').delete().eq('comment_id', commentId).eq('user_id', meId)
+    if (error) throw error
+  } else {
+    const { error } = await supabase.from('post_comment_likes').insert({ comment_id: commentId, user_id: meId })
+    if (error) throw error
+  }
 }
 
 export async function addComment(postId: string, meId: string, body: string): Promise<void> {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { View } from '../types'
 import DialWordmark from './DialWordmark'
-import { PlusIcon, PersonIcon, HomeIcon, TrophyIcon, BellIcon, ToolsIcon, TargetIcon, ScorecardIcon, ChatIcon, CameraIcon } from './Icons'
+import { PlusIcon, PersonIcon, HomeIcon, UsersIcon, TrophyIcon, BellIcon, ToolsIcon, TargetIcon, ScorecardIcon, ChatIcon, CameraIcon } from './Icons'
 
 const NAV_ITEMS: { id: View; label: string }[] = [
   { id: 'dashboard', label: 'Home'    },
@@ -334,6 +334,25 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                 >
                   <PersonIcon size={16} color="#1F3A2A" />
                   Profile
+                </button>
+
+                {/* Friends */}
+                <button
+                  onClick={() => { setMenuOpen(false); onView('friends') }}
+                  style={{
+                    width: '100%', background: 'transparent', border: 'none',
+                    borderRadius: 10, padding: '10px 14px',
+                    textAlign: 'left', cursor: 'pointer',
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: 13.5, fontWeight: 500, color: '#1F1D17',
+                    transition: 'background 0.12s',
+                    display: 'flex', alignItems: 'center', gap: 10,
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#F0EBDD' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                >
+                  <UsersIcon size={16} color="#1F3A2A" />
+                  Friends
                 </button>
 
                 <div style={{ height: 1, background: '#ECE5D2', margin: '4px 8px' }} />

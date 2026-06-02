@@ -396,6 +396,7 @@ function AppShell() {
               onNavigate={handleSetView}
               onBack={goBack}
               onMessage={handleMessageUser}
+              onViewProfile={handleViewProfile}
             />
           )}
           {view === 'settings' && (

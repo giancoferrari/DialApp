@@ -72,6 +72,7 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewPro
   const [input, setInput]       = useState('')
   const [sending, setSending]   = useState(false)
   const [loading, setLoading]   = useState(true)
+  const [sendError, setSendError] = useState<string | null>(null)
   const [vp, setVp] = useState<{ h: number; top: number } | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -130,6 +131,7 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewPro
     if (!text || sending) return
     setInput('')
     setSending(true)
+    setSendError(null)
     // Optimistic
     const optimistic: DirectMessage = {
       id: `tmp-${Date.now()}`, conversationId: conversation.id, senderId: userId,
@@ -141,9 +143,10 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewPro
       const saved = await sendMessage(conversation.id, userId, text)
       setMessages(prev => prev.map(m => m.id === optimistic.id ? saved : m))
       onActivity()
-    } catch {
+    } catch (e: unknown) {
       setMessages(prev => prev.filter(m => m.id !== optimistic.id))
       setInput(text)
+      setSendError(e instanceof Error ? e.message : "Couldn't send. Check your connection and try again.")
     } finally { setSending(false) }
   }
 
@@ -216,6 +219,12 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewPro
             )
           })}
         </div>
+
+        {sendError && (
+          <div style={{ flexShrink: 0, padding: '8px 16px', background: 'rgba(192,57,43,0.10)', borderTop: '1px solid rgba(192,57,43,0.25)', fontSize: 12.5, color: '#C0392B', fontFamily: "'DM Sans', sans-serif", textAlign: 'center' }}>
+            {sendError}
+          </div>
+        )}
 
         {/* Composer */}
         <div style={{ padding: `12px 12px ${isMobile ? 'calc(env(safe-area-inset-bottom) + 12px)' : '12px'}`, borderTop: '1px solid #E0D8C5', background: '#F5F0E6', display: 'flex', gap: 8, alignItems: 'flex-end', flexShrink: 0 }}>

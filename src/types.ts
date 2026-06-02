@@ -182,6 +182,8 @@ export interface PostComment {
   body: string
   createdAt: string
   author?: PublicProfile
+  likeCount: number
+  likedByMe: boolean
 }
 
 // ── Matches ───────────────────────────────────────────────

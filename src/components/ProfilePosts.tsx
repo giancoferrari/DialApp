@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   fetchUserPosts, uploadPostImage, createPost, deletePost,
-  toggleLike, fetchComments, addComment, deleteComment,
+  toggleLike, fetchComments, addComment, deleteComment, toggleCommentLike,
 } from '../lib/posts'
 import type { Post, PostComment, PublicProfile } from '../types'
 import { CloseIcon, HeartIcon, ChatIcon, PlusIcon, CameraIcon } from './Icons'
@@ -112,8 +112,9 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
   const [comments, setComments] = useState<PostComment[]>([])
   const [text, setText]         = useState('')
   const [busy, setBusy]         = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => { fetchComments(post.id).then(setComments).catch(() => {}) }, [post.id])
+  useEffect(() => { fetchComments(post.id, meId).then(setComments).catch(() => {}) }, [post.id, meId])
 
   const onLike = async () => {
     const wasLiked = liked
@@ -122,11 +123,24 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
     catch { setLiked(wasLiked); setLikeCount(c => c + (wasLiked ? 1 : -1)) }
   }
 
+  const onCommentLike = async (c: PostComment) => {
+    const wasLiked = c.likedByMe
+    setComments(prev => prev.map(x => x.id === c.id ? { ...x, likedByMe: !wasLiked, likeCount: x.likeCount + (wasLiked ? -1 : 1) } : x))
+    try { await toggleCommentLike(c.id, meId, wasLiked) }
+    catch { setComments(prev => prev.map(x => x.id === c.id ? { ...x, likedByMe: wasLiked, likeCount: x.likeCount + (wasLiked ? 1 : -1) } : x)) }
+  }
+
+  const startReply = (c: PostComment) => {
+    const mention = c.author?.username ? `@${c.author.username} ` : ''
+    setText(mention)
+    requestAnimationFrame(() => { inputRef.current?.focus() })
+  }
+
   const submit = async () => {
     const body = text.trim()
     if (!body || busy) return
     setBusy(true); setText('')
-    try { await addComment(post.id, meId, body); setComments(await fetchComments(post.id)); onChanged() }
+    try { await addComment(post.id, meId, body); setComments(await fetchComments(post.id, meId)); onChanged() }
     catch { setText(body) }
     finally { setBusy(false) }
   }
@@ -176,18 +190,25 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
               {comments.map(c => {
                 const cn = c.author?.username ? `@${c.author.username}` : (c.author?.firstName ?? 'Golfer')
                 const mine = c.userId === meId
+                const linkBtn: React.CSSProperties = { background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 11.5, fontWeight: 600, color: '#6B5F4E', fontFamily: "'DM Sans', sans-serif" }
                 return (
-                  <div key={c.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                    <div style={{ flex: 1, fontSize: 13.5, color: '#1F1D17', lineHeight: 1.45, fontFamily: "'DM Sans', sans-serif" }}>
-                      <strong style={{ fontWeight: 700 }}>{cn}</strong> {c.body}
-                      <span style={{ fontSize: 11, color: '#8B8272', marginLeft: 8 }}>{timeAgo(c.createdAt)}</span>
+                  <div key={c.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13.5, color: '#1F1D17', lineHeight: 1.45, fontFamily: "'DM Sans', sans-serif" }}>
+                        <strong style={{ fontWeight: 700 }}>{cn}</strong> {c.body}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 4 }}>
+                        <span style={{ fontSize: 11, color: '#8B8272' }}>{timeAgo(c.createdAt)}</span>
+                        {c.likeCount > 0 && <span style={{ fontSize: 11, color: '#8B8272' }}>{c.likeCount} like{c.likeCount > 1 ? 's' : ''}</span>}
+                        <button onClick={() => startReply(c)} style={linkBtn}>Reply</button>
+                        {mine && (
+                          <button onClick={async () => { await deleteComment(c.id); setComments(await fetchComments(post.id, meId)); onChanged() }} style={{ ...linkBtn, color: '#C0603A' }}>Delete</button>
+                        )}
+                      </div>
                     </div>
-                    {mine && (
-                      <button onClick={async () => { await deleteComment(c.id); setComments(await fetchComments(post.id)); onChanged() }}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, opacity: 0.4, flexShrink: 0 }}>
-                        <CloseIcon size={11} color="#1F1D17" />
-                      </button>
-                    )}
+                    <button onClick={() => onCommentLike(c)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0', flexShrink: 0 }}>
+                      <HeartIcon size={15} color={c.likedByMe ? '#D9824D' : '#A89F8C'} filled={c.likedByMe} />
+                    </button>
                   </div>
                 )
               })}
@@ -200,10 +221,11 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
 
         <div style={{ display: 'flex', gap: 8, padding: `12px 12px ${isMobile ? 'calc(env(safe-area-inset-bottom) + 12px)' : '12px'}`, borderTop: '1px solid #E0D8C5', background: '#F5F0E6', flexShrink: 0 }}>
           <input
+            ref={inputRef}
             value={text} onChange={e => setText(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') submit() }}
             placeholder="Add a comment…"
-            style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 20, padding: '10px 16px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif" }}
+            style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 20, padding: '10px 16px', fontSize: 16, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif" }}
             onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
             onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
           />

@@ -1,11 +1,68 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { fetchProfilesForIds } from '../lib/friends'
+import { fetchProfilesForIds, fetchFriendships } from '../lib/friends'
 import type { UserProfile, PublicProfile, View } from '../types'
 import { getRank, RANK_TIERS } from '../lib/points'
 import { flagEmoji, countryName } from '../lib/countries'
-import { ShieldIcon, ChatIcon, GearIcon, CameraIcon } from './Icons'
+import { ShieldIcon, ChatIcon, GearIcon, CameraIcon, CloseIcon } from './Icons'
 import ProfilePosts from './ProfilePosts'
+import Portal from './Portal'
+
+// ── A user's friends, in a tappable sheet ──────────────────────────────
+function FriendsListModal({ userId, isMobile, onClose, onViewProfile }: {
+  userId: string; isMobile: boolean; onClose: () => void; onViewProfile: (id: string) => void
+}) {
+  const [list, setList]       = useState<PublicProfile[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const fs = await fetchFriendships(userId)
+        const ids = fs.filter(f => f.status === 'accepted').map(f => f.requesterId === userId ? f.addresseeId : f.requesterId)
+        setList(await fetchProfilesForIds(ids))
+      } catch { /* ignore */ } finally { setLoading(false) }
+    })()
+  }, [userId])
+
+  const name = (p: PublicProfile) => p.username ? `@${p.username}` : (p.firstName ?? 'Golfer')
+
+  return (
+    <Portal>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 220, background: 'rgba(31,29,23,0.5)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
+        <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, maxHeight: isMobile ? '80vh' : '70vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 18px 12px', borderBottom: '1px solid #E0D8C5' }}>
+            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 17, fontWeight: 700, color: '#1F1D17' }}>Friends</div>
+            <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <CloseIcon size={13} color="#4A4235" />
+            </button>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '6px 10px 16px' }}>
+            {loading ? (
+              <div style={{ textAlign: 'center', color: '#6B5F4E', fontSize: 13, padding: 24 }}>Loading…</div>
+            ) : list.length === 0 ? (
+              <div style={{ textAlign: 'center', color: '#6B5F4E', fontSize: 13, padding: 24 }}>No friends to show.</div>
+            ) : list.map(p => (
+              <button key={p.userId} onClick={() => { onClose(); onViewProfile(p.userId) }}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, background: 'transparent', border: 'none', borderRadius: 12, padding: '10px 8px', cursor: 'pointer', textAlign: 'left' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#EDE6D6' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
+                <div style={{ width: 42, height: 42, borderRadius: 21, background: '#1F3A2A', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {p.avatarUrl ? <img src={p.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 17, color: '#D9824D' }}>{name(p)[0]?.replace('@', '').toUpperCase()}</span>}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17' }}>{name(p)}</div>
+                  {p.handicapIndex != null && <div style={{ fontSize: 12, color: '#6B5F4E' }}>HCP {p.handicapIndex.toFixed(1)}</div>}
+                </div>
+                {p.country && <span style={{ fontSize: 18 }}>{flagEmoji(p.country)}</span>}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Portal>
+  )
+}
 
 interface Props {
   profile: UserProfile | null      // signed-in user's full profile
@@ -16,12 +73,14 @@ interface Props {
   onNavigate: (v: View) => void
   onBack?: () => void
   onMessage: (userId: string) => void
+  onViewProfile?: (userId: string) => void
 }
 
-export default function ProfileView({ profile, meId, viewUserId, userEmail, isMobile = false, onNavigate, onBack, onMessage }: Props) {
+export default function ProfileView({ profile, meId, viewUserId, userEmail, isMobile = false, onNavigate, onBack, onMessage, onViewProfile }: Props) {
   const isOwn = viewUserId === meId
   const [other, setOther] = useState<PublicProfile | null>(null)
   const [friendsCount, setFriendsCount] = useState(0)
+  const [showFriends, setShowFriends] = useState(false)
 
   useEffect(() => {
     supabase
@@ -118,16 +177,21 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
 
         {/* Stats */}
         <div style={{ display: 'flex', gap: isMobile ? 28 : 44, marginTop: 18 }}>
-          {[
+          {([
             { value: handicap != null ? handicap.toFixed(1) : '—', label: 'handicap' },
             { value: points.toLocaleString(), label: 'points' },
-            { value: friendsCount, label: 'friends' },
-          ].map(s => (
-            <div key={s.label} style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.04em', lineHeight: 1 }}>{s.value}</div>
-              <div style={{ fontSize: 10, color: '#4A4235', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 5 }}>{s.label}</div>
-            </div>
-          ))}
+            { value: friendsCount, label: 'friends', onPress: () => (isOwn ? onNavigate('friends') : setShowFriends(true)) },
+          ] as { value: string | number; label: string; onPress?: () => void }[]).map(s => {
+            const content = (
+              <>
+                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.04em', lineHeight: 1 }}>{s.value}</div>
+                <div style={{ fontSize: 10, color: s.onPress ? '#1F3A2A' : '#4A4235', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 5 }}>{s.label}</div>
+              </>
+            )
+            return s.onPress
+              ? <button key={s.label} onClick={s.onPress} style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', padding: 0 }}>{content}</button>
+              : <div key={s.label} style={{ textAlign: 'center' }}>{content}</div>
+          })}
         </div>
 
         {/* Win/loss */}
@@ -181,6 +245,10 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
           ? { userId: meId, username: username ?? null, avatarUrl: avatarUrl ?? null, country: country ?? null, firstName: firstName ?? null, handicapIndex: handicap ?? null, homeCourse: null, rankedPoints: points, wins, losses, ties }
           : other}
       />
+
+      {showFriends && (
+        <FriendsListModal userId={viewUserId} isMobile={isMobile} onClose={() => setShowFriends(false)} onViewProfile={uid => onViewProfile?.(uid)} />
+      )}
     </div>
   )
 }
