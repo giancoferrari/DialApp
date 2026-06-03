@@ -5,6 +5,7 @@ import type { Post, PublicProfile } from '../types'
 import { HeartIcon, ChatIcon } from './Icons'
 import Portal from './Portal'
 import { PostDetail } from './ProfilePosts'
+import RecapCard from './RecapCard'
 
 interface Props {
   userId: string
@@ -113,9 +114,11 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
             </div>
           </div>
 
-          {/* Image */}
-          <button onClick={() => setActive(post)} style={{ display: 'block', width: '100%', padding: 0, border: 'none', background: '#000', cursor: 'pointer' }}>
-            <img src={post.imageUrl} alt="" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', maxHeight: isMobile ? 440 : 520, objectFit: 'cover' }} />
+          {/* Media — photo or round recap */}
+          <button onClick={() => setActive(post)} style={{ display: 'block', width: '100%', padding: 0, border: 'none', background: post.kind === 'round' ? 'none' : '#000', cursor: 'pointer' }}>
+            {post.kind === 'round' && post.meta
+              ? <RecapCard meta={post.meta} variant="feed" />
+              : <img src={post.imageUrl ?? ''} alt="" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', maxHeight: isMobile ? 440 : 520, objectFit: 'cover' }} />}
           </button>
 
           {/* Actions */}

@@ -7,6 +7,7 @@ import { fetchFriendships, fetchProfilesForIds } from '../lib/friends'
 import type { Post, PostComment, PublicProfile } from '../types'
 import { CloseIcon, HeartIcon, ChatIcon, PlusIcon, CameraIcon, MoreIcon } from './Icons'
 import Portal from './Portal'
+import RecapCard from './RecapCard'
 
 const REPORT_REASONS = [
   'Spam or misleading',
@@ -288,7 +289,9 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto' }}>
-          <img src={post.imageUrl} alt="" decoding="async" style={{ width: '100%', display: 'block', background: '#000' }} />
+          {post.kind === 'round' && post.meta
+            ? <RecapCard meta={post.meta} variant="detail" />
+            : <img src={post.imageUrl ?? ''} alt="" decoding="async" style={{ width: '100%', display: 'block', background: '#000' }} />}
 
           <div style={{ padding: '12px 16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
@@ -417,7 +420,9 @@ export default function ProfilePosts({ targetUserId, meId, isMobile = false, can
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
           {posts.map(p => (
             <button key={p.id} onClick={() => setActive(p)} style={{ aspectRatio: '1', padding: 0, border: 'none', borderRadius: 4, overflow: 'hidden', cursor: 'pointer', background: '#000', position: 'relative' }}>
-              <img src={p.imageUrl} alt="" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              {p.kind === 'round' && p.meta
+                ? <RecapCard meta={p.meta} variant="tile" />
+                : <img src={p.imageUrl ?? ''} alt="" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
               {(p.likeCount > 0 || p.commentCount > 0) && (
                 <div style={{ position: 'absolute', bottom: 4, left: 4, display: 'flex', gap: 8, fontSize: 10.5, fontWeight: 700, color: '#FFF', textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>
                   {p.likeCount > 0 && <span>♥ {p.likeCount}</span>}

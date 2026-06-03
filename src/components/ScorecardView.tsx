@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { saveCourse, deleteCourse } from '../lib/courses'
 import { createRound, upsertRoundHoles, deleteRound } from '../lib/rounds'
-import type { Course, Round, RoundHole } from '../types'
+import { createRoundPost } from '../lib/posts'
+import type { Course, Round, RoundHole, RoundRecapMeta } from '../types'
 import { CloseIcon, PlusIcon } from './Icons'
 import CourseSearch from './CourseSearch'
 import type { GolfCourse, GolfTee } from '../lib/golfCourseApi'
@@ -411,6 +412,8 @@ export default function ScorecardView({
 }: Props) {
   const { user } = useAuth()
   const [phase, setPhase]         = useState<Phase>(() => autoStart ? { type: 'round_start' } : { type: 'history' })
+  const [sharedRoundId, setSharedRoundId] = useState<string | null>(null)
+  const [sharing, setSharing]     = useState(false)
   const [saving, setSaving]       = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
 
@@ -1180,6 +1183,24 @@ export default function ScorecardView({
     const statsMode = holes.some(h => h.putts !== null || h.fairwayHit !== null || h.gir !== null)
       ? 'score-stats' : 'score-only'
 
+    const recapMeta: RoundRecapMeta = {
+      courseName: round.courseName,
+      score: t.totalScore, par: t.totalPar, toPar: t.diff,
+      holes: round.holes,
+      girHoles: t.girHoles, girPossible: t.girPossible,
+      fairways: t.fairways, fairwaysPossible: t.fairwaysPossible,
+      putts: t.totalPutts, playedAt: round.playedAt,
+      hasStats: statsMode === 'score-stats',
+    }
+    const isShared = sharedRoundId === round.id
+    const shareRound = async () => {
+      if (!user || sharing || isShared) return
+      setSharing(true)
+      try { await createRoundPost(user.id, recapMeta); setSharedRoundId(round.id) }
+      catch { /* ignore — feed degrades gracefully */ }
+      finally { setSharing(false) }
+    }
+
     return (
       <div style={{ maxWidth: 720, margin: '0 auto', padding: `${isMobile ? 20 : 48}px ${isMobile ? 12 : 40}px ${isMobile ? 96 : 48}px` }}>
         <button style={backBtn} onClick={() => setPhase({ type: 'history' })}>← All rounds</button>
@@ -1203,6 +1224,26 @@ export default function ScorecardView({
             </div>
           </div>
         </div>
+
+        <button
+          onClick={shareRound}
+          disabled={sharing || isShared}
+          style={{
+            width: '100%', marginBottom: 20, borderRadius: 16, padding: '14px',
+            fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, fontWeight: 600,
+            cursor: isShared ? 'default' : 'pointer', letterSpacing: '-0.005em',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            background: isShared ? 'rgba(92,122,77,0.12)' : '#D9824D',
+            color: isShared ? '#5C7A4D' : '#FAF6EA',
+            border: isShared ? '1px solid rgba(92,122,77,0.35)' : 'none',
+            boxShadow: isShared ? 'none' : '0 4px 14px rgba(217,130,77,0.30)',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          {isShared
+            ? <>✓ Shared to your feed</>
+            : sharing ? 'Sharing…' : <>Share this round to your feed</>}
+        </button>
 
         {statsMode === 'score-stats' && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: isMobile ? 8 : 12, marginBottom: 20 }}>
