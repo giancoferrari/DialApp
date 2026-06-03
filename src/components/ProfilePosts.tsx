@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   fetchUserPosts, uploadPostImage, createPost, deletePost,
   toggleLike, fetchComments, addComment, deleteComment, toggleCommentLike, reportPost,
@@ -8,6 +9,7 @@ import type { Post, PostComment, PublicProfile } from '../types'
 import { CloseIcon, HeartIcon, ChatIcon, PlusIcon, CameraIcon, MoreIcon } from './Icons'
 import Portal from './Portal'
 import RecapCard from './RecapCard'
+import Skeleton from './Skeleton'
 
 const REPORT_REASONS = [
   'Spam or misleading',
@@ -367,23 +369,25 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
 
 // ── Posts grid ─────────────────────────────────────────────────────────────
 export default function ProfilePosts({ targetUserId, meId, isMobile = false, canPost = false, authorProfile = null }: Props) {
-  const [posts, setPosts]     = useState<Post[]>([])
-  const [loading, setLoading] = useState(true)
+  const qc = useQueryClient()
   const [composer, setComposer] = useState(false)
   const [active, setActive]   = useState<Post | null>(null)
+  const postsKey = ['userPosts', targetUserId, meId]
 
-  const load = useCallback(async () => {
-    try { setPosts(await fetchUserPosts(targetUserId, meId)) }
-    catch { /* ignore */ }
-    finally { setLoading(false) }
-  }, [targetUserId, meId])
-
-  useEffect(() => { load() }, [load])
+  const { data: posts = [], isLoading: loading } = useQuery({
+    queryKey: postsKey,
+    queryFn: () => fetchUserPosts(targetUserId, meId),
+  })
+  const refresh = () => {
+    qc.invalidateQueries({ queryKey: postsKey })
+    qc.invalidateQueries({ queryKey: ['feed'] })
+  }
 
   const removePost = async (p: Post) => {
     setActive(null)
-    setPosts(prev => prev.filter(x => x.id !== p.id))
-    try { await deletePost(p.id) } catch { load() }
+    qc.setQueryData<Post[]>(postsKey, (old = []) => old.filter(x => x.id !== p.id))
+    try { await deletePost(p.id) } catch { refresh() }
+    qc.invalidateQueries({ queryKey: ['feed'] })
   }
 
   return (
@@ -403,7 +407,9 @@ export default function ProfilePosts({ targetUserId, meId, isMobile = false, can
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: 32, fontSize: 13, color: '#6B5F4E' }}>Loading…</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
+          {[0, 1, 2, 3, 4, 5].map(i => <Skeleton key={i} height="auto" radius={4} style={{ aspectRatio: '1' }} />)}
+        </div>
       ) : posts.length === 0 ? (
         <div style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 18, padding: '36px 24px', textAlign: 'center' }}>
           <div style={{ width: 48, height: 48, borderRadius: 24, background: '#F0EBDD', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
@@ -434,14 +440,14 @@ export default function ProfilePosts({ targetUserId, meId, isMobile = false, can
         </div>
       )}
 
-      {composer && <Portal><Composer meId={meId} isMobile={isMobile} onClose={() => setComposer(false)} onCreated={load} /></Portal>}
+      {composer && <Portal><Composer meId={meId} isMobile={isMobile} onClose={() => setComposer(false)} onCreated={refresh} /></Portal>}
       {active && (
         <Portal>
           <PostDetail
             post={active} meId={meId} isMobile={isMobile} authorProfile={authorProfile}
             canDelete={canPost && active.userId === meId}
             onClose={() => setActive(null)}
-            onChanged={load}
+            onChanged={refresh}
             onDelete={() => removePost(active)}
           />
         </Portal>

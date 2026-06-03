@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { useAuth } from './contexts/AuthContext'
@@ -157,6 +158,7 @@ function AppShell() {
   const [profileUserId, setProfileUserId] = useState<string | null>(null)
   const [messageUserId, setMessageUserId] = useState<string | null>(null)
   const [composing, setComposing]     = useState(false)
+  const qc = useQueryClient()
   const [roundAutoKey, setRoundAutoKey] = useState(0)
 
   const pageRef    = useRef<HTMLDivElement>(null)
@@ -465,7 +467,7 @@ function AppShell() {
             meId={user!.id}
             isMobile={isMobile}
             onClose={() => setComposing(false)}
-            onCreated={() => { setComposing(false); handleSetView('profile') }}
+            onCreated={() => { setComposing(false); qc.invalidateQueries({ queryKey: ['feed'] }); qc.invalidateQueries({ queryKey: ['userPosts'] }); handleSetView('profile') }}
           />
         </Portal>
       )}
