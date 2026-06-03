@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchFriendships } from '../lib/friends'
 import { fetchFeedPosts, toggleLike, deletePost, toggleRepost } from '../lib/posts'
 import type { Post, PublicProfile } from '../types'
@@ -6,6 +7,7 @@ import { HeartIcon, ChatIcon } from './Icons'
 import Portal from './Portal'
 import { PostDetail } from './ProfilePosts'
 import RecapCard from './RecapCard'
+import Skeleton from './Skeleton'
 
 interface Props {
   userId: string
@@ -41,45 +43,62 @@ function Avatar({ profile, size = 38, onClick }: { profile?: PublicProfile; size
   )
 }
 
-export default function Feed({ userId, isMobile = false, onViewProfile }: Props) {
-  const [posts, setPosts]     = useState<Post[]>([])
-  const [loading, setLoading] = useState(true)
-  const [active, setActive]   = useState<Post | null>(null)
+function FeedSkeleton({ isMobile }: { isMobile: boolean }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {[0, 1].map(i => (
+        <div key={i} style={{ background: 'rgba(250,246,234,0.82)', border: '1px solid rgba(255,255,255,0.7)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 22px rgba(31,29,23,0.06), inset 0 1px 0 rgba(255,255,255,0.85)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px' }}>
+            <Skeleton width={38} height={38} radius={19} />
+            <div style={{ flex: 1 }}>
+              <Skeleton width={130} height={13} />
+              <Skeleton width={58} height={10} style={{ marginTop: 7 }} />
+            </div>
+          </div>
+          <Skeleton width="100%" height={isMobile ? 300 : 360} radius={0} />
+          <div style={{ padding: '14px' }}><Skeleton width={150} height={14} /></div>
+        </div>
+      ))}
+    </div>
+  )
+}
 
-  const load = useCallback(async () => {
-    try {
+export default function Feed({ userId, isMobile = false, onViewProfile }: Props) {
+  const qc = useQueryClient()
+  const [active, setActive] = useState<Post | null>(null)
+  const feedKey = ['feed', userId]
+
+  const { data: posts = [], isLoading } = useQuery({
+    queryKey: feedKey,
+    queryFn: async (): Promise<Post[]> => {
       const fs = await fetchFriendships(userId)
       const friendIds = fs.filter(f => f.status === 'accepted')
         .map(f => f.requesterId === userId ? f.addresseeId : f.requesterId)
-      setPosts(await fetchFeedPosts([userId, ...friendIds], userId))
-    } catch { /* tables may not exist yet */ }
-    finally { setLoading(false) }
-  }, [userId])
+      return fetchFeedPosts([userId, ...friendIds], userId)
+    },
+  })
 
-  useEffect(() => { load() }, [load])
+  // Optimistic patches operate directly on the cached feed.
+  const patch = (id: string, fn: (p: Post) => Post) =>
+    qc.setQueryData<Post[]>(feedKey, (old = []) => old.map(p => (p.id === id ? fn(p) : p)))
+  const refresh = () => qc.invalidateQueries({ queryKey: feedKey })
 
   const handleLike = async (post: Post) => {
-    const wasLiked = post.likedByMe
-    setPosts(prev => prev.map(p => p.id === post.id
-      ? { ...p, likedByMe: !wasLiked, likeCount: p.likeCount + (wasLiked ? -1 : 1) }
-      : p))
-    try { await toggleLike(post.id, post.userId, userId, wasLiked) }
-    catch {
-      setPosts(prev => prev.map(p => p.id === post.id
-        ? { ...p, likedByMe: wasLiked, likeCount: p.likeCount + (wasLiked ? 1 : -1) }
-        : p))
-    }
+    const was = post.likedByMe
+    patch(post.id, p => ({ ...p, likedByMe: !was, likeCount: p.likeCount + (was ? -1 : 1) }))
+    try { await toggleLike(post.id, post.userId, userId, was) }
+    catch { patch(post.id, p => ({ ...p, likedByMe: was, likeCount: p.likeCount + (was ? 1 : -1) })) }
   }
 
   const handleRepost = async (post: Post) => {
     const was = !!post.repostedByMe
-    setPosts(prev => prev.map(p => p.id === post.id ? { ...p, repostedByMe: !was } : p))
+    patch(post.id, p => ({ ...p, repostedByMe: !was }))
     try { await toggleRepost(post.id, post.userId, userId, was) }
-    catch { setPosts(prev => prev.map(p => p.id === post.id ? { ...p, repostedByMe: was } : p)) }
+    catch { patch(post.id, p => ({ ...p, repostedByMe: was })) }
   }
 
-  if (loading) {
-    return <div style={{ textAlign: 'center', padding: 28, fontSize: 13, color: '#6B5F4E' }}>Loading the clubhouse…</div>
+  if (isLoading) {
+    return <FeedSkeleton isMobile={isMobile} />
   }
 
   if (posts.length === 0) {
@@ -156,8 +175,8 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
             authorProfile={active.author}
             canDelete={active.userId === userId}
             onClose={() => setActive(null)}
-            onChanged={load}
-            onDelete={async () => { const id = active.id; setActive(null); try { await deletePost(id) } catch { /* ignore */ } load() }}
+            onChanged={refresh}
+            onDelete={async () => { const id = active.id; setActive(null); try { await deletePost(id) } catch { /* ignore */ } refresh() }}
           />
         </Portal>
       )}
