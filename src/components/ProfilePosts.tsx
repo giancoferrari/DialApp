@@ -10,6 +10,7 @@ import { CloseIcon, HeartIcon, ChatIcon, PlusIcon, CameraIcon, MoreIcon } from '
 import Portal from './Portal'
 import RecapCard from './RecapCard'
 import Skeleton from './Skeleton'
+import { useToast } from './Toast'
 
 const REPORT_REASONS = [
   'Spam or misleading',
@@ -104,6 +105,7 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
   const [error, setError]     = useState<string | null>(null)
   const [friends, setFriends] = useState<PublicProfile[]>([])
   const [tagged, setTagged]   = useState<string[]>([])
+  const toast = useToast()
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -134,6 +136,7 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
       await createPost(meId, url, caption, tagged)
       onCreated()
       onClose()
+      toast('Shared to your feed')
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Failed to share post.')
     } finally { setBusy(false) }

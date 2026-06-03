@@ -7,6 +7,7 @@ import {
 } from '../lib/friends'
 import { CloseIcon, PersonIcon, MedalIcon, ChevronRightIcon } from './Icons'
 import Skeleton from './Skeleton'
+import { useToast } from './Toast'
 
 function profileLabel(profile?: PublicProfile | null): { primary: string; secondary: string | null } {
   if (!profile) return { primary: 'Someone', secondary: null }
@@ -38,6 +39,7 @@ function Avatar({ profile, size = 44 }: { profile?: PublicProfile; size?: number
 
 export default function FriendsView({ userId, isMobile = false, onViewProfile, onNavigate }: Props) {
   const qc = useQueryClient()
+  const toast = useToast()
   const [searchQuery,    setSearchQuery]   = useState('')
   const [searchResults,  setSearchResults] = useState<PublicProfile[]>([])
   const [searching,      setSearching]     = useState(false)
@@ -91,6 +93,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
     try {
       const f = await sendFriendRequest(userId, targetId)
       setFriendshipsCache(prev => [...prev, f])
+      toast('Friend request sent')
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Failed to send request.')
     } finally { setActionLoading(null) }
@@ -101,6 +104,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
     try {
       await updateFriendship(friendshipId, 'accepted')
       refresh()
+      toast('Friend added')
     } catch { setError('Failed to accept.') }
     finally { setActionLoading(null) }
   }

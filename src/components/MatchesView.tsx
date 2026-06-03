@@ -9,6 +9,7 @@ import { CloseIcon, TrophyIcon, PlusIcon } from './Icons'
 import CourseSearch from './CourseSearch'
 import Portal from './Portal'
 import Skeleton from './Skeleton'
+import { useToast } from './Toast'
 import { courseDisplayName, type GolfCourse } from '../lib/golfCourseApi'
 
 interface Props {
@@ -663,6 +664,7 @@ type MatchesData = { matches: Match[]; wallet: Wallet | null; friends: { friendI
 
 export default function MatchesView({ userId, isMobile = false }: Props) {
   const qc = useQueryClient()
+  const toast = useToast()
   const [showNew,       setShowNew]       = useState(false)
   const [scoring,       setScoring]       = useState<Match | null>(null)
   const [walletInput,   setWalletInput]   = useState('')
@@ -708,6 +710,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
         ? await topUpWallet(userId, amount)
         : await withdrawFromWallet(userId, amount)
       patch(d => ({ ...d, wallet: w })); setWalletInput(''); setWalletAction(null)
+      toast(walletAction === 'add' ? `Added $${amount}` : `Withdrew $${amount}`)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Transaction failed.')
     } finally { setWalletLoading(false) }
@@ -994,7 +997,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
 
       {showNew && (
         <Portal>
-          <NewMatchModal userId={userId} wallet={wallet} friends={friends} onClose={() => setShowNew(false)} onCreate={m => { patch(d => ({ ...d, matches: [m, ...d.matches] })); refresh() }} isMobile={isMobile} />
+          <NewMatchModal userId={userId} wallet={wallet} friends={friends} onClose={() => setShowNew(false)} onCreate={m => { patch(d => ({ ...d, matches: [m, ...d.matches] })); refresh(); toast('Match created') }} isMobile={isMobile} />
         </Portal>
       )}
 
