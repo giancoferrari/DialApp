@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { Match, Wallet, PublicProfile, GameMode } from '../types'
 import { fetchMatches, createMatch, acceptMatchInvite, declineMatchInvite, activateMatch, upsertScore, completeMatch, cancelMatch, fetchMatchRealtime } from '../lib/matches'
 import { fetchOrCreateWallet, topUpWallet, withdrawFromWallet } from '../lib/wallet'
@@ -7,6 +8,7 @@ import { supabase } from '../lib/supabase'
 import { CloseIcon, TrophyIcon, PlusIcon } from './Icons'
 import CourseSearch from './CourseSearch'
 import Portal from './Portal'
+import Skeleton from './Skeleton'
 import { courseDisplayName, type GolfCourse } from '../lib/golfCourseApi'
 
 interface Props {
@@ -657,45 +659,45 @@ function ScoringModal({
 }
 
 // ── Main MatchesView ──────────────────────────────────────────────────
+type MatchesData = { matches: Match[]; wallet: Wallet | null; friends: { friendId: string; profile?: PublicProfile }[] }
+
 export default function MatchesView({ userId, isMobile = false }: Props) {
-  const [matches,       setMatches]       = useState<Match[]>([])
-  const [wallet,        setWallet]        = useState<Wallet | null>(null)
-  const [friends,       setFriends]       = useState<{ friendId: string; profile?: PublicProfile }[]>([])
-  const [loading,       setLoading]       = useState(true)
+  const qc = useQueryClient()
   const [showNew,       setShowNew]       = useState(false)
   const [scoring,       setScoring]       = useState<Match | null>(null)
   const [walletInput,   setWalletInput]   = useState('')
   const [walletAction,  setWalletAction]  = useState<'add' | 'withdraw' | null>(null)
   const [walletLoading, setWalletLoading] = useState(false)
   const [error,         setError]         = useState<string | null>(null)
+  const matchesKey = ['matchesData', userId]
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    try {
+  const { data, isLoading: loading } = useQuery({
+    queryKey: matchesKey,
+    queryFn: async (): Promise<MatchesData> => {
       const [w, m] = await Promise.all([fetchOrCreateWallet(userId), fetchMatches(userId)])
-      setWallet(w)
-      setMatches(m)
-
       const fs = await fetchFriendships(userId)
-      const accepted = fs.filter(f => f.status === 'accepted')
-      const friendIds = accepted.map(f => f.requesterId === userId ? f.addresseeId : f.requesterId)
+      const friendIds = fs.filter(f => f.status === 'accepted').map(f => f.requesterId === userId ? f.addresseeId : f.requesterId)
       const profiles = await fetchProfilesForIds(friendIds)
-      setFriends(friendIds.map(id => ({ friendId: id, profile: profiles.find(p => p.userId === id) })))
-    } catch { setError('Failed to load matches.') }
-    finally { setLoading(false) }
-  }, [userId])
+      return { matches: m, wallet: w, friends: friendIds.map(id => ({ friendId: id, profile: profiles.find(p => p.userId === id) })) }
+    },
+  })
+  const matches = data?.matches ?? []
+  const wallet  = data?.wallet ?? null
+  const friends = data?.friends ?? []
+  const refresh = () => qc.invalidateQueries({ queryKey: matchesKey })
+  const patch   = (fn: (d: MatchesData) => MatchesData) =>
+    qc.setQueryData<MatchesData>(matchesKey, old => (old ? fn(old) : old))
 
-  useEffect(() => { load() }, [load])
-
-  // Realtime: refresh on new invites AND when any match status changes (e.g. pending→active)
+  // Realtime: refresh on new invites AND when any match status changes (pending→active, etc.)
   useEffect(() => {
+    const inval = () => qc.invalidateQueries({ queryKey: ['matchesData', userId] })
     const ch = supabase
       .channel(`match-invites-${userId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'match_players', filter: `user_id=eq.${userId}` }, () => load())
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'matches' }, () => load())
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'match_players', filter: `user_id=eq.${userId}` }, inval)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'matches' }, inval)
       .subscribe()
     return () => { supabase.removeChannel(ch) }
-  }, [userId, load])
+  }, [userId, qc])
 
   const handleWalletSubmit = async () => {
     const amount = Math.min(10000, Math.max(0, parseInt(walletInput) || 0))
@@ -705,29 +707,29 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
       const w = walletAction === 'add'
         ? await topUpWallet(userId, amount)
         : await withdrawFromWallet(userId, amount)
-      setWallet(w); setWalletInput(''); setWalletAction(null)
+      patch(d => ({ ...d, wallet: w })); setWalletInput(''); setWalletAction(null)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Transaction failed.')
     } finally { setWalletLoading(false) }
   }
 
   const handleAccept = async (matchId: string, wager: number) => {
-    try { await acceptMatchInvite(matchId, userId, wager); await load() }
+    try { await acceptMatchInvite(matchId, userId, wager); refresh() }
     catch (e: unknown) { setError(e instanceof Error ? e.message : 'Failed to accept.') }
   }
 
   const handleDecline = async (matchId: string) => {
-    try { await declineMatchInvite(matchId, userId); setMatches(prev => prev.filter(m => m.id !== matchId)) }
+    try { await declineMatchInvite(matchId, userId); patch(d => ({ ...d, matches: d.matches.filter(m => m.id !== matchId) })) }
     catch { setError('Failed to decline.') }
   }
 
   const handleCancel = async (match: Match) => {
-    try { await cancelMatch(match); await load() }
+    try { await cancelMatch(match); refresh() }
     catch { setError('Failed to cancel.') }
   }
 
   const handleStart = async (match: Match) => {
-    try { await activateMatch(match.id); await load() }
+    try { await activateMatch(match.id); refresh() }
     catch (e: unknown) { setError(e instanceof Error ? e.message : 'Failed to start match.') }
   }
 
@@ -937,7 +939,15 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
       </button>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '48px', fontSize: 14, color: '#6B5F4E' }}>Loading…</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {[0, 1].map(i => (
+            <div key={i} style={{ background: 'rgba(250,246,234,0.70)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 22, padding: '18px 20px' }}>
+              <Skeleton width="40%" height={11} />
+              <Skeleton width="70%" height={18} style={{ marginTop: 12 }} />
+              <Skeleton width="50%" height={12} style={{ marginTop: 10 }} />
+            </div>
+          ))}
+        </div>
       ) : (
         <>
           {myInvites.length > 0 && (
@@ -984,7 +994,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
 
       {showNew && (
         <Portal>
-          <NewMatchModal userId={userId} wallet={wallet} friends={friends} onClose={() => setShowNew(false)} onCreate={m => setMatches(prev => [m, ...prev])} isMobile={isMobile} />
+          <NewMatchModal userId={userId} wallet={wallet} friends={friends} onClose={() => setShowNew(false)} onCreate={m => { patch(d => ({ ...d, matches: [m, ...d.matches] })); refresh() }} isMobile={isMobile} />
         </Portal>
       )}
 
@@ -995,9 +1005,9 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
             userId={userId}
             onClose={() => setScoring(null)}
             onMatchUpdated={updated => {
-              setMatches(prev => prev.map(m => m.id === updated.id ? updated : m))
+              patch(d => ({ ...d, matches: d.matches.map(m => m.id === updated.id ? updated : m) }))
               setScoring(updated)
-              if (updated.status === 'completed') fetchOrCreateWallet(userId).then(setWallet)
+              if (updated.status === 'completed') refresh()  // refetch wallet balance + points after payout
             }}
             isMobile={isMobile}
           />

@@ -160,6 +160,7 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis (`flagEm
 ---
 
 ## 7. Data layer conventions (`src/lib/`)
+- **Caching = TanStack React Query.** App is wrapped in `QueryClientProvider` (`lib/queryClient.ts`: 30s staleTime, background refetch on focus). Data views use `useQuery` so returning to a tab is **instant from cache** then refreshes in the background; mutations update the cache optimistically via `setQueryData` or invalidate. Query keys in use: `['feed', userId]`, `['conversations', userId]`, `['leaderboard', meId]`, `['userPosts', target, me]`, `['friends', userId]`, `['notifications', userId]`, `['matchesData', userId]`. First loads render a shimmer **`Skeleton`** (`components/Skeleton.tsx`) — never a "Loading…" string. Scroll position is preserved per tab in `App` (saved on leave, restored before paint via `useLayoutEffect`).
 - **DB is snake_case, TS is camelCase.** Each lib has `toX(row)` converter functions mapping rows → typed objects.
 - Files: `supabase.ts`, `profile.ts`, `friends.ts`, `rounds.ts`, `courses.ts`, `courseCorrections.ts`, `shots.ts`, `practice.ts`, `matches.ts`, `wallet.ts`, `points.ts`, `feed.ts` (the **round/match activity feed** — distinct from the posts `Feed.tsx`), `messages.ts`, `posts.ts`, `notifications.ts` (tag/repost notifications), `golfCourseApi.ts`, `countries.ts`, `imageCompress.ts`.
 - **Image uploads are auto-compressed** client-side via `imageCompress.compressImage()` (canvas downscale + JPEG re-encode) in `uploadAvatar` (≤512px) and `uploadPostImage` (≤1440px) to save storage.
@@ -186,4 +187,4 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis (`flagEm
 
 ---
 
-_Last updated: 2026-06-02 — comment likes/replies, tappable friends count, DM error banner, post tagging + reposts, full notifications (tags/reposts/likes/comments), 3-dot post menu with Delete + Report, and expanded Terms/Privacy. Pending SQL: SOCIAL_V2.sql, SOCIAL_V3.sql, SOCIAL_V4.sql._
+_Last updated: 2026-06-03 — **Phase 1 "instant & alive":** adopted React Query (cached, stale-while-revalidate) across Feed/Messages/Leaderboard/Profile/Friends/Notifications/Matches, added shimmer skeletons everywhere, scroll-position preservation per tab, and optimistic mutations. Earlier: comment likes/replies, tappable friends count, post tagging + reposts, full notifications, 3-dot post menu, expanded Terms/Privacy. Pending SQL: SOCIAL_V2.sql, SOCIAL_V3.sql, SOCIAL_V4.sql, SOCIAL_V5.sql, plus MORE_SCHEMA.sql._
