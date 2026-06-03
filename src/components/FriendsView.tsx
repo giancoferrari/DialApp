@@ -133,7 +133,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
 
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 8 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#8B8272', textTransform: 'uppercase', marginBottom: 8 }}>
           Social
         </div>
         <h1 style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: 0, lineHeight: 1 }}>

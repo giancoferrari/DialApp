@@ -375,7 +375,7 @@ export default function MessagesView({ userId, isMobile = false, startUserId = n
     <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 28 : 48}px ${px}px ${isMobile ? 120 : 80}px` }}>
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 8 }}>Inbox</div>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#8B8272', textTransform: 'uppercase', marginBottom: 8 }}>Inbox</div>
           <h1 style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: 0, lineHeight: 1 }}>Messages</h1>
         </div>
         <button onClick={() => setShowNew(true)} style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 16px 10px 18px', fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", whiteSpace: 'nowrap', boxShadow: '0 4px 14px rgba(31,58,42,0.20)' }}>

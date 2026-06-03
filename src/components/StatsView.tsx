@@ -73,7 +73,7 @@ export default function StatsView({ rounds, shots, isMobile = false, onNavigate 
         <span style={{ fontSize: 18, lineHeight: 1 }}>‹</span> Tools
       </button>
 
-      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 8 }}>Your game</div>
+      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#8B8272', textTransform: 'uppercase', marginBottom: 8 }}>Your game</div>
       <h1 style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: '0 0 28px', lineHeight: 1 }}>
         Stats
       </h1>

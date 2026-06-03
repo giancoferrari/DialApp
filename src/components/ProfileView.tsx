@@ -126,7 +126,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
         {isOwn ? (
           <>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#D9824D', textTransform: 'uppercase' }}>Your profile</div>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#8B8272', textTransform: 'uppercase' }}>Your profile</div>
             <button
               onClick={() => onNavigate('settings')}
               style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(250,246,234,0.7)', border: '1px solid rgba(255,255,255,0.6)', borderRadius: 999, padding: '8px 14px 8px 12px', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 13, fontWeight: 500, color: '#1F3A2A', boxShadow: '0 2px 10px rgba(31,29,23,0.06)' }}
