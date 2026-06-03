@@ -47,6 +47,12 @@ input, button, textarea, select { font-family: inherit; }
 button { cursor: pointer; }
 input:focus, textarea:focus, select:focus { outline: none; }
 
+/* Real, consistent focus ring on inputs — soft green halo (layers over any
+   inline border-color the component sets on focus). */
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  box-shadow: 0 0 0 3px rgba(31, 58, 42, 0.13);
+}
+
 /* Accessible focus ring for keyboard navigation (not mouse) */
 button:focus-visible {
   outline: 2px solid #1F3A2A;
