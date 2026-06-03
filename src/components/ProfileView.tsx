@@ -148,7 +148,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 22 }}>
         <div
           onClick={() => { if (isOwn) onNavigate('settings') }}
-          style={{ width: 92, height: 92, borderRadius: 46, background: '#1F3A2A', overflow: 'hidden', border: '3px solid rgba(255,255,255,0.7)', boxShadow: '0 8px 24px rgba(31,58,42,0.20)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14, cursor: isOwn ? 'pointer' : 'default', position: 'relative' }}
+          style={{ width: 92, height: 92, borderRadius: 46, background: '#1F3A2A', overflow: 'hidden', border: '3px solid rgba(255,255,255,0.7)', boxShadow: `0 10px 28px rgba(31,58,42,0.22), 0 0 0 5px ${rank.color}1f`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14, cursor: isOwn ? 'pointer' : 'default', position: 'relative' }}
         >
           {avatarUrl
             ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -186,7 +186,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
           ] as { value: string | number; label: string; onPress?: () => void }[]).map(s => {
             const content = (
               <>
-                <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 26, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.04em', lineHeight: 1 }}>{s.value}</div>
+                <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 26, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{s.value}</div>
                 <div style={{ fontSize: 10, color: s.onPress ? '#1F3A2A' : '#4A4235', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 5 }}>{s.label}</div>
               </>
             )
@@ -205,7 +205,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
               { value: ties,   label: 'T', color: '#4A4235', bg: 'rgba(107,104,87,0.10)' },
             ].map(s => (
               <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 5, background: s.bg, borderRadius: 8, padding: '4px 10px' }}>
-                <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, color: s.color }}>{s.value}</span>
+                <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, color: s.color, fontVariantNumeric: 'tabular-nums' }}>{s.value}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, color: s.color, letterSpacing: '0.06em' }}>{s.label}</span>
               </div>
             ))}

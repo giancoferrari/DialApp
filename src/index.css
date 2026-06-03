@@ -130,6 +130,12 @@ button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent
   to   { opacity: 1; transform: translateY(0)    scale(1);    }
 }
 
+/* Onboarding step enters from the right with the standard spring feel. */
+@keyframes onboardIn {
+  from { opacity: 0; transform: translateX(26px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+
 @keyframes slideUp {
   from { transform: translateY(100%); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }

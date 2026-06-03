@@ -34,6 +34,7 @@ import LogShotModal from './components/LogShotModal'
 import AuthScreen from './components/AuthScreen'
 import LegalModal from './components/LegalModal'
 import DialWordmark from './components/DialWordmark'
+import Onboarding from './components/Onboarding'
 
 gsap.registerPlugin(useGSAP)
 
@@ -149,6 +150,7 @@ function AppShell() {
   const [rounds, setRounds]           = useState<Round[]>([])
   const [practiceSessions, setPracticeSessions] = useState<PracticeSession[]>([])
   const [profile, setProfile]         = useState<UserProfile | null>(null)
+  const [profileLoaded, setProfileLoaded] = useState(false)
   const [, setShotsLoading] = useState(true)
   const [logOpen, setLogOpen]         = useState(false)
   const [logPreclub, setLogPreclub]   = useState<Club | null>(null)
@@ -207,7 +209,7 @@ function AppShell() {
         setPracticeSessions(p); setProfile(prof)
       })
       .catch(console.error)
-      .finally(() => setShotsLoading(false))
+      .finally(() => { setShotsLoading(false); setProfileLoaded(true) })
     refreshNotifCount()
     refreshMsgUnread()
   }, [user, refreshNotifCount, refreshMsgUnread])
@@ -337,6 +339,11 @@ function AppShell() {
   const contentStyle: React.CSSProperties = isMobile
     ? { flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never, paddingBottom: 'calc(env(safe-area-inset-bottom) + 92px)' }
     : {}
+
+  // New users (no username yet) must complete onboarding before entering.
+  if (profileLoaded && !isPasswordRecovery && (!profile || !profile.username)) {
+    return <Onboarding userId={user!.id} existingProfile={profile} isMobile={isMobile} onComplete={setProfile} />
+  }
 
   return (
     <>

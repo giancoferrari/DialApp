@@ -161,11 +161,17 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
 
           {/* Caption */}
           {post.caption && (
-            <div style={{ padding: '4px 14px 14px', fontSize: 14, color: '#1F1D17', lineHeight: 1.45, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+            <div style={{ padding: '4px 14px 8px', fontSize: 14, color: '#1F1D17', lineHeight: 1.45, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
               <strong style={{ fontWeight: 700 }}>{authorName(post.author)}</strong> {post.caption}
             </div>
           )}
-          {!post.caption && <div style={{ height: 8 }} />}
+          {/* Inline comment preview — tap to open the comment sheet */}
+          {post.commentCount > 0 && (
+            <button onClick={() => setActive(post)} style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', padding: `${post.caption ? 0 : 4}px 14px 14px`, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 13, color: '#6B5F4E' }}>
+              {post.commentCount === 1 ? 'View 1 comment' : `View all ${post.commentCount} comments`}
+            </button>
+          )}
+          {!post.caption && post.commentCount === 0 && <div style={{ height: 8 }} />}
         </div>
       ))}
 
