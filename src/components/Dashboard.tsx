@@ -4,7 +4,7 @@ import gsap from 'gsap'
 import { useState, useEffect } from 'react'
 import type { UserProfile, Round, View } from '../types'
 import { getRank, RANK_TIERS, POINTS_WIN, POINTS_LOSS, POINTS_TIE } from '../lib/points'
-import { ShieldIcon, UsersIcon, TrophyIcon, ArrowRight, CloseIcon, ChevronRightIcon, CheckIcon } from './Icons'
+import { ShieldIcon, UsersIcon, ScorecardIcon, MedalIcon, CloseIcon, ChevronRightIcon, CheckIcon } from './Icons'
 import Feed from './Feed'
 import Portal from './Portal'
 
@@ -130,17 +130,6 @@ function useLiveDate() {
   return date
 }
 
-function relTime(ts: string): string {
-  const diff = Date.now() - new Date(ts).getTime()
-  const m = Math.floor(diff / 60000)
-  if (m < 2)  return 'just now'
-  if (m < 60) return `${m}m ago`
-  const h = Math.floor(m / 60)
-  if (h < 24) return `${h}h ago`
-  const d = Math.floor(h / 24)
-  if (d < 7)  return `${d}d ago`
-  return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: TZ })
-}
 
 function toParLabel(diff: number | null | undefined): { text: string; color: string } {
   if (diff === null || diff === undefined) return { text: '', color: '#4A4235' }
@@ -221,9 +210,6 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
     ? lastRound.roundHoles.reduce((s, h) => s + h.par, 0)
     : null
   const lastDiff  = lastScore !== null && lastPar !== null ? lastScore - lastPar : null
-
-  // ── Recent rounds (last 4) ──
-  const recentRounds = rounds.slice(0, 4)
 
   // ── Shared style ──
   const glassCard: React.CSSProperties = {
@@ -396,187 +382,82 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
         </div>
       </div>
 
+      {/* ── Actions ────────────────────────────────────────── */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
+        {/* Log a round — primary */}
+        <button
+          onClick={() => onNavigate('rounds')}
+          style={{
+            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9,
+            background: 'linear-gradient(145deg, rgba(35,68,46,1) 0%, rgba(26,50,33,1) 100%)',
+            color: '#FAF6EA', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18,
+            padding: '16px 12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+            fontSize: 14.5, fontWeight: 600, letterSpacing: '-0.01em',
+            boxShadow: '0 8px 24px rgba(31,58,42,0.26), inset 0 1px 0 rgba(255,255,255,0.10)',
+            transition: 'transform 0.16s ease',
+          }}
+          onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
+          onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+          onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
+          onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
+        >
+          <span style={{ width: 30, height: 30, borderRadius: 15, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 8px rgba(217,130,77,0.40)' }}>
+            <ScorecardIcon size={16} color="#FAF6EA" />
+          </span>
+          Log a round
+        </button>
+
+        {/* Friends — glass */}
+        <button
+          onClick={() => onNavigate('friends')}
+          style={{
+            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            ...glassCard, border: '1px solid rgba(255,255,255,0.72)',
+            padding: '16px 12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+            fontSize: 14.5, fontWeight: 600, color: '#1F3A2A', transition: 'transform 0.16s ease',
+          }}
+          onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
+          onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+          onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
+          onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
+        >
+          <UsersIcon size={18} color="#1F3A2A" />
+          Friends
+        </button>
+      </div>
+
+      {/* Friends leaderboard — bigger highlight */}
+      <button
+        onClick={() => onNavigate('leaderboard')}
+        style={{
+          width: '100%', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left',
+          background: 'linear-gradient(150deg, rgba(35,68,46,1) 0%, rgba(22,44,28,1) 100%)',
+          border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '18px 20px',
+          cursor: 'pointer', marginBottom: 26,
+          boxShadow: '0 12px 34px rgba(31,58,42,0.26), inset 0 1px 0 rgba(255,255,255,0.10)',
+          transition: 'transform 0.16s ease',
+        }}
+        onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.985)' }}
+        onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+        onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.985)' }}
+        onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
+      >
+        <span style={{ width: 44, height: 44, borderRadius: 14, background: 'rgba(217,130,77,0.20)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <MedalIcon size={24} color="#D9824D" />
+        </span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em' }}>Friends leaderboard</div>
+          <div style={{ fontSize: 13, color: 'rgba(250,246,234,0.6)', marginTop: 2 }}>See how you rank against your friends</div>
+        </div>
+        <ChevronRightIcon size={20} color="rgba(250,246,234,0.5)" />
+      </button>
+
       {/* ── Clubhouse feed ─────────────────────────────────── */}
       <div style={{ marginBottom: 26 }}>
         <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 12 }}>
           From the clubhouse
         </div>
         <Feed userId={userId} isMobile={isMobile} onViewProfile={onViewProfile} />
-      </div>
-
-      {/* ── Recent Rounds ──────────────────────────────────── */}
-      <div style={{ marginBottom: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase' }}>
-            Recent Rounds
-          </div>
-          {recentRounds.length > 0 && (
-            <button
-              onClick={() => onNavigate('rounds')}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 4,
-                background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                fontSize: 12, color: '#6B5F4E', fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-              }}
-            >
-              View all <ArrowRight size={13} color="#6B5F4E" />
-            </button>
-          )}
-        </div>
-
-        {recentRounds.length === 0 ? (
-          <div style={{ ...glassCard, padding: '40px 24px', textAlign: 'center' }}>
-            <div style={{
-              width: 52, height: 52, borderRadius: 26, background: '#F0EBDD',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              margin: '0 auto 14px',
-            }}>
-              <TrophyIcon size={22} color="#8B8272" />
-            </div>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 17, fontWeight: 700, color: '#8B8272', marginBottom: 6 }}>
-              No rounds yet
-            </div>
-            <div style={{ fontSize: 13, color: '#6B5F4E', marginBottom: 20, lineHeight: 1.5 }}>
-              Log your first round and track your progress.
-            </div>
-            <button
-              onClick={() => onNavigate('rounds')}
-              style={{
-                background: '#1F3A2A', color: '#FAF6EA', border: 'none',
-                borderRadius: 999, padding: '10px 20px',
-                fontSize: 13, fontWeight: 500, cursor: 'pointer',
-                fontFamily: "'DM Sans', sans-serif",
-              }}
-            >
-              Log a round
-            </button>
-          </div>
-        ) : (
-          <div style={{ ...glassCard, overflow: 'hidden' }}>
-            {recentRounds.map((round, i) => {
-              const holes  = round.roundHoles
-              const score  = holes.length ? holes.reduce((s, h) => s + (h.score ?? 0), 0) : null
-              const par    = holes.length ? holes.reduce((s, h) => s + h.par, 0) : null
-              const diff   = score !== null && par !== null ? score - par : null
-              const parUI  = toParLabel(diff)
-              const played = new Date(round.playedAt)
-              const month  = played.toLocaleDateString('en-US', { month: 'short', timeZone: TZ })
-              const day    = played.toLocaleDateString('en-US', { day: 'numeric', timeZone: TZ })
-
-              return (
-                <div
-                  key={round.id}
-                  onClick={() => onNavigate('rounds')}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 14,
-                    padding: '13px 16px', cursor: 'pointer',
-                    borderTop: i === 0 ? 'none' : '1px solid rgba(224,216,197,0.45)',
-                    transition: 'background 0.12s',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(240,235,221,0.55)' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
-                >
-                  {/* Date block */}
-                  <div style={{
-                    width: 38, flexShrink: 0, textAlign: 'center',
-                    background: '#F0EBDD', borderRadius: 10, padding: '6px 4px',
-                  }}>
-                    <div style={{ fontSize: 9, fontWeight: 700, color: '#D9824D', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{month}</div>
-                    <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 17, fontWeight: 700, color: '#1F1D17', lineHeight: 1.1 }}>{day}</div>
-                  </div>
-
-                  {/* Course info */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {round.courseName}
-                    </div>
-                    <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2 }}>
-                      {round.holes} holes · {relTime(round.playedAt)}
-                    </div>
-                  </div>
-
-                  {/* Score */}
-                  {score !== null ? (
-                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1 }}>
-                        {score}
-                      </div>
-                      {diff !== null && (
-                        <div style={{ fontSize: 11, fontWeight: 700, color: parUI.color, marginTop: 1 }}>
-                          {parUI.text}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div style={{ fontSize: 13, color: '#8B8272', fontStyle: 'italic' }}>—</div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* ── Quick Actions ──────────────────────────────────── */}
-      <div style={{ display: 'flex', gap: 10 }}>
-
-        {/* Friends — glass pill */}
-        <button
-          onClick={() => onNavigate('friends')}
-          style={{
-            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            ...glassCard, border: '1px solid rgba(255,255,255,0.72)',
-            padding: '17px 10px', cursor: 'pointer',
-            fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, color: '#1F3A2A',
-            transition: 'transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(31,29,23,0.13), inset 0 1px 0 rgba(255,255,255,0.95)' }}
-          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(31,29,23,0.10), inset 0 1px 0 rgba(255,255,255,0.90)' }}
-          onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
-          onMouseUp={e => { e.currentTarget.style.transform = 'translateY(-1px)' }}
-          onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
-          onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
-        >
-          <UsersIcon size={17} color="#1F3A2A" />
-          <span>Friends</span>
-        </button>
-
-        {/* Start a Match — dark premium CTA */}
-        <button
-          onClick={() => onNavigate('matches')}
-          style={{
-            flex: 1.35,
-            display: 'flex', alignItems: 'center', gap: 10,
-            background: 'linear-gradient(145deg, rgba(35,68,46,1) 0%, rgba(26,50,33,1) 100%)',
-            color: '#FAF6EA',
-            border: '1px solid rgba(255,255,255,0.07)',
-            borderRadius: 20,
-            padding: '15px 16px 15px 14px',
-            cursor: 'pointer',
-            fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600,
-            transition: 'transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
-            boxShadow: '0 10px 28px rgba(31,58,42,0.30), inset 0 1px 0 rgba(255,255,255,0.10)',
-            letterSpacing: '-0.01em',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 14px 36px rgba(31,58,42,0.36), inset 0 1px 0 rgba(255,255,255,0.10)' }}
-          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(31,58,42,0.30), inset 0 1px 0 rgba(255,255,255,0.10)' }}
-          onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
-          onMouseUp={e => { e.currentTarget.style.transform = 'translateY(-1px)' }}
-          onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
-          onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
-        >
-          {/* Orange icon circle */}
-          <span style={{
-            width: 32, height: 32, borderRadius: 16, flexShrink: 0,
-            background: '#D9824D',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(217,130,77,0.40)',
-          }}>
-            <TrophyIcon size={16} color="#FAF6EA" />
-          </span>
-          <span>Start a Match</span>
-        </button>
-
       </div>
 
       {showRanks && <RanksModal points={points} isMobile={isMobile} onClose={() => setShowRanks(false)} onNavigate={onNavigate} />}
