@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchFriendships } from '../lib/friends'
 import { fetchFeedPosts, toggleLike, deletePost, toggleRepost } from '../lib/posts'
@@ -66,6 +66,9 @@ function FeedSkeleton({ isMobile }: { isMobile: boolean }) {
 export default function Feed({ userId, isMobile = false, onViewProfile }: Props) {
   const qc = useQueryClient()
   const [active, setActive] = useState<Post | null>(null)
+  const [burstId, setBurstId]   = useState<string | null>(null)
+  const [poppingId, setPoppingId] = useState<string | null>(null)
+  const tapRef = useRef<{ id: string; time: number; timer: ReturnType<typeof setTimeout> } | null>(null)
   const feedKey = ['feed', userId]
 
   const { data: posts = [], isLoading } = useQuery({
@@ -85,9 +88,25 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
 
   const handleLike = async (post: Post) => {
     const was = post.likedByMe
+    if (!was) { setPoppingId(post.id); setTimeout(() => setPoppingId(null), 420) }
     patch(post.id, p => ({ ...p, likedByMe: !was, likeCount: p.likeCount + (was ? -1 : 1) }))
     try { await toggleLike(post.id, post.userId, userId, was) }
     catch { patch(post.id, p => ({ ...p, likedByMe: was, likeCount: p.likeCount + (was ? 1 : -1) })) }
+  }
+
+  // Distinguish single tap (open) from double tap (like + heart burst).
+  const onMediaTap = (post: Post) => {
+    const now = Date.now()
+    if (tapRef.current && tapRef.current.id === post.id && now - tapRef.current.time < 280) {
+      clearTimeout(tapRef.current.timer)
+      tapRef.current = null
+      if (!post.likedByMe) handleLike(post)
+      setBurstId(post.id)
+      setTimeout(() => setBurstId(null), 700)
+    } else {
+      const timer = setTimeout(() => { tapRef.current = null; setActive(post) }, 280)
+      tapRef.current = { id: post.id, time: now, timer }
+    }
   }
 
   const handleRepost = async (post: Post) => {
@@ -133,17 +152,24 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
             </div>
           </div>
 
-          {/* Media — photo or round recap */}
-          <button onClick={() => setActive(post)} style={{ display: 'block', width: '100%', padding: 0, border: 'none', background: post.kind === 'round' ? 'none' : '#000', cursor: 'pointer' }}>
+          {/* Media — photo or round recap (single tap opens, double tap likes) */}
+          <button onClick={() => onMediaTap(post)} style={{ position: 'relative', display: 'block', width: '100%', padding: 0, border: 'none', background: post.kind === 'round' ? 'none' : '#000', cursor: 'pointer' }}>
             {post.kind === 'round' && post.meta
               ? <RecapCard meta={post.meta} variant="feed" />
               : <img src={post.imageUrl ?? ''} alt="" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', maxHeight: isMobile ? 440 : 520, objectFit: 'cover' }} />}
+            {burstId === post.id && (
+              <div style={{ position: 'absolute', top: '50%', left: '50%', pointerEvents: 'none', animation: 'heartBurst 0.7s ease-out forwards', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))' }}>
+                <HeartIcon size={96} color="#FAF6EA" filled />
+              </div>
+            )}
           </button>
 
           {/* Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 18, padding: '11px 14px 4px' }}>
             <button onClick={() => handleLike(post)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              <HeartIcon size={23} color={post.likedByMe ? '#D9824D' : '#1F1D17'} filled={post.likedByMe} />
+              <span style={{ display: 'inline-flex', animation: poppingId === post.id ? 'likePop 0.42s ease' : undefined }}>
+                <HeartIcon size={23} color={post.likedByMe ? '#D9824D' : '#1F1D17'} filled={post.likedByMe} />
+              </span>
               <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17' }}>{post.likeCount}</span>
             </button>
             <button onClick={() => setActive(post)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
