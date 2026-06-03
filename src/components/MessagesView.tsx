@@ -12,6 +12,7 @@ import Portal from './Portal'
 import Skeleton from './Skeleton'
 import Avatar from './Avatar'
 import EmptyState from './EmptyState'
+import Button from './Button'
 import { tapHaptic } from '../lib/native'
 import { timeAgo, displayName } from '../lib/format'
 import { useEdgeSwipeBack, useSwipeDownDismiss } from '../hooks/useGestures'
@@ -403,7 +404,7 @@ export default function MessagesView({ userId, isMobile = false, startUserId = n
           icon={<ChatIcon size={24} color="#8B8272" />}
           title="No messages yet"
           subtitle="Start a conversation with a friend or any player."
-          action={<button onClick={() => setShowNew(true)} style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 22px', fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>Start a chat</button>}
+          action={<Button onClick={() => setShowNew(true)}>Start a chat</Button>}
         />
       ) : (
         <div style={{ background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 18, overflow: 'hidden' }}>
