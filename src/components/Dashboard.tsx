@@ -8,6 +8,7 @@ import { ShieldIcon, UsersIcon, ScorecardIcon, MedalIcon, CloseIcon, ChevronRigh
 import Feed from './Feed'
 import Portal from './Portal'
 import RankUpMoment from './RankUpMoment'
+import DialRing from './DialRing'
 import { card } from '../lib/surfaces'
 
 gsap.registerPlugin(useGSAP)
@@ -160,7 +161,6 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
   const [showRanks, setShowRanks] = useState(false)
   const [rankUp, setRankUp]       = useState<RankTier | null>(null)
   const pointsRef = useRef<HTMLDivElement>(null)
-  const barRef    = useRef<HTMLDivElement>(null)
 
   useGSAP(() => {
     const mm = gsap.matchMedia()
@@ -195,11 +195,9 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
         const o = { v: 0 }
         gsap.to(o, { v: points, duration: 1.1, ease: 'power2.out', delay: 0.2, onUpdate: () => { if (pointsRef.current) pointsRef.current.textContent = Math.round(o.v).toLocaleString() } })
       }
-      if (barRef.current) gsap.fromTo(barRef.current, { width: '0%' }, { width: `${pct}%`, duration: 1.2, ease: 'power3.out', delay: 0.3 })
     })
     mm.add('(prefers-reduced-motion: reduce)', () => {
       if (pointsRef.current) pointsRef.current.textContent = points.toLocaleString()
-      if (barRef.current) barRef.current.style.width = `${pct}%`
     })
     return () => mm.revert()
   }, { dependencies: [points, pct] })
@@ -268,19 +266,21 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
         onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 18 }}>
-          <div style={{
-            width: 46, height: 46, borderRadius: 23,
-            background: '#2A4D39', border: '2px solid rgba(250,246,234,0.14)',
-            overflow: 'hidden', flexShrink: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            {profile?.avatarUrl
-              ? <img src={profile.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 700, fontSize: 19, color: '#D9824D' }}>
-                  {(profile?.firstName?.[0] ?? profile?.username?.[0] ?? '?').toUpperCase()}
-                </span>
-            }
-          </div>
+          <DialRing progress={nextTier ? progress : 1} size={68} stroke={3.5} color={nextTier ? rank.color : '#D9824D'} trackColor="rgba(250,246,234,0.16)">
+            <div style={{
+              width: 46, height: 46, borderRadius: 23,
+              background: '#2A4D39', border: '2px solid rgba(250,246,234,0.14)',
+              overflow: 'hidden', flexShrink: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              {profile?.avatarUrl
+                ? <img src={profile.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 700, fontSize: 19, color: '#D9824D' }}>
+                    {(profile?.firstName?.[0] ?? profile?.username?.[0] ?? '?').toUpperCase()}
+                  </span>
+              }
+            </div>
+          </DialRing>
           <div style={{ flex: 1 }}>
             <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 16, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
               {profile?.firstName || (profile?.username ? `@${profile.username}` : 'Golfer')}
@@ -302,13 +302,6 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
         </div>
 
         <div>
-          <div style={{ height: 5, background: 'rgba(250,246,234,0.10)', borderRadius: 3, overflow: 'hidden', marginBottom: 7 }}>
-            <div ref={barRef} style={{
-              height: '100%', borderRadius: 3,
-              background: nextTier ? rank.color : '#D9824D',
-              width: `${pct}%`,
-            }} />
-          </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, color: 'rgba(250,246,234,0.32)', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
               {rank.name}
