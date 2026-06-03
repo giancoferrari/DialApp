@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
@@ -165,6 +165,14 @@ function AppShell() {
   const contentRef = useRef<HTMLDivElement>(null)
   const prevView   = useRef<View>(view)
   const navStack   = useRef<{ view: View; profileUserId: string | null; messageUserId: string | null }[]>([])
+  const scrollPos     = useRef<Record<string, number>>({})  // saved scroll per view
+  const pendingScroll = useRef(0)                            // scroll to restore after the next view change
+
+  // Restore the saved scroll for the view we just switched to (before paint).
+  useLayoutEffect(() => {
+    if (isMobile && contentRef.current) contentRef.current.scrollTop = pendingScroll.current
+    else if (!isMobile) window.scrollTo(0, pendingScroll.current)
+  }, [view, isMobile])
 
   const refreshNotifCount = useCallback(async () => {
     if (!user) return
@@ -273,22 +281,22 @@ function AppShell() {
   }
 
   const applyView = (v: View) => {
-    const resetScroll = () => {
-      if (contentRef.current) contentRef.current.scrollTop = 0
-      else window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
-    }
     if (pageRef.current) {
       gsap.to(pageRef.current, {
         opacity: 0, scale: 0.97, y: -6, duration: 0.16, ease: 'power2.in',
-        onComplete: () => { setView(v); resetScroll() },
+        onComplete: () => { setView(v) },
       })
     } else {
-      setView(v); resetScroll()
+      setView(v)
     }
   }
 
   const handleSetView = (v: View, opts?: { profileUserId?: string; force?: boolean; keepMessageTarget?: boolean; isBack?: boolean }) => {
     if (v === view && v !== 'profile' && v !== 'messages' && !opts?.force) return
+    // Save the outgoing view's scroll; restore the destination's (0 for a fresh drill-in).
+    scrollPos.current[view] = isMobile ? (contentRef.current?.scrollTop ?? 0) : window.scrollY
+    const fresh = !!opts?.profileUserId || !!opts?.keepMessageTarget
+    pendingScroll.current = fresh ? 0 : (scrollPos.current[v] ?? 0)
     // Record where we came from so a back arrow can return there.
     if (!opts?.isBack) {
       navStack.current = [...navStack.current, { view, profileUserId, messageUserId }].slice(-25)
@@ -301,10 +309,12 @@ function AppShell() {
   }
 
   const goBack = () => {
+    scrollPos.current[view] = isMobile ? (contentRef.current?.scrollTop ?? 0) : window.scrollY
     const stack = navStack.current
-    if (!stack.length) { setProfileUserId(null); setMessageUserId(null); applyView('dashboard'); return }
+    if (!stack.length) { pendingScroll.current = scrollPos.current['dashboard'] ?? 0; setProfileUserId(null); setMessageUserId(null); applyView('dashboard'); return }
     const prev = stack[stack.length - 1]
     navStack.current = stack.slice(0, -1)
+    pendingScroll.current = scrollPos.current[prev.view] ?? 0
     setProfileUserId(prev.profileUserId)
     setMessageUserId(prev.messageUserId)
     applyView(prev.view)
