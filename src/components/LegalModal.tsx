@@ -9,7 +9,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <div style={{ marginBottom: 28 }}>
       <h2 style={{
-        fontFamily: "'Bricolage Grotesque', sans-serif",
+        fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
         fontSize: 18, fontWeight: 700, color: '#1F1D17',
         letterSpacing: '-0.02em', marginBottom: 10, marginTop: 0,
       }}>
@@ -265,7 +265,7 @@ export default function LegalModal({ doc, onClose }: Props) {
           padding: '22px 24px 18px', borderBottom: '1px solid #E0D8C5', flexShrink: 0,
         }}>
           <h1 style={{
-            fontFamily: "'Bricolage Grotesque', sans-serif",
+            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
             fontSize: 24, fontWeight: 700, color: '#1F1D17',
             letterSpacing: '-0.03em', margin: 0,
           }}>

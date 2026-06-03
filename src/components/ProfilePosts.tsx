@@ -13,6 +13,7 @@ import Skeleton from './Skeleton'
 import { useToast } from './Toast'
 import { useSwipeDownDismiss } from '../hooks/useGestures'
 import { tapHaptic } from '../lib/native'
+import { timeAgo } from '../lib/format'
 
 // Small drag-to-dismiss grabber shown at the top of mobile bottom sheets.
 function Grabber() {
@@ -55,23 +56,23 @@ function ReportSheet({ postId, meId, isMobile, onClose }: {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 240, background: 'rgba(31,29,23,0.55)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
         <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, maxHeight: isMobile ? '80vh' : '70vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 18px 12px', borderBottom: '1px solid #E0D8C5' }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 17, fontWeight: 700, color: '#1F1D17' }}>{done ? 'Report received' : 'Report post'}</div>
+            <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 17, fontWeight: 700, color: '#1F1D17' }}>{done ? 'Report received' : 'Report post'}</div>
             <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <CloseIcon size={13} color="#4A4235" />
             </button>
           </div>
           {done ? (
             <div style={{ padding: '28px 24px 32px', textAlign: 'center' }}>
-              <div style={{ fontSize: 15, color: '#1F1D17', fontWeight: 600, marginBottom: 8, fontFamily: "'DM Sans', sans-serif" }}>Thanks for letting us know.</div>
+              <div style={{ fontSize: 15, color: '#1F1D17', fontWeight: 600, marginBottom: 8, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>Thanks for letting us know.</div>
               <div style={{ fontSize: 13.5, color: '#6B5F4E', lineHeight: 1.5, marginBottom: 20 }}>Our team will review this post against our Community Guidelines. We won't notify the person you reported.</div>
-              <button onClick={onClose} style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '11px 26px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Done</button>
+              <button onClick={onClose} style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '11px 26px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>Done</button>
             </div>
           ) : (
             <div style={{ flex: 1, overflowY: 'auto', padding: '8px 10px 16px' }}>
               <div style={{ fontSize: 12.5, color: '#6B5F4E', padding: '6px 12px 10px' }}>Why are you reporting this post?</div>
               {REPORT_REASONS.map(r => (
                 <button key={r} onClick={() => submit(r)} disabled={busy}
-                  style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', borderRadius: 10, padding: '13px 12px', cursor: busy ? 'default' : 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, color: '#1F1D17', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                  style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', borderRadius: 10, padding: '13px 12px', cursor: busy ? 'default' : 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14.5, color: '#1F1D17', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                   onMouseEnter={e => { if (!busy) e.currentTarget.style.background = '#EDE6D6' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
                   {r}<span style={{ color: '#8B8272', fontSize: 16 }}>›</span>
@@ -93,17 +94,6 @@ interface Props {
   authorProfile?: PublicProfile | null   // used to label posts in the detail view
 }
 
-function timeAgo(ts: string): string {
-  const diff = Date.now() - new Date(ts).getTime()
-  const m = Math.floor(diff / 60000)
-  if (m < 1)  return 'just now'
-  if (m < 60) return `${m}m ago`
-  const h = Math.floor(m / 60)
-  if (h < 24) return `${h}h ago`
-  const d = Math.floor(h / 24)
-  if (d < 7)  return `${d}d ago`
-  return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-}
 
 // ── Composer ─────────────────────────────────────────────────────────────
 export function Composer({ meId, isMobile, onClose, onCreated }: {
@@ -156,11 +146,11 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
   }
 
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 210, background: 'rgba(31,29,23,0.55)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)', ...(isMobile ? dragStyle : {}) }}>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 210, background: 'rgba(31,29,23,0.55)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'fadeIn 0.2s ease' }}>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)', animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)', ...(isMobile ? dragStyle : {}) }}>
         {isMobile && <div {...dragHandlers}><Grabber /></div>}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 20px 14px', borderBottom: '1px solid #E0D8C5' }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>New post</div>
+          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 18, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>New post</div>
           <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             <CloseIcon size={14} color="#4A4235" />
           </button>
@@ -175,14 +165,14 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
               ? <img src={preview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               : <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, color: '#6B5F4E' }}>
                   <CameraIcon size={30} color="#8B8272" />
-                  <span style={{ fontSize: 13.5, fontWeight: 500, fontFamily: "'DM Sans', sans-serif" }}>Choose a photo</span>
+                  <span style={{ fontSize: 13.5, fontWeight: 500, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>Choose a photo</span>
                 </div>}
           </button>
           <textarea
             value={caption} onChange={e => setCaption(e.target.value)}
             placeholder="Write a caption… (e.g. New personal best at Santa Maria 🏌️)"
             rows={3}
-            style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 12, padding: '11px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', resize: 'none', fontFamily: "'DM Sans', sans-serif", lineHeight: 1.5, marginBottom: 14 }}
+            style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 12, padding: '11px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', resize: 'none', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", lineHeight: 1.5, marginBottom: 14 }}
             onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
             onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
           />
@@ -198,9 +188,9 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
                   const nm = f.username ? `@${f.username}` : (f.firstName ?? 'Golfer')
                   return (
                     <button key={f.userId} onClick={() => toggleTag(f.userId)}
-                      style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0, background: sel ? '#1F3A2A' : '#FAF6EA', color: sel ? '#FAF6EA' : '#1F1D17', border: `1px solid ${sel ? '#1F3A2A' : '#E0D8C5'}`, borderRadius: 999, padding: '6px 12px 6px 6px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, fontWeight: 500, whiteSpace: 'nowrap' }}>
+                      style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0, background: sel ? '#1F3A2A' : '#FAF6EA', color: sel ? '#FAF6EA' : '#1F1D17', border: `1px solid ${sel ? '#1F3A2A' : '#E0D8C5'}`, borderRadius: 999, padding: '6px 12px 6px 6px', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 12.5, fontWeight: 500, whiteSpace: 'nowrap' }}>
                       <span style={{ width: 22, height: 22, borderRadius: 11, overflow: 'hidden', background: sel ? '#2A4D39' : '#F0EBDD', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        {f.avatarUrl ? <img src={f.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 10, color: '#D9824D' }}>{nm[0]?.replace('@', '').toUpperCase()}</span>}
+                        {f.avatarUrl ? <img src={f.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 700, fontSize: 10, color: '#D9824D' }}>{nm[0]?.replace('@', '').toUpperCase()}</span>}
                       </span>
                       {nm}
                     </button>
@@ -213,7 +203,7 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
           {error && <div style={{ background: 'rgba(217,130,77,0.10)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#D9824D', marginBottom: 14 }}>{error}</div>}
           <button
             onClick={share} disabled={busy}
-            style={{ width: '100%', background: busy ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '14px', fontSize: 15, fontWeight: 600, cursor: busy ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+            style={{ width: '100%', background: busy ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '14px', fontSize: 15, fontWeight: 600, cursor: busy ? 'not-allowed' : 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
           >
             {busy ? 'Sharing…' : file ? 'Share post' : 'Choose a photo'}
           </button>
@@ -274,11 +264,11 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
   const authorName = authorProfile?.username ? `@${authorProfile.username}` : (authorProfile?.firstName ?? 'Golfer')
 
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 210, background: 'rgba(31,29,23,0.6)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, maxHeight: isMobile ? '94vh' : '90vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)', ...(isMobile ? dragStyle : {}) }}>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 210, background: 'rgba(31,29,23,0.6)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'fadeIn 0.2s ease' }}>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, maxHeight: isMobile ? '94vh' : '90vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)', animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)', ...(isMobile ? dragStyle : {}) }}>
         {isMobile && <div {...dragHandlers}><Grabber /></div>}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid #E0D8C5', flexShrink: 0 }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>{authorName}</div>
+          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>{authorName}</div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <div style={{ position: 'relative' }}>
               <button onClick={() => setMenuOpen(v => !v)} aria-label="More options" style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
@@ -289,13 +279,13 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
                   <div onClick={() => setMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 5 }} />
                   <div style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 14, padding: 6, boxShadow: '0 12px 32px rgba(31,58,42,0.18)', minWidth: 170, zIndex: 10 }}>
                     {canDelete && onDelete && (
-                      <button onClick={() => { setMenuOpen(false); onDelete() }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', borderRadius: 10, padding: '10px 12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 600, color: '#C0392B' }}
+                      <button onClick={() => { setMenuOpen(false); onDelete() }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', borderRadius: 10, padding: '10px 12px', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 13.5, fontWeight: 600, color: '#C0392B' }}
                         onMouseEnter={e => { e.currentTarget.style.background = '#F6E9E5' }} onMouseLeave={e => { e.currentTarget.style.background = 'none' }}>
                         Delete post
                       </button>
                     )}
                     {!isMine && (
-                      <button onClick={() => { setMenuOpen(false); setReporting(true) }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', borderRadius: 10, padding: '10px 12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500, color: '#1F1D17' }}
+                      <button onClick={() => { setMenuOpen(false); setReporting(true) }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', borderRadius: 10, padding: '10px 12px', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 13.5, fontWeight: 500, color: '#1F1D17' }}
                         onMouseEnter={e => { e.currentTarget.style.background = '#F0EBDD' }} onMouseLeave={e => { e.currentTarget.style.background = 'none' }}>
                         Report post
                       </button>
@@ -319,16 +309,16 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
               <button onClick={onLike} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                 <HeartIcon size={24} color={liked ? '#D9824D' : '#1F1D17'} filled={liked} />
-                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17' }}>{likeCount}</span>
+                <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17' }}>{likeCount}</span>
               </button>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <ChatIcon size={22} color="#1F1D17" />
-                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17' }}>{comments.length}</span>
+                <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17' }}>{comments.length}</span>
               </div>
             </div>
 
             {post.caption && (
-              <div style={{ fontSize: 14, color: '#1F1D17', lineHeight: 1.5, marginBottom: 6, fontFamily: "'DM Sans', sans-serif" }}>
+              <div style={{ fontSize: 14, color: '#1F1D17', lineHeight: 1.5, marginBottom: 6, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
                 <strong style={{ fontWeight: 700 }}>{authorName}</strong> {post.caption}
               </div>
             )}
@@ -338,11 +328,11 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
               {comments.map(c => {
                 const cn = c.author?.username ? `@${c.author.username}` : (c.author?.firstName ?? 'Golfer')
                 const mine = c.userId === meId
-                const linkBtn: React.CSSProperties = { background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 11.5, fontWeight: 600, color: '#6B5F4E', fontFamily: "'DM Sans', sans-serif" }
+                const linkBtn: React.CSSProperties = { background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 11.5, fontWeight: 600, color: '#6B5F4E', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }
                 return (
                   <div key={c.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13.5, color: '#1F1D17', lineHeight: 1.45, fontFamily: "'DM Sans', sans-serif" }}>
+                      <div style={{ fontSize: 13.5, color: '#1F1D17', lineHeight: 1.45, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
                         <strong style={{ fontWeight: 700 }}>{cn}</strong> {c.body}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 4 }}>
@@ -373,11 +363,11 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
             value={text} onChange={e => setText(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') submit() }}
             placeholder="Add a comment…"
-            style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 20, padding: '10px 16px', fontSize: 16, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif" }}
+            style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 20, padding: '10px 16px', fontSize: 16, color: '#1F1D17', outline: 'none', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
             onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
             onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
           />
-          <button onClick={submit} disabled={!text.trim() || busy} style={{ background: 'none', border: 'none', cursor: text.trim() ? 'pointer' : 'default', color: text.trim() ? '#1F3A2A' : '#C9C0A8', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 700, padding: '0 8px' }}>
+          <button onClick={submit} disabled={!text.trim() || busy} style={{ background: 'none', border: 'none', cursor: text.trim() ? 'pointer' : 'default', color: text.trim() ? '#1F3A2A' : '#C9C0A8', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, fontWeight: 700, padding: '0 8px' }}>
             Post
           </button>
         </div>
@@ -417,7 +407,7 @@ export default function ProfilePosts({ targetUserId, meId, isMobile = false, can
           Posts{posts.length > 0 ? ` · ${posts.length}` : ''}
         </div>
         {canPost && (
-          <button onClick={() => setComposer(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '7px 14px 7px 12px', fontSize: 12.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+          <button onClick={() => setComposer(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '7px 14px 7px 12px', fontSize: 12.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
             <span style={{ width: 18, height: 18, borderRadius: 9, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
               <PlusIcon size={12} color="#FAF6EA" />
             </span>
@@ -435,11 +425,11 @@ export default function ProfilePosts({ targetUserId, meId, isMobile = false, can
           <div style={{ width: 48, height: 48, borderRadius: 24, background: '#F0EBDD', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
             <CameraIcon size={22} color="#8B8272" />
           </div>
-          <div style={{ fontSize: 14, color: '#6B5F4E', marginBottom: canPost ? 16 : 0, fontFamily: "'DM Sans', sans-serif" }}>
+          <div style={{ fontSize: 14, color: '#6B5F4E', marginBottom: canPost ? 16 : 0, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
             {canPost ? 'Share your first round, your bag, or a great shot.' : 'No posts yet.'}
           </div>
           {canPost && (
-            <button onClick={() => setComposer(true)} style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 22px', fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Create a post</button>
+            <button onClick={() => setComposer(true)} style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 22px', fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>Create a post</button>
           )}
         </div>
       ) : (

@@ -7,6 +7,8 @@ import {
 } from '../lib/friends'
 import { CloseIcon, PersonIcon, MedalIcon, ChevronRightIcon } from './Icons'
 import Skeleton from './Skeleton'
+import Avatar from './Avatar'
+import EmptyState from './EmptyState'
 import { useToast } from './Toast'
 
 function profileLabel(profile?: PublicProfile | null): { primary: string; secondary: string | null } {
@@ -25,17 +27,6 @@ interface Props {
   onNavigate?: (v: View) => void
 }
 
-function Avatar({ profile, size = 44 }: { profile?: PublicProfile; size?: number }) {
-  const initial = profile?.username?.[0]?.toUpperCase() ?? profile?.firstName?.[0]?.toUpperCase() ?? '?'
-  return (
-    <div style={{ width: size, height: size, borderRadius: size / 2, background: '#1F3A2A', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      {profile?.avatarUrl
-        ? <img src={profile.avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: size * 0.38, color: '#D9824D' }}>{initial}</span>
-      }
-    </div>
-  )
-}
 
 export default function FriendsView({ userId, isMobile = false, onViewProfile, onNavigate }: Props) {
   const qc = useQueryClient()
@@ -133,7 +124,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
   const btnSmall = (bg: string, color: string): React.CSSProperties => ({
     background: bg, color, border: 'none', borderRadius: 999,
     padding: '7px 14px', fontSize: 12.5, fontWeight: 500,
-    cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+    cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
     transition: 'all 0.12s cubic-bezier(0.22, 1, 0.36, 1)', whiteSpace: 'nowrap',
   })
 
@@ -145,7 +136,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 8 }}>
           Social
         </div>
-        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: 0, lineHeight: 1 }}>
+        <h1 style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: 0, lineHeight: 1 }}>
           Friends
         </h1>
       </div>
@@ -164,7 +155,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
             <MedalIcon size={20} color="#D9824D" />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em' }}>Leaderboard</div>
+            <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 16, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em' }}>Leaderboard</div>
             <div style={{ fontSize: 12.5, color: 'rgba(250,246,234,0.55)', marginTop: 2 }}>See how you rank against your friends</div>
           </div>
           <ChevronRightIcon size={18} color="rgba(250,246,234,0.5)" />
@@ -190,7 +181,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
             borderRadius: 14, padding: '13px 16px 13px 44px',
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.65)',
             fontSize: 14, color: '#1F1D17', outline: 'none',
-            fontFamily: "'DM Sans', sans-serif",
+            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
             transition: 'border-color 0.15s',
           }}
           onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
@@ -212,7 +203,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
                 <div key={p.userId} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: '1px solid #F0EBDD' }}>
                   <Avatar profile={p} size={40} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
+                    <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
                       {lbl.primary}
                     </div>
                     {lbl.secondary && (
@@ -257,7 +248,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
                 <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', borderTop: i === 0 ? 'none' : '1px solid #F0EBDD' }}>
                   <Avatar profile={profile} size={44} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
+                    <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
                       {profileLabel(profile).primary}
                     </div>
                     {profileLabel(profile).secondary && (
@@ -293,7 +284,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
                 <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', borderTop: i === 0 ? 'none' : '1px solid #F0EBDD' }}>
                   <Avatar profile={profile} size={44} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
+                    <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
                       {profileLabel(profile).primary}
                     </div>
                     {profileLabel(profile).secondary && (
@@ -327,10 +318,11 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
             ))}
           </div>
         ) : myFriendships.length === 0 ? (
-          <div style={{ ...card, padding: '40px 24px', textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, color: '#8B8272', marginBottom: 8 }}>No friends yet</div>
-            <div style={{ fontSize: 13, color: '#6B5F4E' }}>Search by username to add your playing partners.</div>
-          </div>
+          <EmptyState
+            icon={<PersonIcon size={24} color="#8B8272" />}
+            title="No friends yet"
+            subtitle="Search by username to add your playing partners."
+          />
         ) : (
           <div style={card}>
             {myFriendships.map((f, i) => {
@@ -341,7 +333,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
                   <div onClick={() => profile && onViewProfile?.(friendId)} style={{ cursor: profile ? 'pointer' : 'default', display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
                     <Avatar profile={profile} size={44} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
+                      <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
                         {profileLabel(profile).primary}
                       </div>
                       {profileLabel(profile).secondary && (

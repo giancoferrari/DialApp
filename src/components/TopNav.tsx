@@ -102,7 +102,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                       background: active ? '#1F3A2A' : 'transparent',
                       color: active ? '#FAF6EA' : '#1F1D17',
                       padding: '9px 18px', borderRadius: 999,
-                      fontFamily: "'DM Sans', sans-serif",
+                      fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                       fontSize: 13.5, fontWeight: 500,
                       letterSpacing: '-0.005em',
                       transition: 'all 0.15s cubic-bezier(0.22, 1, 0.36, 1)',
@@ -151,7 +151,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                   background: '#D9824D', border: '1.5px solid rgba(237,232,212,0.92)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 9, fontWeight: 700, color: '#FAF6EA',
-                  fontFamily: "'DM Sans', sans-serif", padding: '0 3px',
+                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", padding: '0 3px',
                 }}>
                   {msgUnread > 9 ? '9+' : msgUnread}
                 </div>
@@ -187,7 +187,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                 background: '#D9824D', border: '1.5px solid rgba(237,232,212,0.92)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 9, fontWeight: 700, color: '#FAF6EA',
-                fontFamily: "'DM Sans', sans-serif", padding: '0 3px',
+                fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", padding: '0 3px',
               }}>
                 {notifCount > 9 ? '9+' : notifCount}
               </div>
@@ -205,7 +205,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                 background: createOpen ? '#16271D' : '#1F3A2A', color: '#FAF6EA', border: 'none',
                 borderRadius: 999,
                 padding: isMobile ? '9px 10px 9px 16px' : '10px 18px 10px 20px',
-                fontFamily: "'DM Sans', sans-serif",
+                fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                 fontSize: isMobile ? 13 : 13.5, fontWeight: 500,
                 cursor: 'pointer', letterSpacing: '-0.005em',
                 transition: 'all 0.15s cubic-bezier(0.22, 1, 0.36, 1)',
@@ -267,7 +267,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                       <item.Icon size={17} color={item.accent ? '#D9824D' : '#1F3A2A'} />
                     </span>
                     <div>
-                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, color: '#1F1D17', letterSpacing: '-0.01em' }}>{item.title}</div>
+                      <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, fontWeight: 600, color: '#1F1D17', letterSpacing: '-0.01em' }}>{item.title}</div>
                       <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 1 }}>{item.sub}</div>
                     </div>
                   </button>
@@ -284,7 +284,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                 width: 36, height: 36, borderRadius: 18,
                 background: '#1F3A2A', color: '#D9824D',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontFamily: "'Bricolage Grotesque', sans-serif",
+                fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                 fontWeight: 700, fontSize: 14,
                 cursor: 'pointer', flexShrink: 0,
                 letterSpacing: '-0.02em',
@@ -325,7 +325,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                     width: '100%', background: 'transparent', border: 'none',
                     borderRadius: 10, padding: '10px 14px',
                     textAlign: 'left', cursor: 'pointer',
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                     fontSize: 13.5, fontWeight: 500, color: '#1F1D17',
                     transition: 'background 0.12s',
                     display: 'flex', alignItems: 'center', gap: 10,
@@ -344,7 +344,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                     width: '100%', background: 'transparent', border: 'none',
                     borderRadius: 10, padding: '10px 14px',
                     textAlign: 'left', cursor: 'pointer',
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                     fontSize: 13.5, fontWeight: 500, color: '#1F1D17',
                     transition: 'background 0.12s',
                     display: 'flex', alignItems: 'center', gap: 10,
@@ -365,7 +365,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                     width: '100%', background: 'transparent', border: 'none',
                     borderRadius: 10, padding: '10px 14px',
                     textAlign: 'left', cursor: 'pointer',
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                     fontSize: 13.5, fontWeight: 500, color: '#D9824D',
                     transition: 'background 0.12s',
                   }}
@@ -430,7 +430,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                         background: '#D9824D', border: '1.5px solid rgba(251,248,238,0.96)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: 8.5, fontWeight: 700, color: '#FAF6EA',
-                        fontFamily: "'DM Sans', sans-serif", padding: '0 3px',
+                        fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", padding: '0 3px',
                       }}>
                         {msgUnread > 9 ? '9+' : msgUnread}
                       </div>
@@ -438,7 +438,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                   </div>
                   <span style={{
                     fontSize: 10.5, fontWeight: active ? 700 : 400,
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                     letterSpacing: active ? '-0.02em' : '0.01em',
                     color: active ? '#1F1D17' : '#4A4235',
                     transition: 'color 0.2s ease, font-weight 0.2s ease',

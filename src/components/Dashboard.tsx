@@ -42,7 +42,7 @@ function RanksModal({ points, isMobile, onClose, onNavigate }: { points: number;
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 20px 14px', borderBottom: '1px solid #E0D8C5', flexShrink: 0 }}>
             <div>
               <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#D9824D', textTransform: 'uppercase' }}>Ranked play</div>
-              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>Ranks &amp; points</div>
+              <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>Ranks &amp; points</div>
             </div>
             <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <CloseIcon size={14} color="#4A4235" />
@@ -55,7 +55,7 @@ function RanksModal({ points, isMobile, onClose, onNavigate }: { points: number;
             <div style={{ display: 'flex', gap: 10, marginBottom: 24 }}>
               {perMatch.map(p => (
                 <div key={p.label} style={{ flex: 1, textAlign: 'center', background: p.bg, border: '1px solid rgba(255,255,255,0.5)', borderRadius: 16, padding: '14px 8px' }}>
-                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: p.color, letterSpacing: '-0.03em', lineHeight: 1 }}>{p.value}</div>
+                  <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 24, fontWeight: 700, color: p.color, letterSpacing: '-0.03em', lineHeight: 1 }}>{p.value}</div>
                   <div style={{ fontSize: 10.5, color: p.color, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 6, opacity: 0.85 }}>{p.label}</div>
                 </div>
               ))}
@@ -80,7 +80,7 @@ function RanksModal({ points, isMobile, onClose, onNavigate }: { points: number;
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15.5, fontWeight: 700, letterSpacing: '-0.01em', color: isCurrent ? '#FAF6EA' : '#1F1D17' }}>{t.name}</span>
+                        <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15.5, fontWeight: 700, letterSpacing: '-0.01em', color: isCurrent ? '#FAF6EA' : '#1F1D17' }}>{t.name}</span>
                         {isCurrent && <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#1F3A2A', background: '#D9824D', borderRadius: 999, padding: '2px 7px' }}>You're here</span>}
                       </div>
                       <div style={{ fontSize: 12, color: isCurrent ? 'rgba(250,246,234,0.6)' : '#6B5F4E', marginTop: 2 }}>
@@ -97,7 +97,7 @@ function RanksModal({ points, isMobile, onClose, onNavigate }: { points: number;
 
             <button
               onClick={() => { onClose(); onNavigate('leaderboard') }}
-              style={{ width: '100%', marginTop: 18, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '13px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}
+              style={{ width: '100%', marginTop: 18, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '13px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", letterSpacing: '-0.01em' }}
             >
               See friends leaderboard
             </button>
@@ -249,7 +249,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
           border: '1px solid rgba(255,255,255,0.55)',
           borderRadius: 999, padding: '6px 14px',
           fontSize: 12, fontWeight: 500, color: '#4A4235',
-          fontFamily: "'DM Sans', sans-serif",
+          fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
           boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
         }}>
           <span style={{ width: 6, height: 6, borderRadius: 3, background: '#D9824D', flexShrink: 0 }} />
@@ -285,25 +285,25 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
           }}>
             {profile?.avatarUrl
               ? <img src={profile.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 19, color: '#D9824D' }}>
+              : <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 700, fontSize: 19, color: '#D9824D' }}>
                   {(profile?.firstName?.[0] ?? profile?.username?.[0] ?? '?').toUpperCase()}
                 </span>
             }
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+            <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 16, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
               {profile?.firstName || (profile?.username ? `@${profile.username}` : 'Golfer')}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4 }}>
               <ShieldIcon size={11} color={rank.color} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: rank.color, fontFamily: "'DM Sans', sans-serif", letterSpacing: '0.05em' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: rank.color, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", letterSpacing: '0.05em' }}>
                 {rank.name.toUpperCase()}
               </span>
               <ChevronRightIcon size={12} color="rgba(250,246,234,0.4)" />
             </div>
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div ref={pointsRef} style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 30, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.045em', lineHeight: 1 }}>
+            <div ref={pointsRef} style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 30, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.045em', lineHeight: 1 }}>
               {points.toLocaleString()}
             </div>
             <div style={{ fontSize: 9.5, color: 'rgba(250,246,234,0.38)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 2 }}>points</div>
@@ -319,16 +319,16 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
             }} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 11, color: 'rgba(250,246,234,0.32)', fontFamily: "'DM Sans', sans-serif" }}>
+            <span style={{ fontSize: 11, color: 'rgba(250,246,234,0.32)', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
               {rank.name}
             </span>
             {nextTier ? (
-              <span style={{ fontSize: 11, color: 'rgba(250,246,234,0.45)', fontFamily: "'DM Sans', sans-serif" }}>
+              <span style={{ fontSize: 11, color: 'rgba(250,246,234,0.45)', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
                 {nextTier.minPoints - points} pts to{' '}
                 <span style={{ color: nextTier.color, fontWeight: 600 }}>{nextTier.name}</span>
               </span>
             ) : (
-              <span style={{ fontSize: 11, color: '#D9824D', fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>Max rank</span>
+              <span style={{ fontSize: 11, color: '#D9824D', fontWeight: 700, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>Max rank</span>
             )}
           </div>
         </div>
@@ -342,7 +342,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
           {lastScore !== null ? (
             <>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 3 }}>
-                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1 }}>
+                <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1 }}>
                   {lastScore}
                 </span>
                 {lastDiff !== null && (
@@ -358,7 +358,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
             </>
           ) : (
             <>
-              <div style={{ fontSize: 22, color: '#8B8272', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700 }}>—</div>
+              <div style={{ fontSize: 22, color: '#8B8272', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 700 }}>—</div>
               <div style={{ fontSize: 9.5, color: '#6B5F4E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Last round</div>
               <div style={{ fontSize: 10.5, color: '#8B8272', marginTop: 2 }}>None yet</div>
             </>
@@ -367,7 +367,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
 
         {/* Handicap */}
         <div style={{ ...glassCard, padding: '15px 10px 13px', textAlign: 'center' }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1 }}>
+          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1 }}>
             {profile?.handicapIndex != null ? profile.handicapIndex.toFixed(1) : '—'}
           </div>
           <div style={{ fontSize: 9.5, color: '#6B5F4E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Handicap</div>
@@ -377,12 +377,12 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
         {/* Record — flex-centered to fix alignment */}
         <div style={{ ...glassCard, padding: '15px 10px 13px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, justifyContent: 'center' }}>
-            <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.03em', lineHeight: 1 }}>
+            <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 20, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.03em', lineHeight: 1 }}>
               {profile?.wins ?? 0}
             </span>
             <span style={{ fontSize: 13, fontWeight: 700, color: '#5C7A4D', lineHeight: 1 }}>W</span>
             <span style={{ fontSize: 8, color: '#8B8272' }}>·</span>
-            <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.03em', lineHeight: 1 }}>
+            <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 20, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.03em', lineHeight: 1 }}>
               {profile?.losses ?? 0}
             </span>
             <span style={{ fontSize: 13, fontWeight: 700, color: '#C0603A', lineHeight: 1 }}>L</span>
@@ -403,7 +403,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
             flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9,
             background: 'linear-gradient(145deg, rgba(35,68,46,1) 0%, rgba(26,50,33,1) 100%)',
             color: '#FAF6EA', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18,
-            padding: '16px 12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+            padding: '16px 12px', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
             fontSize: 14.5, fontWeight: 600, letterSpacing: '-0.01em',
             boxShadow: '0 8px 24px rgba(31,58,42,0.26), inset 0 1px 0 rgba(255,255,255,0.10)',
             transition: 'transform 0.16s ease',
@@ -425,7 +425,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
           style={{
             flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             ...glassCard, border: '1px solid rgba(255,255,255,0.72)',
-            padding: '16px 12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+            padding: '16px 12px', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
             fontSize: 14.5, fontWeight: 600, color: '#1F3A2A', transition: 'transform 0.16s ease',
           }}
           onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
@@ -458,7 +458,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
           <MedalIcon size={24} color="#D9824D" />
         </span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em' }}>Friends leaderboard</div>
+          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 18, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em' }}>Friends leaderboard</div>
           <div style={{ fontSize: 13, color: 'rgba(250,246,234,0.6)', marginTop: 2 }}>See how you rank against your friends</div>
         </div>
         <ChevronRightIcon size={20} color="rgba(250,246,234,0.5)" />

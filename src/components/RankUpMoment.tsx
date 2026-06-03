@@ -20,9 +20,9 @@ export default function RankUpMoment({ tier, onClose }: { tier: RankTier; onClos
             <div style={{ width: 84, height: 84, borderRadius: 42, margin: '0 auto 18px', background: tier.color + '22', border: `2px solid ${tier.color}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 44px ${tier.color}55` }}>
               <ShieldIcon size={40} color={tier.color} />
             </div>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: 'rgba(250,246,234,0.6)', marginBottom: 4 }}>You reached</div>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 32, fontWeight: 800, color: tier.color, letterSpacing: '-0.03em', marginBottom: 22 }}>{tier.name}</div>
-            <button onClick={onClose} style={{ background: tier.color, color: '#15261B', border: 'none', borderRadius: 999, padding: '11px 30px', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Let's go</button>
+            <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, color: 'rgba(250,246,234,0.6)', marginBottom: 4 }}>You reached</div>
+            <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 32, fontWeight: 800, color: tier.color, letterSpacing: '-0.03em', marginBottom: 22 }}>{tier.name}</div>
+            <button onClick={onClose} style={{ background: tier.color, color: '#15261B', border: 'none', borderRadius: 999, padding: '11px 30px', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>Let's go</button>
           </div>
         </div>
       </div>

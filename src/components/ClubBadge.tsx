@@ -25,7 +25,7 @@ export default function ClubBadge({ abbr, size = 44, variant = 'default' }: Prop
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontFamily: "'Bricolage Grotesque', sans-serif",
+        fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
         fontWeight: 700,
         fontSize: abbr.length > 2 ? size * 0.30 : size * 0.36,
         letterSpacing: '-0.03em',

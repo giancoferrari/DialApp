@@ -76,7 +76,7 @@ function SetNewPasswordModal() {
   const inputStyle: React.CSSProperties = {
     width: '100%', background: '#FAF6EA', border: '1px solid #E0D8C5',
     borderRadius: 14, padding: '13px 16px', fontSize: 15, color: '#1F1D17',
-    fontFamily: "'DM Sans', sans-serif", outline: 'none',
+    fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", outline: 'none',
     transition: 'border-color 0.15s', boxSizing: 'border-box',
   }
 
@@ -86,20 +86,20 @@ function SetNewPasswordModal() {
         <DialWordmark size={28} />
         {done ? (
           <div style={{ marginTop: 28, textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: '#1F1D17', marginBottom: 10 }}>
+            <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 24, fontWeight: 700, color: '#1F1D17', marginBottom: 10 }}>
               Password updated!
             </div>
             <p style={{ fontSize: 14, color: '#4A4235', marginBottom: 24 }}>You're all set. Continue using the app.</p>
             <button
               onClick={clearPasswordRecovery}
-              style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '12px 28px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
+              style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '12px 28px', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
             >
               Continue
             </button>
           </div>
         ) : (
           <>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginTop: 20, marginBottom: 6 }}>
+            <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginTop: 20, marginBottom: 6 }}>
               Set new password
             </div>
             <p style={{ fontSize: 14, color: '#4A4235', marginBottom: 24, lineHeight: 1.5 }}>
@@ -127,7 +127,7 @@ function SetNewPasswordModal() {
               )}
               <button
                 type="submit" disabled={loading}
-                style={{ background: loading ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}
+                style={{ background: loading ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}
               >
                 {loading ? 'Saving…' : 'Update password'}
               </button>
@@ -167,6 +167,7 @@ function AppShell() {
   const navStack   = useRef<{ view: View; profileUserId: string | null; messageUserId: string | null }[]>([])
   const scrollPos     = useRef<Record<string, number>>({})  // saved scroll per view
   const pendingScroll = useRef(0)                            // scroll to restore after the next view change
+  const navDir        = useRef<'forward' | 'back'>('forward') // drives directional page transitions
 
   // Restore the saved scroll for the view we just switched to (before paint).
   useLayoutEffect(() => {
@@ -228,7 +229,12 @@ function AppShell() {
     if (!pageRef.current || prevView.current === view) return
     const mm = gsap.matchMedia()
     mm.add('(prefers-reduced-motion: no-preference)', () => {
-      gsap.fromTo(pageRef.current, { opacity: 0, scale: 0.97, y: 12 }, { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: 'power3.out' })
+      // Directional: forward views enter from the right, back from the left.
+      const fromX = navDir.current === 'back' ? -28 : 28
+      gsap.fromTo(pageRef.current, { opacity: 0, x: fromX, scale: 0.995 }, { opacity: 1, x: 0, scale: 1, duration: 0.34, ease: 'power3.out' })
+    })
+    mm.add('(prefers-reduced-motion: reduce)', () => {
+      gsap.set(pageRef.current, { opacity: 1, x: 0, scale: 1 })
     })
     prevView.current = view
     return () => mm.revert()
@@ -282,8 +288,10 @@ function AppShell() {
 
   const applyView = (v: View) => {
     if (pageRef.current) {
+      // Exit toward the opposite edge of the incoming direction.
+      const toX = navDir.current === 'back' ? 18 : -18
       gsap.to(pageRef.current, {
-        opacity: 0, scale: 0.97, y: -6, duration: 0.16, ease: 'power2.in',
+        opacity: 0, x: toX, scale: 0.995, duration: 0.15, ease: 'power2.in',
         onComplete: () => { setView(v) },
       })
     } else {
@@ -293,6 +301,7 @@ function AppShell() {
 
   const handleSetView = (v: View, opts?: { profileUserId?: string; force?: boolean; keepMessageTarget?: boolean; isBack?: boolean }) => {
     if (v === view && v !== 'profile' && v !== 'messages' && !opts?.force) return
+    navDir.current = opts?.isBack ? 'back' : 'forward'
     // Save the outgoing view's scroll; restore the destination's (0 for a fresh drill-in).
     scrollPos.current[view] = isMobile ? (contentRef.current?.scrollTop ?? 0) : window.scrollY
     const fresh = !!opts?.profileUserId || !!opts?.keepMessageTarget
@@ -309,6 +318,7 @@ function AppShell() {
   }
 
   const goBack = () => {
+    navDir.current = 'back'
     scrollPos.current[view] = isMobile ? (contentRef.current?.scrollTop ?? 0) : window.scrollY
     const stack = navStack.current
     if (!stack.length) { pendingScroll.current = scrollPos.current['dashboard'] ?? 0; setProfileUserId(null); setMessageUserId(null); applyView('dashboard'); return }

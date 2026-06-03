@@ -73,7 +73,7 @@ function Row({ label, description, last, children }: { label: string; descriptio
   return (
     <div style={{ padding: '13px 18px', borderBottom: last ? 'none' : '1px solid rgba(224,216,197,0.5)', display: 'flex', alignItems: 'center', gap: 12, minHeight: 52 }}>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>{label}</div>
+        <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>{label}</div>
         {description && <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2 }}>{description}</div>}
       </div>
       {children}
@@ -96,7 +96,7 @@ function Segment({ options, value, onChange }: { options: string[]; value: strin
   return (
     <div style={{ display: 'flex', background: '#EDE8D4', borderRadius: 10, padding: 3, gap: 2, flexShrink: 0 }}>
       {options.map(opt => (
-        <button key={opt} onClick={() => onChange(opt)} style={{ padding: '5px 13px', borderRadius: 7, border: 'none', background: value === opt ? '#FAF6EA' : 'transparent', color: value === opt ? '#1F1D17' : '#4A4235', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s', boxShadow: value === opt ? '0 1px 4px rgba(31,29,23,0.10)' : 'none', fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap' }}>
+        <button key={opt} onClick={() => onChange(opt)} style={{ padding: '5px 13px', borderRadius: 7, border: 'none', background: value === opt ? '#FAF6EA' : 'transparent', color: value === opt ? '#1F1D17' : '#4A4235', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s', boxShadow: value === opt ? '0 1px 4px rgba(31,29,23,0.10)' : 'none', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", whiteSpace: 'nowrap' }}>
           {opt}
         </button>
       ))}
@@ -137,12 +137,12 @@ function EditableRow({
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>{label}</div>
+          <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>{label}</div>
           {description && <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2 }}>{description}</div>}
         </div>
         {!editing && (
           <>
-            <div style={{ fontSize: 13.5, color: value ? '#4A4235' : '#8B8272', fontFamily: "'DM Sans', sans-serif", maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: 13.5, color: value ? '#4A4235' : '#8B8272', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {value ? `${prefix ?? ''}${value}` : (placeholder ?? '—')}
             </div>
             <ChevronRightIcon size={15} color="#8B8272" />
@@ -151,14 +151,14 @@ function EditableRow({
       </div>
       {editing && (
         <div style={{ padding: '0 18px 14px', display: 'flex', gap: 8, alignItems: 'center' }}>
-          {prefix && <span style={{ fontSize: 14, color: '#4A4235', fontFamily: "'DM Sans', sans-serif", flexShrink: 0 }}>{prefix}</span>}
+          {prefix && <span style={{ fontSize: 14, color: '#4A4235', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", flexShrink: 0 }}>{prefix}</span>}
           <input
             ref={inputRef}
             type={type}
             value={draft}
             onChange={e => setDraft(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') cancel() }}
-            style={{ flex: 1, background: '#EDE8D4', border: '1.5px solid #1F3A2A', borderRadius: 10, padding: '9px 12px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif" }}
+            style={{ flex: 1, background: '#EDE8D4', border: '1.5px solid #1F3A2A', borderRadius: 10, padding: '9px 12px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
           />
           <button onClick={commit} disabled={saving} style={{ width: 34, height: 34, borderRadius: 10, background: '#1F3A2A', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
             <CheckIcon size={14} color="#FAF6EA" />
@@ -260,12 +260,12 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       {/* ── Page title ── */}
       <button
         onClick={() => (onBack ? onBack() : onNavigate('profile'))}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: '#4A4235', padding: 0, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, color: '#4A4235', padding: 0, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}
       >
         <span style={{ fontSize: 18, lineHeight: 1 }}>‹</span> Back
       </button>
       <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 8 }}>Your account</div>
-      <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: '0 0 28px', lineHeight: 1 }}>
+      <h1 style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: '0 0 28px', lineHeight: 1 }}>
         Settings
       </h1>
 
@@ -291,7 +291,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
           >
             {profile?.avatarUrl
               ? <img src={profile.avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 28, color: '#D9824D' }}>{initial}</span>
+              : <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 700, fontSize: 28, color: '#D9824D' }}>{initial}</span>
             }
             {uploadingAvatar && (
               <div style={{ position: 'absolute', inset: 0, background: 'rgba(31,29,23,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -310,7 +310,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
 
         {/* Info */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.025em', lineHeight: 1.1, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 20, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.025em', lineHeight: 1.1, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {displayName}
           </div>
           <div style={{ fontSize: 12, color: 'rgba(250,246,234,0.55)', marginBottom: 10, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -318,13 +318,13 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
           </div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: rank.color + '22', border: `1px solid ${rank.color}44`, borderRadius: 999, padding: '3px 10px 3px 7px' }}>
             <ShieldIcon size={11} color={rank.color} />
-            <span style={{ fontSize: 11, fontWeight: 700, color: rank.color, letterSpacing: '0.04em', fontFamily: "'DM Sans', sans-serif" }}>{rank.name}</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: rank.color, letterSpacing: '0.04em', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>{rank.name}</span>
           </div>
         </div>
 
         {/* Points */}
         <div style={{ textAlign: 'center', flexShrink: 0 }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 28, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.04em', lineHeight: 1 }}>{profile?.rankedPoints ?? 0}</div>
+          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 28, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.04em', lineHeight: 1 }}>{profile?.rankedPoints ?? 0}</div>
           <div style={{ fontSize: 10, color: 'rgba(250,246,234,0.5)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 3 }}>points</div>
         </div>
       </div>
@@ -354,7 +354,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       <SectionLabel label="Location" />
       <Card>
         <div style={{ padding: '14px 18px' }}>
-          <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif", marginBottom: 4 }}>Country</div>
+          <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", marginBottom: 4 }}>Country</div>
           <div style={{ fontSize: 11.5, color: '#6B5F4E', marginBottom: 10 }}>Your flag shows on your profile</div>
           <CountryPicker value={profile?.country ?? null} onChange={code => save({ country: code })} isMobile={isMobile} />
         </div>
@@ -375,7 +375,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
             style={{ padding: '13px 18px', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', minHeight: 52 }}
           >
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>Change password</div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>Change password</div>
               {!showPw && <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2 }}>Update your account password</div>}
             </div>
             <div style={{ transform: showPw ? 'rotate(90deg)' : 'none', transition: 'transform 0.18s ease' }}>
@@ -394,7 +394,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
                   <input
                     type="password" placeholder="New password" value={pwNew}
                     onChange={e => setPwNew(e.target.value)}
-                    style={{ background: '#EDE8D4', border: '1.5px solid #E0D8C5', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif" }}
+                    style={{ background: '#EDE8D4', border: '1.5px solid #E0D8C5', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
                     onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
                     onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
                   />
@@ -402,7 +402,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
                     type="password" placeholder="Confirm new password" value={pwConfirm}
                     onChange={e => setPwConfirm(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') handlePasswordSave() }}
-                    style={{ background: '#EDE8D4', border: `1.5px solid ${pwConfirm && pwConfirm !== pwNew ? '#D9824D' : '#E0D8C5'}`, borderRadius: 10, padding: '10px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif" }}
+                    style={{ background: '#EDE8D4', border: `1.5px solid ${pwConfirm && pwConfirm !== pwNew ? '#D9824D' : '#E0D8C5'}`, borderRadius: 10, padding: '10px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
                     onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
                     onBlur={e => { e.currentTarget.style.borderColor = pwConfirm && pwConfirm !== pwNew ? '#D9824D' : '#E0D8C5' }}
                   />
@@ -426,7 +426,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
                   <button
                     onClick={handlePasswordSave}
                     disabled={pwSaving || !pwNew || !pwConfirm}
-                    style={{ background: pwSaving || !pwNew || !pwConfirm ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 12, padding: '11px', fontSize: 13.5, fontWeight: 500, cursor: pwSaving || !pwNew || !pwConfirm ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'background 0.15s' }}
+                    style={{ background: pwSaving || !pwNew || !pwConfirm ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 12, padding: '11px', fontSize: 13.5, fontWeight: 500, cursor: pwSaving || !pwNew || !pwConfirm ? 'not-allowed' : 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", transition: 'background 0.15s' }}
                   >
                     {pwSaving ? 'Updating…' : 'Update password'}
                   </button>
@@ -521,7 +521,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       <SectionLabel label="About" />
       <Card>
         <Row label="Version" last={false}>
-          <span style={{ fontSize: 13.5, color: '#6B5F4E', fontFamily: "'DM Sans', sans-serif" }}>1.0.0</span>
+          <span style={{ fontSize: 13.5, color: '#6B5F4E', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>1.0.0</span>
         </Row>
         <div
           onClick={() => onShowLegal('privacy')}
@@ -529,7 +529,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
           onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.02)' }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
         >
-          <div style={{ flex: 1, fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>Privacy Policy</div>
+          <div style={{ flex: 1, fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>Privacy Policy</div>
           <ChevronRightIcon size={15} color="#8B8272" />
         </div>
         <div
@@ -538,7 +538,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
           onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.02)' }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
         >
-          <div style={{ flex: 1, fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>Terms of Service</div>
+          <div style={{ flex: 1, fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>Terms of Service</div>
           <ChevronRightIcon size={15} color="#8B8272" />
         </div>
       </Card>
@@ -547,7 +547,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       <SectionLabel label="Account actions" />
       <button
         onClick={onSignOut}
-        style={{ width: '100%', background: 'rgba(250,246,234,0.62)', backdropFilter: 'blur(24px) saturate(160%)', WebkitBackdropFilter: 'blur(24px) saturate(160%)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 18, padding: '16px', fontSize: 14, fontWeight: 600, color: '#D9824D', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'all 0.15s', boxShadow: '0 4px 20px rgba(31,29,23,0.07), inset 0 1px 0 rgba(255,255,255,0.65)' }}
+        style={{ width: '100%', background: 'rgba(250,246,234,0.62)', backdropFilter: 'blur(24px) saturate(160%)', WebkitBackdropFilter: 'blur(24px) saturate(160%)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 18, padding: '16px', fontSize: 14, fontWeight: 600, color: '#D9824D', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", transition: 'all 0.15s', boxShadow: '0 4px 20px rgba(31,29,23,0.07), inset 0 1px 0 rgba(255,255,255,0.65)' }}
         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(217,130,77,0.10)' }}
         onMouseLeave={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.62)' }}
       >

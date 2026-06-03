@@ -165,7 +165,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
     width: '100%', background: '#FAF6EA',
     border: '1px solid #E0D8C5', borderRadius: 14,
     padding: '13px 16px', fontSize: 15, color: '#1F1D17',
-    fontFamily: "'DM Sans', sans-serif", outline: 'none',
+    fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", outline: 'none',
     transition: 'border-color 0.15s', boxSizing: 'border-box',
   }
 
@@ -187,7 +187,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <DialWordmark size={36} />
           <p style={{
-            fontFamily: "'DM Sans', sans-serif", fontSize: 15,
+            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15,
             color: '#4A4235', marginTop: 8, marginBottom: 0,
           }}>
             Your personal yardage book.
@@ -224,7 +224,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                 Check your inbox
               </div>
               <div style={{
-                fontFamily: "'Bricolage Grotesque', sans-serif",
+                fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                 fontSize: 24, fontWeight: 700, color: '#1F1D17',
                 letterSpacing: '-0.025em', lineHeight: 1.1, marginBottom: 12,
               }}>
@@ -243,7 +243,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                 style={{
                   marginTop: 20, background: 'transparent', border: 'none',
                   color: '#1F3A2A', fontSize: 13, fontWeight: 500,
-                  cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+                  cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                   textDecoration: 'underline',
                 }}
               >
@@ -268,7 +268,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                         padding: '9px 0', cursor: 'pointer',
                         background: mode === m ? '#1F3A2A' : 'transparent',
                         color: mode === m ? '#FAF6EA' : '#4A4235',
-                        fontFamily: "'DM Sans', sans-serif",
+                        fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                         fontSize: 13.5, fontWeight: 500,
                         transition: 'all 0.18s ease',
                       }}
@@ -288,11 +288,11 @@ export default function AuthScreen({ onShowLegal }: Props) {
                   <div>
                     <button
                       onClick={() => switchMode('signin')}
-                      style={{ background: 'none', border: 'none', color: '#4A4235', fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginBottom: 20, padding: 0 }}
+                      style={{ background: 'none', border: 'none', color: '#4A4235', fontSize: 13, cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", marginBottom: 20, padding: 0 }}
                     >
                       ← Back to sign in
                     </button>
-                    <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginBottom: 8 }}>
+                    <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginBottom: 8 }}>
                       Reset password
                     </div>
                     <p style={{ fontSize: 14, color: '#4A4235', lineHeight: 1.55, marginBottom: 24 }}>
@@ -304,7 +304,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                         <div style={{ marginTop: 12 }}>
                           <button
                             onClick={() => switchMode('signin')}
-                            style={{ background: 'none', border: 'none', color: '#1F3A2A', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", textDecoration: 'underline', padding: 0 }}
+                            style={{ background: 'none', border: 'none', color: '#1F3A2A', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", textDecoration: 'underline', padding: 0 }}
                           >
                             Back to sign in
                           </button>
@@ -331,7 +331,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                         <button
                           type="submit"
                           disabled={loading || cooldown > 0}
-                          style={{ width: '100%', background: (loading || cooldown > 0) ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px 24px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer', transition: 'all 0.15s' }}
+                          style={{ width: '100%', background: (loading || cooldown > 0) ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px 24px', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, fontWeight: 500, cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer', transition: 'all 0.15s' }}
                           onMouseEnter={e => { if (!loading && !cooldown) e.currentTarget.style.background = '#16271D' }}
                           onMouseLeave={e => { if (!loading && !cooldown) e.currentTarget.style.background = '#1F3A2A' }}
                         >
@@ -435,7 +435,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                       <button
                         type="button"
                         onClick={() => switchMode('forgot')}
-                        style={{ background: 'none', border: 'none', color: '#5C7A4D', fontSize: 12.5, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", padding: 0, fontWeight: 500 }}
+                        style={{ background: 'none', border: 'none', color: '#5C7A4D', fontSize: 12.5, cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", padding: 0, fontWeight: 500 }}
                       >
                         Forgot password?
                       </button>
@@ -517,14 +517,14 @@ export default function AuthScreen({ onShowLegal }: Props) {
                           checked: agreeTerms,
                           onChange: () => setAgreeTerms(v => !v),
                           label: <>I agree to the{' '}
-                            <button type="button" onClick={() => onShowLegal('terms')} style={{ background: 'none', border: 'none', color: '#1F3A2A', fontSize: 13, cursor: 'pointer', padding: 0, textDecoration: 'underline', fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>Terms of Service</button>
+                            <button type="button" onClick={() => onShowLegal('terms')} style={{ background: 'none', border: 'none', color: '#1F3A2A', fontSize: 13, cursor: 'pointer', padding: 0, textDecoration: 'underline', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 500 }}>Terms of Service</button>
                           </>,
                         },
                         {
                           checked: agreePrivacy,
                           onChange: () => setAgreePrivacy(v => !v),
                           label: <>I have read the{' '}
-                            <button type="button" onClick={() => onShowLegal('privacy')} style={{ background: 'none', border: 'none', color: '#1F3A2A', fontSize: 13, cursor: 'pointer', padding: 0, textDecoration: 'underline', fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>Privacy Policy</button>
+                            <button type="button" onClick={() => onShowLegal('privacy')} style={{ background: 'none', border: 'none', color: '#1F3A2A', fontSize: 13, cursor: 'pointer', padding: 0, textDecoration: 'underline', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 500 }}>Privacy Policy</button>
                           </>,
                         },
                         {
@@ -550,7 +550,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                               </svg>
                             )}
                           </div>
-                          <span style={{ fontSize: 13, color: '#4A4235', lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif" }}>
+                          <span style={{ fontSize: 13, color: '#4A4235', lineHeight: 1.4, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
                             {item.label}
                           </span>
                         </label>
@@ -576,7 +576,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
                     style={{
                       width: '100%', background: (loading || cooldown > 0) ? '#8B8272' : '#1F3A2A',
                       color: '#FAF6EA', border: 'none', borderRadius: 999,
-                      padding: '14px 24px', fontFamily: "'DM Sans', sans-serif",
+                      padding: '14px 24px', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                       fontSize: 14, fontWeight: 500, cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer',
                       transition: 'all 0.15s',
                     }}
@@ -599,12 +599,12 @@ export default function AuthScreen({ onShowLegal }: Props) {
         {mode !== 'signup' && (
           <p style={{
             textAlign: 'center', fontSize: 12, color: '#6B5F4E',
-            marginTop: 20, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.6,
+            marginTop: 20, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", lineHeight: 1.6,
           }}>
             <button onClick={() => onShowLegal('terms')} style={{
               background: 'none', border: 'none', color: '#4A4235', fontSize: 12,
               cursor: 'pointer', textDecoration: 'underline', padding: 0,
-              fontFamily: "'DM Sans', sans-serif",
+              fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
             }}>
               Terms of Service
             </button>
@@ -612,7 +612,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
             <button onClick={() => onShowLegal('privacy')} style={{
               background: 'none', border: 'none', color: '#4A4235', fontSize: 12,
               cursor: 'pointer', textDecoration: 'underline', padding: 0,
-              fontFamily: "'DM Sans', sans-serif",
+              fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
             }}>
               Privacy Policy
             </button>

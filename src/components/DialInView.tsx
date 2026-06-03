@@ -75,7 +75,7 @@ export default function DialInView({ shots, isMobile }: Props) {
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#5C7A4D', textTransform: 'uppercase', marginBottom: 8 }}>
           Club Recommender
         </div>
-        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 28 : 38, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: 0 }}>
+        <h1 style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: isMobile ? 28 : 38, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: 0 }}>
           Dial in.
         </h1>
         <p style={{ fontSize: 14, color: '#4A4235', marginTop: 8 }}>
@@ -86,7 +86,7 @@ export default function DialInView({ shots, isMobile }: Props) {
       {!hasEnoughData ? (
         <div style={{ ...card, textAlign: 'center', padding: '48px 28px' }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>⛳</div>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', marginBottom: 8 }}>No shot data yet</div>
+          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', marginBottom: 8 }}>No shot data yet</div>
           <p style={{ fontSize: 14, color: '#4A4235' }}>Log shots in My Bag first so we can recommend clubs based on your real averages.</p>
         </div>
       ) : (
@@ -105,7 +105,7 @@ export default function DialInView({ shots, isMobile }: Props) {
                   flex: 1, background: '#F0EBDD', border: '1px solid #E0D8C5',
                   borderRadius: 12, padding: '13px 16px', fontSize: 22,
                   fontWeight: 700, color: '#1F1D17', outline: 'none',
-                  fontFamily: "'Bricolage Grotesque', sans-serif",
+                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                   letterSpacing: '-0.02em',
                 }}
                 onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
@@ -127,7 +127,7 @@ export default function DialInView({ shots, isMobile }: Props) {
                   style={{
                     border: '1px solid', borderRadius: 999, padding: '7px 14px',
                     fontSize: 12.5, fontWeight: 500, cursor: 'pointer',
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                     background: dir === d.id ? '#1F3A2A' : 'transparent',
                     color: dir === d.id ? '#FAF6EA' : '#1F1D17',
                     borderColor: dir === d.id ? '#1F3A2A' : '#E0D8C5',
@@ -151,7 +151,7 @@ export default function DialInView({ shots, isMobile }: Props) {
                     onClick={() => { setStr(s.id); setResult(null) }}
                     style={{
                       flex: 1, border: '1px solid', borderRadius: 14, padding: '10px 8px',
-                      cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+                      cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                       background: str === s.id ? '#1F3A2A' : 'transparent',
                       color: str === s.id ? '#FAF6EA' : '#1F1D17',
                       borderColor: str === s.id ? '#1F3A2A' : '#E0D8C5',
@@ -176,7 +176,7 @@ export default function DialInView({ shots, isMobile }: Props) {
                 color: '#FAF6EA', border: 'none', borderRadius: 999,
                 padding: '15px 24px', fontSize: 15, fontWeight: 600,
                 cursor: target ? 'pointer' : 'not-allowed',
-                fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em',
+                fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", letterSpacing: '-0.01em',
                 transition: 'background 0.15s',
               }}
               onMouseEnter={e => { if (target) e.currentTarget.style.background = '#16271D' }}
@@ -221,7 +221,7 @@ export default function DialInView({ shots, isMobile }: Props) {
                           width: 44, height: 44, borderRadius: 12,
                           background: i === 0 ? '#D9824D' : '#1F3A2A',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontFamily: "'Bricolage Grotesque', sans-serif",
+                          fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                           fontSize: 13, fontWeight: 700, color: '#FAF6EA',
                           flexShrink: 0,
                         }}>
@@ -229,7 +229,7 @@ export default function DialInView({ shots, isMobile }: Props) {
                         </div>
 
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: i === 0 ? 18 : 15, fontWeight: 700, color: i === 0 ? '#FAF6EA' : '#1F1D17', letterSpacing: '-0.02em' }}>
+                          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: i === 0 ? 18 : 15, fontWeight: 700, color: i === 0 ? '#FAF6EA' : '#1F1D17', letterSpacing: '-0.02em' }}>
                             {i === 0 && <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#D9824D', display: 'block', marginBottom: 2 }}>Best match</span>}
                             {s.name}
                           </div>
@@ -239,7 +239,7 @@ export default function DialInView({ shots, isMobile }: Props) {
                         </div>
 
                         <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: i === 0 ? '#FAF6EA' : '#1F1D17', letterSpacing: '-0.03em' }}>
+                          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 20, fontWeight: 700, color: i === 0 ? '#FAF6EA' : '#1F1D17', letterSpacing: '-0.03em' }}>
                             {s.diff === 0 ? 'Perfect' : `${s.diff} yds off`}
                           </div>
                         </div>

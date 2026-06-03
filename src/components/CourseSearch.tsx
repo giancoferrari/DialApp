@@ -51,7 +51,7 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
 
   const base: React.CSSProperties = {
     background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 14,
-    padding: '12px 16px', fontSize: 14, fontFamily: "'DM Sans', sans-serif",
+    padding: '12px 16px', fontSize: 14, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
     color: '#1F1D17', width: '100%', outline: 'none', boxSizing: 'border-box',
     transition: 'border-color 0.15s',
     ...inputStyle,
@@ -71,7 +71,7 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
       />
 
       {loading && (
-        <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#6B5F4E', fontFamily: "'DM Sans', sans-serif" }}>
+        <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#6B5F4E', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
           Searching…
         </div>
       )}
@@ -100,7 +100,7 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
                 onMouseEnter={e => { e.currentTarget.style.background = 'rgba(31,58,42,0.05)' }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
               >
-                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
+                <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
                   {courseDisplayName(course)}
                 </div>
                 <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2, display: 'flex', gap: 8 }}>

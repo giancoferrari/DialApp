@@ -15,7 +15,8 @@ html {
 body {
   margin: 0;
   height: 100%;
-  font-family: 'DM Sans', sans-serif;
+  /* System Helvetica stack — real Helvetica Neue on Apple, Arial on Windows. */
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: transparent;
@@ -24,6 +25,9 @@ body {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
+
+/* Numbers that sit in columns (scores, handicaps, yardages) align cleanly. */
+.tnum { font-variant-numeric: tabular-nums; }
 
 /* Lets the mobile app-shell's height:100% resolve to the viewport so its
    inner area scrolls correctly under the fixed bottom tab bar. */

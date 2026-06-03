@@ -24,7 +24,7 @@ export default function ToolsView({ onNavigate, isMobile = false }: Props) {
         Your kit
       </div>
       <h1 style={{
-        fontFamily: "'Bricolage Grotesque', sans-serif",
+        fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
         fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17',
         letterSpacing: '-0.035em', margin: '0 0 32px', lineHeight: 1,
       }}>
@@ -79,7 +79,7 @@ export default function ToolsView({ onNavigate, isMobile = false }: Props) {
             </div>
             <div>
               <div style={{
-                fontFamily: "'Bricolage Grotesque', sans-serif",
+                fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                 fontSize: 18, fontWeight: 700, color: '#1F1D17',
                 letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 4,
               }}>

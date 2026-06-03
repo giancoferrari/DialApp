@@ -10,7 +10,7 @@ export default function DialWordmark({ size = 28 }: { size?: number }) {
   return (
     <span
       style={{
-        fontFamily: "'Bricolage Grotesque', sans-serif",
+        fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
         fontSize: size,
         fontWeight: 700,
         letterSpacing: '-0.04em',

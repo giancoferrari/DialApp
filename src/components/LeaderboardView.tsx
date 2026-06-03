@@ -52,13 +52,13 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
     <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 24 : 44}px ${px}px ${isMobile ? 120 : 80}px` }}>
 
       {onBack && (
-        <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: '#4A4235', padding: 0, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
+        <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, color: '#4A4235', padding: 0, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
           <span style={{ fontSize: 18, lineHeight: 1 }}>‹</span> Back
         </button>
       )}
 
       <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 8 }}>Ranked</div>
-      <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: '0 0 6px', lineHeight: 1 }}>
+      <h1 style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: '0 0 6px', lineHeight: 1 }}>
         Leaderboard
       </h1>
       <p style={{ fontSize: 13.5, color: '#6B5F4E', margin: '0 0 26px' }}>You and your friends, by ranked points.</p>
@@ -79,7 +79,7 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
         </div>
       ) : friendsOnly.length === 0 ? (
         <div style={{ background: 'rgba(250,246,234,0.78)', border: '1px solid rgba(255,255,255,0.66)', borderRadius: 22, padding: '44px 24px', textAlign: 'center', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.82)' }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 19, fontWeight: 700, color: '#1F1D17', marginBottom: 8 }}>Add friends to compete</div>
+          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 19, fontWeight: 700, color: '#1F1D17', marginBottom: 8 }}>Add friends to compete</div>
           <div style={{ fontSize: 13.5, color: '#6B5F4E', lineHeight: 1.5 }}>Once you've added friends, you'll all be ranked here by points earned in matches.</div>
         </div>
       ) : (
@@ -107,7 +107,7 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
                 <div style={{
                   width: 30, height: 30, borderRadius: 15, flexShrink: 0,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: 14,
+                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 800, fontSize: 14,
                   background: medal ? medal : (me ? 'rgba(250,246,234,0.14)' : '#F0EBDD'),
                   color: medal ? '#1F1D17' : (me ? '#FAF6EA' : '#6B5F4E'),
                 }}>
@@ -118,13 +118,13 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
                 <div style={{ width: 42, height: 42, borderRadius: 21, background: me ? '#2A4D39' : '#1F3A2A', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {p.avatarUrl
                     ? <img src={p.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 17, color: '#D9824D' }}>{name(p)[0]?.replace('@', '').toUpperCase()}</span>}
+                    : <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 700, fontSize: 17, color: '#D9824D' }}>{name(p)[0]?.replace('@', '').toUpperCase()}</span>}
                 </div>
 
                 {/* Name + tier */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em', color: me ? '#FAF6EA' : '#1F1D17', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em', color: me ? '#FAF6EA' : '#1F1D17', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {me ? 'You' : name(p)}
                     </span>
                     {p.country && <span style={{ fontSize: 14 }}>{flagEmoji(p.country)}</span>}
@@ -140,7 +140,7 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
 
                 {/* Points */}
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1, color: me ? '#FAF6EA' : '#1F1D17' }}>
+                  <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 22, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1, color: me ? '#FAF6EA' : '#1F1D17' }}>
                     {(p.rankedPoints ?? 0).toLocaleString()}
                   </div>
                   <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 3, color: me ? 'rgba(250,246,234,0.45)' : '#8B8272' }}>pts</div>
