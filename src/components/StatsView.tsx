@@ -140,7 +140,7 @@ export default function StatsView({ rounds, shots, isMobile = false, onNavigate 
           return (
             <div key={m.label} style={{ ...card, padding: '16px 18px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
-                <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 30, fontWeight: 700, color: has ? '#1F1D17' : '#C9C0A8', letterSpacing: '-0.04em', lineHeight: 1 }}>
+                <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 30, fontWeight: 700, color: has ? '#1F1D17' : '#C9C0A8', letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
                   {has ? m.value : '—'}
                 </span>
                 {has && m.suffix && <span style={{ fontSize: 15, fontWeight: 700, color: '#6B5F4E' }}>{m.suffix}</span>}

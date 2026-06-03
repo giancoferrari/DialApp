@@ -294,7 +294,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
             </div>
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div ref={pointsRef} style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 30, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.045em', lineHeight: 1 }}>
+            <div ref={pointsRef} style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 30, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.045em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
               {points.toLocaleString()}
             </div>
             <div style={{ fontSize: 9.5, color: 'rgba(250,246,234,0.38)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 2 }}>points</div>
@@ -333,7 +333,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
           {lastScore !== null ? (
             <>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 3 }}>
-                <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1 }}>
+                <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
                   {lastScore}
                 </span>
                 {lastDiff !== null && (
@@ -358,7 +358,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
 
         {/* Handicap */}
         <div style={{ ...glassCard, padding: '15px 10px 13px', textAlign: 'center' }}>
-          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1 }}>
+          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
             {profile?.handicapIndex != null ? profile.handicapIndex.toFixed(1) : '—'}
           </div>
           <div style={{ fontSize: 9.5, color: '#6B5F4E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Handicap</div>

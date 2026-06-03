@@ -134,7 +134,7 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
           <button onClick={() => onMediaTap(post)} style={{ position: 'relative', display: 'block', width: '100%', padding: 0, border: 'none', background: post.kind === 'round' ? 'none' : '#000', cursor: 'pointer' }}>
             {post.kind === 'round' && post.meta
               ? <RecapCard meta={post.meta} variant="feed" />
-              : <img src={post.imageUrl ?? ''} alt="" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', aspectRatio: '4 / 5', objectFit: 'cover' }} />}
+              : <img src={post.imageUrl ?? ''} alt="" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', aspectRatio: '4 / 5', objectFit: 'cover', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)' }} />}
             {burstId === post.id && (
               <div style={{ position: 'absolute', top: '50%', left: '50%', pointerEvents: 'none', animation: 'heartBurst 0.7s ease-out forwards', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))' }}>
                 <HeartIcon size={96} color="#FAF6EA" filled />

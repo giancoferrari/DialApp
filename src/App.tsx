@@ -360,6 +360,14 @@ function AppShell() {
         pointerEvents: 'none',
       }} />
 
+      {/* ── Paper grain: barely-there tactile texture over the cream ── */}
+      <div aria-hidden="true" style={{
+        position: 'fixed', inset: 0, zIndex: 1, pointerEvents: 'none',
+        opacity: 0.04, mixBlendMode: 'multiply',
+        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+        backgroundSize: '140px 140px',
+      }} />
+
       {/* ── All app content at z-index 2+ ───────────────────── */}
       <div style={{ ...shellStyle, position: 'relative', zIndex: 2 }}>
       {isPasswordRecovery && <SetNewPasswordModal />}

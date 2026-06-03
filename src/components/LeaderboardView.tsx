@@ -139,7 +139,7 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
 
                 {/* Points */}
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 22, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1, color: me ? '#FAF6EA' : '#1F1D17' }}>
+                  <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 22, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1, color: me ? '#FAF6EA' : '#1F1D17', fontVariantNumeric: 'tabular-nums' }}>
                     {(p.rankedPoints ?? 0).toLocaleString()}
                   </div>
                   <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 3, color: me ? 'rgba(250,246,234,0.45)' : '#8B8272' }}>pts</div>
