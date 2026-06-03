@@ -1,10 +1,12 @@
-import { useState, useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
+import { useQuery } from '@tanstack/react-query'
 import { fetchLeaderboard } from '../lib/leaderboard'
 import { getRank } from '../lib/points'
 import { flagEmoji } from '../lib/countries'
 import { ShieldIcon } from './Icons'
+import Skeleton from './Skeleton'
 import type { PublicProfile } from '../types'
 
 gsap.registerPlugin(useGSAP)
@@ -23,14 +25,13 @@ function name(p: PublicProfile): string {
 }
 
 export default function LeaderboardView({ meId, isMobile = false, onBack, onViewProfile }: Props) {
-  const [rows, setRows]       = useState<PublicProfile[]>([])
-  const [loading, setLoading] = useState(true)
   const listRef = useRef<HTMLDivElement>(null)
   const px = isMobile ? 20 : 40
 
-  useEffect(() => {
-    fetchLeaderboard(meId).then(setRows).catch(() => {}).finally(() => setLoading(false))
-  }, [meId])
+  const { data: rows = [], isLoading: loading } = useQuery({
+    queryKey: ['leaderboard', meId],
+    queryFn: () => fetchLeaderboard(meId),
+  })
 
   useGSAP(() => {
     const mm = gsap.matchMedia()
@@ -61,7 +62,19 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
       <p style={{ fontSize: 13.5, color: '#6B5F4E', margin: '0 0 26px' }}>You and your friends, by ranked points.</p>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: 48, fontSize: 14, color: '#6B5F4E' }}>Loading…</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {[0, 1, 2, 3, 4].map(i => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 13, background: 'rgba(250,246,234,0.82)', border: '1px solid rgba(255,255,255,0.7)', borderRadius: 18, padding: '13px 16px' }}>
+              <Skeleton width={30} height={30} radius={15} />
+              <Skeleton width={42} height={42} radius={21} />
+              <div style={{ flex: 1 }}>
+                <Skeleton width="45%" height={13} />
+                <Skeleton width="30%" height={10} style={{ marginTop: 7 }} />
+              </div>
+              <Skeleton width={36} height={20} />
+            </div>
+          ))}
+        </div>
       ) : friendsOnly.length === 0 ? (
         <div style={{ background: 'rgba(250,246,234,0.78)', border: '1px solid rgba(255,255,255,0.66)', borderRadius: 22, padding: '44px 24px', textAlign: 'center', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.82)' }}>
           <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 19, fontWeight: 700, color: '#1F1D17', marginBottom: 8 }}>Add friends to compete</div>

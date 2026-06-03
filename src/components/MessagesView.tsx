@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import { fetchFriendships, fetchProfilesForIds, searchUsers } from '../lib/friends'
 import {
@@ -8,6 +9,7 @@ import {
 import type { Conversation, DirectMessage, PublicProfile } from '../types'
 import { CloseIcon, SendIcon, PlusIcon, ChatIcon } from './Icons'
 import Portal from './Portal'
+import Skeleton from './Skeleton'
 
 interface Props {
   userId: string
@@ -333,18 +335,15 @@ function NewMessageSheet({ userId, isMobile, onPick, onClose }: {
 
 // ── Main view ────────────────────────────────────────────────────────────
 export default function MessagesView({ userId, isMobile = false, startUserId = null, onUnreadChange, onViewProfile }: Props) {
-  const [conversations, setConversations] = useState<Conversation[]>([])
-  const [loading, setLoading] = useState(true)
+  const qc = useQueryClient()
   const [active, setActive]   = useState<Conversation | null>(null)
   const [showNew, setShowNew] = useState(false)
 
-  const load = useCallback(async () => {
-    try { setConversations(await fetchConversations(userId)) }
-    catch { /* ignore */ }
-    finally { setLoading(false) }
-  }, [userId])
-
-  useEffect(() => { load() }, [load])
+  const { data: conversations = [], isLoading: loading } = useQuery({
+    queryKey: ['conversations', userId],
+    queryFn: () => fetchConversations(userId),
+  })
+  const refresh = () => qc.invalidateQueries({ queryKey: ['conversations', userId] })
 
   // Open a conversation directly (e.g. tapped "Message" on someone's profile)
   useEffect(() => {
@@ -358,13 +357,14 @@ export default function MessagesView({ userId, isMobile = false, startUserId = n
 
   // Refresh list when a new message lands in any of my conversations
   useEffect(() => {
+    const inval = () => qc.invalidateQueries({ queryKey: ['conversations', userId] })
     const ch = supabase
       .channel(`convs-${userId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => { load(); onUnreadChange?.() })
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'conversations' }, load)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => { inval(); onUnreadChange?.() })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'conversations' }, inval)
       .subscribe()
     return () => { supabase.removeChannel(ch) }
-  }, [userId, load, onUnreadChange])
+  }, [userId, qc, onUnreadChange])
 
   const openWith = async (otherId: string) => {
     setShowNew(false)
@@ -375,7 +375,7 @@ export default function MessagesView({ userId, isMobile = false, startUserId = n
     setActive({ id: convId, otherUserId: otherId, otherProfile: profiles[0], lastMessage: null, lastMessageAt: null, unread: 0 })
   }
 
-  const closeThread = () => { setActive(null); load(); onUnreadChange?.() }
+  const closeThread = () => { setActive(null); refresh(); onUnreadChange?.() }
 
   const px = isMobile ? 20 : 40
 
@@ -395,7 +395,17 @@ export default function MessagesView({ userId, isMobile = false, startUserId = n
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: 48, fontSize: 14, color: '#6B5F4E' }}>Loading…</div>
+        <div style={{ background: 'rgba(250,246,234,0.78)', border: '1px solid rgba(255,255,255,0.66)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.82)' }}>
+          {[0, 1, 2, 3].map(i => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 13, padding: '14px 16px', borderTop: i === 0 ? 'none' : '1px solid rgba(224,216,197,0.5)' }}>
+              <Skeleton width={48} height={48} radius={24} />
+              <div style={{ flex: 1 }}>
+                <Skeleton width="42%" height={13} />
+                <Skeleton width="68%" height={11} style={{ marginTop: 8 }} />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : conversations.length === 0 ? (
         <div style={{ background: 'rgba(250,246,234,0.72)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 22, padding: '48px 24px', textAlign: 'center', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.80)' }}>
           <div style={{ width: 56, height: 56, borderRadius: 28, background: '#F0EBDD', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
@@ -433,7 +443,7 @@ export default function MessagesView({ userId, isMobile = false, startUserId = n
         </div>
       )}
 
-      {active && <Portal><Thread conversation={active} userId={userId} isMobile={isMobile} onClose={closeThread} onActivity={() => { load(); onUnreadChange?.() }} onViewProfile={onViewProfile} /></Portal>}
+      {active && <Portal><Thread conversation={active} userId={userId} isMobile={isMobile} onClose={closeThread} onActivity={() => { refresh(); onUnreadChange?.() }} onViewProfile={onViewProfile} /></Portal>}
       {showNew && <Portal><NewMessageSheet userId={userId} isMobile={isMobile} onPick={openWith} onClose={() => setShowNew(false)} /></Portal>}
     </div>
   )
