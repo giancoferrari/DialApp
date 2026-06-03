@@ -1,10 +1,12 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { Friendship, PublicProfile, View } from '../types'
 import {
   searchUsers, fetchFriendships, fetchProfilesForIds,
   sendFriendRequest, updateFriendship, removeFriend,
 } from '../lib/friends'
 import { CloseIcon, PersonIcon, MedalIcon, ChevronRightIcon } from './Icons'
+import Skeleton from './Skeleton'
 
 function profileLabel(profile?: PublicProfile | null): { primary: string; secondary: string | null } {
   if (!profile) return { primary: 'Someone', secondary: null }
@@ -35,28 +37,29 @@ function Avatar({ profile, size = 44 }: { profile?: PublicProfile; size?: number
 }
 
 export default function FriendsView({ userId, isMobile = false, onViewProfile, onNavigate }: Props) {
-  const [friendships,    setFriendships]   = useState<Friendship[]>([])
-  const [friendProfiles, setFriendProfiles] = useState<PublicProfile[]>([])
-  const [loading,        setLoading]       = useState(true)
+  const qc = useQueryClient()
   const [searchQuery,    setSearchQuery]   = useState('')
   const [searchResults,  setSearchResults] = useState<PublicProfile[]>([])
   const [searching,      setSearching]     = useState(false)
   const [actionLoading,  setActionLoading] = useState<string | null>(null)
   const [error,          setError]         = useState<string | null>(null)
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    try {
+  const friendsKey = ['friends', userId]
+  const { data, isLoading: loading } = useQuery({
+    queryKey: friendsKey,
+    queryFn: async () => {
       const fs = await fetchFriendships(userId)
-      setFriendships(fs)
-      const allIds = fs.map(f => f.requesterId === userId ? f.addresseeId : f.requesterId)
-      const profiles = await fetchProfilesForIds(allIds)
-      setFriendProfiles(profiles)
-    } catch { setError('Failed to load friends.') }
-    finally { setLoading(false) }
-  }, [userId])
-
-  useEffect(() => { load() }, [load])
+      const ids = fs.map(f => f.requesterId === userId ? f.addresseeId : f.requesterId)
+      const profiles = await fetchProfilesForIds(ids)
+      return { friendships: fs, profiles }
+    },
+  })
+  const friendships    = data?.friendships ?? []
+  const friendProfiles = data?.profiles ?? []
+  const setFriendshipsCache = (fn: (prev: Friendship[]) => Friendship[]) =>
+    qc.setQueryData<{ friendships: Friendship[]; profiles: PublicProfile[] }>(friendsKey, old =>
+      old ? { ...old, friendships: fn(old.friendships) } : old)
+  const refresh = () => qc.invalidateQueries({ queryKey: friendsKey })
 
   useEffect(() => {
     if (!searchQuery.trim()) { setSearchResults([]); return }
@@ -87,7 +90,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
     setActionLoading(targetId)
     try {
       const f = await sendFriendRequest(userId, targetId)
-      setFriendships(prev => [...prev, f])
+      setFriendshipsCache(prev => [...prev, f])
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Failed to send request.')
     } finally { setActionLoading(null) }
@@ -97,7 +100,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
     setActionLoading(friendshipId)
     try {
       await updateFriendship(friendshipId, 'accepted')
-      await load()
+      refresh()
     } catch { setError('Failed to accept.') }
     finally { setActionLoading(null) }
   }
@@ -106,7 +109,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
     setActionLoading(friendshipId)
     try {
       await updateFriendship(friendshipId, 'declined')
-      setFriendships(prev => prev.filter(f => f.id !== friendshipId))
+      setFriendshipsCache(prev => prev.filter(f => f.id !== friendshipId))
     } catch { setError('Failed to decline.') }
     finally { setActionLoading(null) }
   }
@@ -115,7 +118,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
     setActionLoading(friendshipId)
     try {
       await removeFriend(friendshipId)
-      setFriendships(prev => prev.filter(f => f.id !== friendshipId))
+      setFriendshipsCache(prev => prev.filter(f => f.id !== friendshipId))
     } catch { setError('Failed to remove.') }
     finally { setActionLoading(null) }
   }
@@ -308,7 +311,17 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
         </div>
 
         {loading ? (
-          <div style={{ ...card, padding: '32px', textAlign: 'center', fontSize: 14, color: '#6B5F4E' }}>Loading…</div>
+          <div style={card}>
+            {[0, 1, 2].map(i => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', borderTop: i === 0 ? 'none' : '1px solid #F0EBDD' }}>
+                <Skeleton width={44} height={44} radius={22} />
+                <div style={{ flex: 1 }}>
+                  <Skeleton width="40%" height={13} />
+                  <Skeleton width="55%" height={11} style={{ marginTop: 7 }} />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : myFriendships.length === 0 ? (
           <div style={{ ...card, padding: '40px 24px', textAlign: 'center' }}>
             <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, color: '#8B8272', marginBottom: 8 }}>No friends yet</div>
