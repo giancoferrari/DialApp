@@ -33,7 +33,7 @@ function FriendsListModal({ userId, isMobile, onClose, onViewProfile }: {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 220, background: 'rgba(31,29,23,0.5)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
         <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, maxHeight: isMobile ? '80vh' : '70vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 18px 12px', borderBottom: '1px solid #E0D8C5' }}>
-            <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 17, fontWeight: 700, color: '#1F1D17' }}>Friends</div>
+            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 17, fontWeight: 700, color: '#1F1D17' }}>Friends</div>
             <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <CloseIcon size={13} color="#4A4235" />
             </button>
@@ -49,10 +49,10 @@ function FriendsListModal({ userId, isMobile, onClose, onViewProfile }: {
                 onMouseEnter={e => { e.currentTarget.style.background = '#EDE6D6' }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
                 <div style={{ width: 42, height: 42, borderRadius: 21, background: '#1F3A2A', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {p.avatarUrl ? <img src={p.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 700, fontSize: 17, color: '#D9824D' }}>{name(p)[0]?.replace('@', '').toUpperCase()}</span>}
+                  {p.avatarUrl ? <img src={p.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 17, color: '#D9824D' }}>{name(p)[0]?.replace('@', '').toUpperCase()}</span>}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17' }}>{name(p)}</div>
+                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17' }}>{name(p)}</div>
                   {p.handicapIndex != null && <div style={{ fontSize: 12, color: '#6B5F4E' }}>HCP {p.handicapIndex.toFixed(1)}</div>}
                 </div>
                 {p.country && <span style={{ fontSize: 18 }}>{flagEmoji(p.country)}</span>}
@@ -129,7 +129,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
             <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#8B8272', textTransform: 'uppercase' }}>Your profile</div>
             <button
               onClick={() => onNavigate('settings')}
-              style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(250,246,234,0.7)', border: '1px solid rgba(255,255,255,0.6)', borderRadius: 999, padding: '8px 14px 8px 12px', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 13, fontWeight: 500, color: '#1F3A2A', boxShadow: '0 2px 10px rgba(31,29,23,0.06)' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(250,246,234,0.7)', border: '1px solid rgba(255,255,255,0.6)', borderRadius: 999, padding: '8px 14px 8px 12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 500, color: '#1F3A2A', boxShadow: '0 2px 10px rgba(31,29,23,0.06)' }}
             >
               <GearIcon size={15} color="#1F3A2A" /> Edit profile
             </button>
@@ -137,7 +137,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
         ) : (
           <button
             onClick={() => (onBack ? onBack() : onNavigate('friends'))}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, color: '#4A4235', padding: 0, display: 'flex', alignItems: 'center', gap: 6 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: '#4A4235', padding: 0, display: 'flex', alignItems: 'center', gap: 6 }}
           >
             <span style={{ fontSize: 18, lineHeight: 1 }}>‹</span> Back
           </button>
@@ -152,7 +152,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
         >
           {avatarUrl
             ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            : <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 700, fontSize: 38, color: '#D9824D' }}>{initial}</span>}
+            : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 38, color: '#D9824D' }}>{initial}</span>}
           {isOwn && (
             <div style={{ position: 'absolute', bottom: 0, right: 0, width: 28, height: 28, borderRadius: 14, background: '#D9824D', border: '2px solid #EDE8D4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <CameraIcon size={12} color="#FAF6EA" />
@@ -160,12 +160,12 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
           )}
         </div>
 
-        <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 24, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', lineHeight: 1.1 }}>
+        <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', lineHeight: 1.1 }}>
           {displayName}
         </div>
         {handle && <div style={{ fontSize: 13, color: '#6B5F4E', marginTop: 3 }}>{handle}</div>}
         {country && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 7, fontSize: 13, color: '#4A4235', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 7, fontSize: 13, color: '#4A4235', fontFamily: "'DM Sans', sans-serif" }}>
             <span style={{ fontSize: 17, lineHeight: 1 }}>{flagEmoji(country)}</span>
             {countryName(country)}
           </div>
@@ -174,7 +174,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
         {/* Rank badge */}
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: rank.color + '20', border: `1px solid ${rank.color}44`, borderRadius: 999, padding: '5px 14px 5px 10px', marginTop: 12 }}>
           <ShieldIcon size={13} color={rank.color} />
-          <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 12, fontWeight: 700, color: rank.color, letterSpacing: '0.04em' }}>{rank.name}</span>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 700, color: rank.color, letterSpacing: '0.04em' }}>{rank.name}</span>
         </div>
 
         {/* Stats */}
@@ -186,7 +186,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
           ] as { value: string | number; label: string; onPress?: () => void }[]).map(s => {
             const content = (
               <>
-                <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 26, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{s.value}</div>
+                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{s.value}</div>
                 <div style={{ fontSize: 10, color: s.onPress ? '#1F3A2A' : '#4A4235', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 5 }}>{s.label}</div>
               </>
             )
@@ -205,7 +205,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
               { value: ties,   label: 'T', color: '#4A4235', bg: 'rgba(107,104,87,0.10)' },
             ].map(s => (
               <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 5, background: s.bg, borderRadius: 8, padding: '4px 10px' }}>
-                <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, color: s.color, fontVariantNumeric: 'tabular-nums' }}>{s.value}</span>
+                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: s.color, fontVariantNumeric: 'tabular-nums' }}>{s.value}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, color: s.color, letterSpacing: '0.06em' }}>{s.label}</span>
               </div>
             ))}
@@ -227,7 +227,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
         {!isOwn && (
           <button
             onClick={() => onMessage(viewUserId)}
-            style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 8, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '12px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", boxShadow: '0 4px 14px rgba(31,58,42,0.22)' }}
+            style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 8, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '12px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", boxShadow: '0 4px 14px rgba(31,58,42,0.22)' }}
           >
             <ChatIcon size={16} color="#FAF6EA" /> Message
           </button>

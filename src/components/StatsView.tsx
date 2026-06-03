@@ -69,12 +69,12 @@ export default function StatsView({ rounds, shots, isMobile = false, onNavigate 
   return (
     <div ref={ref} style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 24 : 44}px ${px}px ${isMobile ? 120 : 80}px` }}>
 
-      <button onClick={() => onNavigate('tools')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, color: '#4A4235', padding: 0, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
+      <button onClick={() => onNavigate('tools')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: '#4A4235', padding: 0, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
         <span style={{ fontSize: 18, lineHeight: 1 }}>‹</span> Tools
       </button>
 
       <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#8B8272', textTransform: 'uppercase', marginBottom: 8 }}>Your game</div>
-      <h1 style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: '0 0 28px', lineHeight: 1 }}>
+      <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: '0 0 28px', lineHeight: 1 }}>
         Stats
       </h1>
 
@@ -84,12 +84,12 @@ export default function StatsView({ rounds, shots, isMobile = false, onNavigate 
         {hcp.value !== null ? (
           <>
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14 }}>
-              <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 60, fontWeight: 800, color: '#FAF6EA', letterSpacing: '-0.04em', lineHeight: 0.95 }}>
+              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 60, fontWeight: 800, color: '#FAF6EA', letterSpacing: '-0.04em', lineHeight: 0.95 }}>
                 {hcp.value > 0 ? hcp.value.toFixed(1) : (hcp.value === 0 ? 'E' : hcp.value.toFixed(1))}
               </div>
               {agg.bestToPar !== null && (
                 <div style={{ paddingBottom: 8 }}>
-                  <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 20, fontWeight: 700, color: '#8BC47A', letterSpacing: '-0.02em' }}>{toParText(agg.bestToPar)}</div>
+                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#8BC47A', letterSpacing: '-0.02em' }}>{toParText(agg.bestToPar)}</div>
                   <div style={{ fontSize: 11.5, color: 'rgba(250,246,234,0.45)', marginTop: 1 }}>best round</div>
                 </div>
               )}
@@ -98,7 +98,7 @@ export default function StatsView({ rounds, shots, isMobile = false, onNavigate 
           </>
         ) : (
           <div style={{ paddingTop: 4 }}>
-            <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 26, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em', marginBottom: 6 }}>
+            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em', marginBottom: 6 }}>
               Play {hcp.roundsNeeded} more 18-hole round{hcp.roundsNeeded !== 1 ? 's' : ''}
             </div>
             <div style={{ fontSize: 13, color: 'rgba(250,246,234,0.55)', lineHeight: 1.5 }}>Log complete 18-hole rounds and Dial will estimate your handicap automatically.</div>
@@ -116,7 +116,7 @@ export default function StatsView({ rounds, shots, isMobile = false, onNavigate 
               const c = toParColor(t.toPar)
               return (
                 <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 6, minWidth: 0 }}>
-                  <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 13, fontWeight: 700, color: c }}>{toParText(t.toPar)}</div>
+                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 13, fontWeight: 700, color: c }}>{toParText(t.toPar)}</div>
                   <div style={{ width: '70%', maxWidth: 26, height: h, borderRadius: 7, background: c, opacity: 0.9 }} />
                   <div style={{ fontSize: 9.5, color: '#8B8272', whiteSpace: 'nowrap' }}>{shortDate(t.date)}</div>
                 </div>
@@ -140,7 +140,7 @@ export default function StatsView({ rounds, shots, isMobile = false, onNavigate 
           return (
             <div key={m.label} style={{ ...card, padding: '16px 18px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
-                <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 30, fontWeight: 700, color: has ? '#1F1D17' : '#C9C0A8', letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 30, fontWeight: 700, color: has ? '#1F1D17' : '#C9C0A8', letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
                   {has ? m.value : '—'}
                 </span>
                 {has && m.suffix && <span style={{ fontSize: 15, fontWeight: 700, color: '#6B5F4E' }}>{m.suffix}</span>}
@@ -160,20 +160,20 @@ export default function StatsView({ rounds, shots, isMobile = false, onNavigate 
       <div style={{ ...card, padding: clubsWithData >= 2 ? '8px 18px' : '24px 18px' }}>
         {clubsWithData < 2 ? (
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 14, color: '#1F1D17', fontWeight: 600, marginBottom: 6, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>Log a few shots first</div>
+            <div style={{ fontSize: 14, color: '#1F1D17', fontWeight: 600, marginBottom: 6, fontFamily: "'DM Sans', sans-serif" }}>Log a few shots first</div>
             <div style={{ fontSize: 13, color: '#6B5F4E', lineHeight: 1.5, marginBottom: 14 }}>Once Dial knows a couple of your club distances, it'll flag yardage gaps to fill.</div>
-            <button onClick={() => onNavigate('bag')} style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 22px', fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>Go to My Bag</button>
+            <button onClick={() => onNavigate('bag')} style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 22px', fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Go to My Bag</button>
           </div>
         ) : (
           gaps.map((g, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(224,216,197,0.55)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
-                <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 13, fontWeight: 700, color: '#1F3A2A' }}>{g.from.abbr}</span>
+                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 13, fontWeight: 700, color: '#1F3A2A' }}>{g.from.abbr}</span>
                 <span style={{ flex: 1, height: 1, background: g.notable ? 'rgba(217,130,77,0.4)' : 'rgba(224,216,197,0.9)', position: 'relative' }} />
-                <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 13, fontWeight: 700, color: '#1F3A2A' }}>{g.to.abbr}</span>
+                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 13, fontWeight: 700, color: '#1F3A2A' }}>{g.to.abbr}</span>
               </div>
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 16, fontWeight: 700, color: g.notable ? '#D9824D' : '#1F1D17', letterSpacing: '-0.02em' }}>{g.gap}</span>
+                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: g.notable ? '#D9824D' : '#1F1D17', letterSpacing: '-0.02em' }}>{g.gap}</span>
                 <span style={{ fontSize: 11, color: '#8B8272', marginLeft: 3 }}>yd</span>
                 {g.notable && <div style={{ fontSize: 10, color: '#D9824D', fontWeight: 600 }}>big gap</div>}
               </div>

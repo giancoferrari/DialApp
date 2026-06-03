@@ -130,7 +130,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
     <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 28 : 48}px ${px}px ${isMobile ? 120 : 80}px` }}>
 
       <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#8B8272', textTransform: 'uppercase', marginBottom: 8 }}>Activity</div>
-      <h1 style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: '0 0 28px', lineHeight: 1 }}>
+      <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: '0 0 28px', lineHeight: 1 }}>
         Notifications
       </h1>
 
@@ -159,7 +159,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
               <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="#8B8272" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 20, fontWeight: 700, color: '#8B8272', marginBottom: 8, letterSpacing: '-0.02em' }}>You're all caught up</div>
+          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#8B8272', marginBottom: 8, letterSpacing: '-0.02em' }}>You're all caught up</div>
           <div style={{ fontSize: 13, color: '#6B5F4E', lineHeight: 1.5 }}>Friend requests, match invites, tags and reposts appear here.</div>
         </div>
       ) : (
@@ -173,7 +173,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
                   <UsersIcon size={13} color="#5C7A4D" />
                   <span style={{ fontSize: 11, fontWeight: 600, color: '#5C7A4D', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Friend Request</span>
                 </div>
-                <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 16, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>
+                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>
                   {f.profile?.username ? `@${f.profile.username}` : 'Someone'}
                 </div>
                 <div style={{ fontSize: 12, color: '#6B5F4E', marginTop: 2 }}>wants to be friends</div>
@@ -216,7 +216,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
                   <span style={{ fontSize: 11, fontWeight: 600, color: '#B5C29A', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Match Invite</span>
                 </div>
                 <div style={{ padding: '14px 18px', background: 'rgba(250,246,234,0.06)' }}>
-                  <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 18, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em', marginBottom: 4 }}>
+                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em', marginBottom: 4 }}>
                     {m.courseName}
                   </div>
                   <div style={{ fontSize: 13, color: '#B5C29A', marginBottom: 4 }}>
@@ -230,14 +230,14 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
                     <button
                       onClick={() => handleMatchDecline(m)}
                       disabled={busy === m.id}
-                      style={{ flex: 1, background: 'rgba(250,246,234,0.2)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 12, padding: '10px', fontSize: 13, color: '#B5C29A', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
+                      style={{ flex: 1, background: 'rgba(250,246,234,0.2)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 12, padding: '10px', fontSize: 13, color: '#B5C29A', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
                     >
                       Decline
                     </button>
                     <button
                       onClick={() => handleMatchAccept(m)}
                       disabled={busy === m.id}
-                      style={{ flex: 2, background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 12, padding: '10px', fontSize: 13, fontWeight: 600, color: '#1F3A2A', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", boxShadow: '0 2px 8px rgba(31,29,23,0.08)' }}
+                      style={{ flex: 2, background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 12, padding: '10px', fontSize: 13, fontWeight: 600, color: '#1F3A2A', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", boxShadow: '0 2px 8px rgba(31,29,23,0.08)' }}
                     >
                       {busy === m.id ? '…' : `Accept${m.wagerPerPlayer > 0 ? ` · $${m.wagerPerPlayer}` : ''}`}
                     </button>
@@ -257,7 +257,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
               <div key={n.id} style={{ background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 20, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 13 }}>
                 <Avatar profile={n.actor ?? null} size={42} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 14, color: '#1F1D17', lineHeight: 1.4, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+                  <div style={{ fontSize: 14, color: '#1F1D17', lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif" }}>
                     <strong style={{ fontWeight: 700 }}>{nm}</strong> {text}
                   </div>
                   <div style={{ fontSize: 11.5, color: '#8B8272', marginTop: 2 }}>{notifAgo(n.createdAt)}</div>

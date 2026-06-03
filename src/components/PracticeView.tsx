@@ -104,7 +104,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
   const inputStyle: React.CSSProperties = {
     width: '100%', background: '#FAF6EA', border: '1px solid #E0D8C5',
     borderRadius: 14, padding: '13px 16px', fontSize: 15, color: '#1F1D17',
-    outline: 'none', boxSizing: 'border-box', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+    outline: 'none', boxSizing: 'border-box', fontFamily: "'DM Sans', sans-serif",
     transition: 'border-color 0.15s',
   }
 
@@ -117,13 +117,13 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#5C7A4D', textTransform: 'uppercase', marginBottom: 8 }}>
             Practice Log
           </div>
-          <h1 style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: isMobile ? 28 : 38, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: 0 }}>
+          <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 28 : 38, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: 0 }}>
             Range sessions.
           </h1>
         </div>
         <button
           onClick={openModal}
-          style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 18px 10px 20px', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 13.5, fontWeight: 500, cursor: 'pointer', transition: 'background 0.15s', whiteSpace: 'nowrap' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 18px 10px 20px', fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500, cursor: 'pointer', transition: 'background 0.15s', whiteSpace: 'nowrap' }}
           onMouseEnter={e => { e.currentTarget.style.background = '#16271D' }}
           onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A' }}
         >
@@ -142,7 +142,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
             onClick={() => setFilter(f.id as FocusArea | 'all')}
             style={{
               border: '1px solid', borderRadius: 999, padding: '7px 16px', fontSize: 13, fontWeight: 500, cursor: 'pointer',
-              fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", whiteSpace: 'nowrap', flexShrink: 0, transition: 'all 0.15s',
+              fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap', flexShrink: 0, transition: 'all 0.15s',
               background: filter === f.id ? '#1F3A2A' : 'transparent',
               color: filter === f.id ? '#FAF6EA' : '#1F1D17',
               borderColor: filter === f.id ? '#1F3A2A' : '#E0D8C5',
@@ -156,7 +156,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
       {/* Sessions list */}
       {filtered.length === 0 ? (
         <div style={{ ...card, padding: '56px 28px', textAlign: 'center' }}>
-          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', marginBottom: 8 }}>
+          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', marginBottom: 8 }}>
             No sessions yet
           </div>
           <p style={{ fontSize: 14, color: '#4A4235', margin: 0 }}>Log your first range session to start tracking your practice.</p>
@@ -169,14 +169,14 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
                 width: 44, height: 44, borderRadius: 12, flexShrink: 0,
                 background: FOCUS_COLORS[s.focusArea],
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                fontFamily: "'Bricolage Grotesque', sans-serif",
                 fontSize: 11, fontWeight: 700, color: '#FAF6EA', letterSpacing: '0.02em',
               }}>
                 {s.focusArea === 'short_game' ? 'SG' : focusLabel(s.focusArea).slice(0, 2).toUpperCase()}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: s.notes ? 4 : 0, flexWrap: 'wrap' }}>
-                  <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>
+                  <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>
                     {focusLabel(s.focusArea)}
                   </span>
                   <span style={{ fontSize: 12, color: '#6B5F4E' }}>·</span>
@@ -243,7 +243,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#5C7A4D', textTransform: 'uppercase', marginBottom: 5 }}>
                   Practice Log
                 </div>
-                <h2 style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: 0, lineHeight: 1.1 }}>
+                <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: 0, lineHeight: 1.1 }}>
                   Log a session
                 </h2>
               </div>
@@ -272,7 +272,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
                         onClick={() => setFocusArea(f.id)}
                         style={{
                           border: '1px solid', borderRadius: 14, padding: '11px 8px',
-                          cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                          cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
                           fontSize: 13, fontWeight: 500, transition: 'all 0.15s',
                           minHeight: 46,
                           background: active ? FOCUS_COLORS[f.id] : '#FAF6EA',
@@ -342,7 +342,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
                   color: '#FAF6EA', border: 'none', borderRadius: 999,
                   padding: '15px', fontSize: 15, fontWeight: 500,
                   cursor: saving ? 'not-allowed' : 'pointer',
-                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", transition: 'background 0.15s',
+                  fontFamily: "'DM Sans', sans-serif", transition: 'background 0.15s',
                 }}
                 onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#16271D' }}
                 onMouseLeave={e => { if (!saving) e.currentTarget.style.background = '#1F3A2A' }}

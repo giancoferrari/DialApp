@@ -42,8 +42,8 @@ export default function RecapCard({ meta, variant }: { meta: RoundRecapMeta; var
       <div style={{ position: 'relative', overflow: 'hidden', width: '100%', height: '100%', background: GREEN_GRAD, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
         <div style={{ position: 'absolute', right: -34, bottom: -42, opacity: 0.08, pointerEvents: 'none' }}><GreenMotif size={130} /></div>
         <span style={{ position: 'relative', fontSize: 8.5, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(250,246,234,0.5)', marginBottom: 2 }}>Round</span>
-        <span style={{ position: 'relative', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 38, fontWeight: 800, color: '#FAF6EA', letterSpacing: '-0.05em', lineHeight: 1 }}>{meta.score}</span>
-        <span style={{ position: 'relative', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 13, fontWeight: 700, color: diffColor }}>{diffText}</span>
+        <span style={{ position: 'relative', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 38, fontWeight: 800, color: '#FAF6EA', letterSpacing: '-0.05em', lineHeight: 1 }}>{meta.score}</span>
+        <span style={{ position: 'relative', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 13, fontWeight: 700, color: diffColor }}>{diffText}</span>
       </div>
     )
   }
@@ -68,11 +68,11 @@ export default function RecapCard({ meta, variant }: { meta: RoundRecapMeta; var
 
         {/* Score */}
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 18 }}>
-          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: big ? 84 : 68, fontWeight: 800, letterSpacing: '-0.05em', lineHeight: 0.86, textShadow: '0 2px 24px rgba(0,0,0,0.25)' }}>
+          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: big ? 84 : 68, fontWeight: 800, letterSpacing: '-0.05em', lineHeight: 0.86, textShadow: '0 2px 24px rgba(0,0,0,0.25)' }}>
             {meta.score}
           </div>
           <div style={{ paddingBottom: big ? 8 : 6 }}>
-            <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: big ? 32 : 27, fontWeight: 700, color: diffColor, letterSpacing: '-0.02em', lineHeight: 1 }}>
+            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: big ? 32 : 27, fontWeight: 700, color: diffColor, letterSpacing: '-0.02em', lineHeight: 1 }}>
               {diffText}
             </div>
             <div style={{ fontSize: 12.5, fontWeight: 600, color: diffColor, opacity: 0.85, marginTop: 4 }}>{parWord}</div>
@@ -93,7 +93,7 @@ export default function RecapCard({ meta, variant }: { meta: RoundRecapMeta; var
               { label: 'Putts',    value: meta.putts || '—' },
             ].map(s => (
               <div key={s.label} style={{ flex: 1, textAlign: 'center', background: 'rgba(250,246,234,0.07)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 14, padding: '11px 6px', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}>
-                <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 17, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em' }}>{s.value}</div>
+                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 17, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em' }}>{s.value}</div>
                 <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(250,246,234,0.45)', marginTop: 3 }}>{s.label}</div>
               </div>
             ))}

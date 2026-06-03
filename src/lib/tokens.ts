@@ -6,20 +6,21 @@
 //
 // Rules of the house:
 //  • Spacing comes from `space` (a strict 4/8pt scale) — no magic numbers.
-//  • One typeface (Helvetica) for everything; hierarchy via size/weight/tracking.
+//  • Two typefaces: Bricolage Grotesque (display) + DM Sans (body), via `font`.
 //  • Numbers that sit in columns (scores, handicaps, yardages) use `numeric`.
 //  • Most cards are FLAT (hairline border, no shadow). Reserve elevation for
 //    things that genuinely float (sheets, menus, toasts).
 // ─────────────────────────────────────────────────────────────────────────
 
 // ── Typeface ────────────────────────────────────────────────────────────
-// Single Helvetica family. Real Helvetica Neue on Apple devices, Arial on
-// Windows, the platform grotesque on Android — visually indistinguishable.
-const HELVETICA = "'Helvetica Neue', Helvetica, Arial, sans-serif"
+// The original pairing: Bricolage Grotesque for display/headings/large
+// numbers, DM Sans for body & UI. Loaded from Google Fonts in index.html.
+const DISPLAY = "'Bricolage Grotesque', sans-serif"
+const BODY = "'DM Sans', sans-serif"
 
 export const font = {
-  display: HELVETICA, // large headings — pair with tight tracking + weight 700
-  body: HELVETICA,    // everything else
+  display: DISPLAY, // headings / large numbers — pair with tight tracking + weight 700
+  body: BODY,       // body & UI
   mono: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
 } as const
 
@@ -139,4 +140,4 @@ export const type = {
   label:   { fontFamily: font.body, fontSize: 11, lineHeight: 1.3, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: color.faint },
 } as const
 
-export const FONT_STACK = HELVETICA
+export const FONT_STACK = BODY

@@ -122,7 +122,7 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
             <div style={{ flex: 1, minWidth: 0 }}>
               <div
                 onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined}
-                style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14.5, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em', cursor: onViewProfile ? 'pointer' : 'default' }}
+                style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14.5, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em', cursor: onViewProfile ? 'pointer' : 'default' }}
               >
                 {authorName(post.author)}
               </div>
@@ -148,27 +148,27 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
               <span style={{ display: 'inline-flex', animation: poppingId === post.id ? 'likePop 0.42s ease' : undefined }}>
                 <HeartIcon size={23} color={post.likedByMe ? '#D9824D' : '#1F1D17'} filled={post.likedByMe} />
               </span>
-              <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17' }}>{post.likeCount}</span>
+              <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17' }}>{post.likeCount}</span>
             </button>
             <button onClick={() => setActive(post)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <ChatIcon size={21} color="#1F1D17" />
-              <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17' }}>{post.commentCount}</span>
+              <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17' }}>{post.commentCount}</span>
             </button>
             <button onClick={() => handleRepost(post)} style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <span style={{ fontSize: 19, lineHeight: 1, color: post.repostedByMe ? '#5C7A4D' : '#1F1D17' }}>↻</span>
-              <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 12.5, fontWeight: 600, color: post.repostedByMe ? '#5C7A4D' : '#6B5F4E' }}>{post.repostedByMe ? 'Reposted' : 'Repost'}</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, fontWeight: 600, color: post.repostedByMe ? '#5C7A4D' : '#6B5F4E' }}>{post.repostedByMe ? 'Reposted' : 'Repost'}</span>
             </button>
           </div>
 
           {/* Caption */}
           {post.caption && (
-            <div style={{ padding: '4px 14px 8px', fontSize: 14, color: '#1F1D17', lineHeight: 1.45, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+            <div style={{ padding: '4px 14px 8px', fontSize: 14, color: '#1F1D17', lineHeight: 1.45, fontFamily: "'DM Sans', sans-serif" }}>
               <strong style={{ fontWeight: 700 }}>{authorName(post.author)}</strong> {post.caption}
             </div>
           )}
           {/* Inline comment preview — tap to open the comment sheet */}
           {post.commentCount > 0 && (
-            <button onClick={() => setActive(post)} style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', padding: `${post.caption ? 0 : 4}px 14px 14px`, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 13, color: '#6B5F4E' }}>
+            <button onClick={() => setActive(post)} style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', padding: `${post.caption ? 0 : 4}px 14px 14px`, fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: '#6B5F4E' }}>
               {post.commentCount === 1 ? 'View 1 comment' : `View all ${post.commentCount} comments`}
             </button>
           )}

@@ -23,7 +23,7 @@ export default function CountryPicker({ value, onChange, isMobile = false, trigg
     width: '100%', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
     background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 14,
     padding: '13px 16px', fontSize: 15, color: value ? '#1F1D17' : '#8B8272',
-    fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", cursor: 'pointer', textAlign: 'left',
+    fontFamily: "'DM Sans', sans-serif", cursor: 'pointer', textAlign: 'left',
     ...triggerStyle,
   }
 
@@ -42,7 +42,7 @@ export default function CountryPicker({ value, onChange, isMobile = false, trigg
           <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex, background: 'rgba(31,29,23,0.5)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
             <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, maxHeight: isMobile ? '80vh' : '70vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 18px 12px', borderBottom: '1px solid #E0D8C5' }}>
-                <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 17, fontWeight: 700, color: '#1F1D17' }}>Where are you from?</div>
+                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 17, fontWeight: 700, color: '#1F1D17' }}>Where are you from?</div>
                 <button onClick={() => setOpen(false)} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                   <CloseIcon size={13} color="#4A4235" />
                 </button>
@@ -51,13 +51,13 @@ export default function CountryPicker({ value, onChange, isMobile = false, trigg
                 <input
                   autoFocus value={q} onChange={e => setQ(e.target.value)}
                   placeholder="Search countries…"
-                  style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 12, padding: '11px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
+                  style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 12, padding: '11px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif" }}
                 />
               </div>
               <div style={{ flex: 1, overflowY: 'auto', padding: '4px 10px 14px' }}>
                 {filtered.map(c => (
                   <button key={c.code} onClick={() => { onChange(c.code); setOpen(false) }}
-                    style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, background: c.code === value ? 'rgba(31,58,42,0.06)' : 'transparent', border: 'none', borderRadius: 10, padding: '11px 12px', cursor: 'pointer', textAlign: 'left', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14.5, color: '#1F1D17' }}
+                    style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, background: c.code === value ? 'rgba(31,58,42,0.06)' : 'transparent', border: 'none', borderRadius: 10, padding: '11px 12px', cursor: 'pointer', textAlign: 'left', fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, color: '#1F1D17' }}
                     onMouseEnter={e => { if (c.code !== value) e.currentTarget.style.background = '#EDE6D6' }}
                     onMouseLeave={e => { if (c.code !== value) e.currentTarget.style.background = 'transparent' }}>
                     <span style={{ fontSize: 20, lineHeight: 1 }}>{flagEmoji(c.code)}</span>

@@ -77,7 +77,7 @@ function SetNewPasswordModal() {
   const inputStyle: React.CSSProperties = {
     width: '100%', background: '#FAF6EA', border: '1px solid #E0D8C5',
     borderRadius: 14, padding: '13px 16px', fontSize: 15, color: '#1F1D17',
-    fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", outline: 'none',
+    fontFamily: "'DM Sans', sans-serif", outline: 'none',
     transition: 'border-color 0.15s', boxSizing: 'border-box',
   }
 
@@ -87,20 +87,20 @@ function SetNewPasswordModal() {
         <DialWordmark size={28} />
         {done ? (
           <div style={{ marginTop: 28, textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 24, fontWeight: 700, color: '#1F1D17', marginBottom: 10 }}>
+            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: '#1F1D17', marginBottom: 10 }}>
               Password updated!
             </div>
             <p style={{ fontSize: 14, color: '#4A4235', marginBottom: 24 }}>You're all set. Continue using the app.</p>
             <button
               onClick={clearPasswordRecovery}
-              style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '12px 28px', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
+              style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '12px 28px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
             >
               Continue
             </button>
           </div>
         ) : (
           <>
-            <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginTop: 20, marginBottom: 6 }}>
+            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginTop: 20, marginBottom: 6 }}>
               Set new password
             </div>
             <p style={{ fontSize: 14, color: '#4A4235', marginBottom: 24, lineHeight: 1.5 }}>
@@ -128,7 +128,7 @@ function SetNewPasswordModal() {
               )}
               <button
                 type="submit" disabled={loading}
-                style={{ background: loading ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}
+                style={{ background: loading ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}
               >
                 {loading ? 'Saving…' : 'Update password'}
               </button>

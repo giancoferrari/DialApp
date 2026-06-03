@@ -158,7 +158,7 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewPro
           >
             <Avatar profile={conversation.otherProfile} size={38} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 16, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {name(conversation.otherProfile)}
               </div>
               <div style={{ fontSize: 11.5, color: '#B5C29A' }}>
@@ -198,7 +198,7 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewPro
                     background: mine ? '#1F3A2A' : '#FFFFFF',
                     color: mine ? '#FAF6EA' : '#1F1D17',
                     border: mine ? 'none' : '1px solid #E0D8C5',
-                    fontSize: 14.5, lineHeight: 1.4, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                    fontSize: 14.5, lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif",
                     boxShadow: '0 1px 2px rgba(31,29,23,0.06)', wordBreak: 'break-word',
                     display: 'flex', flexDirection: 'column',
                   }}>
@@ -214,7 +214,7 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewPro
         </div>
 
         {sendError && (
-          <div style={{ flexShrink: 0, padding: '8px 16px', background: 'rgba(192,57,43,0.10)', borderTop: '1px solid rgba(192,57,43,0.25)', fontSize: 12.5, color: '#C0392B', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", textAlign: 'center' }}>
+          <div style={{ flexShrink: 0, padding: '8px 16px', background: 'rgba(192,57,43,0.10)', borderTop: '1px solid rgba(192,57,43,0.25)', fontSize: 12.5, color: '#C0392B', fontFamily: "'DM Sans', sans-serif", textAlign: 'center' }}>
             {sendError}
           </div>
         )}
@@ -227,7 +227,7 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewPro
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
             placeholder="Message…"
             rows={1}
-            style={{ flex: 1, resize: 'none', maxHeight: 120, background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 20, padding: '11px 16px', fontSize: 16, color: '#1F1D17', outline: 'none', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", lineHeight: 1.4 }}
+            style={{ flex: 1, resize: 'none', maxHeight: 120, background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 20, padding: '11px 16px', fontSize: 16, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4 }}
             onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
             onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
           />
@@ -285,7 +285,7 @@ function NewMessageSheet({ userId, isMobile, onPick, onClose }: {
       <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 480, maxHeight: isMobile ? '85vh' : '80vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)', animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)', ...(isMobile ? dragStyle : {}) }}>
         {isMobile && <div {...dragHandlers}><Grabber /></div>}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 20px 14px', borderBottom: '1px solid #E0D8C5', flexShrink: 0 }}>
-          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 18, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>New message</div>
+          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>New message</div>
           <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             <CloseIcon size={14} color="#4A4235" />
           </button>
@@ -294,7 +294,7 @@ function NewMessageSheet({ userId, isMobile, onPick, onClose }: {
           <input
             value={query} onChange={e => setQuery(e.target.value)} autoFocus
             placeholder="Search players by username…"
-            style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 12, padding: '11px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
+            style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 12, padding: '11px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif" }}
             onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
             onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
           />
@@ -315,7 +315,7 @@ function NewMessageSheet({ userId, isMobile, onPick, onClose }: {
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
               <Avatar profile={p} size={42} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>{name(p)}</div>
+                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>{name(p)}</div>
                 {p.handicapIndex != null && <div style={{ fontSize: 12, color: '#6B5F4E' }}>HCP {p.handicapIndex.toFixed(1)}</div>}
               </div>
             </button>
@@ -377,9 +377,9 @@ export default function MessagesView({ userId, isMobile = false, startUserId = n
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#8B8272', textTransform: 'uppercase', marginBottom: 8 }}>Inbox</div>
-          <h1 style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: 0, lineHeight: 1 }}>Messages</h1>
+          <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: 0, lineHeight: 1 }}>Messages</h1>
         </div>
-        <button onClick={() => setShowNew(true)} style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 16px 10px 18px', fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", whiteSpace: 'nowrap', boxShadow: '0 4px 14px rgba(31,58,42,0.20)' }}>
+        <button onClick={() => setShowNew(true)} style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 16px 10px 18px', fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap', boxShadow: '0 4px 14px rgba(31,58,42,0.20)' }}>
           New
           <span style={{ width: 20, height: 20, borderRadius: 10, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
             <PlusIcon size={13} color="#FAF6EA" />
@@ -415,7 +415,7 @@ export default function MessagesView({ userId, isMobile = false, startUserId = n
               <Avatar profile={c.otherProfile} size={48} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                  <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name(c.otherProfile)}</span>
+                  <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name(c.otherProfile)}</span>
                   <span style={{ fontSize: 11, color: '#8B8272', flexShrink: 0 }}>{relTime(c.lastMessageAt)}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 3 }}>
@@ -423,7 +423,7 @@ export default function MessagesView({ userId, isMobile = false, startUserId = n
                     {c.lastMessage ?? 'No messages yet'}
                   </span>
                   {c.unread > 0 && (
-                    <span style={{ flexShrink: 0, minWidth: 18, height: 18, borderRadius: 9, background: '#D9824D', color: '#FAF6EA', fontSize: 10.5, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+                    <span style={{ flexShrink: 0, minWidth: 18, height: 18, borderRadius: 9, background: '#D9824D', color: '#FAF6EA', fontSize: 10.5, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px', fontFamily: "'DM Sans', sans-serif" }}>
                       {c.unread > 9 ? '9+' : c.unread}
                     </span>
                   )}

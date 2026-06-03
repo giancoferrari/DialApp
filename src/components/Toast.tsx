@@ -27,7 +27,7 @@ function ToastCard({ message, type }: ToastItem) {
       backdropFilter: 'blur(20px) saturate(160%)', WebkitBackdropFilter: 'blur(20px) saturate(160%)',
       border: '1px solid rgba(255,255,255,0.12)',
       borderRadius: 14, padding: '11px 16px',
-      fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 13.5, fontWeight: 500,
+      fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500,
       maxWidth: 420, boxShadow: '0 10px 34px rgba(20,18,12,0.30)',
       animation: 'toastIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1)',
     }}>

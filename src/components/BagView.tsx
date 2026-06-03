@@ -48,7 +48,7 @@ function AddClubModal({ onAdd, onClose, isMobile = false }: AddClubModalProps) {
   const inputStyle: React.CSSProperties = {
     width: '100%', background: '#FAF6EA', border: '1px solid #E0D8C5',
     borderRadius: 14, padding: '13px 16px', fontSize: 15, color: '#1F1D17',
-    fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", outline: 'none',
+    fontFamily: "'DM Sans', sans-serif", outline: 'none',
     transition: 'border-color 0.15s', boxSizing: 'border-box',
   }
 
@@ -58,7 +58,7 @@ function AddClubModal({ onAdd, onClose, isMobile = false }: AddClubModalProps) {
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
       <div style={{ background: '#F0EBDD', borderRadius: 28, padding: isMobile ? '28px 24px' : '36px 40px', width: '100%', maxWidth: 420, boxShadow: '0 24px 64px rgba(31,58,42,0.2)' }}>
-        <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginBottom: 6 }}>
+        <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginBottom: 6 }}>
           Add a club
         </div>
         <p style={{ fontSize: 14, color: '#4A4235', marginBottom: 24, lineHeight: 1.5, marginTop: 0 }}>
@@ -96,13 +96,13 @@ function AddClubModal({ onAdd, onClose, isMobile = false }: AddClubModalProps) {
           <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
             <button
               type="button" onClick={onClose}
-              style={{ flex: 1, background: 'transparent', border: '1px solid #E0D8C5', borderRadius: 999, padding: '13px', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, fontWeight: 500, cursor: 'pointer', color: '#4A4235' }}
+              style={{ flex: 1, background: 'transparent', border: '1px solid #E0D8C5', borderRadius: 999, padding: '13px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: 'pointer', color: '#4A4235' }}
             >
               Cancel
             </button>
             <button
               type="submit"
-              style={{ flex: 2, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '13px', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
+              style={{ flex: 2, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '13px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
             >
               Add club
             </button>
@@ -204,7 +204,7 @@ function ClubDistanceCard({ club, distance, isCustom = false, onSave, onDelete, 
 
       {/* Club name */}
       <h3 style={{
-        fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+        fontFamily: "'Bricolage Grotesque', sans-serif",
         fontSize: isMobile ? 14 : 20, fontWeight: 700, color: '#1F1D17',
         letterSpacing: '-0.025em', marginBottom: isMobile ? 8 : 14,
         lineHeight: 1, marginTop: 0,
@@ -230,7 +230,7 @@ function ClubDistanceCard({ club, distance, isCustom = false, onSave, onDelete, 
               onBlur={commit}
               style={{
                 width: isMobile ? 80 : 100, background: 'transparent', border: 'none',
-                fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                fontFamily: "'Bricolage Grotesque', sans-serif",
                 fontSize: isMobile ? 36 : 52, fontWeight: 700, lineHeight: 0.9,
                 color: '#1F3A2A', letterSpacing: '-0.04em', outline: 'none', padding: 0,
               }}
@@ -240,7 +240,7 @@ function ClubDistanceCard({ club, distance, isCustom = false, onSave, onDelete, 
         ) : distance != null ? (
           <>
             <span style={{
-              fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+              fontFamily: "'Bricolage Grotesque', sans-serif",
               fontSize: isMobile ? 36 : 52, fontWeight: 700, lineHeight: 0.9,
               color: saving ? '#6B5F4E' : '#1F3A2A', letterSpacing: '-0.04em',
               transition: 'color 0.15s',
@@ -251,7 +251,7 @@ function ClubDistanceCard({ club, distance, isCustom = false, onSave, onDelete, 
           </>
         ) : (
           <div style={{ paddingBottom: 4 }}>
-            <div style={{ fontSize: isMobile ? 12 : 14, color: '#6B5F4E', fontWeight: 400, fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+            <div style={{ fontSize: isMobile ? 12 : 14, color: '#6B5F4E', fontWeight: 400, fontFamily: "'DM Sans', sans-serif" }}>
               Tap to set distance
             </div>
           </div>
@@ -379,7 +379,7 @@ export default function BagView({ shots, onSetDistance, isMobile = false }: Prop
             <FlagPin size={12} /> Your bag
           </div>
           <h1 style={{
-            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+            fontFamily: "'Bricolage Grotesque', sans-serif",
             fontSize: isMobile ? 44 : 76, fontWeight: 700, lineHeight: 0.95,
             letterSpacing: '-0.04em', color: '#1F1D17',
             marginBottom: isMobile ? 12 : 20, marginTop: 0,
@@ -393,7 +393,7 @@ export default function BagView({ shots, onSetDistance, isMobile = false }: Prop
           <p style={{
             fontSize: 16, lineHeight: 1.5, color: '#4A4235',
             maxWidth: 480, fontWeight: 400, margin: 0,
-            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+            fontFamily: "'DM Sans', sans-serif",
           }}>
             One distance per club. Tap any card to update yours.
           </p>
@@ -418,7 +418,7 @@ export default function BagView({ shots, onSetDistance, isMobile = false }: Prop
                 background: active ? '#1F3A2A' : '#FAF6EA',
                 color: active ? '#FAF6EA' : '#1F1D17',
                 borderRadius: 999, padding: isMobile ? '7px 12px' : '9px 16px',
-                fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: isMobile ? 12.5 : 13.5, fontWeight: 500,
+                fontFamily: "'DM Sans', sans-serif", fontSize: isMobile ? 12.5 : 13.5, fontWeight: 500,
                 cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap' as const, flexShrink: 0,
               }}
               onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
@@ -439,7 +439,7 @@ export default function BagView({ shots, onSetDistance, isMobile = false }: Prop
             display: 'inline-flex', alignItems: 'center', gap: 6,
             border: '1px solid #D9824D', background: 'transparent', color: '#D9824D',
             borderRadius: 999, padding: isMobile ? '7px 12px' : '9px 16px',
-            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: isMobile ? 12.5 : 13.5, fontWeight: 500,
+            fontFamily: "'DM Sans', sans-serif", fontSize: isMobile ? 12.5 : 13.5, fontWeight: 500,
             cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap' as const, flexShrink: 0,
           }}
           onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
