@@ -23,6 +23,7 @@ import MatchesView from './components/MatchesView'
 import NotificationsView from './components/NotificationsView'
 import ToolsView from './components/ToolsView'
 import StatsView from './components/StatsView'
+import LeaderboardView from './components/LeaderboardView'
 import SettingsView from './components/SettingsView'
 import ProfileView from './components/ProfileView'
 import MessagesView from './components/MessagesView'
@@ -427,7 +428,7 @@ function AppShell() {
             />
           )}
           {view === 'friends' && (
-            <FriendsView userId={user!.id} isMobile={isMobile} onViewProfile={handleViewProfile} />
+            <FriendsView userId={user!.id} isMobile={isMobile} onViewProfile={handleViewProfile} onNavigate={handleSetView} />
           )}
           {view === 'matches' && (
             <MatchesView userId={user!.id} isMobile={isMobile} />
@@ -440,6 +441,9 @@ function AppShell() {
           )}
           {view === 'stats' && (
             <StatsView rounds={rounds} shots={shots} onNavigate={handleSetView} isMobile={isMobile} />
+          )}
+          {view === 'leaderboard' && (
+            <LeaderboardView meId={user!.id} isMobile={isMobile} onBack={goBack} onViewProfile={handleViewProfile} />
           )}
         </div>
       </div>

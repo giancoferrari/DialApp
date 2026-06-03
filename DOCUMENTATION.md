@@ -130,6 +130,9 @@ Read-only, computed from logged rounds + shots (no schema). Shows an **estimated
 ### Log a shot — `components/LogShotModal.tsx`
 Quick club-distance capture (numpad + club picker + note). Opened from the "Log a shot" create-menu item; saves a `shots` row.
 
+### Leaderboard — `components/LeaderboardView.tsx`, `lib/leaderboard.ts`
+Ranks **you + your accepted friends by all-time ranked points** (read from `user_profiles`, which is readable for others). Medals for top 3, your row highlighted in dark green, rank tier + W/L + country flag, tap a row → their profile. Reached from a card at the top of **Friends**, and from a "See friends leaderboard" button in the Home rank card's `RanksModal`. (Weekly/monthly would need a points-event ledger — not built; this is all-time.)
+
 ### Friends — `components/FriendsView.tsx`, `lib/friends.ts`
 Search users by username, send/accept/decline/remove requests, friends list. **Tapping a friend opens their full profile page** (`onViewProfile` → ProfileView). (The old popup modal was removed.)
 

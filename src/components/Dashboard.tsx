@@ -11,7 +11,7 @@ import Portal from './Portal'
 gsap.registerPlugin(useGSAP)
 
 // ── Ranks & points info (opened from the rank card) ────────────────────────────
-function RanksModal({ points, isMobile, onClose }: { points: number; isMobile: boolean; onClose: () => void }) {
+function RanksModal({ points, isMobile, onClose, onNavigate }: { points: number; isMobile: boolean; onClose: () => void; onNavigate: (v: View) => void }) {
   const current = getRank(points)
   const listRef = useRef<HTMLDivElement>(null)
 
@@ -93,6 +93,13 @@ function RanksModal({ points, isMobile, onClose }: { points: number; isMobile: b
                 )
               })}
             </div>
+
+            <button
+              onClick={() => { onClose(); onNavigate('leaderboard') }}
+              style={{ width: '100%', marginTop: 18, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '13px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}
+            >
+              See friends leaderboard
+            </button>
           </div>
         </div>
       </div>
@@ -572,7 +579,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
 
       </div>
 
-      {showRanks && <RanksModal points={points} isMobile={isMobile} onClose={() => setShowRanks(false)} />}
+      {showRanks && <RanksModal points={points} isMobile={isMobile} onClose={() => setShowRanks(false)} onNavigate={onNavigate} />}
 
     </main>
   )

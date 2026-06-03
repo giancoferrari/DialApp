@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
-import type { Friendship, PublicProfile } from '../types'
+import type { Friendship, PublicProfile, View } from '../types'
 import {
   searchUsers, fetchFriendships, fetchProfilesForIds,
   sendFriendRequest, updateFriendship, removeFriend,
 } from '../lib/friends'
-import { CloseIcon, PersonIcon } from './Icons'
+import { CloseIcon, PersonIcon, MedalIcon, ChevronRightIcon } from './Icons'
 
 function profileLabel(profile?: PublicProfile | null): { primary: string; secondary: string | null } {
   if (!profile) return { primary: 'Someone', secondary: null }
@@ -19,6 +19,7 @@ interface Props {
   userId: string
   isMobile?: boolean
   onViewProfile?: (userId: string) => void
+  onNavigate?: (v: View) => void
 }
 
 function Avatar({ profile, size = 44 }: { profile?: PublicProfile; size?: number }) {
@@ -33,7 +34,7 @@ function Avatar({ profile, size = 44 }: { profile?: PublicProfile; size?: number
   )
 }
 
-export default function FriendsView({ userId, isMobile = false, onViewProfile }: Props) {
+export default function FriendsView({ userId, isMobile = false, onViewProfile, onNavigate }: Props) {
   const [friendships,    setFriendships]   = useState<Friendship[]>([])
   const [friendProfiles, setFriendProfiles] = useState<PublicProfile[]>([])
   const [loading,        setLoading]       = useState(true)
@@ -141,6 +142,27 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile }:
           Friends
         </h1>
       </div>
+
+      {/* Leaderboard entry */}
+      {onNavigate && (
+        <button
+          onClick={() => onNavigate('leaderboard')}
+          style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 13, background: 'linear-gradient(150deg, rgba(35,68,46,1) 0%, rgba(26,50,33,1) 100%)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, padding: '15px 18px', cursor: 'pointer', textAlign: 'left', marginBottom: 24, boxShadow: '0 10px 30px rgba(31,58,42,0.22)', transition: 'transform 0.16s ease' }}
+          onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
+          onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+          onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
+          onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
+        >
+          <div style={{ width: 38, height: 38, borderRadius: 12, background: 'rgba(217,130,77,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <MedalIcon size={20} color="#D9824D" />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em' }}>Leaderboard</div>
+            <div style={{ fontSize: 12.5, color: 'rgba(250,246,234,0.55)', marginTop: 2 }}>See how you rank against your friends</div>
+          </div>
+          <ChevronRightIcon size={18} color="rgba(250,246,234,0.5)" />
+        </button>
+      )}
 
       {error && (
         <div style={{ background: 'rgba(217,130,77,0.10)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 12, padding: '10px 14px', fontSize: 13, color: '#D9824D', marginBottom: 20 }}>
