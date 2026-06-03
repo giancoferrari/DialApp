@@ -1205,7 +1205,12 @@ export default function ScorecardView({
       <div style={{ maxWidth: 720, margin: '0 auto', padding: `${isMobile ? 20 : 48}px ${isMobile ? 12 : 40}px ${isMobile ? 96 : 48}px` }}>
         <button style={backBtn} onClick={() => setPhase({ type: 'history' })}>← All rounds</button>
 
-        <div style={{ background: '#1F3A2A', borderRadius: 24, padding: '36px 32px', marginBottom: 20, color: '#FAF6EA' }}>
+        <div style={{ background: '#1F3A2A', borderRadius: 24, padding: '36px 32px', marginBottom: 20, color: '#FAF6EA', boxShadow: t.diff < 0 ? '0 0 0 1px rgba(139,196,122,0.45), 0 12px 50px rgba(139,196,122,0.28)' : 'none', transition: 'box-shadow 0.4s ease' }}>
+          {t.diff < 0 && (
+            <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8BC47A', marginBottom: 8 }}>
+              ★ Under par
+            </div>
+          )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: teeInfo.color, border: teeInfo.id === 'white' ? '1px solid rgba(255,255,255,0.4)' : 'none' }} />
             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(250,246,234,0.45)' }}>

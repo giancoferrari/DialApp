@@ -3,10 +3,11 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { useState, useEffect } from 'react'
 import type { UserProfile, Round, View } from '../types'
-import { getRank, RANK_TIERS, POINTS_WIN, POINTS_LOSS, POINTS_TIE } from '../lib/points'
+import { getRank, RANK_TIERS, POINTS_WIN, POINTS_LOSS, POINTS_TIE, type RankTier } from '../lib/points'
 import { ShieldIcon, UsersIcon, ScorecardIcon, MedalIcon, CloseIcon, ChevronRightIcon, CheckIcon } from './Icons'
 import Feed from './Feed'
 import Portal from './Portal'
+import RankUpMoment from './RankUpMoment'
 
 gsap.registerPlugin(useGSAP)
 
@@ -156,6 +157,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
   const date = useLiveDate()
   const px   = isMobile ? 20 : 40
   const [showRanks, setShowRanks] = useState(false)
+  const [rankUp, setRankUp]       = useState<RankTier | null>(null)
   const pointsRef = useRef<HTMLDivElement>(null)
   const barRef    = useRef<HTMLDivElement>(null)
 
@@ -200,6 +202,16 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
     })
     return () => mm.revert()
   }, { dependencies: [points, pct] })
+
+  // ── Rank-up moment: celebrate when the tier increases since last visit ──
+  useEffect(() => {
+    if (!profile) return
+    const idx = RANK_TIERS.findIndex(t => t.name === rank.name)
+    let stored: number | null = null
+    try { const v = localStorage.getItem('dial_lastTierIdx'); stored = v === null ? null : parseInt(v) } catch { /* */ }
+    if (stored !== null && idx > stored) setRankUp(rank)
+    if (stored === null || idx !== stored) { try { localStorage.setItem('dial_lastTierIdx', String(idx)) } catch { /* */ } }
+  }, [profile, rank])
 
   // ── Last round ──
   const lastRound = rounds[0] ?? null
@@ -461,6 +473,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
       </div>
 
       {showRanks && <RanksModal points={points} isMobile={isMobile} onClose={() => setShowRanks(false)} onNavigate={onNavigate} />}
+      {rankUp && <RankUpMoment tier={rankUp} onClose={() => setRankUp(null)} />}
 
     </main>
   )
