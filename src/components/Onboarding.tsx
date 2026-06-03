@@ -240,7 +240,7 @@ export default function Onboarding({ userId, existingProfile, onComplete, isMobi
         {step === 'country' && (
           <>
             {headline("Where do you play?", "Your flag shows up on your profile, the leaderboard and in matches.")}
-            <CountryPicker value={country} onChange={setCountry} isMobile={isMobile} />
+            <CountryPicker value={country} onChange={setCountry} isMobile={isMobile} zIndex={600} />
             {country && (
               <div style={{ marginTop: space[4], display: 'flex', alignItems: 'center', gap: space[3], padding: space[4], background: color.white, border: `1px solid ${color.border}`, borderRadius: radius.card }}>
                 <span style={{ fontSize: 30, lineHeight: 1 }}>{flagEmoji(country)}</span>

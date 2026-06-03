@@ -8,9 +8,10 @@ interface Props {
   onChange: (code: string) => void
   isMobile?: boolean
   triggerStyle?: React.CSSProperties
+  zIndex?: number
 }
 
-export default function CountryPicker({ value, onChange, isMobile = false, triggerStyle }: Props) {
+export default function CountryPicker({ value, onChange, isMobile = false, triggerStyle, zIndex = 230 }: Props) {
   const [open, setOpen] = useState(false)
   const [q, setQ]       = useState('')
 
@@ -38,7 +39,7 @@ export default function CountryPicker({ value, onChange, isMobile = false, trigg
 
       {open && (
         <Portal>
-          <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 230, background: 'rgba(31,29,23,0.5)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
+          <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex, background: 'rgba(31,29,23,0.5)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
             <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, maxHeight: isMobile ? '80vh' : '70vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 18px 12px', borderBottom: '1px solid #E0D8C5' }}>
                 <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 17, fontWeight: 700, color: '#1F1D17' }}>Where are you from?</div>
