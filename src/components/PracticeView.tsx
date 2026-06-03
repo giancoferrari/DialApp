@@ -11,13 +11,13 @@ interface Props {
   isMobile?: boolean
 }
 
-const FOCUS_AREAS: { id: FocusArea; label: string; emoji: string }[] = [
-  { id: 'driver',     label: 'Driver',     emoji: '🏌️' },
-  { id: 'woods',      label: 'Woods',      emoji: '🌲' },
-  { id: 'irons',      label: 'Irons',      emoji: '⛳' },
-  { id: 'short_game', label: 'Short Game', emoji: '🎯' },
-  { id: 'putting',    label: 'Putting',    emoji: '🏳️' },
-  { id: 'bunker',     label: 'Bunker',     emoji: '🏖️' },
+const FOCUS_AREAS: { id: FocusArea; label: string }[] = [
+  { id: 'driver',     label: 'Driver'     },
+  { id: 'woods',      label: 'Woods'      },
+  { id: 'irons',      label: 'Irons'      },
+  { id: 'short_game', label: 'Short Game' },
+  { id: 'putting',    label: 'Putting'    },
+  { id: 'bunker',     label: 'Bunker'     },
 ]
 
 const FOCUS_COLORS: Record<FocusArea, string> = {

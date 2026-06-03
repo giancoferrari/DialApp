@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { Shot, WindDirection, WindStrength } from '../types'
 import { CLUBS_DATA, getClubAvg } from '../data'
+import { TargetIcon } from './Icons'
+import EmptyState from './EmptyState'
 
 interface Props { shots: Shot[]; isMobile?: boolean }
 
@@ -84,11 +86,11 @@ export default function DialInView({ shots, isMobile }: Props) {
       </div>
 
       {!hasEnoughData ? (
-        <div style={{ ...card, textAlign: 'center', padding: '48px 28px' }}>
-          <div style={{ fontSize: 32, marginBottom: 12 }}>⛳</div>
-          <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', marginBottom: 8 }}>No shot data yet</div>
-          <p style={{ fontSize: 14, color: '#4A4235' }}>Log shots in My Bag first so we can recommend clubs based on your real averages.</p>
-        </div>
+        <EmptyState
+          icon={<TargetIcon size={24} color="#8B8272" />}
+          title="No shot data yet"
+          subtitle="Log shots in My Bag first so we can recommend clubs based on your real averages."
+        />
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 16 : 24, maxWidth: isMobile ? '100%' : 820 }}>
 

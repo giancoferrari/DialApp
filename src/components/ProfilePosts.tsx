@@ -170,7 +170,7 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
           </button>
           <textarea
             value={caption} onChange={e => setCaption(e.target.value)}
-            placeholder="Write a caption… (e.g. New personal best at Santa Maria 🏌️)"
+            placeholder="Write a caption… (e.g. New personal best at Santa Maria)"
             rows={3}
             style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 12, padding: '11px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', resize: 'none', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", lineHeight: 1.5, marginBottom: 14 }}
             onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
@@ -441,8 +441,8 @@ export default function ProfilePosts({ targetUserId, meId, isMobile = false, can
                 : <img src={p.imageUrl ?? ''} alt="" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
               {(p.likeCount > 0 || p.commentCount > 0) && (
                 <div style={{ position: 'absolute', bottom: 4, left: 4, display: 'flex', gap: 8, fontSize: 10.5, fontWeight: 700, color: '#FFF', textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>
-                  {p.likeCount > 0 && <span>♥ {p.likeCount}</span>}
-                  {p.commentCount > 0 && <span>💬 {p.commentCount}</span>}
+                  {p.likeCount > 0 && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><HeartIcon size={11} color="#FFF" filled /> {p.likeCount}</span>}
+                  {p.commentCount > 0 && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><ChatIcon size={11} color="#FFF" /> {p.commentCount}</span>}
                 </div>
               )}
             </button>

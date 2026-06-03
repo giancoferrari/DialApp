@@ -4,7 +4,8 @@ import { saveCourse, deleteCourse } from '../lib/courses'
 import { createRound, upsertRoundHoles, deleteRound } from '../lib/rounds'
 import { createRoundPost } from '../lib/posts'
 import type { Course, Round, RoundHole, RoundRecapMeta } from '../types'
-import { CloseIcon, PlusIcon } from './Icons'
+import { CloseIcon, PlusIcon, ScorecardIcon } from './Icons'
+import EmptyState from './EmptyState'
 import CourseSearch from './CourseSearch'
 import type { GolfCourse, GolfTee } from '../lib/golfCourseApi'
 import { fetchCorrection, saveCorrection } from '../lib/courseCorrections'
@@ -570,11 +571,11 @@ export default function ScorecardView({
         </div>
 
         {rounds.length === 0 ? (
-          <div style={{ ...card, padding: '56px 28px', textAlign: 'center' }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>⛳</div>
-            <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', marginBottom: 8 }}>No rounds yet</div>
-            <p style={{ fontSize: 14, color: '#4A4235' }}>Start a round to track your scores hole by hole.</p>
-          </div>
+          <EmptyState
+            icon={<ScorecardIcon size={24} color="#8B8272" />}
+            title="No rounds yet"
+            subtitle="Start a round to track your scores hole by hole."
+          />
         ) : (
           <div>
             <span style={sectionLabel}>Round history</span>
@@ -1208,7 +1209,7 @@ export default function ScorecardView({
         <div style={{ background: '#1F3A2A', borderRadius: 24, padding: '36px 32px', marginBottom: 20, color: '#FAF6EA', boxShadow: t.diff < 0 ? '0 0 0 1px rgba(139,196,122,0.45), 0 12px 50px rgba(139,196,122,0.28)' : 'none', transition: 'box-shadow 0.4s ease' }}>
           {t.diff < 0 && (
             <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8BC47A', marginBottom: 8 }}>
-              ★ Under par
+              Under par
             </div>
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>

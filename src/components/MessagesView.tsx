@@ -173,7 +173,7 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewPro
             <div style={{ textAlign: 'center', color: '#6B5F4E', fontSize: 13, marginTop: 24 }}>Loading…</div>
           ) : messages.length === 0 ? (
             <div style={{ textAlign: 'center', color: '#6B5F4E', fontSize: 13, marginTop: 40 }}>
-              Say hello to {name(conversation.otherProfile)} 👋
+              Say hello to {name(conversation.otherProfile)}
             </div>
           ) : messages.map((m, i) => {
             const mine = m.senderId === userId
