@@ -7,6 +7,7 @@ import { flagEmoji, countryName } from '../lib/countries'
 import { ShieldIcon, ChatIcon, GearIcon, CameraIcon, CloseIcon } from './Icons'
 import ProfilePosts from './ProfilePosts'
 import Portal from './Portal'
+import { useEdgeSwipeBack } from '../hooks/useGestures'
 
 // ── A user's friends, in a tappable sheet ──────────────────────────────
 function FriendsListModal({ userId, isMobile, onClose, onViewProfile }: {
@@ -78,6 +79,7 @@ interface Props {
 
 export default function ProfileView({ profile, meId, viewUserId, userEmail, isMobile = false, onNavigate, onBack, onMessage, onViewProfile }: Props) {
   const isOwn = viewUserId === meId
+  useEdgeSwipeBack(() => (onBack ? onBack() : onNavigate('friends')), !isOwn)
   const [other, setOther] = useState<PublicProfile | null>(null)
   const [friendsCount, setFriendsCount] = useState(0)
   const [showFriends, setShowFriends] = useState(false)

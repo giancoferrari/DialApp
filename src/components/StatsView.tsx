@@ -3,6 +3,7 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import type { Round, Shot, View } from '../types'
 import { aggregateStats, scoreTrend, estimateHandicap, bagGaps } from '../lib/stats'
+import { useEdgeSwipeBack } from '../hooks/useGestures'
 
 gsap.registerPlugin(useGSAP)
 
@@ -28,6 +29,7 @@ function shortDate(iso: string): string {
 export default function StatsView({ rounds, shots, isMobile = false, onNavigate }: Props) {
   const ref = useRef<HTMLDivElement>(null)
   const px  = isMobile ? 20 : 40
+  useEdgeSwipeBack(() => onNavigate('tools'))
 
   useGSAP(() => {
     const mm = gsap.matchMedia()

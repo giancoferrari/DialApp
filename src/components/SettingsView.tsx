@@ -5,6 +5,7 @@ import type { UserProfile, View } from '../types'
 import { getRank } from '../lib/points'
 import { CameraIcon, CheckIcon, CloseIcon, ShieldIcon, ChevronRightIcon } from './Icons'
 import CountryPicker from './CountryPicker'
+import { useEdgeSwipeBack } from '../hooks/useGestures'
 
 // ── Local preferences (no DB needed) ──────────────────────
 type Prefs = {
@@ -185,6 +186,7 @@ interface Props {
 }
 
 export default function SettingsView({ profile, userEmail, userId, onProfileSaved, onSignOut, onShowLegal, onNavigate, onBack, isMobile = false }: Props) {
+  useEdgeSwipeBack(() => (onBack ? onBack() : onNavigate('profile')))
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [savedFlash, setSavedFlash] = useState<string | null>(null)

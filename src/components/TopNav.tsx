@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { View } from '../types'
 import DialWordmark from './DialWordmark'
 import { PlusIcon, PersonIcon, HomeIcon, UsersIcon, TrophyIcon, BellIcon, ToolsIcon, TargetIcon, ScorecardIcon, ChatIcon, CameraIcon } from './Icons'
+import { tapHaptic } from '../lib/native'
 
 const NAV_ITEMS: { id: View; label: string }[] = [
   { id: 'dashboard', label: 'Home'    },
@@ -401,7 +402,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
             return (
               <button
                 key={item.id}
-                onClick={() => onView(item.id)}
+                onClick={() => { if (!active) tapHaptic(); onView(item.id) }}
                 style={{
                   flex: 1, background: 'none', border: 'none',
                   display: 'flex', flexDirection: 'column', alignItems: 'center',

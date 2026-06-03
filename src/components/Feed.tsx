@@ -8,6 +8,7 @@ import Portal from './Portal'
 import { PostDetail } from './ProfilePosts'
 import RecapCard from './RecapCard'
 import Skeleton from './Skeleton'
+import { tapHaptic } from '../lib/native'
 
 interface Props {
   userId: string
@@ -88,7 +89,7 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
 
   const handleLike = async (post: Post) => {
     const was = post.likedByMe
-    if (!was) { setPoppingId(post.id); setTimeout(() => setPoppingId(null), 420) }
+    if (!was) { setPoppingId(post.id); setTimeout(() => setPoppingId(null), 420); tapHaptic() }
     patch(post.id, p => ({ ...p, likedByMe: !was, likeCount: p.likeCount + (was ? -1 : 1) }))
     try { await toggleLike(post.id, post.userId, userId, was) }
     catch { patch(post.id, p => ({ ...p, likedByMe: was, likeCount: p.likeCount + (was ? 1 : -1) })) }

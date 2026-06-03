@@ -7,6 +7,7 @@ import { getRank } from '../lib/points'
 import { flagEmoji } from '../lib/countries'
 import { ShieldIcon } from './Icons'
 import Skeleton from './Skeleton'
+import { useEdgeSwipeBack } from '../hooks/useGestures'
 import type { PublicProfile } from '../types'
 
 gsap.registerPlugin(useGSAP)
@@ -27,6 +28,7 @@ function name(p: PublicProfile): string {
 export default function LeaderboardView({ meId, isMobile = false, onBack, onViewProfile }: Props) {
   const listRef = useRef<HTMLDivElement>(null)
   const px = isMobile ? 20 : 40
+  useEdgeSwipeBack(() => onBack?.(), !!onBack)
 
   const { data: rows = [], isLoading: loading } = useQuery({
     queryKey: ['leaderboard', meId],

@@ -11,6 +11,17 @@ import Portal from './Portal'
 import RecapCard from './RecapCard'
 import Skeleton from './Skeleton'
 import { useToast } from './Toast'
+import { useSwipeDownDismiss } from '../hooks/useGestures'
+import { tapHaptic } from '../lib/native'
+
+// Small drag-to-dismiss grabber shown at the top of mobile bottom sheets.
+function Grabber() {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0 2px' }}>
+      <div style={{ width: 38, height: 4, borderRadius: 999, background: '#C9C0A8' }} />
+    </div>
+  )
+}
 
 const REPORT_REASONS = [
   'Spam or misleading',
@@ -107,6 +118,7 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
   const [tagged, setTagged]   = useState<string[]>([])
   const toast = useToast()
   const fileRef = useRef<HTMLInputElement>(null)
+  const { dragStyle, dragHandlers } = useSwipeDownDismiss(onClose)
 
   useEffect(() => {
     (async () => {
@@ -136,6 +148,7 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
       await createPost(meId, url, caption, tagged)
       onCreated()
       onClose()
+      tapHaptic()
       toast('Shared to your feed')
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Failed to share post.')
@@ -144,7 +157,8 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 210, background: 'rgba(31,29,23,0.55)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)' }}>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)', ...(isMobile ? dragStyle : {}) }}>
+        {isMobile && <div {...dragHandlers}><Grabber /></div>}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 20px 14px', borderBottom: '1px solid #E0D8C5' }}>
           <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>New post</div>
           <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
@@ -223,11 +237,13 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
   const [reporting, setReporting] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const isMine = post.userId === meId
+  const { dragStyle, dragHandlers } = useSwipeDownDismiss(onClose)
 
   useEffect(() => { fetchComments(post.id, meId).then(setComments).catch(() => {}) }, [post.id, meId])
 
   const onLike = async () => {
     const wasLiked = liked
+    if (!wasLiked) tapHaptic()
     setLiked(!wasLiked); setLikeCount(c => c + (wasLiked ? -1 : 1))
     try { await toggleLike(post.id, post.userId, meId, wasLiked); onChanged() }
     catch { setLiked(wasLiked); setLikeCount(c => c + (wasLiked ? 1 : -1)) }
@@ -259,7 +275,8 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 210, background: 'rgba(31,29,23,0.6)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, maxHeight: isMobile ? '94vh' : '90vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)' }}>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, maxHeight: isMobile ? '94vh' : '90vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)', ...(isMobile ? dragStyle : {}) }}>
+        {isMobile && <div {...dragHandlers}><Grabber /></div>}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid #E0D8C5', flexShrink: 0 }}>
           <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>{authorName}</div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>

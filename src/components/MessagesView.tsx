@@ -10,6 +10,17 @@ import type { Conversation, DirectMessage, PublicProfile } from '../types'
 import { CloseIcon, SendIcon, PlusIcon, ChatIcon } from './Icons'
 import Portal from './Portal'
 import Skeleton from './Skeleton'
+import { tapHaptic } from '../lib/native'
+import { useEdgeSwipeBack, useSwipeDownDismiss } from '../hooks/useGestures'
+
+// Drag-to-dismiss grabber for mobile bottom sheets.
+function Grabber() {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0 2px' }}>
+      <div style={{ width: 38, height: 4, borderRadius: 999, background: '#C9C0A8' }} />
+    </div>
+  )
+}
 
 interface Props {
   userId: string
@@ -75,6 +86,7 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewPro
   const [sending, setSending]   = useState(false)
   const [loading, setLoading]   = useState(true)
   const [sendError, setSendError] = useState<string | null>(null)
+  useEdgeSwipeBack(onClose)
   const [vp, setVp] = useState<{ h: number; top: number } | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -134,6 +146,7 @@ function Thread({ conversation, userId, isMobile, onClose, onActivity, onViewPro
     setInput('')
     setSending(true)
     setSendError(null)
+    tapHaptic()
     // Optimistic
     const optimistic: DirectMessage = {
       id: `tmp-${Date.now()}`, conversationId: conversation.id, senderId: userId,
@@ -264,6 +277,7 @@ function NewMessageSheet({ userId, isMobile, onPick, onClose }: {
   const [query, setQuery]     = useState('')
   const [results, setResults] = useState<PublicProfile[]>([])
   const [searching, setSearching] = useState(false)
+  const { dragStyle, dragHandlers } = useSwipeDownDismiss(onClose)
 
   useEffect(() => {
     (async () => {
@@ -290,7 +304,8 @@ function NewMessageSheet({ userId, isMobile, onPick, onClose }: {
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 210, background: 'rgba(31,29,23,0.5)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 480, maxHeight: isMobile ? '85vh' : '80vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)' }}>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 480, maxHeight: isMobile ? '85vh' : '80vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)', ...(isMobile ? dragStyle : {}) }}>
+        {isMobile && <div {...dragHandlers}><Grabber /></div>}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 20px 14px', borderBottom: '1px solid #E0D8C5', flexShrink: 0 }}>
           <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>New message</div>
           <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
