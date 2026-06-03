@@ -1,10 +1,18 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import { fetchFriendships, fetchProfilesForIds, updateFriendship } from '../lib/friends'
 import { fetchMatches, acceptMatchInvite, declineMatchInvite } from '../lib/matches'
 import { fetchNotifications, markNotificationsRead } from '../lib/notifications'
 import type { PublicProfile, Friendship, Match, AppNotification } from '../types'
 import { CheckIcon, CloseIcon, TrophyIcon, UsersIcon } from './Icons'
+import Skeleton from './Skeleton'
+
+type NotifData = {
+  friendReqs: (Friendship & { profile?: PublicProfile })[]
+  matchInvites: Match[]
+  notifs: AppNotification[]
+}
 
 function notifAgo(ts: string): string {
   const m = Math.floor((Date.now() - new Date(ts).getTime()) / 60000)
@@ -38,66 +46,61 @@ const MODE_LABELS: Record<string, string> = {
 }
 
 export default function NotificationsView({ userId, isMobile = false, onCountChange }: Props) {
-  const [friendReqs, setFriendReqs] = useState<(Friendship & { profile?: PublicProfile })[]>([])
-  const [matchInvites, setMatchInvites] = useState<Match[]>([])
-  const [notifs, setNotifs] = useState<AppNotification[]>([])
-  const [loading, setLoading] = useState(true)
+  const qc = useQueryClient()
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const notifKey = ['notifications', userId]
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    try {
-      const [friendships, matches] = await Promise.all([
-        fetchFriendships(userId),
-        fetchMatches(userId),
-      ])
+  const { data, isLoading: loading } = useQuery({
+    queryKey: notifKey,
+    queryFn: async (): Promise<NotifData> => {
+      const [friendships, matches] = await Promise.all([fetchFriendships(userId), fetchMatches(userId)])
 
       const pendingForMe = friendships.filter(f => f.addresseeId === userId && f.status === 'pending')
       const requesterIds = pendingForMe.map(f => f.requesterId)
       const profiles = requesterIds.length ? await fetchProfilesForIds(requesterIds) : []
-      setFriendReqs(pendingForMe.map(f => ({
-        ...f,
-        profile: profiles.find(p => p.userId === f.requesterId),
-      })))
+      const friendReqs = pendingForMe.map(f => ({ ...f, profile: profiles.find(p => p.userId === f.requesterId) }))
 
-      const invites = matches.filter(m => {
+      const matchInvites = matches.filter(m => {
         const me = m.players.find(p => p.userId === userId)
         return me?.status === 'invited' && m.status === 'pending'
       })
-      setMatchInvites(invites)
 
-      // Tag/repost notifications (degrade gracefully if the table isn't there yet)
-      try {
-        const ns = await fetchNotifications(userId)
-        setNotifs(ns)
-        markNotificationsRead(userId).catch(() => {})
-      } catch { /* notifications table not set up */ }
+      let notifs: AppNotification[] = []
+      try { notifs = await fetchNotifications(userId); markNotificationsRead(userId).catch(() => {}) }
+      catch { /* notifications table not set up */ }
 
-      onCountChange(pendingForMe.length + invites.length)
-    } catch { setError('Failed to load notifications.') }
-    finally { setLoading(false) }
-  }, [userId]) // eslint-disable-line react-hooks/exhaustive-deps
+      return { friendReqs, matchInvites, notifs }
+    },
+  })
 
-  useEffect(() => { load() }, [load])
+  const friendReqs   = data?.friendReqs ?? []
+  const matchInvites = data?.matchInvites ?? []
+  const notifs       = data?.notifs ?? []
 
-  // Realtime: listen for new match invites
+  // Keep the bell badge in sync (notifications are marked read on load).
+  useEffect(() => { onCountChange(friendReqs.length + matchInvites.length) }, [friendReqs.length, matchInvites.length, onCountChange])
+
+  const patch = (fn: (d: NotifData) => NotifData) =>
+    qc.setQueryData<NotifData>(notifKey, old => (old ? fn(old) : old))
+
+  // Realtime: new friend requests / match invites / notifications
   useEffect(() => {
+    const inval = () => qc.invalidateQueries({ queryKey: notifKey })
     const ch = supabase
       .channel(`notifs-${userId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'match_players', filter: `user_id=eq.${userId}` }, load)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'friendships', filter: `addressee_id=eq.${userId}` }, load)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` }, load)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'match_players', filter: `user_id=eq.${userId}` }, inval)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'friendships', filter: `addressee_id=eq.${userId}` }, inval)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` }, inval)
       .subscribe()
     return () => { supabase.removeChannel(ch) }
-  }, [userId, load])
+  }, [userId, qc]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleFriendAccept = async (f: Friendship) => {
     setBusy(f.id); setError(null)
     try {
       await updateFriendship(f.id, 'accepted')
-      setFriendReqs(prev => prev.filter(x => x.id !== f.id))
-      onCountChange(friendReqs.length - 1 + matchInvites.length)
+      patch(d => ({ ...d, friendReqs: d.friendReqs.filter(x => x.id !== f.id) }))
     } catch { setError('Failed to accept.') }
     finally { setBusy(null) }
   }
@@ -106,8 +109,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
     setBusy(f.id); setError(null)
     try {
       await updateFriendship(f.id, 'declined')
-      setFriendReqs(prev => prev.filter(x => x.id !== f.id))
-      onCountChange(friendReqs.length - 1 + matchInvites.length)
+      patch(d => ({ ...d, friendReqs: d.friendReqs.filter(x => x.id !== f.id) }))
     } catch { setError('Failed to decline.') }
     finally { setBusy(null) }
   }
@@ -116,8 +118,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
     setBusy(match.id); setError(null)
     try {
       await acceptMatchInvite(match.id, userId, match.wagerPerPlayer)
-      setMatchInvites(prev => prev.filter(m => m.id !== match.id))
-      onCountChange(friendReqs.length + matchInvites.length - 1)
+      patch(d => ({ ...d, matchInvites: d.matchInvites.filter(m => m.id !== match.id) }))
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Failed to accept.')
     } finally { setBusy(null) }
@@ -127,8 +128,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
     setBusy(match.id); setError(null)
     try {
       await declineMatchInvite(match.id, userId)
-      setMatchInvites(prev => prev.filter(m => m.id !== match.id))
-      onCountChange(friendReqs.length + matchInvites.length - 1)
+      patch(d => ({ ...d, matchInvites: d.matchInvites.filter(m => m.id !== match.id) }))
     } catch { setError('Failed to decline.') }
     finally { setBusy(null) }
   }
@@ -151,7 +151,17 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
       )}
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '48px', fontSize: 14, color: '#6B5F4E' }}>Loading…</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {[0, 1, 2].map(i => (
+            <div key={i} style={{ background: 'rgba(250,246,234,0.70)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 20, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
+              <Skeleton width={44} height={44} radius={22} />
+              <div style={{ flex: 1 }}>
+                <Skeleton width="35%" height={11} />
+                <Skeleton width="55%" height={14} style={{ marginTop: 8 }} />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : total === 0 ? (
         <div style={{ background: 'rgba(250,246,234,0.70)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 22, padding: '48px 24px', textAlign: 'center', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.80)' }}>
           <div style={{ width: 56, height: 56, borderRadius: 28, background: '#F0EBDD', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
