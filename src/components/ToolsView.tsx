@@ -37,11 +37,9 @@ export default function ToolsView({ onNavigate, isMobile = false }: Props) {
             key={item.view}
             onClick={() => onNavigate(item.view)}
             style={{
-              background: 'rgba(250,246,234,0.70)',
-              backdropFilter: 'blur(36px) saturate(180%)',
-              WebkitBackdropFilter: 'blur(36px) saturate(180%)',
-              border: '1px solid rgba(255,255,255,0.62)',
-              borderRadius: 22,
+              background: '#FFFDF8',
+              border: '1px solid #E0D8C5',
+              borderRadius: 18,
               padding: '24px 20px',
               display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 14,
               cursor: 'pointer', textAlign: 'left',

@@ -8,6 +8,7 @@ import { ShieldIcon, UsersIcon, ScorecardIcon, MedalIcon, CloseIcon, ChevronRigh
 import Feed from './Feed'
 import Portal from './Portal'
 import RankUpMoment from './RankUpMoment'
+import { card } from '../lib/surfaces'
 
 gsap.registerPlugin(useGSAP)
 
@@ -223,15 +224,8 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
     : null
   const lastDiff  = lastScore !== null && lastPar !== null ? lastScore - lastPar : null
 
-  // ── Shared style ──
-  const glassCard: React.CSSProperties = {
-    background: 'rgba(250,246,234,0.80)',
-    backdropFilter: 'blur(40px) saturate(190%)',
-    WebkitBackdropFilter: 'blur(40px) saturate(190%)',
-    border: '1px solid rgba(255,255,255,0.72)',
-    borderRadius: 20,
-    boxShadow: '0 4px 24px rgba(31,29,23,0.10), inset 0 1px 0 rgba(255,255,255,0.90)',
-  }
+  // ── Shared style — flat card on cream (the hero rank card uses cardRaised) ──
+  const glassCard: React.CSSProperties = { ...card, borderRadius: 18 }
 
   return (
     <main
@@ -243,14 +237,11 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
       <div style={{ marginBottom: 20 }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
-          background: 'rgba(250,246,234,0.65)',
-          backdropFilter: 'blur(16px) saturate(160%)',
-          WebkitBackdropFilter: 'blur(16px) saturate(160%)',
-          border: '1px solid rgba(255,255,255,0.55)',
+          background: '#FFFDF8',
+          border: '1px solid #E0D8C5',
           borderRadius: 999, padding: '6px 14px',
           fontSize: 12, fontWeight: 500, color: '#4A4235',
           fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
         }}>
           <span style={{ width: 6, height: 6, borderRadius: 3, background: '#D9824D', flexShrink: 0 }} />
           {date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: TZ })}
@@ -424,7 +415,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
           onClick={() => onNavigate('friends')}
           style={{
             flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            ...glassCard, border: '1px solid rgba(255,255,255,0.72)',
+            ...glassCard,
             padding: '16px 12px', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
             fontSize: 14.5, fontWeight: 600, color: '#1F3A2A', transition: 'transform 0.16s ease',
           }}

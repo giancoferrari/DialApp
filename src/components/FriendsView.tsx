@@ -119,7 +119,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
   }
 
   const px = isMobile ? 20 : 40
-  const card: React.CSSProperties = { background: 'rgba(250,246,234,0.70)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 22, overflow: 'hidden', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.80)' }
+  const card: React.CSSProperties = { background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 18, overflow: 'hidden' }
 
   const btnSmall = (bg: string, color: string): React.CSSProperties => ({
     background: bg, color, border: 'none', borderRadius: 999,
@@ -176,7 +176,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
           placeholder="Search by username…"
           style={{
             width: '100%', boxSizing: 'border-box',
-            background: 'rgba(250,246,234,0.68)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+            background: '#F0EBDD',
             border: '1px solid rgba(255,255,255,0.52)',
             borderRadius: 14, padding: '13px 16px 13px 44px',
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.65)',
@@ -192,7 +192,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
         </div>
 
         {(searchResults.length > 0 || searching) && (
-          <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, background: 'rgba(250,246,234,0.92)', backdropFilter: 'blur(40px) saturate(200%)', WebkitBackdropFilter: 'blur(40px) saturate(200%)', border: '1px solid rgba(255,255,255,0.68)', borderRadius: 18, overflow: 'hidden', zIndex: 20, boxShadow: '0 16px 40px rgba(31,58,42,0.16), inset 0 1px 0 rgba(255,255,255,0.85)' }}>
+          <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 18, overflow: 'hidden', zIndex: 20, boxShadow: '0 16px 40px rgba(31,58,42,0.16), inset 0 1px 0 rgba(255,255,255,0.85)' }}>
             {searching && (
               <div style={{ padding: '14px 16px', fontSize: 13, color: '#6B5F4E' }}>Searching…</div>
             )}

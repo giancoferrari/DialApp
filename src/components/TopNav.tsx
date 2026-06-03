@@ -62,13 +62,10 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
       {/* ── Top bar ── */}
       <div style={{
         position: isMobile ? 'relative' : 'sticky', top: isMobile ? undefined : 0, zIndex: 30,
-        background: 'rgba(237,232,212,0.78)',
-        backdropFilter: 'blur(32px) saturate(200%)',
-        WebkitBackdropFilter: 'blur(32px) saturate(200%)',
+        background: '#FAF6EA',
         paddingTop: isMobile ? 'calc(env(safe-area-inset-top) + 12px)' : '20px',
         paddingBottom: isMobile ? '12px' : '20px',
-        borderBottom: '1px solid rgba(255,255,255,0.45)',
-        boxShadow: '0 1px 0 rgba(255,255,255,0.6), 0 4px 20px rgba(31,29,23,0.06)',
+        borderBottom: '1px solid #E0D8C5',
       }}>
         <div style={{
           maxWidth: 1320, margin: '0 auto',
@@ -129,17 +126,14 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
               style={{
                 position: 'relative',
                 width: 38, height: 38, borderRadius: 19,
-                background: 'rgba(250,246,234,0.65)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255,255,255,0.5)',
+                background: '#FFFDF8',
+                border: '1px solid #E0D8C5',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: 'pointer', flexShrink: 0,
-                boxShadow: '0 2px 8px rgba(31,29,23,0.06), inset 0 1px 0 rgba(255,255,255,0.7)',
                 transition: 'all 0.15s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.90)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.65)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#F0EBDD' }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FFFDF8' }}
               onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.94)' }}
               onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
             >
@@ -165,13 +159,10 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
             style={{
               position: 'relative',
               width: 38, height: 38, borderRadius: 19,
-              background: 'rgba(250,246,234,0.65)',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.5)',
+              background: '#FFFDF8',
+              border: '1px solid #E0D8C5',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', flexShrink: 0,
-              boxShadow: '0 2px 8px rgba(31,29,23,0.06), inset 0 1px 0 rgba(255,255,255,0.7)',
               transition: 'all 0.15s',
             }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.90)' }}

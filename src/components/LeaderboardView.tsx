@@ -96,11 +96,10 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
                 style={{
                   display: 'flex', alignItems: 'center', gap: 13, textAlign: 'left',
                   background: me ? 'linear-gradient(150deg, rgba(35,68,46,1) 0%, rgba(26,50,33,1) 100%)' : 'rgba(250,246,234,0.82)',
-                  backdropFilter: me ? 'none' : 'blur(28px) saturate(170%)', WebkitBackdropFilter: me ? 'none' : 'blur(28px) saturate(170%)',
-                  border: `1px solid ${me ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.7)'}`,
+                                    border: `1px solid ${me ? 'rgba(255,255,255,0.10)' : '#E0D8C5'}`,
                   borderRadius: 18, padding: '13px 16px',
                   cursor: clickable ? 'pointer' : 'default',
-                  boxShadow: me ? '0 10px 30px rgba(31,58,42,0.24)' : '0 4px 18px rgba(31,29,23,0.07), inset 0 1px 0 rgba(255,255,255,0.8)',
+                  boxShadow: me ? '0 10px 30px rgba(31,58,42,0.24)' : 'none',
                 }}
               >
                 {/* Rank */}

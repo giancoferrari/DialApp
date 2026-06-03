@@ -406,7 +406,7 @@ export default function MessagesView({ userId, isMobile = false, startUserId = n
           action={<button onClick={() => setShowNew(true)} style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 22px', fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>Start a chat</button>}
         />
       ) : (
-        <div style={{ background: 'rgba(250,246,234,0.78)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.66)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.82)' }}>
+        <div style={{ background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 18, overflow: 'hidden' }}>
           {conversations.map((c, i) => (
             <button key={c.id} onClick={() => setActive(c)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 13, background: 'transparent', border: 'none', borderTop: i === 0 ? 'none' : '1px solid rgba(224,216,197,0.5)', padding: '14px 16px', cursor: 'pointer', textAlign: 'left', transition: 'background 0.12s' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(240,235,221,0.6)' }}

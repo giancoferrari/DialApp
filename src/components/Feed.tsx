@@ -12,6 +12,7 @@ import Avatar from './Avatar'
 import EmptyState from './EmptyState'
 import { tapHaptic } from '../lib/native'
 import { timeAgo, displayName as authorName } from '../lib/format'
+import { card } from '../lib/surfaces'
 
 interface Props {
   userId: string
@@ -23,7 +24,7 @@ function FeedSkeleton({ isMobile }: { isMobile: boolean }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {[0, 1].map(i => (
-        <div key={i} style={{ background: 'rgba(250,246,234,0.82)', border: '1px solid rgba(255,255,255,0.7)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 22px rgba(31,29,23,0.06), inset 0 1px 0 rgba(255,255,255,0.85)' }}>
+        <div key={i} style={{ ...card, borderRadius: 18, overflow: 'hidden' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px' }}>
             <Skeleton width={38} height={38} radius={19} />
             <div style={{ flex: 1 }}>
@@ -109,7 +110,7 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {posts.map(post => (
-        <div key={`${post.id}-${post.repostedBy?.userId ?? 'orig'}`} style={{ background: 'rgba(250,246,234,0.82)', backdropFilter: 'blur(28px) saturate(170%)', WebkitBackdropFilter: 'blur(28px) saturate(170%)', border: '1px solid rgba(255,255,255,0.7)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 22px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.85)' }}>
+        <div key={`${post.id}-${post.repostedBy?.userId ?? 'orig'}`} style={{ ...card, borderRadius: 18, overflow: 'hidden' }}>
           {post.repostedBy && (
             <div style={{ padding: '9px 14px 0', fontSize: 12, color: '#6B5F4E', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
               <span style={{ fontSize: 14, lineHeight: 1 }}>↻</span> {authorName(post.repostedBy)} reposted

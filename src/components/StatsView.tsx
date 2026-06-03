@@ -48,10 +48,8 @@ export default function StatsView({ rounds, shots, isMobile = false, onNavigate 
   const { gaps, clubsWithData } = bagGaps(shots)
 
   const card: React.CSSProperties = {
-    background: 'rgba(250,246,234,0.80)',
-    backdropFilter: 'blur(36px) saturate(185%)', WebkitBackdropFilter: 'blur(36px) saturate(185%)',
-    border: '1px solid rgba(255,255,255,0.68)', borderRadius: 22,
-    boxShadow: '0 6px 24px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.85)',
+    background: '#FFFDF8',
+    border: '1px solid #E0D8C5', borderRadius: 18,
   }
   const sectionLabel: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 12 }
 
