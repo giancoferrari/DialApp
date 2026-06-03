@@ -179,7 +179,7 @@ function NewMatchModal({
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(31,29,23,0.50)', backdropFilter: 'blur(20px) saturate(140%)', WebkitBackdropFilter: 'blur(20px) saturate(140%)', zIndex: 100, display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
-      <div style={{ background: 'rgba(237,232,212,0.90)', backdropFilter: 'blur(28px) saturate(180%)', WebkitBackdropFilter: 'blur(28px) saturate(180%)', border: '1px solid rgba(255,255,255,0.52)', borderRadius: isMobile ? '28px 28px 0 0' : 28, width: '100%', maxWidth: 520, maxHeight: isMobile ? '92vh' : '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: isMobile ? '0 -16px 48px rgba(31,29,23,0.18), inset 0 1px 0 rgba(255,255,255,0.7)' : '0 32px 80px rgba(31,29,23,0.22), inset 0 1px 0 rgba(255,255,255,0.7)' }}>
+      <div style={{ background: '#F5F0E6', border: '1px solid #E0D8C5', borderRadius: isMobile ? '28px 28px 0 0' : 28, width: '100%', maxWidth: 520, maxHeight: isMobile ? '92vh' : '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: isMobile ? '0 -16px 48px rgba(31,29,23,0.18), inset 0 1px 0 rgba(255,255,255,0.7)' : '0 32px 80px rgba(31,29,23,0.22), inset 0 1px 0 rgba(255,255,255,0.7)' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px 16px', borderBottom: '1px solid #E0D8C5', flexShrink: 0 }}>
           <div style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>New Match</div>
@@ -759,14 +759,12 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
 
     return (
       <div style={{
-        background: isDark ? 'rgba(31,58,42,0.88)' : 'rgba(250,246,234,0.68)',
-        backdropFilter: 'blur(36px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(36px) saturate(180%)',
-        border: isDark ? '1px solid rgba(255,255,255,0.14)' : '1px solid rgba(255,255,255,0.60)',
+        background: isDark ? '#1F3A2A' : '#FFFDF8',
+        border: isDark ? '1px solid rgba(255,255,255,0.10)' : '1px solid #E0D8C5',
         borderRadius: 22,
         boxShadow: isDark
           ? '0 12px 40px rgba(31,58,42,0.26), inset 0 1px 0 rgba(255,255,255,0.16)'
-          : '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.75)',
+          : 'none',
         overflow: 'hidden',
       }}>
         {/* Header */}
@@ -784,7 +782,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
         </div>
 
         {/* Players inset */}
-        <div style={{ margin: '10px 12px', background: isDark ? 'rgba(250,246,234,0.07)' : 'rgba(255,255,255,0.45)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.55)', borderRadius: 14, padding: '10px 12px', display: 'flex', gap: 10, alignItems: 'center' }}>
+        <div style={{ margin: '10px 12px', background: isDark ? 'rgba(255,255,255,0.06)' : '#F0EBDD', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E0D8C5', borderRadius: 14, padding: '10px 12px', display: 'flex', gap: 10, alignItems: 'center' }}>
           {others.map(p => (
             <div key={p.userId} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Avatar profile={p.profile} size={28} />
@@ -805,13 +803,13 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
             <>
               <button
                 onClick={() => handleDecline(match.id)}
-                style={{ flex: 1, background: 'rgba(240,235,221,0.72)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.5)', borderRadius: 13, padding: '11px', fontSize: 13, color: '#4A4235', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", transition: 'transform 0.12s ease' }}
+                style={{ flex: 1, background: '#F0EBDD', border: '1px solid #E0D8C5', borderRadius: 13, padding: '11px', fontSize: 13, color: '#4A4235', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", transition: 'transform 0.12s ease' }}
                 onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
                 onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
               >Decline</button>
               <button
                 onClick={() => handleAccept(match.id, match.wagerPerPlayer)}
-                style={{ flex: 2, background: 'rgba(31,58,42,0.92)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.16)', borderRadius: 13, padding: '11px', fontSize: 13, fontWeight: 600, color: '#FAF6EA', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", transition: 'transform 0.12s ease' }}
+                style={{ flex: 2, background: '#1F3A2A', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 13, padding: '11px', fontSize: 13, fontWeight: 600, color: '#FAF6EA', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", transition: 'transform 0.12s ease' }}
                 onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
                 onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
               >Accept{match.wagerPerPlayer > 0 ? ` · $${match.wagerPerPlayer}` : ''}</button>
@@ -821,7 +819,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
             <>
               <button
                 onClick={() => setScoring(match)}
-                style={{ flex: 2, background: 'rgba(250,246,234,0.90)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: '1px solid rgba(255,255,255,0.6)', borderRadius: 13, padding: '11px', fontSize: 13, fontWeight: 600, color: '#1F3A2A', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", boxShadow: '0 2px 10px rgba(31,29,23,0.07)', transition: 'transform 0.12s ease' }}
+                style={{ flex: 2, background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 13, padding: '11px', fontSize: 13, fontWeight: 600, color: '#1F3A2A', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", boxShadow: '0 2px 10px rgba(31,29,23,0.07)', transition: 'transform 0.12s ease' }}
                 onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
                 onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
               >Enter Scores →</button>
@@ -836,7 +834,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
           {isDone && (
             <button
               onClick={() => setScoring(match)}
-              style={{ flex: 1, background: isDark ? 'rgba(250,246,234,0.90)' : 'rgba(240,235,221,0.85)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: isDark ? '1px solid rgba(255,255,255,0.55)' : '1px solid rgba(255,255,255,0.50)', borderRadius: 13, padding: '11px', fontSize: 13, fontWeight: 600, color: '#1F1D17', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", boxShadow: '0 2px 10px rgba(31,29,23,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'transform 0.12s ease' }}
+              style={{ flex: 1, background: isDark ? '#FFFDF8' : '#F0EBDD', border: '1px solid #E0D8C5', borderRadius: 13, padding: '11px', fontSize: 13, fontWeight: 600, color: '#1F1D17', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", boxShadow: '0 2px 10px rgba(31,29,23,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'transform 0.12s ease' }}
               onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
               onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
             >View Scorecard <span style={{ fontSize: 12, opacity: 0.45 }}>›</span></button>
@@ -880,7 +878,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
         </h1>
 
         {wallet && (
-          <div style={{ background: 'rgba(250,246,234,0.70)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 22, padding: '16px 20px', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.80)' }}>
+          <div style={{ background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 18, padding: '16px 20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: walletAction ? 14 : 0 }}>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 4 }}>Wallet Balance</div>
@@ -912,9 +910,9 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
 
       <button
         onClick={() => setShowNew(true)}
-        style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', background: 'rgba(31,58,42,0.88)', backdropFilter: 'blur(36px) saturate(160%)', WebkitBackdropFilter: 'blur(36px) saturate(160%)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 22, padding: '18px 20px', marginBottom: 28, cursor: 'pointer', transition: 'all 0.22s cubic-bezier(0.22, 1, 0.36, 1)', boxShadow: '0 12px 40px rgba(31,58,42,0.26), inset 0 1px 0 rgba(255,255,255,0.16)' }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(31,58,42,0.97)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 18px 52px rgba(31,58,42,0.32), inset 0 1px 0 rgba(255,255,255,0.16)' }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(31,58,42,0.88)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(31,58,42,0.26), inset 0 1px 0 rgba(255,255,255,0.16)' }}
+        style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', background: '#1F3A2A', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 22, padding: '18px 20px', marginBottom: 28, cursor: 'pointer', transition: 'all 0.22s cubic-bezier(0.22, 1, 0.36, 1)', boxShadow: '0 12px 40px rgba(31,58,42,0.26), inset 0 1px 0 rgba(255,255,255,0.16)' }}
+        onMouseEnter={e => { e.currentTarget.style.background = '#16271D'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 18px 52px rgba(31,58,42,0.32), inset 0 1px 0 rgba(255,255,255,0.16)' }}
+        onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(31,58,42,0.26), inset 0 1px 0 rgba(255,255,255,0.16)' }}
         onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
         onMouseUp={e => { e.currentTarget.style.transform = 'translateY(-2px)' }}
         onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.97)' }}

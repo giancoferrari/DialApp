@@ -63,7 +63,7 @@ function SectionLabel({ label }: { label: string }) {
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ background: 'rgba(250,246,234,0.70)', backdropFilter: 'blur(36px) saturate(180%)', WebkitBackdropFilter: 'blur(36px) saturate(180%)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 6px 24px rgba(31,29,23,0.08), inset 0 1px 0 rgba(255,255,255,0.80)' }}>
+    <div style={{ background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 18, overflow: 'hidden' }}>
       {children}
     </div>
   )
@@ -282,7 +282,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       )}
 
       {/* ── Profile header card ── */}
-      <div style={{ background: 'rgba(31,58,42,0.84)', backdropFilter: 'blur(24px) saturate(140%)', WebkitBackdropFilter: 'blur(24px) saturate(140%)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 22, padding: '28px 24px', display: 'flex', alignItems: 'center', gap: 20, boxShadow: '0 8px 32px rgba(31,58,42,0.22), inset 0 1px 0 rgba(255,255,255,0.14)', marginBottom: 4 }}>
+      <div style={{ background: '#1F3A2A', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 22, padding: '28px 24px', display: 'flex', alignItems: 'center', gap: 20, boxShadow: '0 8px 32px rgba(31,58,42,0.22), inset 0 1px 0 rgba(255,255,255,0.14)', marginBottom: 4 }}>
         {/* Avatar */}
         <div style={{ position: 'relative', flexShrink: 0 }}>
           <div
@@ -547,9 +547,9 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       <SectionLabel label="Account actions" />
       <button
         onClick={onSignOut}
-        style={{ width: '100%', background: 'rgba(250,246,234,0.62)', backdropFilter: 'blur(24px) saturate(160%)', WebkitBackdropFilter: 'blur(24px) saturate(160%)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 18, padding: '16px', fontSize: 14, fontWeight: 600, color: '#D9824D', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", transition: 'all 0.15s', boxShadow: '0 4px 20px rgba(31,29,23,0.07), inset 0 1px 0 rgba(255,255,255,0.65)' }}
+        style={{ width: '100%', background: '#FFFDF8', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 18, padding: '16px', fontSize: 14, fontWeight: 600, color: '#D9824D', cursor: 'pointer', fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", transition: 'all 0.15s' }}
         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(217,130,77,0.10)' }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.62)' }}
+        onMouseLeave={e => { e.currentTarget.style.background = '#FFFDF8' }}
       >
         Sign out
       </button>

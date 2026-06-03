@@ -196,10 +196,8 @@ export default function AuthScreen({ onShowLegal }: Props) {
 
         {/* Main card */}
         <div style={{
-          background: 'rgba(250,246,234,0.68)',
-          backdropFilter: 'blur(28px) saturate(160%)',
-          WebkitBackdropFilter: 'blur(28px) saturate(160%)',
-          border: '1px solid rgba(255,255,255,0.55)',
+          background: '#FFFDF8',
+          border: '1px solid #E0D8C5',
           borderRadius: 28, padding: '32px 36px',
           boxShadow: '0 8px 40px rgba(31,58,42,0.12), inset 0 1px 0 rgba(255,255,255,0.7)',
         }}>
