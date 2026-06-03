@@ -122,7 +122,10 @@ Phases: history → round_start (pick saved course / featured **Santa Maria** / 
 Virtual **wallet** (top up / withdraw, USD). Create match: course, 9/18, format (**stroke** active; match_play/skins/wolf "coming soon"), wager per player, invite friends. Invites accept/decline (also in Notifications). Active → `ScoringModal` (per-hole entry, realtime, golf-notation grid same as rounds). Complete → winner determined (stroke = lowest total; match_play = holes won), **pot credited to winner / refunds on tie**, ranked points awarded. **Points:** WIN +25, LOSS −10, TIE +5. **Ranks:** Newcomer(0) → Bronze(100) → Silver(300) → Gold(600) → Platinum(1000) → Diamond(1500) → Legend(2000).
 
 ### Tools — `components/ToolsView.tsx`
-Hub → **Bag** (`BagView.tsx`, club distances from shots), **Dial In** (`DialInView.tsx`, shot/wind calculator), **Rounds** (Scorecard), **Practice** (`PracticeView.tsx`, training log).
+Hub → **Stats** (`StatsView.tsx`), **Bag** (`BagView.tsx`, club distances from shots), **Dial In** (`DialInView.tsx`, shot/wind calculator), **Rounds** (Scorecard), **Practice** (`PracticeView.tsx`, training log).
+
+### Stats / Trends — `components/StatsView.tsx`, `lib/stats.ts`
+Read-only, computed from logged rounds + shots (no schema). Shows an **estimated handicap** (best 8 of last 20 complete 18-hole rounds' to-par × 0.96), a **recent-rounds bar chart** colored by to-par, **averages** (GIR%, fairways%, putts/18, scrambling%), and **bag gap analysis** (consecutive club-distance gaps, flags "full club" gaps ≥18yd). Pure functions live in `lib/stats.ts` (`roundTotals`, `aggregateStats`, `scoreTrend`, `estimateHandicap`, `bagGaps`).
 
 ### Log a shot — `components/LogShotModal.tsx`
 Quick club-distance capture (numpad + club picker + note). Opened from the "Log a shot" create-menu item; saves a `shots` row.

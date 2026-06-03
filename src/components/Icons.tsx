@@ -215,6 +215,26 @@ export function GridIcon({ size = 22, color = 'currentColor' }: { size?: number;
   )
 }
 
+export function ChartIcon({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path d="M3 21h18" stroke={color} strokeWidth="1.6" strokeLinecap="round" />
+      <rect x="5" y="11" width="3.6" height="7" rx="1.2" stroke={color} strokeWidth="1.6" />
+      <rect x="10.2" y="6" width="3.6" height="12" rx="1.2" stroke={color} strokeWidth="1.6" />
+      <rect x="15.4" y="13" width="3.6" height="5" rx="1.2" stroke={color} strokeWidth="1.6" />
+    </svg>
+  )
+}
+
+export function MedalIcon({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path d="M8 4l3 6M16 4l-3 6" stroke={color} strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="12" cy="15.5" r="5" stroke={color} strokeWidth="1.6" />
+    </svg>
+  )
+}
+
 export function MoreIcon({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>

@@ -22,6 +22,7 @@ import FriendsView from './components/FriendsView'
 import MatchesView from './components/MatchesView'
 import NotificationsView from './components/NotificationsView'
 import ToolsView from './components/ToolsView'
+import StatsView from './components/StatsView'
 import SettingsView from './components/SettingsView'
 import ProfileView from './components/ProfileView'
 import MessagesView from './components/MessagesView'
@@ -436,6 +437,9 @@ function AppShell() {
           )}
           {view === 'tools' && (
             <ToolsView onNavigate={handleSetView} isMobile={isMobile} />
+          )}
+          {view === 'stats' && (
+            <StatsView rounds={rounds} shots={shots} onNavigate={handleSetView} isMobile={isMobile} />
           )}
         </div>
       </div>

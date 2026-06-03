@@ -1,5 +1,5 @@
 import type { View } from '../types'
-import { BagIcon, TargetIcon, ScorecardIcon, DumbbellIcon } from './Icons'
+import { BagIcon, TargetIcon, ScorecardIcon, DumbbellIcon, ChartIcon } from './Icons'
 
 interface Props {
   onNavigate: (v: View) => void
@@ -7,6 +7,7 @@ interface Props {
 }
 
 const TOOLS = [
+  { view: 'stats'    as const, label: 'Stats',    sub: 'Trends & handicap', Icon: ChartIcon    },
   { view: 'bag'      as const, label: 'My Bag',   sub: 'Club distances',  Icon: BagIcon      },
   { view: 'dialin'   as const, label: 'Dial In',  sub: 'Shot calculator', Icon: TargetIcon   },
   { view: 'rounds'   as const, label: 'Rounds',   sub: 'Scorecards',      Icon: ScorecardIcon },
