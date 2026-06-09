@@ -10,6 +10,7 @@ import Portal from './Portal'
 import RankUpMoment from './RankUpMoment'
 import DialRing from './DialRing'
 import { card } from '../lib/surfaces'
+import { color, font, elevation, radius } from '../lib/tokens'
 
 gsap.registerPlugin(useGSAP)
 
@@ -31,67 +32,65 @@ function RanksModal({ points, isMobile, onClose, onNavigate }: { points: number;
   }, { scope: listRef })
 
   const perMatch = [
-    { label: 'Win',  value: `+${POINTS_WIN}`,  color: '#5C7A4D', bg: 'rgba(92,122,77,0.12)' },
-    { label: 'Tie',  value: `+${POINTS_TIE}`,  color: '#4A4235', bg: 'rgba(107,104,87,0.10)' },
-    { label: 'Loss', value: `−${POINTS_LOSS}`, color: '#C0603A', bg: 'rgba(192,96,58,0.12)' },
+    { label: 'Win',  value: `+${POINTS_WIN}`,  color: color.positive,   bg: color.greenTint },
+    { label: 'Tie',  value: `+${POINTS_TIE}`,  color: color.inkSoft,    bg: color.sand },
+    { label: 'Loss', value: `−${POINTS_LOSS}`, color: color.orangeDeep, bg: '#F7EDE6' },
   ]
 
   return (
     <Portal>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 220, background: 'rgba(31,29,23,0.55)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
-        <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, maxHeight: isMobile ? '90vh' : '86vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.26)' }}>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 220, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'fadeIn 0.2s ease' }}>
+        <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, maxHeight: isMobile ? '90vh' : '86vh', background: color.white, borderRadius: isMobile ? '24px 24px 0 0' : radius.sheet, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}>
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 20px 14px', borderBottom: '1px solid #E0D8C5', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 14px', borderBottom: `1px solid ${color.border}`, flexShrink: 0 }}>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#8B8272', textTransform: 'uppercase' }}>Ranked play</div>
-              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>Ranks &amp; points</div>
+              <div style={{ fontFamily: font.body, fontSize: 17, fontWeight: 650, color: color.ink, letterSpacing: '-0.01em' }}>Ranks &amp; points</div>
+              <div style={{ fontSize: 13, color: color.muted, marginTop: 2 }}>How ranked play works</div>
             </div>
-            <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <CloseIcon size={14} color="#4A4235" />
+            <button onClick={onClose} aria-label="Close" style={{ background: color.sand, border: 'none', borderRadius: 16, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <CloseIcon size={14} color={color.inkSoft} />
             </button>
           </div>
 
           <div style={{ flex: 1, overflowY: 'auto', padding: '18px 20px 24px' }}>
             {/* Points per match */}
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 10 }}>Points per match</div>
-            <div style={{ display: 'flex', gap: 10, marginBottom: 24 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: color.inkSoft, marginBottom: 10 }}>Points per match</div>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
               {perMatch.map(p => (
-                <div key={p.label} style={{ flex: 1, textAlign: 'center', background: p.bg, border: '1px solid rgba(255,255,255,0.5)', borderRadius: 16, padding: '14px 8px' }}>
-                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: p.color, letterSpacing: '-0.03em', lineHeight: 1 }}>{p.value}</div>
-                  <div style={{ fontSize: 10.5, color: p.color, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 6, opacity: 0.85 }}>{p.label}</div>
+                <div key={p.label} style={{ flex: 1, textAlign: 'center', background: p.bg, borderRadius: radius.md, padding: '14px 8px' }}>
+                  <div style={{ fontFamily: font.body, fontSize: 22, fontWeight: 650, color: p.color, letterSpacing: '-0.02em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{p.value}</div>
+                  <div style={{ fontSize: 12, color: p.color, fontWeight: 500, marginTop: 6 }}>{p.label}</div>
                 </div>
               ))}
             </div>
 
             {/* Tiers */}
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 10 }}>Tiers</div>
-            <div ref={listRef} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: color.inkSoft, marginBottom: 10 }}>Tiers</div>
+            <div ref={listRef} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {RANK_TIERS.map(t => {
                 const isCurrent = t.name === current.name
                 const reached   = points >= t.minPoints
                 return (
                   <div key={t.name} style={{
-                    display: 'flex', alignItems: 'center', gap: 13,
-                    background: isCurrent ? '#1F3A2A' : '#FAF6EA',
-                    border: `1px solid ${isCurrent ? '#1F3A2A' : '#E0D8C5'}`,
-                    borderRadius: 16, padding: '13px 16px',
-                    boxShadow: isCurrent ? '0 6px 20px rgba(31,58,42,0.22)' : 'none',
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    background: isCurrent ? color.green : color.sand,
+                    borderRadius: radius.md, padding: '12px 14px',
                   }}>
-                    <div style={{ width: 34, height: 34, borderRadius: 17, background: t.color + (isCurrent ? '33' : '22'), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <ShieldIcon size={16} color={t.color} />
+                    <div style={{ width: 32, height: 32, borderRadius: 16, background: isCurrent ? 'rgba(255,255,255,0.12)' : color.white, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <ShieldIcon size={15} color={t.color} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15.5, fontWeight: 700, letterSpacing: '-0.01em', color: isCurrent ? '#FAF6EA' : '#1F1D17' }}>{t.name}</span>
-                        {isCurrent && <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#1F3A2A', background: '#D9824D', borderRadius: 999, padding: '2px 7px' }}>You're here</span>}
+                        <span style={{ fontFamily: font.body, fontSize: 15, fontWeight: 600, color: isCurrent ? color.onGreen : color.ink }}>{t.name}</span>
+                        {isCurrent && <span style={{ fontSize: 11, fontWeight: 600, color: color.green, background: color.white, borderRadius: 999, padding: '2px 8px' }}>Current</span>}
                       </div>
-                      <div style={{ fontSize: 12, color: isCurrent ? 'rgba(250,246,234,0.6)' : '#6B5F4E', marginTop: 2 }}>
+                      <div style={{ fontSize: 12, color: isCurrent ? 'rgba(242,245,241,0.65)' : color.muted, marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>
                         {t.minPoints.toLocaleString()}+ points
                       </div>
                     </div>
                     {reached
-                      ? <CheckIcon size={16} color={isCurrent ? '#D9824D' : '#5C7A4D'} />
-                      : <span style={{ fontSize: 11.5, color: '#8B8272', fontWeight: 600, flexShrink: 0 }}>{(t.minPoints - points).toLocaleString()} to go</span>}
+                      ? <CheckIcon size={15} color={isCurrent ? color.onGreen : color.positive} />
+                      : <span style={{ fontSize: 12, color: color.muted, fontWeight: 500, flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>{(t.minPoints - points).toLocaleString()} to go</span>}
                   </div>
                 )
               })}
@@ -99,7 +98,7 @@ function RanksModal({ points, isMobile, onClose, onNavigate }: { points: number;
 
             <button
               onClick={() => { onClose(); onNavigate('leaderboard') }}
-              style={{ width: '100%', marginTop: 18, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '13px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", letterSpacing: '-0.01em' }}
+              style={{ width: '100%', marginTop: 20, background: color.green, color: color.onGreen, border: 'none', borderRadius: radius.md, padding: '13px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: font.body }}
             >
               See friends leaderboard
             </button>
@@ -135,10 +134,10 @@ function useLiveDate() {
 
 
 function toParLabel(diff: number | null | undefined): { text: string; color: string } {
-  if (diff === null || diff === undefined) return { text: '', color: '#4A4235' }
-  if (diff === 0) return { text: 'E', color: '#4A4235' }
-  if (diff < 0)  return { text: `${diff}`, color: '#5C7A4D' }
-  return { text: `+${diff}`, color: '#C0603A' }
+  if (diff === null || diff === undefined) return { text: '', color: color.inkSoft }
+  if (diff === 0) return { text: 'E', color: color.inkSoft }
+  if (diff < 0)  return { text: `${diff}`, color: color.birdie }
+  return { text: `+${diff}`, color: color.orangeDeep }
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -168,8 +167,8 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
       if (containerRef.current) {
         gsap.fromTo(
           Array.from(containerRef.current.children),
-          { opacity: 0, y: 22 },
-          { opacity: 1, y: 0, duration: 0.55, stagger: 0.09, ease: 'power3.out', delay: 0.05 }
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.5, stagger: 0.07, ease: 'power3.out', delay: 0.05 }
         )
       }
     })
@@ -186,7 +185,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
     : 1
   const pct = Math.round(progress * 100)
 
-  // Count up the points and fill the rank bar on mount — small "alive" touch.
+  // Count up the points on mount — small "alive" touch.
   useGSAP(() => {
     const mm = gsap.matchMedia()
     mm.add('(prefers-reduced-motion: no-preference)', () => {
@@ -222,236 +221,219 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
     : null
   const lastDiff  = lastScore !== null && lastPar !== null ? lastScore - lastPar : null
 
-  // ── Shared style — flat card on cream (the hero rank card uses cardRaised) ──
-  const glassCard: React.CSSProperties = { ...card, borderRadius: 18 }
+  const statCard: React.CSSProperties = { ...card, padding: '16px 10px 14px', textAlign: 'center' }
+  const statValue: React.CSSProperties = { fontFamily: font.body, fontSize: 22, fontWeight: 650, color: color.ink, letterSpacing: '-0.02em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }
+  const statLabel: React.CSSProperties = { fontSize: 12, color: color.muted, fontWeight: 500, marginTop: 7 }
 
   return (
     <main
       ref={containerRef}
-      style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 22 : 40}px ${px}px ${isMobile ? 112 : 64}px` }}
+      style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 20 : 36}px ${px}px ${isMobile ? 112 : 64}px` }}
     >
 
-      {/* ── Date pill ──────────────────────────────────────── */}
-      <div style={{ marginBottom: 20 }}>
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8,
-          background: '#FFFDF8',
-          border: '1px solid #E0D8C5',
-          borderRadius: 999, padding: '6px 14px',
-          fontSize: 12, fontWeight: 500, color: '#4A4235',
-          fontFamily: "'DM Sans', sans-serif",
-        }}>
-          <span style={{ width: 6, height: 6, borderRadius: 3, background: '#D9824D', flexShrink: 0 }} />
-          {date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: TZ })}
-        </div>
+      {/* ── Date ───────────────────────────────────────────── */}
+      <div style={{ marginBottom: 16, fontSize: 13, fontWeight: 500, color: color.muted, fontFamily: font.body }}>
+        {date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: TZ })}
       </div>
 
-      {/* ── Rank Card (tap → ranks & points) ───────────────── */}
+      {/* ── Rank card (tap → ranks & points) — the screen's one color moment ── */}
       <button
         onClick={() => setShowRanks(true)}
         style={{
           display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer',
-          background: 'linear-gradient(160deg, rgba(35,68,46,1) 0%, rgba(26,50,33,1) 100%)',
-          borderRadius: 24, padding: '20px 22px 22px',
-          marginBottom: 14,
-          boxShadow: '0 14px 44px rgba(31,58,42,0.28), inset 0 1px 0 rgba(255,255,255,0.10)',
-          border: '1px solid rgba(255,255,255,0.06)',
-          transition: 'transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s ease',
+          background: color.green,
+          borderRadius: radius.lg, padding: '20px 20px 18px',
+          marginBottom: 12,
+          border: 'none',
+          transition: 'transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), background 0.15s',
         }}
-        onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 18px 52px rgba(31,58,42,0.34), inset 0 1px 0 rgba(255,255,255,0.10)' }}
-        onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 14px 44px rgba(31,58,42,0.28), inset 0 1px 0 rgba(255,255,255,0.10)'; e.currentTarget.style.transform = 'scale(1)' }}
-        onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.985)' }}
+        onMouseEnter={e => { e.currentTarget.style.background = color.greenDeep }}
+        onMouseLeave={e => { e.currentTarget.style.background = color.green; e.currentTarget.style.transform = 'scale(1)' }}
+        onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.99)' }}
         onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-        onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.985)' }}
+        onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.99)' }}
         onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 18 }}>
-          <DialRing progress={nextTier ? progress : 1} size={68} stroke={3.5} color={nextTier ? rank.color : '#D9824D'} trackColor="rgba(250,246,234,0.16)">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+          <DialRing progress={nextTier ? progress : 1} size={64} stroke={3} color={rank.color} trackColor="rgba(242,245,241,0.18)">
             <div style={{
-              width: 46, height: 46, borderRadius: 23,
-              background: '#2A4D39', border: '2px solid rgba(250,246,234,0.14)',
+              width: 44, height: 44, borderRadius: 22,
+              background: 'rgba(255,255,255,0.10)',
               overflow: 'hidden', flexShrink: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               {profile?.avatarUrl
                 ? <img src={profile.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 19, color: '#D9824D' }}>
+                : <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: 18, color: color.onGreen }}>
                     {(profile?.firstName?.[0] ?? profile?.username?.[0] ?? '?').toUpperCase()}
                   </span>
               }
             </div>
           </DialRing>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: font.body, fontSize: 16, fontWeight: 600, color: color.onGreen, letterSpacing: '-0.01em', lineHeight: 1.2 }}>
               {profile?.firstName || (profile?.username ? `@${profile.username}` : 'Golfer')}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4 }}>
-              <ShieldIcon size={11} color={rank.color} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: rank.color, fontFamily: "'DM Sans', sans-serif", letterSpacing: '0.05em' }}>
-                {rank.name.toUpperCase()}
+              <ShieldIcon size={12} color={rank.color} />
+              <span style={{ fontSize: 13, fontWeight: 600, color: rank.color, fontFamily: font.body }}>
+                {rank.name}
               </span>
-              <ChevronRightIcon size={12} color="rgba(250,246,234,0.4)" />
+              <ChevronRightIcon size={13} color="rgba(242,245,241,0.45)" />
             </div>
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div ref={pointsRef} style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 30, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.045em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+            <div ref={pointsRef} style={{ fontFamily: font.body, fontSize: 28, fontWeight: 650, color: color.onGreen, letterSpacing: '-0.025em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
               {points.toLocaleString()}
             </div>
-            <div style={{ fontSize: 9.5, color: 'rgba(250,246,234,0.38)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 2 }}>points</div>
+            <div style={{ fontSize: 12, color: 'rgba(242,245,241,0.55)', fontWeight: 500, marginTop: 3 }}>points</div>
           </div>
         </div>
 
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 11, color: 'rgba(250,246,234,0.32)', fontFamily: "'DM Sans', sans-serif" }}>
-              {rank.name}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 12, color: 'rgba(242,245,241,0.5)', fontFamily: font.body }}>
+            {rank.name}
+          </span>
+          {nextTier ? (
+            <span style={{ fontSize: 12, color: 'rgba(242,245,241,0.65)', fontFamily: font.body, fontVariantNumeric: 'tabular-nums' }}>
+              {nextTier.minPoints - points} pts to <span style={{ color: rank.color, fontWeight: 600 }}>{nextTier.name}</span>
             </span>
-            {nextTier ? (
-              <span style={{ fontSize: 11, color: 'rgba(250,246,234,0.45)', fontFamily: "'DM Sans', sans-serif" }}>
-                {nextTier.minPoints - points} pts to{' '}
-                <span style={{ color: nextTier.color, fontWeight: 600 }}>{nextTier.name}</span>
-              </span>
-            ) : (
-              <span style={{ fontSize: 11, color: '#D9824D', fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>Max rank</span>
-            )}
-          </div>
+          ) : (
+            <span style={{ fontSize: 12, color: rank.color, fontWeight: 600, fontFamily: font.body }}>Max rank</span>
+          )}
         </div>
       </button>
 
       {/* ── Quick Stats ────────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 30 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 24 }}>
 
         {/* Last round */}
-        <div style={{ ...glassCard, padding: '15px 10px 13px', textAlign: 'center' }}>
+        <div style={statCard}>
           {lastScore !== null ? (
             <>
-              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 3 }}>
-                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
-                  {lastScore}
-                </span>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4 }}>
+                <span style={statValue}>{lastScore}</span>
                 {lastDiff !== null && (
-                  <span style={{ fontSize: 12.5, fontWeight: 700, color: toParLabel(lastDiff).color, lineHeight: 1 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: toParLabel(lastDiff).color, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
                     {toParLabel(lastDiff).text}
                   </span>
                 )}
               </div>
-              <div style={{ fontSize: 9.5, color: '#6B5F4E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Last round</div>
-              <div style={{ fontSize: 10.5, color: '#4A4235', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '0 4px' }}>
+              <div style={statLabel}>Last round</div>
+              <div style={{ fontSize: 12, color: color.faint, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '0 4px' }}>
                 {lastRound!.courseName.split(' ').slice(0, 3).join(' ')}
               </div>
             </>
           ) : (
             <>
-              <div style={{ fontSize: 22, color: '#8B8272', fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700 }}>—</div>
-              <div style={{ fontSize: 9.5, color: '#6B5F4E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Last round</div>
-              <div style={{ fontSize: 10.5, color: '#8B8272', marginTop: 2 }}>None yet</div>
+              <div style={{ ...statValue, color: color.faint }}>—</div>
+              <div style={statLabel}>Last round</div>
+              <div style={{ fontSize: 12, color: color.faint, marginTop: 2 }}>None yet</div>
             </>
           )}
         </div>
 
         {/* Handicap */}
-        <div style={{ ...glassCard, padding: '15px 10px 13px', textAlign: 'center' }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+        <div style={statCard}>
+          <div style={statValue}>
             {profile?.handicapIndex != null ? profile.handicapIndex.toFixed(1) : '—'}
           </div>
-          <div style={{ fontSize: 9.5, color: '#6B5F4E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Handicap</div>
-          <div style={{ fontSize: 10.5, color: '#4A4235', marginTop: 2 }}>index</div>
+          <div style={statLabel}>Handicap</div>
+          <div style={{ fontSize: 12, color: color.faint, marginTop: 2 }}>index</div>
         </div>
 
-        {/* Record — flex-centered to fix alignment */}
-        <div style={{ ...glassCard, padding: '15px 10px 13px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        {/* Record */}
+        <div style={{ ...card, padding: '16px 10px 14px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, justifyContent: 'center' }}>
-            <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.03em', lineHeight: 1 }}>
-              {profile?.wins ?? 0}
-            </span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#5C7A4D', lineHeight: 1 }}>W</span>
-            <span style={{ fontSize: 8, color: '#8B8272' }}>·</span>
-            <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F3A2A', letterSpacing: '-0.03em', lineHeight: 1 }}>
-              {profile?.losses ?? 0}
-            </span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#C0603A', lineHeight: 1 }}>L</span>
+            <span style={{ ...statValue, fontSize: 18 }}>{profile?.wins ?? 0}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: color.positive, lineHeight: 1 }}>W</span>
+            <span style={{ fontSize: 9, color: color.faint }}>·</span>
+            <span style={{ ...statValue, fontSize: 18 }}>{profile?.losses ?? 0}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: color.orangeDeep, lineHeight: 1 }}>L</span>
           </div>
           {(profile?.ties ?? 0) > 0 && (
-            <div style={{ fontSize: 11, color: '#4A4235', marginTop: 2 }}>{profile!.ties}T</div>
+            <div style={{ fontSize: 12, color: color.muted, marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>{profile!.ties}T</div>
           )}
-          <div style={{ fontSize: 9.5, color: '#6B5F4E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', marginTop: 6 }}>Record</div>
+          <div style={statLabel}>Record</div>
         </div>
       </div>
 
       {/* ── Actions ────────────────────────────────────────── */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
         {/* Log a round — primary */}
         <button
           onClick={() => onNavigate('rounds')}
           style={{
-            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9,
-            background: 'linear-gradient(145deg, rgba(35,68,46,1) 0%, rgba(26,50,33,1) 100%)',
-            color: '#FAF6EA', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18,
-            padding: '16px 12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
-            fontSize: 14.5, fontWeight: 600, letterSpacing: '-0.01em',
-            boxShadow: '0 8px 24px rgba(31,58,42,0.26), inset 0 1px 0 rgba(255,255,255,0.10)',
-            transition: 'transform 0.16s ease',
+            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            background: color.green,
+            color: color.onGreen, border: 'none', borderRadius: radius.card,
+            padding: '15px 12px', cursor: 'pointer', fontFamily: font.body,
+            fontSize: 14, fontWeight: 600,
+            transition: 'background 0.15s, transform 0.16s ease',
           }}
-          onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
+          onMouseEnter={e => { e.currentTarget.style.background = color.greenDeep }}
+          onMouseLeave={e => { e.currentTarget.style.background = color.green }}
+          onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
           onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-          onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
+          onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
           onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
         >
-          <span style={{ width: 30, height: 30, borderRadius: 15, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 8px rgba(217,130,77,0.40)' }}>
-            <ScorecardIcon size={16} color="#FAF6EA" />
-          </span>
+          <ScorecardIcon size={17} color={color.onGreen} />
           Log a round
         </button>
 
-        {/* Friends — glass */}
+        {/* Friends — secondary */}
         <button
           onClick={() => onNavigate('friends')}
           style={{
             flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            ...glassCard,
-            padding: '16px 12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
-            fontSize: 14.5, fontWeight: 600, color: '#1F3A2A', transition: 'transform 0.16s ease',
+            ...card,
+            padding: '15px 12px', cursor: 'pointer', fontFamily: font.body,
+            fontSize: 14, fontWeight: 600, color: color.ink, transition: 'background 0.15s, transform 0.16s ease',
           }}
-          onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
+          onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
+          onMouseLeave={e => { e.currentTarget.style.background = color.white }}
+          onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
           onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-          onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
+          onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
           onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
         >
-          <UsersIcon size={18} color="#1F3A2A" />
+          <UsersIcon size={17} color={color.inkSoft} />
           Friends
         </button>
       </div>
 
-      {/* Friends leaderboard — bigger highlight */}
+      {/* Friends leaderboard — quiet list row */}
       <button
         onClick={() => onNavigate('leaderboard')}
         style={{
-          width: '100%', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left',
-          background: 'linear-gradient(150deg, rgba(35,68,46,1) 0%, rgba(22,44,28,1) 100%)',
-          border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '18px 20px',
-          cursor: 'pointer', marginBottom: 26,
-          boxShadow: '0 12px 34px rgba(31,58,42,0.26), inset 0 1px 0 rgba(255,255,255,0.10)',
-          transition: 'transform 0.16s ease',
+          width: '100%', display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left',
+          ...card,
+          padding: '14px 16px',
+          cursor: 'pointer', marginBottom: 28,
+          transition: 'background 0.15s, transform 0.16s ease',
         }}
-        onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.985)' }}
+        onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
+        onMouseLeave={e => { e.currentTarget.style.background = color.white }}
+        onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.99)' }}
         onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-        onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.985)' }}
+        onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.99)' }}
         onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
       >
-        <span style={{ width: 44, height: 44, borderRadius: 14, background: 'rgba(217,130,77,0.20)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <MedalIcon size={24} color="#D9824D" />
+        <span style={{ width: 40, height: 40, borderRadius: radius.sm, background: color.greenTint, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <MedalIcon size={20} color={color.green} />
         </span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em' }}>Friends leaderboard</div>
-          <div style={{ fontSize: 13, color: 'rgba(250,246,234,0.6)', marginTop: 2 }}>See how you rank against your friends</div>
+          <div style={{ fontFamily: font.body, fontSize: 15, fontWeight: 600, color: color.ink }}>Friends leaderboard</div>
+          <div style={{ fontSize: 13, color: color.muted, marginTop: 1 }}>See how you rank against your friends</div>
         </div>
-        <ChevronRightIcon size={20} color="rgba(250,246,234,0.5)" />
+        <ChevronRightIcon size={18} color={color.faint} />
       </button>
 
       {/* ── Clubhouse feed ─────────────────────────────────── */}
       <div style={{ marginBottom: 26 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 12 }}>
-          From the clubhouse
+        <div style={{ fontFamily: font.body, fontSize: 17, fontWeight: 650, letterSpacing: '-0.01em', color: color.ink, marginBottom: 12 }}>
+          Clubhouse
         </div>
         <Feed userId={userId} isMobile={isMobile} onViewProfile={onViewProfile} />
       </div>
@@ -462,4 +444,3 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
     </main>
   )
 }
-

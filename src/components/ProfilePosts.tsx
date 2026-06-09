@@ -14,14 +14,29 @@ import { useToast } from './Toast'
 import { useSwipeDownDismiss } from '../hooks/useGestures'
 import { tapHaptic } from '../lib/native'
 import { timeAgo } from '../lib/format'
+import { color, font, elevation, radius } from '../lib/tokens'
 
 // Small drag-to-dismiss grabber shown at the top of mobile bottom sheets.
 function Grabber() {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0 2px' }}>
-      <div style={{ width: 38, height: 4, borderRadius: 999, background: '#C9C0A8' }} />
+      <div style={{ width: 36, height: 4, borderRadius: 999, background: color.borderStrong }} />
     </div>
   )
+}
+
+// Shared sheet chrome
+const scrim: React.CSSProperties = {
+  position: 'fixed', inset: 0, zIndex: 210,
+  background: 'rgba(23,26,23,0.45)',
+  backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+  display: 'flex', justifyContent: 'center',
+  animation: 'fadeIn 0.2s ease',
+}
+
+const closeBtn: React.CSSProperties = {
+  background: color.sand, border: 'none', borderRadius: 15,
+  width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
 }
 
 const REPORT_REASONS = [
@@ -53,29 +68,29 @@ function ReportSheet({ postId, meId, isMobile, onClose }: {
 
   return (
     <Portal>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 240, background: 'rgba(31,29,23,0.55)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
-        <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, maxHeight: isMobile ? '80vh' : '70vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 18px 12px', borderBottom: '1px solid #E0D8C5' }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 17, fontWeight: 700, color: '#1F1D17' }}>{done ? 'Report received' : 'Report post'}</div>
-            <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <CloseIcon size={13} color="#4A4235" />
+      <div onClick={onClose} style={{ ...scrim, zIndex: 240, alignItems: isMobile ? 'flex-end' : 'center', padding: isMobile ? 0 : 24 }}>
+        <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 420, maxHeight: isMobile ? '80vh' : '70vh', background: color.white, borderRadius: isMobile ? '24px 24px 0 0' : radius.sheet, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 18px 12px', borderBottom: `1px solid ${color.border}` }}>
+            <div style={{ fontFamily: font.body, fontSize: 16, fontWeight: 650, color: color.ink }}>{done ? 'Report received' : 'Report post'}</div>
+            <button onClick={onClose} aria-label="Close" style={closeBtn}>
+              <CloseIcon size={13} color={color.inkSoft} />
             </button>
           </div>
           {done ? (
             <div style={{ padding: '28px 24px 32px', textAlign: 'center' }}>
-              <div style={{ fontSize: 15, color: '#1F1D17', fontWeight: 600, marginBottom: 8, fontFamily: "'DM Sans', sans-serif" }}>Thanks for letting us know.</div>
-              <div style={{ fontSize: 13.5, color: '#6B5F4E', lineHeight: 1.5, marginBottom: 20 }}>Our team will review this post against our Community Guidelines. We won't notify the person you reported.</div>
-              <button onClick={onClose} style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '11px 26px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Done</button>
+              <div style={{ fontSize: 15, color: color.ink, fontWeight: 600, marginBottom: 8, fontFamily: font.body }}>Thanks for letting us know.</div>
+              <div style={{ fontSize: 13, color: color.muted, lineHeight: 1.55, marginBottom: 20 }}>Our team will review this post against our Community Guidelines. We won't notify the person you reported.</div>
+              <button onClick={onClose} style={{ background: color.green, color: color.onGreen, border: 'none', borderRadius: radius.md, padding: '11px 28px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: font.body }}>Done</button>
             </div>
           ) : (
             <div style={{ flex: 1, overflowY: 'auto', padding: '8px 10px 16px' }}>
-              <div style={{ fontSize: 12.5, color: '#6B5F4E', padding: '6px 12px 10px' }}>Why are you reporting this post?</div>
+              <div style={{ fontSize: 13, color: color.muted, padding: '6px 12px 10px' }}>Why are you reporting this post?</div>
               {REPORT_REASONS.map(r => (
                 <button key={r} onClick={() => submit(r)} disabled={busy}
-                  style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', borderRadius: 10, padding: '13px 12px', cursor: busy ? 'default' : 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, color: '#1F1D17', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-                  onMouseEnter={e => { if (!busy) e.currentTarget.style.background = '#EDE6D6' }}
+                  style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', borderRadius: radius.sm, padding: '13px 12px', cursor: busy ? 'default' : 'pointer', fontFamily: font.body, fontSize: 14, color: color.ink, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                  onMouseEnter={e => { if (!busy) e.currentTarget.style.background = color.sand }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
-                  {r}<span style={{ color: '#8B8272', fontSize: 16 }}>›</span>
+                  {r}<span style={{ color: color.faint, fontSize: 16 }}>›</span>
                 </button>
               ))}
             </div>
@@ -146,41 +161,41 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
   }
 
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 210, background: 'rgba(31,29,23,0.55)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'fadeIn 0.2s ease' }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)', animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)', ...(isMobile ? dragStyle : {}) }}>
+    <div onClick={onClose} style={{ ...scrim, alignItems: isMobile ? 'flex-end' : 'center', padding: isMobile ? 0 : 24 }}>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, background: color.white, borderRadius: isMobile ? '24px 24px 0 0' : radius.sheet, overflow: 'hidden', boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)', ...(isMobile ? dragStyle : {}) }}>
         {isMobile && <div {...dragHandlers}><Grabber /></div>}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 20px 14px', borderBottom: '1px solid #E0D8C5' }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>New post</div>
-          <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-            <CloseIcon size={14} color="#4A4235" />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 20px 14px', borderBottom: `1px solid ${color.border}` }}>
+          <div style={{ fontFamily: font.body, fontSize: 16, fontWeight: 650, color: color.ink }}>New post</div>
+          <button onClick={onClose} aria-label="Close" style={closeBtn}>
+            <CloseIcon size={13} color={color.inkSoft} />
           </button>
         </div>
         <div style={{ padding: 20 }}>
           <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={pick} />
           <button
             onClick={() => fileRef.current?.click()}
-            style={{ width: '100%', aspectRatio: '1', borderRadius: 18, border: preview ? 'none' : '2px dashed #C9C0A8', background: preview ? '#000' : '#FAF6EA', cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16, padding: 0 }}
+            style={{ width: '100%', aspectRatio: '1', borderRadius: radius.card, border: preview ? 'none' : `1.5px dashed ${color.borderStrong}`, background: preview ? '#000' : color.sand, cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16, padding: 0 }}
           >
             {preview
               ? <img src={preview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, color: '#6B5F4E' }}>
-                  <CameraIcon size={30} color="#8B8272" />
-                  <span style={{ fontSize: 13.5, fontWeight: 500, fontFamily: "'DM Sans', sans-serif" }}>Choose a photo</span>
+              : <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, color: color.muted }}>
+                  <CameraIcon size={28} color={color.faint} />
+                  <span style={{ fontSize: 13, fontWeight: 500, fontFamily: font.body }}>Choose a photo</span>
                 </div>}
           </button>
           <textarea
             value={caption} onChange={e => setCaption(e.target.value)}
-            placeholder="Write a caption… (e.g. New personal best at Santa Maria)"
+            placeholder="Write a caption…"
             rows={3}
-            style={{ width: '100%', boxSizing: 'border-box', background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 12, padding: '11px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', resize: 'none', fontFamily: "'DM Sans', sans-serif", lineHeight: 1.5, marginBottom: 14 }}
-            onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-            onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+            style={{ width: '100%', boxSizing: 'border-box', background: color.white, border: `1px solid ${color.borderStrong}`, borderRadius: radius.sm, padding: '11px 14px', fontSize: 16, color: color.ink, outline: 'none', resize: 'none', fontFamily: font.body, lineHeight: 1.5, marginBottom: 14 }}
+            onFocus={e => { e.currentTarget.style.borderColor = color.green }}
+            onBlur={e => { e.currentTarget.style.borderColor = color.borderStrong }}
           />
 
           {friends.length > 0 && (
             <div style={{ marginBottom: 14 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 8 }}>
-                Tag players {tagged.length > 0 && `(${tagged.length})`}
+              <div style={{ fontSize: 13, fontWeight: 600, color: color.inkSoft, marginBottom: 8, fontFamily: font.body }}>
+                Tag players{tagged.length > 0 ? ` (${tagged.length})` : ''}
               </div>
               <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
                 {friends.map(f => {
@@ -188,9 +203,9 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
                   const nm = f.username ? `@${f.username}` : (f.firstName ?? 'Golfer')
                   return (
                     <button key={f.userId} onClick={() => toggleTag(f.userId)}
-                      style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0, background: sel ? '#1F3A2A' : '#FAF6EA', color: sel ? '#FAF6EA' : '#1F1D17', border: `1px solid ${sel ? '#1F3A2A' : '#E0D8C5'}`, borderRadius: 999, padding: '6px 12px 6px 6px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, fontWeight: 500, whiteSpace: 'nowrap' }}>
-                      <span style={{ width: 22, height: 22, borderRadius: 11, overflow: 'hidden', background: sel ? '#2A4D39' : '#F0EBDD', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        {f.avatarUrl ? <img src={f.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 10, color: '#D9824D' }}>{nm[0]?.replace('@', '').toUpperCase()}</span>}
+                      style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0, background: sel ? color.green : color.white, color: sel ? color.onGreen : color.ink, border: `1px solid ${sel ? color.green : color.borderStrong}`, borderRadius: 999, padding: '5px 12px 5px 5px', cursor: 'pointer', fontFamily: font.body, fontSize: 13, fontWeight: 500, whiteSpace: 'nowrap', transition: 'all 0.15s' }}>
+                      <span style={{ width: 22, height: 22, borderRadius: 11, overflow: 'hidden', background: sel ? 'rgba(255,255,255,0.15)' : color.greenTint, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {f.avatarUrl ? <img src={f.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: 10, color: sel ? color.onGreen : color.green }}>{nm[0]?.replace('@', '').toUpperCase()}</span>}
                       </span>
                       {nm}
                     </button>
@@ -200,10 +215,10 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
             </div>
           )}
 
-          {error && <div style={{ background: 'rgba(217,130,77,0.10)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#D9824D', marginBottom: 14 }}>{error}</div>}
+          {error && <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, marginBottom: 14 }}>{error}</div>}
           <button
             onClick={share} disabled={busy}
-            style={{ width: '100%', background: busy ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 14, padding: '14px', fontSize: 15, fontWeight: 600, cursor: busy ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+            style={{ width: '100%', background: busy ? color.borderStrong : color.green, color: busy ? color.inkSoft : color.onGreen, border: 'none', borderRadius: radius.md, padding: '14px', fontSize: 15, fontWeight: 600, cursor: busy ? 'not-allowed' : 'pointer', fontFamily: font.body, transition: 'background 0.15s' }}
           >
             {busy ? 'Sharing…' : file ? 'Share post' : 'Choose a photo'}
           </button>
@@ -264,29 +279,29 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
   const authorName = authorProfile?.username ? `@${authorProfile.username}` : (authorProfile?.firstName ?? 'Golfer')
 
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 210, background: 'rgba(31,29,23,0.6)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'fadeIn 0.2s ease' }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, maxHeight: isMobile ? '94vh' : '90vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)', animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)', ...(isMobile ? dragStyle : {}) }}>
+    <div onClick={onClose} style={{ ...scrim, alignItems: isMobile ? 'flex-end' : 'center', padding: isMobile ? 0 : 24 }}>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, maxHeight: isMobile ? '94vh' : '90vh', background: color.white, borderRadius: isMobile ? '24px 24px 0 0' : radius.sheet, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)', ...(isMobile ? dragStyle : {}) }}>
         {isMobile && <div {...dragHandlers}><Grabber /></div>}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid #E0D8C5', flexShrink: 0 }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>{authorName}</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: `1px solid ${color.border}`, flexShrink: 0 }}>
+          <div style={{ fontFamily: font.body, fontSize: 15, fontWeight: 600, color: color.ink }}>{authorName}</div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <div style={{ position: 'relative' }}>
-              <button onClick={() => setMenuOpen(v => !v)} aria-label="More options" style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                <MoreIcon size={16} color="#4A4235" />
+              <button onClick={() => setMenuOpen(v => !v)} aria-label="More options" style={closeBtn}>
+                <MoreIcon size={16} color={color.inkSoft} />
               </button>
               {menuOpen && (
                 <>
                   <div onClick={() => setMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 5 }} />
-                  <div style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 14, padding: 6, boxShadow: '0 12px 32px rgba(31,58,42,0.18)', minWidth: 170, zIndex: 10 }}>
+                  <div style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, background: color.white, border: `1px solid ${color.border}`, borderRadius: radius.card, padding: 6, boxShadow: elevation.md, minWidth: 170, zIndex: 10 }}>
                     {canDelete && onDelete && (
-                      <button onClick={() => { setMenuOpen(false); onDelete() }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', borderRadius: 10, padding: '10px 12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 600, color: '#C0392B' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = '#F6E9E5' }} onMouseLeave={e => { e.currentTarget.style.background = 'none' }}>
+                      <button onClick={() => { setMenuOpen(false); onDelete() }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', borderRadius: radius.sm, padding: '10px 12px', cursor: 'pointer', fontFamily: font.body, fontSize: 14, fontWeight: 500, color: color.danger }}
+                        onMouseEnter={e => { e.currentTarget.style.background = '#FBEDEB' }} onMouseLeave={e => { e.currentTarget.style.background = 'none' }}>
                         Delete post
                       </button>
                     )}
                     {!isMine && (
-                      <button onClick={() => { setMenuOpen(false); setReporting(true) }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', borderRadius: 10, padding: '10px 12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500, color: '#1F1D17' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = '#F0EBDD' }} onMouseLeave={e => { e.currentTarget.style.background = 'none' }}>
+                      <button onClick={() => { setMenuOpen(false); setReporting(true) }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', borderRadius: radius.sm, padding: '10px 12px', cursor: 'pointer', fontFamily: font.body, fontSize: 14, fontWeight: 500, color: color.ink }}
+                        onMouseEnter={e => { e.currentTarget.style.background = color.sand }} onMouseLeave={e => { e.currentTarget.style.background = 'none' }}>
                         Report post
                       </button>
                     )}
@@ -294,8 +309,8 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
                 </>
               )}
             </div>
-            <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <CloseIcon size={13} color="#4A4235" />
+            <button onClick={onClose} aria-label="Close" style={closeBtn}>
+              <CloseIcon size={13} color={color.inkSoft} />
             </button>
           </div>
         </div>
@@ -307,67 +322,67 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
 
           <div style={{ padding: '12px 16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
-              <button onClick={onLike} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                <HeartIcon size={24} color={liked ? '#D9824D' : '#1F1D17'} filled={liked} />
-                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17' }}>{likeCount}</span>
+              <button onClick={onLike} aria-label={liked ? 'Unlike' : 'Like'} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                <HeartIcon size={22} color={liked ? color.danger : color.ink} filled={liked} />
+                <span style={{ fontFamily: font.body, fontSize: 14, fontWeight: 600, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>{likeCount}</span>
               </button>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <ChatIcon size={22} color="#1F1D17" />
-                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17' }}>{comments.length}</span>
+                <ChatIcon size={20} color={color.ink} />
+                <span style={{ fontFamily: font.body, fontSize: 14, fontWeight: 600, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>{comments.length}</span>
               </div>
             </div>
 
             {post.caption && (
-              <div style={{ fontSize: 14, color: '#1F1D17', lineHeight: 1.5, marginBottom: 6, fontFamily: "'DM Sans', sans-serif" }}>
-                <strong style={{ fontWeight: 700 }}>{authorName}</strong> {post.caption}
+              <div style={{ fontSize: 14, color: color.ink, lineHeight: 1.5, marginBottom: 6, fontFamily: font.body }}>
+                <strong style={{ fontWeight: 600 }}>{authorName}</strong> {post.caption}
               </div>
             )}
-            <div style={{ fontSize: 11.5, color: '#8B8272', marginBottom: 12 }}>{timeAgo(post.createdAt)}</div>
+            <div style={{ fontSize: 12, color: color.faint, marginBottom: 12 }}>{timeAgo(post.createdAt)}</div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 4 }}>
               {comments.map(c => {
                 const cn = c.author?.username ? `@${c.author.username}` : (c.author?.firstName ?? 'Golfer')
                 const mine = c.userId === meId
-                const linkBtn: React.CSSProperties = { background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 11.5, fontWeight: 600, color: '#6B5F4E', fontFamily: "'DM Sans', sans-serif" }
+                const linkBtn: React.CSSProperties = { background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 12, fontWeight: 600, color: color.muted, fontFamily: font.body }
                 return (
                   <div key={c.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13.5, color: '#1F1D17', lineHeight: 1.45, fontFamily: "'DM Sans', sans-serif" }}>
-                        <strong style={{ fontWeight: 700 }}>{cn}</strong> {c.body}
+                      <div style={{ fontSize: 14, color: color.ink, lineHeight: 1.45, fontFamily: font.body }}>
+                        <strong style={{ fontWeight: 600 }}>{cn}</strong> {c.body}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 4 }}>
-                        <span style={{ fontSize: 11, color: '#8B8272' }}>{timeAgo(c.createdAt)}</span>
-                        {c.likeCount > 0 && <span style={{ fontSize: 11, color: '#8B8272' }}>{c.likeCount} like{c.likeCount > 1 ? 's' : ''}</span>}
+                        <span style={{ fontSize: 12, color: color.faint }}>{timeAgo(c.createdAt)}</span>
+                        {c.likeCount > 0 && <span style={{ fontSize: 12, color: color.faint, fontVariantNumeric: 'tabular-nums' }}>{c.likeCount} like{c.likeCount > 1 ? 's' : ''}</span>}
                         <button onClick={() => startReply(c)} style={linkBtn}>Reply</button>
                         {mine && (
-                          <button onClick={async () => { await deleteComment(c.id); setComments(await fetchComments(post.id, meId)); onChanged() }} style={{ ...linkBtn, color: '#C0603A' }}>Delete</button>
+                          <button onClick={async () => { await deleteComment(c.id); setComments(await fetchComments(post.id, meId)); onChanged() }} style={{ ...linkBtn, color: color.danger }}>Delete</button>
                         )}
                       </div>
                     </div>
-                    <button onClick={() => onCommentLike(c)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0', flexShrink: 0 }}>
-                      <HeartIcon size={15} color={c.likedByMe ? '#D9824D' : '#A89F8C'} filled={c.likedByMe} />
+                    <button onClick={() => onCommentLike(c)} aria-label="Like comment" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0', flexShrink: 0 }}>
+                      <HeartIcon size={15} color={c.likedByMe ? color.danger : color.faint} filled={c.likedByMe} />
                     </button>
                   </div>
                 )
               })}
               {comments.length === 0 && (
-                <div style={{ fontSize: 13, color: '#8B8272', fontStyle: 'italic' }}>No comments yet. Be the first.</div>
+                <div style={{ fontSize: 13, color: color.faint }}>No comments yet. Be the first.</div>
               )}
             </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 8, padding: `12px 12px ${isMobile ? 'calc(env(safe-area-inset-bottom) + 12px)' : '12px'}`, borderTop: '1px solid #E0D8C5', background: '#F5F0E6', flexShrink: 0 }}>
+        <div style={{ display: 'flex', gap: 8, padding: `12px 12px ${isMobile ? 'calc(env(safe-area-inset-bottom) + 12px)' : '12px'}`, borderTop: `1px solid ${color.border}`, background: color.white, flexShrink: 0 }}>
           <input
             ref={inputRef}
             value={text} onChange={e => setText(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') submit() }}
             placeholder="Add a comment…"
-            style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E0D8C5', borderRadius: 20, padding: '10px 16px', fontSize: 16, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif" }}
-            onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-            onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+            style={{ flex: 1, background: color.sand, border: `1px solid ${color.border}`, borderRadius: 999, padding: '10px 16px', fontSize: 16, color: color.ink, outline: 'none', fontFamily: font.body }}
+            onFocus={e => { e.currentTarget.style.borderColor = color.green }}
+            onBlur={e => { e.currentTarget.style.borderColor = color.border }}
           />
-          <button onClick={submit} disabled={!text.trim() || busy} style={{ background: 'none', border: 'none', cursor: text.trim() ? 'pointer' : 'default', color: text.trim() ? '#1F3A2A' : '#C9C0A8', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 700, padding: '0 8px' }}>
+          <button onClick={submit} disabled={!text.trim() || busy} style={{ background: 'none', border: 'none', cursor: text.trim() ? 'pointer' : 'default', color: text.trim() ? color.green : color.faint, fontFamily: font.body, fontSize: 14, fontWeight: 600, padding: '0 8px' }}>
             Post
           </button>
         </div>
@@ -403,44 +418,44 @@ export default function ProfilePosts({ targetUserId, meId, isMobile = false, can
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#5C7A4D', textTransform: 'uppercase' }}>
-          Posts{posts.length > 0 ? ` · ${posts.length}` : ''}
+        <div style={{ fontFamily: font.body, fontSize: 16, fontWeight: 650, letterSpacing: '-0.01em', color: color.ink }}>
+          Posts{posts.length > 0 && <span style={{ color: color.muted, fontWeight: 500 }}> · {posts.length}</span>}
         </div>
         {canPost && (
-          <button onClick={() => setComposer(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '7px 14px 7px 12px', fontSize: 12.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
-            <span style={{ width: 18, height: 18, borderRadius: 9, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-              <PlusIcon size={12} color="#FAF6EA" />
-            </span>
+          <button onClick={() => setComposer(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: color.white, color: color.ink, border: `1px solid ${color.borderStrong}`, borderRadius: radius.sm, padding: '7px 13px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: font.body, transition: 'background 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
+            onMouseLeave={e => { e.currentTarget.style.background = color.white }}>
+            <PlusIcon size={13} color={color.inkSoft} />
             New post
           </button>
         )}
       </div>
 
       {loading ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
-          {[0, 1, 2, 3, 4, 5].map(i => <Skeleton key={i} height="auto" radius={4} style={{ aspectRatio: '1' }} />)}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3 }}>
+          {[0, 1, 2, 3, 4, 5].map(i => <Skeleton key={i} height="auto" radius={6} style={{ aspectRatio: '1' }} />)}
         </div>
       ) : posts.length === 0 ? (
-        <div style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 18, padding: '36px 24px', textAlign: 'center' }}>
-          <div style={{ width: 48, height: 48, borderRadius: 24, background: '#F0EBDD', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-            <CameraIcon size={22} color="#8B8272" />
+        <div style={{ background: color.white, border: `1px solid ${color.border}`, borderRadius: radius.card, padding: '36px 24px', textAlign: 'center' }}>
+          <div style={{ width: 48, height: 48, borderRadius: 24, background: color.sand, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+            <CameraIcon size={22} color={color.faint} />
           </div>
-          <div style={{ fontSize: 14, color: '#6B5F4E', marginBottom: canPost ? 16 : 0, fontFamily: "'DM Sans', sans-serif" }}>
+          <div style={{ fontSize: 14, color: color.muted, marginBottom: canPost ? 16 : 0, fontFamily: font.body, lineHeight: 1.5 }}>
             {canPost ? 'Share your first round, your bag, or a great shot.' : 'No posts yet.'}
           </div>
           {canPost && (
-            <button onClick={() => setComposer(true)} style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 22px', fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Create a post</button>
+            <button onClick={() => setComposer(true)} style={{ background: color.green, color: color.onGreen, border: 'none', borderRadius: radius.md, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: font.body }}>Create a post</button>
           )}
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3 }}>
           {posts.map(p => (
-            <button key={p.id} onClick={() => setActive(p)} style={{ aspectRatio: '1', padding: 0, border: 'none', borderRadius: 4, overflow: 'hidden', cursor: 'pointer', background: '#000', position: 'relative' }}>
+            <button key={p.id} onClick={() => setActive(p)} style={{ aspectRatio: '1', padding: 0, border: 'none', borderRadius: 6, overflow: 'hidden', cursor: 'pointer', background: '#000', position: 'relative' }}>
               {p.kind === 'round' && p.meta
                 ? <RecapCard meta={p.meta} variant="tile" />
                 : <img src={p.imageUrl ?? ''} alt="" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
               {(p.likeCount > 0 || p.commentCount > 0) && (
-                <div style={{ position: 'absolute', bottom: 4, left: 4, display: 'flex', gap: 8, fontSize: 10.5, fontWeight: 700, color: '#FFF', textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>
+                <div style={{ position: 'absolute', bottom: 5, left: 6, display: 'flex', gap: 8, fontSize: 11, fontWeight: 600, color: '#FFF', textShadow: '0 1px 3px rgba(0,0,0,0.6)', fontVariantNumeric: 'tabular-nums' }}>
                   {p.likeCount > 0 && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><HeartIcon size={11} color="#FFF" filled /> {p.likeCount}</span>}
                   {p.commentCount > 0 && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><ChatIcon size={11} color="#FFF" /> {p.commentCount}</span>}
                 </div>

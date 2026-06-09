@@ -23,7 +23,7 @@ export default function Field({
   return (
     <div style={style}>
       {label && (
-        <label style={{ display: 'block', fontFamily: font.body, fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: color.faint, marginBottom: space[2] }}>
+        <label style={{ display: 'block', fontFamily: font.body, fontSize: 13, fontWeight: 500, color: color.inkSoft, marginBottom: space[2] }}>
           {label}
         </label>
       )}
@@ -40,8 +40,8 @@ export default function Field({
           maxLength={maxLength}
           style={{
             width: '100%', boxSizing: 'border-box', minHeight: 44,
-            background: color.sand, color: color.ink,
-            border: `1.5px solid ${error ? color.danger : color.border}`,
+            background: color.white, color: color.ink,
+            border: `1px solid ${error ? color.danger : color.borderStrong}`,
             borderRadius: radius.sm, padding: prefix ? '13px 16px 13px 30px' : '13px 16px',
             fontSize: 16, fontFamily: font.body, outline: 'none',
           }}

@@ -12,9 +12,9 @@ export function useToast() {
 }
 
 const STYLES: Record<ToastType, { bg: string; fg: string }> = {
-  success: { bg: 'rgba(31,58,42,0.96)',  fg: '#FAF6EA' },
-  error:   { bg: 'rgba(160,52,38,0.96)', fg: '#FAF6EA' },
-  info:    { bg: 'rgba(40,38,30,0.94)',  fg: '#FAF6EA' },
+  success: { bg: 'rgba(23,26,23,0.92)',  fg: '#F2F5F1' },
+  error:   { bg: 'rgba(140,42,33,0.94)', fg: '#F2F5F1' },
+  info:    { bg: 'rgba(23,26,23,0.92)',  fg: '#F2F5F1' },
 }
 
 function ToastCard({ message, type }: ToastItem) {
@@ -25,16 +25,15 @@ function ToastCard({ message, type }: ToastItem) {
       display: 'flex', alignItems: 'center', gap: 9,
       background: s.bg, color: s.fg,
       backdropFilter: 'blur(20px) saturate(160%)', WebkitBackdropFilter: 'blur(20px) saturate(160%)',
-      border: '1px solid rgba(255,255,255,0.12)',
-      borderRadius: 14, padding: '11px 16px',
-      fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500,
-      maxWidth: 420, boxShadow: '0 10px 34px rgba(20,18,12,0.30)',
+      borderRadius: 12, padding: '11px 16px',
+      fontFamily: "'Geist', system-ui, sans-serif", fontSize: 13, fontWeight: 500,
+      maxWidth: 420, boxShadow: '0 10px 34px rgba(23,26,23,0.25)',
       animation: 'toastIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1)',
     }}>
-      <span style={{ width: 20, height: 20, borderRadius: 10, background: type === 'error' ? 'rgba(250,246,234,0.18)' : '#D9824D', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         {type === 'error'
-          ? <CloseIcon size={11} color="#FAF6EA" />
-          : <CheckIcon size={11} color="#FAF6EA" />}
+          ? <CloseIcon size={13} color="#F2F5F1" />
+          : <CheckIcon size={13} color="#7FB89A" />}
       </span>
       <span style={{ lineHeight: 1.35 }}>{message}</span>
     </div>

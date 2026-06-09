@@ -75,60 +75,60 @@ function SetNewPasswordModal() {
   }
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', background: '#FAF6EA', border: '1px solid #E0D8C5',
-    borderRadius: 14, padding: '13px 16px', fontSize: 15, color: '#1F1D17',
-    fontFamily: "'DM Sans', sans-serif", outline: 'none',
+    width: '100%', background: '#FFFFFF', border: '1px solid #CDD2CC',
+    borderRadius: 10, padding: '13px 16px', fontSize: 16, color: '#171A17',
+    fontFamily: 'inherit', outline: 'none',
     transition: 'border-color 0.15s', boxSizing: 'border-box',
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(31,29,23,0.6)', backdropFilter: 'blur(8px)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div style={{ background: '#F0EBDD', borderRadius: 28, padding: '36px 40px', width: '100%', maxWidth: 440, boxShadow: '0 24px 64px rgba(31,58,42,0.2)' }}>
-        <DialWordmark size={28} />
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+      <div style={{ background: '#FFFFFF', borderRadius: 20, padding: '32px 32px 28px', width: '100%', maxWidth: 420, boxShadow: '0 20px 50px rgba(23,26,23,0.18)' }}>
+        <DialWordmark size={26} />
         {done ? (
           <div style={{ marginTop: 28, textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: '#1F1D17', marginBottom: 10 }}>
-              Password updated!
+            <div style={{ fontSize: 22, fontWeight: 650, letterSpacing: '-0.02em', color: '#171A17', marginBottom: 8 }}>
+              Password updated
             </div>
-            <p style={{ fontSize: 14, color: '#4A4235', marginBottom: 24 }}>You're all set. Continue using the app.</p>
+            <p style={{ fontSize: 14, color: '#494F49', marginBottom: 24 }}>You're all set. Continue using the app.</p>
             <button
               onClick={clearPasswordRecovery}
-              style={{ background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '12px 28px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
+              style={{ background: '#1E4D38', color: '#F2F5F1', border: 'none', borderRadius: 12, padding: '12px 28px', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
             >
               Continue
             </button>
           </div>
         ) : (
           <>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginTop: 20, marginBottom: 6 }}>
+            <div style={{ fontSize: 22, fontWeight: 650, color: '#171A17', letterSpacing: '-0.02em', marginTop: 24, marginBottom: 6 }}>
               Set new password
             </div>
-            <p style={{ fontSize: 14, color: '#4A4235', marginBottom: 24, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 14, color: '#494F49', marginBottom: 24, lineHeight: 1.5 }}>
               Choose a strong password for your account.
             </p>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <input
                 type="password" required value={password} placeholder="New password"
                 onChange={e => setPassword(e.target.value)}
                 style={inputStyle}
-                onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-                onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+                onFocus={e => { e.currentTarget.style.borderColor = '#1E4D38' }}
+                onBlur={e => { e.currentTarget.style.borderColor = '#CDD2CC' }}
               />
               <input
                 type="password" required value={confirm} placeholder="Confirm new password"
                 onChange={e => setConfirm(e.target.value)}
-                style={{ ...inputStyle, borderColor: confirm && confirm !== password ? '#D9824D' : '#E0D8C5' }}
-                onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-                onBlur={e => { e.currentTarget.style.borderColor = confirm && confirm !== password ? '#D9824D' : '#E0D8C5' }}
+                style={{ ...inputStyle, borderColor: confirm && confirm !== password ? '#BD3A2D' : '#CDD2CC' }}
+                onFocus={e => { e.currentTarget.style.borderColor = '#1E4D38' }}
+                onBlur={e => { e.currentTarget.style.borderColor = confirm && confirm !== password ? '#BD3A2D' : '#CDD2CC' }}
               />
               {error && (
-                <div style={{ background: 'rgba(217,130,77,0.10)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#D9824D' }}>
+                <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#8C2A21' }}>
                   {error}
                 </div>
               )}
               <button
                 type="submit" disabled={loading}
-                style={{ background: loading ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}
+                style={{ background: loading ? '#9AA09A' : '#1E4D38', color: '#F2F5F1', border: 'none', borderRadius: 12, padding: '14px', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}
               >
                 {loading ? 'Saving…' : 'Update password'}
               </button>
@@ -347,25 +347,12 @@ function AppShell() {
 
   return (
     <>
-      {/* ── Background: solid cream with very subtle green depth corners ── */}
+      {/* ── Background: flat cool porcelain, nothing else ── */}
       <div aria-hidden="true" style={{
         position: 'fixed', inset: 0,
-        background: `
-          radial-gradient(ellipse 130% 70% at 5% 100%, rgba(52,82,37,0.13) 0%, transparent 55%),
-          radial-gradient(ellipse 100% 55% at 95% 0%,  rgba(90,115,65,0.09) 0%, transparent 50%),
-          #EDE8D4
-        `,
-        backgroundAttachment: 'fixed',
+        background: '#F4F5F2',
         zIndex: 0,
         pointerEvents: 'none',
-      }} />
-
-      {/* ── Paper grain: barely-there tactile texture over the cream ── */}
-      <div aria-hidden="true" style={{
-        position: 'fixed', inset: 0, zIndex: 1, pointerEvents: 'none',
-        opacity: 0.04, mixBlendMode: 'multiply',
-        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-        backgroundSize: '140px 140px',
       }} />
 
       {/* ── All app content at z-index 2+ ───────────────────── */}

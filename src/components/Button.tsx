@@ -12,7 +12,7 @@ type Tier = 'primary' | 'secondary' | 'tertiary'
 type Size = 'sm' | 'md' | 'lg'
 
 const PAD: Record<Size, string> = { sm: '8px 14px', md: '12px 20px', lg: '15px 24px' }
-const FS:  Record<Size, number> = { sm: 13, md: 14.5, lg: 16 }
+const FS:  Record<Size, number> = { sm: 13, md: 14, lg: 16 }
 
 export default function Button({
   children, onClick, tier = 'primary', size = 'md',
@@ -30,8 +30,8 @@ export default function Button({
 }) {
   const tierStyle: Record<Tier, CSSProperties> = {
     primary:   { background: disabled ? color.borderStrong : color.green, color: color.onGreen, border: 'none' },
-    secondary: { background: color.white, color: color.green, border: `1px solid ${color.border}` },
-    tertiary:  { background: 'transparent', color: color.muted, border: 'none' },
+    secondary: { background: color.white, color: color.ink, border: `1px solid ${color.borderStrong}` },
+    tertiary:  { background: 'transparent', color: color.inkSoft, border: 'none' },
   }
   return (
     <button
@@ -41,7 +41,7 @@ export default function Button({
       style={{
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
         width: fullWidth ? '100%' : undefined,
-        padding: PAD[size], borderRadius: radius.pill,
+        padding: PAD[size], borderRadius: radius.md,
         fontFamily: font.body, fontSize: FS[size], fontWeight: 600, letterSpacing: '-0.005em',
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.7 : 1,

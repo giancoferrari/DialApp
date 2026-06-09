@@ -1,27 +1,29 @@
 // ─────────────────────────────────────────────────────────────────────────
-// Dial design system — the single source of truth for spacing, type, color,
-// elevation, radius and motion. Import what you need:
+// Dial design system v2 — the single source of truth for spacing, type,
+// color, elevation, radius and motion. Import what you need:
 //
 //   import { color, space, radius, font, type, elevation, motion } from '../lib/tokens'
 //
 // Rules of the house:
+//  • One typeface (Geist) — hierarchy via size + weight, never font-switching.
+//  • Cool light-neutral surfaces. Green is the single brand color and is
+//    reserved for primary actions, identity moments and selected states.
 //  • Spacing comes from `space` (a strict 4/8pt scale) — no magic numbers.
-//  • Two typefaces: Bricolage Grotesque (display) + DM Sans (body), via `font`.
-//  • Numbers that sit in columns (scores, handicaps, yardages) use `numeric`.
-//  • Most cards are FLAT (hairline border, no shadow). Reserve elevation for
-//    things that genuinely float (sheets, menus, toasts).
+//  • Type sizes come from `type` — no decimal font sizes (14.5, 10.5…).
+//  • Cards are FLAT (white + hairline border, no shadow, no blur). Elevation
+//    only for things that float: menus, sheets, toasts. Backdrop-blur only
+//    on the mobile bottom nav and modal scrims.
+//  • No uppercase letter-spaced eyebrow labels. Section labels are sentence
+//    case, 13px / 600.
 // ─────────────────────────────────────────────────────────────────────────
 
-// ── Typeface ────────────────────────────────────────────────────────────
-// The original pairing: Bricolage Grotesque for display/headings/large
-// numbers, DM Sans for body & UI. Loaded from Google Fonts in index.html.
-const DISPLAY = "'Bricolage Grotesque', sans-serif"
-const BODY = "'DM Sans', sans-serif"
+// ── Typeface — one neutral grotesk for everything ───────────────────────
+const SANS = "'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif"
 
 export const font = {
-  display: DISPLAY, // headings / large numbers — pair with tight tracking + weight 700
-  body: BODY,       // body & UI
-  mono: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+  display: SANS, // kept for compatibility — same family, heavier weight
+  body: SANS,
+  mono: "'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
 } as const
 
 // Apply to any element showing figures that should align in columns.
@@ -44,60 +46,59 @@ export const space = {
 
 // ── Radius — concentric (nested corners are smaller than their container) ──
 export const radius = {
-  sm: 8,    // chips, inputs
-  md: 12,   // buttons, small cards
+  sm: 10,   // chips, inputs, small controls
+  md: 12,   // buttons
   card: 16, // cards
-  lg: 20,   // large cards
+  lg: 20,   // large cards / hero blocks
   sheet: 24,// modals / bottom sheets
   pill: 999,
 } as const
 
-// ── Color — semantic names over the canonical Dial palette ─────────────────
+// ── Color — cool light neutrals + one brand green ──────────────────────────
 export const color = {
-  // Brand greens
-  green: '#1F3A2A',      // primary dark green (CTAs, headers)
-  greenDeep: '#16271D',
-  greenMid: '#5C7A4D',
-  sage: '#8B9E6E',
-  sageLight: '#B5C29A',
+  // Brand green — the only brand color. Primary actions, identity, selection.
+  green: '#1E4D38',
+  greenDeep: '#153B2A',   // hover / pressed
+  greenMid: '#35704F',
+  sage: '#7A937F',
+  sageLight: '#C2CFC3',
+  greenTint: '#E8EFEA',   // selected backgrounds, badges
 
-  // Surfaces (a warm cream ladder: app → sand → sheet → card → white)
-  cream: '#FAF6EA',      // app background
-  creamDeep: '#EDE8D4',
-  sand: '#F0EBDD',       // sunken / inputs
-  sheet: '#F5F0E6',      // modal & sheet bodies
-  card: '#FFFDF8',       // raised card on cream
+  // Surfaces (cool porcelain ladder: bg → well → sheet → card)
+  cream: '#F4F5F2',       // app background (legacy key name)
+  creamDeep: '#ECEEE8',
+  sand: '#EFF1ED',        // sunken wells / segmented-control tracks
+  sheet: '#FCFCFB',       // modal & sheet bodies
+  card: '#FFFFFF',        // cards
   white: '#FFFFFF',
 
   // Text (ink → soft → muted → faint)
-  ink: '#1F1D17',
-  inkSoft: '#4A4235',
-  muted: '#6B5F4E',
-  faint: '#8B8272',
-  onGreen: '#FAF6EA',    // text on the dark green
+  ink: '#171A17',
+  inkSoft: '#494F49',
+  muted: '#6B716B',
+  faint: '#9AA09A',
+  onGreen: '#F2F5F1',     // text on the brand green
 
   // Lines
-  border: '#E0D8C5',
-  borderStrong: '#C9C0A8',
+  border: '#E4E6E1',
+  borderStrong: '#CDD2CC',
 
-  // Accent (use sparingly — one key action per screen)
-  orange: '#D9824D',
-  orangeDeep: '#C0603A',
-  gold: '#C8A84B',
-
-  // Functional / golf semantics
-  birdie: '#8BC47A',     // under par / positive
-  positive: '#5C7A4D',
-  danger: '#C0392B',
-  dangerDeep: '#991B1B',
+  // Functional / golf semantics — data colors, never decoration
+  orange: '#C25E33',      // over par / warnings
+  orangeDeep: '#9E4A26',
+  gold: '#A8852F',        // eagle
+  birdie: '#3F8761',      // under par
+  positive: '#2F6E4C',
+  danger: '#BD3A2D',
+  dangerDeep: '#8C2A21',
 } as const
 
 // ── Elevation — three levels, nothing more ─────────────────────────────────
 export const elevation = {
-  flat: 'none',                                   // pair with a 1px border
-  sm: '0 1px 2px rgba(31,29,23,0.05), 0 4px 12px rgba(31,29,23,0.05)',
-  md: '0 8px 24px rgba(31,58,42,0.12)',
-  lg: '0 24px 64px rgba(31,29,23,0.24)',          // sheets / modals
+  flat: 'none',                                            // pair with a 1px border
+  sm: '0 1px 2px rgba(23,26,23,0.04), 0 2px 8px rgba(23,26,23,0.04)',
+  md: '0 6px 20px rgba(23,26,23,0.10)',                    // menus, popovers
+  lg: '0 20px 50px rgba(23,26,23,0.18)',                   // sheets / modals
 } as const
 
 // ── Z-index ladder ─────────────────────────────────────────────────────────
@@ -126,18 +127,19 @@ export const ease = {
 } as const
 
 // ── Type presets — spread onto a style object ──────────────────────────────
+// Tight product scale (≈1.2 ratio). Whole-pixel sizes only.
 // e.g. <h2 style={{ ...type.title, color: color.ink }}>
 export const type = {
-  display: { fontFamily: font.display, fontSize: 40, lineHeight: 1.04, letterSpacing: '-0.03em', fontWeight: 700 },
-  hero:    { fontFamily: font.display, fontSize: 32, lineHeight: 1.08, letterSpacing: '-0.025em', fontWeight: 700 },
-  section: { fontFamily: font.display, fontSize: 24, lineHeight: 1.15, letterSpacing: '-0.02em', fontWeight: 700 },
-  title:   { fontFamily: font.display, fontSize: 20, lineHeight: 1.2,  letterSpacing: '-0.02em', fontWeight: 700 },
-  bodyStrong: { fontFamily: font.body, fontSize: 15, lineHeight: 1.5, fontWeight: 600 },
-  body:    { fontFamily: font.body, fontSize: 15, lineHeight: 1.5, fontWeight: 400 },
-  small:   { fontFamily: font.body, fontSize: 13, lineHeight: 1.45, fontWeight: 400 },
-  caption: { fontFamily: font.body, fontSize: 12, lineHeight: 1.4, fontWeight: 500 },
-  // Section eyebrow: uppercase, letter-spaced, faint.
-  label:   { fontFamily: font.body, fontSize: 11, lineHeight: 1.3, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: color.faint },
+  display: { fontFamily: SANS, fontSize: 34, lineHeight: 1.1,  letterSpacing: '-0.025em', fontWeight: 650 },
+  hero:    { fontFamily: SANS, fontSize: 28, lineHeight: 1.15, letterSpacing: '-0.02em',  fontWeight: 650 },
+  section: { fontFamily: SANS, fontSize: 22, lineHeight: 1.2,  letterSpacing: '-0.02em',  fontWeight: 650 },
+  title:   { fontFamily: SANS, fontSize: 17, lineHeight: 1.3,  letterSpacing: '-0.01em',  fontWeight: 600 },
+  bodyStrong: { fontFamily: SANS, fontSize: 15, lineHeight: 1.5, fontWeight: 600 },
+  body:    { fontFamily: SANS, fontSize: 15, lineHeight: 1.5, fontWeight: 400 },
+  small:   { fontFamily: SANS, fontSize: 13, lineHeight: 1.45, fontWeight: 400 },
+  caption: { fontFamily: SANS, fontSize: 12, lineHeight: 1.4, fontWeight: 500 },
+  // Section label: sentence case, quiet. (The old uppercase eyebrow is retired.)
+  label:   { fontFamily: SANS, fontSize: 13, lineHeight: 1.3, fontWeight: 600, color: color.inkSoft },
 } as const
 
-export const FONT_STACK = BODY
+export const FONT_STACK = SANS

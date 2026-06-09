@@ -4,6 +4,7 @@ import gsap from 'gsap'
 import { useAuth } from '../contexts/AuthContext'
 import DialWordmark from './DialWordmark'
 import CountryPicker from './CountryPicker'
+import { color, font } from '../lib/tokens'
 
 type Mode = 'signin' | 'signup' | 'forgot'
 
@@ -19,10 +20,10 @@ function passwordStrength(pw: string): { score: number; label: string; color: st
   if (/[0-9]/.test(pw)) score++
   if (/[^A-Za-z0-9]/.test(pw)) score++
 
-  if (score <= 1) return { score, label: 'Weak',   color: '#D9824D' }
-  if (score <= 2) return { score, label: 'Fair',   color: '#C8A84B' }
-  if (score <= 3) return { score, label: 'Good',   color: '#5C7A4D' }
-  return             { score, label: 'Strong', color: '#1F3A2A' }
+  if (score <= 1) return { score, label: 'Weak',   color: color.danger }
+  if (score <= 2) return { score, label: 'Fair',   color: color.gold }
+  if (score <= 3) return { score, label: 'Good',   color: color.birdie }
+  return             { score, label: 'Strong', color: color.green }
 }
 
 export default function AuthScreen({ onShowLegal }: Props) {
@@ -80,8 +81,8 @@ export default function AuthScreen({ onShowLegal }: Props) {
     mm.add('(prefers-reduced-motion: no-preference)', () => {
       gsap.fromTo(
         containerRef.current?.children ?? [],
-        { opacity: 0, y: 24 },
-        { opacity: 1, y: 0, duration: 0.6, stagger: 0.12, ease: 'power3.out' }
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: 'power3.out' }
       )
     })
     return () => mm.revert()
@@ -160,458 +161,381 @@ export default function AuthScreen({ onShowLegal }: Props) {
   }
 
   const strength = password ? passwordStrength(password) : null
+  const disabled = loading || cooldown > 0
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', background: '#FAF6EA',
-    border: '1px solid #E0D8C5', borderRadius: 14,
-    padding: '13px 16px', fontSize: 15, color: '#1F1D17',
-    fontFamily: "'DM Sans', sans-serif", outline: 'none',
+    width: '100%', background: color.white,
+    border: `1px solid ${color.borderStrong}`, borderRadius: 10,
+    padding: '13px 14px', fontSize: 16, color: color.ink,
+    fontFamily: font.body, outline: 'none',
     transition: 'border-color 0.15s', boxSizing: 'border-box',
   }
 
   const labelStyle: React.CSSProperties = {
-    display: 'block', fontSize: 11, fontWeight: 600,
-    letterSpacing: '0.08em', color: '#4A4235',
-    textTransform: 'uppercase', marginBottom: 6,
+    display: 'block', fontSize: 13, fontWeight: 500,
+    color: color.inkSoft, marginBottom: 6,
   }
+
+  const hintStyle: React.CSSProperties = { fontSize: 12, color: color.muted, marginTop: 6, lineHeight: 1.45 }
+
+  const linkBtn: React.CSSProperties = {
+    background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+    fontFamily: font.body, fontSize: 'inherit', fontWeight: 500,
+    color: color.green, textDecoration: 'underline', textUnderlineOffset: 3,
+  }
+
+  const submitBtn: React.CSSProperties = {
+    width: '100%', background: disabled ? color.borderStrong : color.green,
+    color: disabled ? color.inkSoft : color.onGreen, border: 'none', borderRadius: 12,
+    padding: '14px 24px', fontFamily: font.body,
+    fontSize: 15, fontWeight: 600, cursor: disabled ? 'not-allowed' : 'pointer',
+    transition: 'background 0.15s',
+  }
+
+  const errorBox = error && (
+    <div style={{
+      background: '#FBEDEB', border: '1px solid #EFCBC5',
+      borderRadius: 10, padding: '11px 14px',
+      fontSize: 13, lineHeight: 1.45, color: color.dangerDeep, marginBottom: 16,
+    }}>
+      {error}
+    </div>
+  )
 
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
-      padding: '40px 20px',
+      padding: '48px 24px', background: color.cream,
     }}>
-      <div ref={containerRef} style={{ width: '100%', maxWidth: 460 }}>
+      <div ref={containerRef} style={{ width: '100%', maxWidth: 380 }}>
 
-        {/* Wordmark + tagline */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <DialWordmark size={36} />
-          <p style={{
-            fontFamily: "'DM Sans', sans-serif", fontSize: 15,
-            color: '#4A4235', marginTop: 8, marginBottom: 0,
-          }}>
-            Your personal yardage book.
-          </p>
+        {/* Wordmark */}
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <DialWordmark size={30} />
         </div>
 
-        {/* Main card */}
-        <div style={{
-          background: '#FFFDF8',
-          border: '1px solid #E0D8C5',
-          borderRadius: 28, padding: '32px 36px',
-          boxShadow: '0 8px 40px rgba(31,58,42,0.12), inset 0 1px 0 rgba(255,255,255,0.7)',
-        }}>
-          {confirmed ? (
-            /* Email confirmation sent state */
-            <div style={{ textAlign: 'center', padding: '8px 0' }}>
-              <div style={{
-                width: 64, height: 64, borderRadius: 32,
-                background: '#1F3A2A', display: 'flex',
-                alignItems: 'center', justifyContent: 'center',
-                margin: '0 auto 20px',
-              }}>
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                  <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    stroke="#D9824D" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div style={{
-                fontSize: 11, fontWeight: 600, letterSpacing: '0.12em',
-                color: '#5C7A4D', textTransform: 'uppercase', marginBottom: 8,
-              }}>
-                Check your inbox
-              </div>
-              <div style={{
-                fontFamily: "'Bricolage Grotesque', sans-serif",
-                fontSize: 24, fontWeight: 700, color: '#1F1D17',
-                letterSpacing: '-0.025em', lineHeight: 1.1, marginBottom: 12,
-              }}>
-                Confirm your email
-              </div>
-              <p style={{ fontSize: 14, color: '#4A4235', lineHeight: 1.6, marginBottom: 20 }}>
-                We sent a verification link to{' '}
-                <strong style={{ color: '#1F1D17' }}>{email}</strong>.
-                Click it to activate your account, then come back here to sign in.
-              </p>
-              <p style={{ fontSize: 12, color: '#6B5F4E' }}>
-                Don't see it? Check your spam folder.
-              </p>
-              <button
-                onClick={() => { setConfirmed(false); setMode('signin') }}
-                style={{
-                  marginTop: 20, background: 'transparent', border: 'none',
-                  color: '#1F3A2A', fontSize: 13, fontWeight: 500,
-                  cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
-                  textDecoration: 'underline',
-                }}
-              >
-                Back to sign in
-              </button>
+        {confirmed ? (
+          /* Email confirmation sent state */
+          <div style={{ textAlign: 'center' }}>
+            <div style={{
+              width: 56, height: 56, borderRadius: 28,
+              background: color.greenTint, display: 'flex',
+              alignItems: 'center', justifyContent: 'center',
+              margin: '0 auto 20px',
+            }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  stroke={color.green} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
-          ) : (
-            <>
-              {/* Mode tabs — hidden when in forgot mode */}
-              {mode !== 'forgot' && (
-                <div style={{
-                  display: 'flex', gap: 4, background: '#F0EBDD',
-                  border: '1px solid #E0D8C5', borderRadius: 999,
-                  padding: 4, marginBottom: 28,
-                }}>
-                  {(['signin', 'signup'] as Mode[]).map(m => (
+            <h1 style={{ fontSize: 24, fontWeight: 650, color: color.ink, letterSpacing: '-0.02em', lineHeight: 1.2, margin: '0 0 10px' }}>
+              Confirm your email
+            </h1>
+            <p style={{ fontSize: 14, color: color.inkSoft, lineHeight: 1.6, margin: '0 0 8px' }}>
+              We sent a verification link to <strong style={{ color: color.ink, fontWeight: 600 }}>{email}</strong>.
+              Click it to activate your account, then come back here to sign in.
+            </p>
+            <p style={{ fontSize: 13, color: color.muted, margin: 0 }}>
+              Don't see it? Check your spam folder.
+            </p>
+            <button
+              onClick={() => { setConfirmed(false); setMode('signin') }}
+              style={{ ...linkBtn, fontSize: 14, marginTop: 24 }}
+            >
+              Back to sign in
+            </button>
+          </div>
+        ) : (
+          <div ref={formRef}>
+            {/* Heading */}
+            <div style={{ textAlign: 'center', marginBottom: 28 }}>
+              <h1 style={{ fontSize: 24, fontWeight: 650, color: color.ink, letterSpacing: '-0.02em', lineHeight: 1.2, margin: 0 }}>
+                {mode === 'signin' ? 'Welcome back' : mode === 'signup' ? 'Create your account' : 'Reset your password'}
+              </h1>
+              <p style={{ fontSize: 14, color: color.muted, lineHeight: 1.5, margin: '8px 0 0' }}>
+                {mode === 'signin' && 'Sign in to your yardage book.'}
+                {mode === 'signup' && 'Track rounds, play matches, climb the ranks.'}
+                {mode === 'forgot' && "Enter your email and we'll send you a reset link. It expires in 30 minutes."}
+              </p>
+            </div>
+
+            {/* Forgot password form */}
+            {mode === 'forgot' && (
+              resetSent ? (
+                <div style={{ background: color.greenTint, border: `1px solid ${color.sageLight}`, borderRadius: 12, padding: '14px 16px', fontSize: 14, color: color.greenDeep, lineHeight: 1.55 }}>
+                  <strong style={{ fontWeight: 600 }}>Check your inbox.</strong> We sent a reset link to <strong style={{ fontWeight: 600 }}>{email}</strong>. It expires in 30 minutes.
+                  <div style={{ marginTop: 12, fontSize: 14 }}>
+                    <button onClick={() => switchMode('signin')} style={linkBtn}>Back to sign in</button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit}>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={labelStyle}>Email</label>
+                    <input
+                      type="email" required value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      style={inputStyle}
+                      onFocus={e => { e.currentTarget.style.borderColor = color.green }}
+                      onBlur={e => { e.currentTarget.style.borderColor = color.borderStrong }}
+                    />
+                  </div>
+                  {errorBox}
+                  <button type="submit" disabled={disabled} style={submitBtn}>
+                    {loading ? 'Sending…' : cooldown > 0 ? `Try again in ${cooldown}s` : 'Send reset link'}
+                  </button>
+                  <div style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: color.muted }}>
+                    <button type="button" onClick={() => switchMode('signin')} style={linkBtn}>Back to sign in</button>
+                  </div>
+                </form>
+              )
+            )}
+
+            {/* Sign in / sign up form */}
+            <form onSubmit={handleSubmit} style={{ display: mode === 'forgot' ? 'none' : undefined }}>
+
+              {/* First + last name — signup only */}
+              {mode === 'signup' && (
+                <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={labelStyle}>First name</label>
+                    <input
+                      type="text" required value={firstName}
+                      onChange={e => setFirstName(e.target.value)}
+                      placeholder="First name"
+                      style={inputStyle}
+                      onFocus={e => { e.currentTarget.style.borderColor = color.green }}
+                      onBlur={e => { e.currentTarget.style.borderColor = color.borderStrong }}
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={labelStyle}>Last name</label>
+                    <input
+                      type="text" required value={lastName}
+                      onChange={e => setLastName(e.target.value)}
+                      placeholder="Last name"
+                      style={inputStyle}
+                      onFocus={e => { e.currentTarget.style.borderColor = color.green }}
+                      onBlur={e => { e.currentTarget.style.borderColor = color.borderStrong }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Username — signup only */}
+              {mode === 'signup' && (
+                <div style={{ marginBottom: 16 }}>
+                  <label style={labelStyle}>Username</label>
+                  <input
+                    type="text" required value={username}
+                    onChange={e => setUsername(e.target.value.replace(/\s/g, ''))}
+                    placeholder="e.g. tigerwoods99"
+                    style={inputStyle}
+                    onFocus={e => { e.currentTarget.style.borderColor = color.green }}
+                    onBlur={e => { e.currentTarget.style.borderColor = color.borderStrong }}
+                  />
+                  <div style={hintStyle}>Used to find you on Dial. At least 3 characters, no spaces.</div>
+                </div>
+              )}
+
+              {/* Country — signup only */}
+              {mode === 'signup' && (
+                <div style={{ marginBottom: 16 }}>
+                  <label style={labelStyle}>Country</label>
+                  <CountryPicker value={country} onChange={setCountry} />
+                  <div style={hintStyle}>Your flag appears on your profile. You can change this later.</div>
+                </div>
+              )}
+
+              {/* Email */}
+              <div style={{ marginBottom: 16 }}>
+                <label style={labelStyle}>{mode === 'signin' ? 'Email or username' : 'Email'}</label>
+                <input
+                  type={mode === 'signin' ? 'text' : 'email'} required value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder={mode === 'signin' ? 'you@example.com or @username' : 'you@example.com'}
+                  style={inputStyle}
+                  onFocus={e => { e.currentTarget.style.borderColor = color.green }}
+                  onBlur={e => { e.currentTarget.style.borderColor = color.borderStrong }}
+                />
+              </div>
+
+              {/* Password */}
+              <div style={{ marginBottom: mode === 'signup' ? 10 : 8 }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                  <label style={labelStyle}>Password</label>
+                  {mode === 'signin' && (
                     <button
-                      key={m}
-                      onClick={() => switchMode(m)}
-                      style={{
-                        flex: 1, border: 'none', borderRadius: 999,
-                        padding: '9px 0', cursor: 'pointer',
-                        background: mode === m ? '#1F3A2A' : 'transparent',
-                        color: mode === m ? '#FAF6EA' : '#4A4235',
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontSize: 13.5, fontWeight: 500,
-                        transition: 'all 0.18s ease',
-                      }}
-                      onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
-                      onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+                      type="button"
+                      onClick={() => switchMode('forgot')}
+                      style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: font.body, fontSize: 13, fontWeight: 500, color: color.muted }}
                     >
-                      {m === 'signin' ? 'Sign in' : 'Create account'}
+                      Forgot password?
                     </button>
+                  )}
+                </div>
+                <input
+                  type="password" required value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder={mode === 'signup' ? 'At least 8 characters' : '••••••••'}
+                  style={inputStyle}
+                  onFocus={e => {
+                    e.currentTarget.style.borderColor = color.green
+                    if (mode === 'signup') setShowPwHints(true)
+                  }}
+                  onBlur={e => { e.currentTarget.style.borderColor = color.borderStrong }}
+                />
+              </div>
+
+              {/* Password strength — signup only */}
+              {mode === 'signup' && showPwHints && password && strength && (
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i} style={{
+                        flex: 1, height: 3, borderRadius: 2,
+                        background: strength.score >= i ? strength.color : color.border,
+                        transition: 'background 0.2s',
+                      }} />
+                    ))}
+                  </div>
+                  <div style={{ fontSize: 12, color: strength.color, fontWeight: 500 }}>
+                    {strength.label} password
+                  </div>
+                  <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {[
+                      { ok: password.length >= 8,          text: 'At least 8 characters' },
+                      { ok: /[A-Z]/.test(password),         text: 'One uppercase letter' },
+                      { ok: /[0-9]/.test(password),         text: 'One number' },
+                      { ok: /[^A-Za-z0-9]/.test(password),  text: 'One special character (! @ # $ ...)' },
+                    ].map(req => (
+                      <div key={req.text} style={{
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        fontSize: 12, color: req.ok ? color.positive : color.muted,
+                      }}>
+                        <svg width="10" height="10" viewBox="0 0 10 10">
+                          {req.ok
+                            ? <path d="M1.5 5.5l2.5 2.5 4.5-5" stroke={color.positive} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                            : <circle cx="5" cy="5" r="2" fill={color.borderStrong}/>
+                          }
+                        </svg>
+                        {req.text}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Confirm password — signup only */}
+              {mode === 'signup' && (
+                <div style={{ marginBottom: 20 }}>
+                  <label style={labelStyle}>Confirm password</label>
+                  <input
+                    type="password" required value={confirm}
+                    onChange={e => setConfirm(e.target.value)}
+                    placeholder="Repeat your password"
+                    style={{
+                      ...inputStyle,
+                      borderColor: confirm && confirm !== password ? color.danger : color.borderStrong,
+                    }}
+                    onFocus={e => { e.currentTarget.style.borderColor = color.green }}
+                    onBlur={e => {
+                      e.currentTarget.style.borderColor =
+                        confirm && confirm !== password ? color.danger : color.borderStrong
+                    }}
+                  />
+                  {confirm && confirm !== password && (
+                    <div style={{ fontSize: 12, color: color.danger, marginTop: 6 }}>
+                      Passwords don't match
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Legal checkboxes — signup only */}
+              {mode === 'signup' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+                  {[
+                    {
+                      checked: agreeTerms,
+                      onChange: () => setAgreeTerms(v => !v),
+                      label: <>I agree to the{' '}
+                        <button type="button" onClick={() => onShowLegal('terms')} style={{ ...linkBtn, fontSize: 13 }}>Terms of Service</button>
+                      </>,
+                    },
+                    {
+                      checked: agreePrivacy,
+                      onChange: () => setAgreePrivacy(v => !v),
+                      label: <>I have read the{' '}
+                        <button type="button" onClick={() => onShowLegal('privacy')} style={{ ...linkBtn, fontSize: 13 }}>Privacy Policy</button>
+                      </>,
+                    },
+                    {
+                      checked: agreeAge,
+                      onChange: () => setAgreeAge(v => !v),
+                      label: 'I confirm that I am 18 years of age or older',
+                    },
+                  ].map((item, i) => (
+                    <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+                      <div
+                        onClick={item.onChange}
+                        style={{
+                          width: 18, height: 18, borderRadius: 5, flexShrink: 0,
+                          border: `1.5px solid ${item.checked ? color.green : color.borderStrong}`,
+                          background: item.checked ? color.green : color.white,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          transition: 'all 0.15s', cursor: 'pointer',
+                        }}
+                      >
+                        {item.checked && (
+                          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                            <path d="M1 4l3 3 5-6" stroke={color.onGreen} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        )}
+                      </div>
+                      <span style={{ fontSize: 13, color: color.inkSoft, lineHeight: 1.4, fontFamily: font.body }}>
+                        {item.label}
+                      </span>
+                    </label>
                   ))}
                 </div>
               )}
 
-              {/* Form */}
-              <div ref={formRef}>
-                {/* Forgot password form */}
-                {mode === 'forgot' && (
-                  <div>
-                    <button
-                      onClick={() => switchMode('signin')}
-                      style={{ background: 'none', border: 'none', color: '#4A4235', fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginBottom: 20, padding: 0 }}
-                    >
-                      ← Back to sign in
-                    </button>
-                    <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', marginBottom: 8 }}>
-                      Reset password
-                    </div>
-                    <p style={{ fontSize: 14, color: '#4A4235', lineHeight: 1.55, marginBottom: 24 }}>
-                      Enter your email and we'll send you a link to reset your password. The link expires in 30 minutes.
-                    </p>
-                    {resetSent ? (
-                      <div style={{ background: 'rgba(92,122,77,0.10)', border: '1px solid rgba(92,122,77,0.3)', borderRadius: 12, padding: '14px 16px', fontSize: 14, color: '#3D5C2A', lineHeight: 1.5 }}>
-                        <strong>Check your inbox.</strong> We sent a reset link to <strong>{email}</strong>. It expires in 30 minutes.
-                        <div style={{ marginTop: 12 }}>
-                          <button
-                            onClick={() => switchMode('signin')}
-                            style={{ background: 'none', border: 'none', color: '#1F3A2A', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", textDecoration: 'underline', padding: 0 }}
-                          >
-                            Back to sign in
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                        <div>
-                          <label style={labelStyle}>Email</label>
-                          <input
-                            type="email" required value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            placeholder="you@example.com"
-                            style={inputStyle}
-                            onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-                            onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
-                          />
-                        </div>
-                        {error && (
-                          <div style={{ background: 'rgba(217,130,77,0.10)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#D9824D' }}>
-                            {error}
-                          </div>
-                        )}
-                        <button
-                          type="submit"
-                          disabled={loading || cooldown > 0}
-                          style={{ width: '100%', background: (loading || cooldown > 0) ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '14px 24px', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer', transition: 'all 0.15s' }}
-                          onMouseEnter={e => { if (!loading && !cooldown) e.currentTarget.style.background = '#16271D' }}
-                          onMouseLeave={e => { if (!loading && !cooldown) e.currentTarget.style.background = '#1F3A2A' }}
-                        >
-                          {loading ? 'Sending…' : cooldown > 0 ? `Try again in ${cooldown}s` : 'Send reset link'}
-                        </button>
-                      </form>
-                    )}
-                  </div>
-                )}
-                <form onSubmit={handleSubmit} style={{ display: mode === 'forgot' ? 'none' : undefined }}>
+              {errorBox}
 
-                  {/* First + last name — signup only */}
-                  {mode === 'signup' && (
-                    <div style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
-                      <div style={{ flex: 1 }}>
-                        <label style={labelStyle}>First name</label>
-                        <input
-                          type="text" required value={firstName}
-                          onChange={e => setFirstName(e.target.value)}
-                          placeholder="First name"
-                          style={inputStyle}
-                          onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-                          onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
-                        />
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <label style={labelStyle}>Last name</label>
-                        <input
-                          type="text" required value={lastName}
-                          onChange={e => setLastName(e.target.value)}
-                          placeholder="Last name"
-                          style={inputStyle}
-                          onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-                          onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
-                        />
-                      </div>
-                    </div>
-                  )}
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={disabled}
+                style={{ ...submitBtn, marginTop: mode === 'signin' ? 16 : 0 }}
+                onMouseEnter={e => { if (!disabled) e.currentTarget.style.background = color.greenDeep }}
+                onMouseLeave={e => { if (!disabled) e.currentTarget.style.background = color.green }}
+              >
+                {loading ? 'Please wait…'
+                  : cooldown > 0 ? `Try again in ${cooldown}s`
+                  : mode === 'signin' ? 'Sign in' : 'Create account'}
+              </button>
 
-                  {/* Username — signup only */}
-                  {mode === 'signup' && (
-                    <div style={{ marginBottom: 14 }}>
-                      <label style={labelStyle}>Username</label>
-                      <input
-                        type="text" required value={username}
-                        onChange={e => setUsername(e.target.value.replace(/\s/g, ''))}
-                        placeholder="e.g. tigerwoods99"
-                        style={inputStyle}
-                        onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-                        onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
-                      />
-                      <div style={{ fontSize: 11, color: '#6B5F4E', marginTop: 5 }}>
-                        Used to find you on Dial. Min. 3 characters, no spaces.
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Country — signup only */}
-                  {mode === 'signup' && (
-                    <div style={{ marginBottom: 14 }}>
-                      <label style={labelStyle}>Country</label>
-                      <CountryPicker value={country} onChange={setCountry} />
-                      <div style={{ fontSize: 11, color: '#6B5F4E', marginTop: 5 }}>
-                        Your flag appears on your profile. You can change this later.
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Email */}
-                  <div style={{ marginBottom: 14 }}>
-                    <label style={labelStyle}>{mode === 'signin' ? 'Email or username' : 'Email'}</label>
-                    <input
-                      type={mode === 'signin' ? 'text' : 'email'} required value={email}
-                      onChange={e => setEmail(e.target.value)}
-                      placeholder={mode === 'signin' ? 'you@example.com or @username' : 'you@example.com'}
-                      style={inputStyle}
-                      onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-                      onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
-                    />
-                  </div>
-
-                  {/* Password */}
-                  <div style={{ marginBottom: mode === 'signup' ? 8 : 12 }}>
-                    <label style={labelStyle}>Password</label>
-                    <input
-                      type="password" required value={password}
-                      onChange={e => setPassword(e.target.value)}
-                      placeholder={mode === 'signup' ? 'Min. 8 characters' : '••••••••'}
-                      style={inputStyle}
-                      onFocus={e => {
-                        e.currentTarget.style.borderColor = '#1F3A2A'
-                        if (mode === 'signup') setShowPwHints(true)
-                      }}
-                      onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
-                    />
-                  </div>
-
-                  {/* Forgot password link — sign-in only */}
-                  {mode === 'signin' && (
-                    <div style={{ textAlign: 'right', marginBottom: 20, marginTop: 6 }}>
-                      <button
-                        type="button"
-                        onClick={() => switchMode('forgot')}
-                        style={{ background: 'none', border: 'none', color: '#5C7A4D', fontSize: 12.5, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", padding: 0, fontWeight: 500 }}
-                      >
-                        Forgot password?
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Password strength — signup only */}
-                  {mode === 'signup' && showPwHints && password && strength && (
-                    <div style={{ marginBottom: 14 }}>
-                      {/* Strength bar */}
-                      <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
-                        {[1, 2, 3, 4].map(i => (
-                          <div key={i} style={{
-                            flex: 1, height: 3, borderRadius: 2,
-                            background: strength.score >= i ? strength.color : '#E0D8C5',
-                            transition: 'background 0.2s',
-                          }} />
-                        ))}
-                      </div>
-                      <div style={{ fontSize: 11, color: strength.color, fontWeight: 500 }}>
-                        {strength.label} password
-                      </div>
-                      {/* Requirements */}
-                      <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                        {[
-                          { ok: password.length >= 8,          text: 'At least 8 characters' },
-                          { ok: /[A-Z]/.test(password),         text: 'One uppercase letter' },
-                          { ok: /[0-9]/.test(password),         text: 'One number' },
-                          { ok: /[^A-Za-z0-9]/.test(password),  text: 'One special character (! @ # $ ...)' },
-                        ].map(req => (
-                          <div key={req.text} style={{
-                            display: 'flex', alignItems: 'center', gap: 6,
-                            fontSize: 11.5, color: req.ok ? '#5C7A4D' : '#6B5F4E',
-                          }}>
-                            <svg width="10" height="10" viewBox="0 0 10 10">
-                              {req.ok
-                                ? <path d="M1.5 5.5l2.5 2.5 4.5-5" stroke="#5C7A4D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                                : <circle cx="5" cy="5" r="2" fill="#E0D8C5"/>
-                              }
-                            </svg>
-                            {req.text}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Confirm password — signup only */}
-                  {mode === 'signup' && (
-                    <div style={{ marginBottom: 20 }}>
-                      <label style={labelStyle}>Confirm password</label>
-                      <input
-                        type="password" required value={confirm}
-                        onChange={e => setConfirm(e.target.value)}
-                        placeholder="Repeat your password"
-                        style={{
-                          ...inputStyle,
-                          borderColor: confirm && confirm !== password ? '#D9824D' : '#E0D8C5',
-                        }}
-                        onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-                        onBlur={e => {
-                          e.currentTarget.style.borderColor =
-                            confirm && confirm !== password ? '#D9824D' : '#E0D8C5'
-                        }}
-                      />
-                      {confirm && confirm !== password && (
-                        <div style={{ fontSize: 11.5, color: '#D9824D', marginTop: 5 }}>
-                          Passwords don't match
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Legal checkboxes — signup only */}
-                  {mode === 'signup' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
-                      {[
-                        {
-                          checked: agreeTerms,
-                          onChange: () => setAgreeTerms(v => !v),
-                          label: <>I agree to the{' '}
-                            <button type="button" onClick={() => onShowLegal('terms')} style={{ background: 'none', border: 'none', color: '#1F3A2A', fontSize: 13, cursor: 'pointer', padding: 0, textDecoration: 'underline', fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>Terms of Service</button>
-                          </>,
-                        },
-                        {
-                          checked: agreePrivacy,
-                          onChange: () => setAgreePrivacy(v => !v),
-                          label: <>I have read the{' '}
-                            <button type="button" onClick={() => onShowLegal('privacy')} style={{ background: 'none', border: 'none', color: '#1F3A2A', fontSize: 13, cursor: 'pointer', padding: 0, textDecoration: 'underline', fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>Privacy Policy</button>
-                          </>,
-                        },
-                        {
-                          checked: agreeAge,
-                          onChange: () => setAgreeAge(v => !v),
-                          label: 'I confirm that I am 18 years of age or older',
-                        },
-                      ].map((item, i) => (
-                        <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
-                          <div
-                            onClick={item.onChange}
-                            style={{
-                              width: 18, height: 18, borderRadius: 5, flexShrink: 0,
-                              border: `1.5px solid ${item.checked ? '#1F3A2A' : '#8B8272'}`,
-                              background: item.checked ? '#1F3A2A' : 'transparent',
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              transition: 'all 0.15s', cursor: 'pointer',
-                            }}
-                          >
-                            {item.checked && (
-                              <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                                <path d="M1 4l3 3 5-6" stroke="#FAF6EA" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                              </svg>
-                            )}
-                          </div>
-                          <span style={{ fontSize: 13, color: '#4A4235', lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif" }}>
-                            {item.label}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Error */}
-                  {error && (
-                    <div style={{
-                      background: 'rgba(217,130,77,0.10)', border: '1px solid rgba(217,130,77,0.3)',
-                      borderRadius: 10, padding: '10px 14px',
-                      fontSize: 13, color: '#D9824D', marginBottom: 16,
-                    }}>
-                      {error}
-                    </div>
-                  )}
-
-                  {/* Submit */}
-                  <button
-                    type="submit"
-                    disabled={loading || cooldown > 0}
-                    style={{
-                      width: '100%', background: (loading || cooldown > 0) ? '#8B8272' : '#1F3A2A',
-                      color: '#FAF6EA', border: 'none', borderRadius: 999,
-                      padding: '14px 24px', fontFamily: "'DM Sans', sans-serif",
-                      fontSize: 14, fontWeight: 500, cursor: (loading || cooldown > 0) ? 'not-allowed' : 'pointer',
-                      transition: 'all 0.15s',
-                    }}
-                    onMouseEnter={e => { if (!loading && !cooldown) e.currentTarget.style.background = '#16271D' }}
-                    onMouseLeave={e => { if (!loading && !cooldown) e.currentTarget.style.background = '#1F3A2A' }}
-                    onMouseDown={e => { if (!loading && !cooldown) e.currentTarget.style.transform = 'scale(0.98)' }}
-                    onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-                  >
-                    {loading ? 'Please wait…'
-                      : cooldown > 0 ? `Try again in ${cooldown}s`
-                      : mode === 'signin' ? 'Sign in' : 'Create account'}
-                  </button>
-                </form>
+              {/* Mode switch */}
+              <div style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: color.muted }}>
+                {mode === 'signin'
+                  ? <>New to Dial?{' '}<button type="button" onClick={() => switchMode('signup')} style={linkBtn}>Create an account</button></>
+                  : <>Already have an account?{' '}<button type="button" onClick={() => switchMode('signin')} style={linkBtn}>Sign in</button></>}
               </div>
-            </>
-          )}
-        </div>
+            </form>
+          </div>
+        )}
 
         {/* Legal footer — sign-in only */}
-        {mode !== 'signup' && (
-          <p style={{
-            textAlign: 'center', fontSize: 12, color: '#6B5F4E',
-            marginTop: 20, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.6,
-          }}>
-            <button onClick={() => onShowLegal('terms')} style={{
-              background: 'none', border: 'none', color: '#4A4235', fontSize: 12,
-              cursor: 'pointer', textDecoration: 'underline', padding: 0,
-              fontFamily: "'DM Sans', sans-serif",
-            }}>
+        {mode === 'signin' && !confirmed && (
+          <p style={{ textAlign: 'center', fontSize: 12, color: color.faint, marginTop: 32, fontFamily: font.body }}>
+            <button onClick={() => onShowLegal('terms')} style={{ background: 'none', border: 'none', color: color.muted, fontSize: 12, cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3, padding: 0, fontFamily: font.body }}>
               Terms of Service
             </button>
             {' '}·{' '}
-            <button onClick={() => onShowLegal('privacy')} style={{
-              background: 'none', border: 'none', color: '#4A4235', fontSize: 12,
-              cursor: 'pointer', textDecoration: 'underline', padding: 0,
-              fontFamily: "'DM Sans', sans-serif",
-            }}>
+            <button onClick={() => onShowLegal('privacy')} style={{ background: 'none', border: 'none', color: color.muted, fontSize: 12, cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3, padding: 0, fontFamily: font.body }}>
               Privacy Policy
             </button>
           </p>
@@ -620,4 +544,3 @@ export default function AuthScreen({ onShowLegal }: Props) {
     </div>
   )
 }
-

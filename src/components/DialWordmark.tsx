@@ -1,27 +1,21 @@
-const LETTERS = [
-  { ch: 'D', color: '#1F3A2A' },
-  { ch: 'i', color: '#D9824D' },
-  { ch: 'a', color: '#8B9E6E' },
-  { ch: 'l', color: '#1F3A2A' },
-  { ch: '.', color: '#D9824D' },
-]
+import { color, font } from '../lib/tokens'
 
-export default function DialWordmark({ size = 28 }: { size?: number }) {
+// The wordmark: "Dial" set in ink with a single brand-green full stop.
+// One color move, not five — quiet and confident.
+export default function DialWordmark({ size = 28, onDark = false }: { size?: number; onDark?: boolean }) {
   return (
     <span
       style={{
-        fontFamily: "'Bricolage Grotesque', sans-serif",
+        fontFamily: font.display,
         fontSize: size,
         fontWeight: 700,
-        letterSpacing: '-0.04em',
+        letterSpacing: '-0.03em',
         lineHeight: 1,
         display: 'inline-flex',
+        color: onDark ? color.onGreen : color.ink,
       }}
     >
-      {LETTERS.map((l, i) => (
-        <span key={i} style={{ color: l.color }}>{l.ch}</span>
-      ))}
+      Dial<span style={{ color: onDark ? '#7FB89A' : color.green }}>.</span>
     </span>
   )
 }
-

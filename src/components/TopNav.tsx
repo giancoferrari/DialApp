@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { View } from '../types'
 import DialWordmark from './DialWordmark'
 import { PlusIcon, PersonIcon, HomeIcon, UsersIcon, TrophyIcon, BellIcon, ToolsIcon, TargetIcon, ScorecardIcon, ChatIcon, CameraIcon } from './Icons'
+import { color, font, elevation, radius } from '../lib/tokens'
 import { tapHaptic } from '../lib/native'
 
 const NAV_ITEMS: { id: View; label: string }[] = [
@@ -37,6 +38,22 @@ interface Props {
   msgUnread?: number
 }
 
+// Count badge used on the bell / messages icons.
+function Badge({ n }: { n: number }) {
+  return (
+    <div style={{
+      position: 'absolute', top: -2, right: -3,
+      minWidth: 16, height: 16, borderRadius: 8,
+      background: color.green, border: `1.5px solid ${color.cream}`,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: 10, fontWeight: 600, color: color.onGreen,
+      fontFamily: font.body, padding: '0 4px',
+    }}>
+      {n > 9 ? '9+' : n}
+    </div>
+  )
+}
+
 export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, onNotif, onMessages, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0, msgUnread = 0 }: Props) {
   const [menuOpen, setMenuOpen]     = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
@@ -57,35 +74,54 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
     return () => { document.removeEventListener('mousedown', handler); document.removeEventListener('keydown', onKey) }
   }, [])
 
+  // Borderless 40px icon button — quiet until hovered.
+  const iconBtn: React.CSSProperties = {
+    position: 'relative',
+    width: 40, height: 40, borderRadius: 20,
+    background: 'transparent', border: 'none',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    cursor: 'pointer', flexShrink: 0,
+    transition: 'background 0.15s',
+  }
+
+  const menuItem: React.CSSProperties = {
+    width: '100%', background: 'transparent', border: 'none',
+    borderRadius: radius.sm, padding: '10px 12px',
+    textAlign: 'left', cursor: 'pointer',
+    fontFamily: font.body, fontSize: 14, fontWeight: 500, color: color.ink,
+    transition: 'background 0.12s',
+    display: 'flex', alignItems: 'center', gap: 10,
+  }
+
   return (
     <>
       {/* ── Top bar ── */}
       <div style={{
         position: isMobile ? 'relative' : 'sticky', top: isMobile ? undefined : 0, zIndex: 30,
-        background: '#FAF6EA',
-        paddingTop: isMobile ? 'calc(env(safe-area-inset-top) + 12px)' : '20px',
-        paddingBottom: isMobile ? '12px' : '20px',
-        borderBottom: '1px solid #E0D8C5',
+        background: color.cream,
+        paddingTop: isMobile ? 'calc(env(safe-area-inset-top) + 10px)' : '14px',
+        paddingBottom: isMobile ? '10px' : '14px',
+        borderBottom: `1px solid ${color.border}`,
       }}>
         <div style={{
           maxWidth: 1320, margin: '0 auto',
-          padding: isMobile ? '0 24px' : '0 40px',
-          display: 'flex', alignItems: 'center', gap: isMobile ? 12 : 28,
+          padding: isMobile ? '0 20px' : '0 40px',
+          display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 24,
         }}>
           {/* Wordmark */}
           <button
             onClick={() => onView('dashboard')}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0, display: 'flex' }}
           >
-            <DialWordmark size={isMobile ? 24 : 28} />
+            <DialWordmark size={isMobile ? 22 : 24} />
           </button>
 
-          {/* Pill nav — hidden on mobile (replaced by bottom bar) */}
+          {/* Segmented nav — hidden on mobile (replaced by bottom bar) */}
           {!isMobile && (
             <nav style={{
-              display: 'flex', gap: 4,
-              background: '#FAF6EA', border: '1px solid #E0D8C5',
-              borderRadius: 999, padding: 4, marginLeft: 12,
+              display: 'flex', gap: 2,
+              background: color.sand,
+              borderRadius: radius.md, padding: 3, marginLeft: 8,
               overflowX: 'auto', flexShrink: 1,
             }}>
               {NAV_ITEMS.map(item => {
@@ -96,19 +132,17 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                     onClick={() => onView(item.id)}
                     style={{
                       border: 'none', cursor: 'pointer',
-                      background: active ? '#1F3A2A' : 'transparent',
-                      color: active ? '#FAF6EA' : '#1F1D17',
-                      padding: '9px 18px', borderRadius: 999,
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: 13.5, fontWeight: 500,
-                      letterSpacing: '-0.005em',
+                      background: active ? color.white : 'transparent',
+                      color: active ? color.ink : color.inkSoft,
+                      padding: '8px 16px', borderRadius: radius.sm,
+                      fontFamily: font.body,
+                      fontSize: 14, fontWeight: active ? 600 : 500,
+                      boxShadow: active ? elevation.sm : 'none',
                       transition: 'all 0.15s cubic-bezier(0.22, 1, 0.36, 1)',
                       whiteSpace: 'nowrap',
                     }}
-                    onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(31,58,42,0.07)' }}
-                    onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent' }}
-                    onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
-                    onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+                    onMouseEnter={e => { if (!active) e.currentTarget.style.color = color.ink }}
+                    onMouseLeave={e => { if (!active) e.currentTarget.style.color = color.inkSoft }}
                   >
                     {item.label}
                   </button>
@@ -123,66 +157,26 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
           {!isMobile && (
             <button
               onClick={onMessages}
-              style={{
-                position: 'relative',
-                width: 38, height: 38, borderRadius: 19,
-                background: '#FFFDF8',
-                border: '1px solid #E0D8C5',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', flexShrink: 0,
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#F0EBDD' }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#FFFDF8' }}
-              onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.94)' }}
-              onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+              aria-label="Messages"
+              style={iconBtn}
+              onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
             >
-              <ChatIcon size={17} color={view === 'messages' ? '#D9824D' : '#1F3A2A'} />
-              {msgUnread > 0 && (
-                <div style={{
-                  position: 'absolute', top: -2, right: -2,
-                  minWidth: 16, height: 16, borderRadius: 8,
-                  background: '#D9824D', border: '1.5px solid rgba(237,232,212,0.92)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 9, fontWeight: 700, color: '#FAF6EA',
-                  fontFamily: "'DM Sans', sans-serif", padding: '0 3px',
-                }}>
-                  {msgUnread > 9 ? '9+' : msgUnread}
-                </div>
-              )}
+              <ChatIcon size={19} color={view === 'messages' ? color.green : color.inkSoft} />
+              {msgUnread > 0 && <Badge n={msgUnread} />}
             </button>
           )}
 
           {/* Bell notification button */}
           <button
             onClick={onNotif}
-            style={{
-              position: 'relative',
-              width: 38, height: 38, borderRadius: 19,
-              background: '#FFFDF8',
-              border: '1px solid #E0D8C5',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', flexShrink: 0,
-              transition: 'all 0.15s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.90)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(250,246,234,0.65)' }}
-            onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.94)' }}
-            onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+            aria-label="Notifications"
+            style={iconBtn}
+            onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
           >
-            <BellIcon size={17} color={view === 'notifications' ? '#D9824D' : '#1F3A2A'} />
-            {notifCount > 0 && (
-              <div style={{
-                position: 'absolute', top: -2, right: -2,
-                minWidth: 16, height: 16, borderRadius: 8,
-                background: '#D9824D', border: '1.5px solid rgba(237,232,212,0.92)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 9, fontWeight: 700, color: '#FAF6EA',
-                fontFamily: "'DM Sans', sans-serif", padding: '0 3px',
-              }}>
-                {notifCount > 9 ? '9+' : notifCount}
-              </div>
-            )}
+            <BellIcon size={19} color={view === 'notifications' ? color.green : color.inkSoft} />
+            {notifCount > 0 && <Badge n={notifCount} />}
           </button>
 
           {/* Quick-create button + menu */}
@@ -192,47 +186,46 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
               aria-expanded={createOpen}
               aria-haspopup="menu"
               style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                background: createOpen ? '#16271D' : '#1F3A2A', color: '#FAF6EA', border: 'none',
-                borderRadius: 999,
-                padding: isMobile ? '9px 10px 9px 16px' : '10px 18px 10px 20px',
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: isMobile ? 13 : 13.5, fontWeight: 500,
-                cursor: 'pointer', letterSpacing: '-0.005em',
-                transition: 'all 0.15s cubic-bezier(0.22, 1, 0.36, 1)',
+                display: 'flex', alignItems: 'center', gap: 6,
+                background: createOpen ? color.greenDeep : color.green, color: color.onGreen, border: 'none',
+                borderRadius: radius.md,
+                padding: isMobile ? '9px 14px' : '9px 16px',
+                fontFamily: font.body,
+                fontSize: 14, fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'background 0.15s, transform 0.14s cubic-bezier(0.22, 1, 0.36, 1)',
                 whiteSpace: 'nowrap',
-                boxShadow: '0 4px 14px rgba(31,58,42,0.20)',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#16271D'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(31,58,42,0.28)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = createOpen ? '#16271D' : '#1F3A2A'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(31,58,42,0.20)' }}
-              onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = color.greenDeep }}
+              onMouseLeave={e => { e.currentTarget.style.background = createOpen ? color.greenDeep : color.green }}
+              onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
               onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-              onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.96)' }}
+              onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
               onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
             >
-              Log
-              <span style={{ width: 22, height: 22, borderRadius: 11, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transform: createOpen ? 'rotate(45deg)' : 'rotate(0deg)', transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
-                <PlusIcon size={14} color="#FAF6EA" />
+              <span style={{ display: 'inline-flex', transform: createOpen ? 'rotate(45deg)' : 'rotate(0deg)', transition: 'transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)' }}>
+                <PlusIcon size={15} color={color.onGreen} />
               </span>
+              Log
             </button>
 
             {createOpen && (
               <div
                 role="menu"
                 style={{
-                  position: 'absolute', top: 'calc(100% + 10px)', right: 0,
-                  background: '#FAF6EA', border: '1px solid #E0D8C5',
-                  borderRadius: 16, padding: '6px',
-                  boxShadow: '0 12px 32px rgba(31,58,42,0.16)',
-                  minWidth: 232, zIndex: 50,
-                  animation: 'fadeIn 0.15s ease',
+                  position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+                  background: color.white, border: `1px solid ${color.border}`,
+                  borderRadius: radius.card, padding: 6,
+                  boxShadow: elevation.md,
+                  minWidth: 230, zIndex: 50,
+                  animation: 'slideDown 0.16s cubic-bezier(0.22, 1, 0.36, 1)',
                 }}
               >
                 {[
-                  { Icon: CameraIcon,    title: 'Share a post',  sub: 'Photo to your feed',   accent: true,  action: onPost },
-                  { Icon: TargetIcon,    title: 'Log a shot',    sub: 'Quick club distance',  accent: false, action: onLogShot },
-                  { Icon: ScorecardIcon, title: 'Start a round', sub: 'Full scorecard',       accent: false, action: onLogRound },
-                  { Icon: TrophyIcon,    title: 'New match',     sub: 'Challenge a friend',   accent: false, action: () => onView('matches') },
+                  { Icon: CameraIcon,    title: 'Share a post',  sub: 'Photo to your feed',  action: onPost },
+                  { Icon: TargetIcon,    title: 'Log a shot',    sub: 'Quick club distance', action: onLogShot },
+                  { Icon: ScorecardIcon, title: 'Start a round', sub: 'Full scorecard',      action: onLogRound },
+                  { Icon: TrophyIcon,    title: 'New match',     sub: 'Challenge a friend',  action: () => onView('matches') },
                 ].map((item, i) => (
                   <button
                     key={item.title}
@@ -240,26 +233,25 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                     onClick={() => { setCreateOpen(false); item.action() }}
                     style={{
                       width: '100%', background: 'transparent', border: 'none',
-                      borderRadius: 12, padding: '10px 12px',
+                      borderRadius: radius.sm, padding: '9px 10px',
                       marginTop: i === 0 ? 0 : 2,
                       textAlign: 'left', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', gap: 12,
                       transition: 'background 0.12s',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#F0EBDD' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
                   >
                     <span style={{
-                      width: 34, height: 34, borderRadius: 11, flexShrink: 0,
-                      background: item.accent ? '#1F3A2A' : '#F0EBDD',
+                      width: 34, height: 34, borderRadius: radius.sm, flexShrink: 0,
+                      background: color.greenTint,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: item.accent ? '0 2px 8px rgba(31,58,42,0.22)' : 'none',
                     }}>
-                      <item.Icon size={17} color={item.accent ? '#D9824D' : '#1F3A2A'} />
+                      <item.Icon size={17} color={color.green} />
                     </span>
                     <div>
-                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, color: '#1F1D17', letterSpacing: '-0.01em' }}>{item.title}</div>
-                      <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 1 }}>{item.sub}</div>
+                      <div style={{ fontFamily: font.body, fontSize: 14, fontWeight: 600, color: color.ink }}>{item.title}</div>
+                      <div style={{ fontSize: 12, color: color.muted, marginTop: 1 }}>{item.sub}</div>
                     </div>
                   </button>
                 ))}
@@ -273,18 +265,18 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
               onClick={() => setMenuOpen(v => !v)}
               style={{
                 width: 36, height: 36, borderRadius: 18,
-                background: '#1F3A2A', color: '#D9824D',
+                background: color.greenTint, color: color.green,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontFamily: "'Bricolage Grotesque', sans-serif",
-                fontWeight: 700, fontSize: 14,
+                fontFamily: font.body,
+                fontWeight: 600, fontSize: 14,
                 cursor: 'pointer', flexShrink: 0,
-                letterSpacing: '-0.02em',
-                transition: 'transform 0.15s, background 0.15s',
+                border: `1px solid ${color.border}`,
+                transition: 'box-shadow 0.15s',
                 userSelect: 'none',
                 overflow: 'hidden',
               }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = `0 0 0 3px ${color.greenTint}` }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none' }}
             >
               {avatarUrl
                 ? <img src={avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -294,73 +286,47 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
 
             {menuOpen && (
               <div style={{
-                position: 'absolute', top: 'calc(100% + 10px)', right: 0,
-                background: '#FAF6EA', border: '1px solid #E0D8C5',
-                borderRadius: 16, padding: '6px',
-                boxShadow: '0 8px 24px rgba(31,58,42,0.12)',
-                minWidth: 190, zIndex: 50,
-                animation: 'fadeIn 0.15s ease',
+                position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+                background: color.white, border: `1px solid ${color.border}`,
+                borderRadius: radius.card, padding: 6,
+                boxShadow: elevation.md,
+                minWidth: 200, zIndex: 50,
+                animation: 'slideDown 0.16s cubic-bezier(0.22, 1, 0.36, 1)',
               }}>
                 {/* Email */}
-                <div style={{ padding: '10px 14px 8px', borderBottom: '1px solid #ECE5D2', marginBottom: 4 }}>
-                  <div style={{ fontSize: 11, color: '#6B5F4E', fontWeight: 500 }}>Signed in as</div>
-                  <div style={{ fontSize: 13, color: '#1F1D17', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 160 }}>
+                <div style={{ padding: '8px 12px 10px', borderBottom: `1px solid ${color.border}`, marginBottom: 4 }}>
+                  <div style={{ fontSize: 12, color: color.muted }}>Signed in as</div>
+                  <div style={{ fontSize: 13, color: color.ink, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 170, marginTop: 1 }}>
                     {userEmail}
                   </div>
                 </div>
 
-                {/* Profile */}
                 <button
                   onClick={() => { setMenuOpen(false); onProfile() }}
-                  style={{
-                    width: '100%', background: 'transparent', border: 'none',
-                    borderRadius: 10, padding: '10px 14px',
-                    textAlign: 'left', cursor: 'pointer',
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: 13.5, fontWeight: 500, color: '#1F1D17',
-                    transition: 'background 0.12s',
-                    display: 'flex', alignItems: 'center', gap: 10,
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#F0EBDD' }}
+                  style={menuItem}
+                  onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
                 >
-                  <PersonIcon size={16} color="#1F3A2A" />
+                  <PersonIcon size={16} color={color.inkSoft} />
                   Profile
                 </button>
 
-                {/* Friends */}
                 <button
                   onClick={() => { setMenuOpen(false); onView('friends') }}
-                  style={{
-                    width: '100%', background: 'transparent', border: 'none',
-                    borderRadius: 10, padding: '10px 14px',
-                    textAlign: 'left', cursor: 'pointer',
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: 13.5, fontWeight: 500, color: '#1F1D17',
-                    transition: 'background 0.12s',
-                    display: 'flex', alignItems: 'center', gap: 10,
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#F0EBDD' }}
+                  style={menuItem}
+                  onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
                 >
-                  <UsersIcon size={16} color="#1F3A2A" />
+                  <UsersIcon size={16} color={color.inkSoft} />
                   Friends
                 </button>
 
-                <div style={{ height: 1, background: '#ECE5D2', margin: '4px 8px' }} />
+                <div style={{ height: 1, background: color.border, margin: '4px 8px' }} />
 
-                {/* Sign out */}
                 <button
                   onClick={() => { setMenuOpen(false); onSignOut() }}
-                  style={{
-                    width: '100%', background: 'transparent', border: 'none',
-                    borderRadius: 10, padding: '10px 14px',
-                    textAlign: 'left', cursor: 'pointer',
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: 13.5, fontWeight: 500, color: '#D9824D',
-                    transition: 'background 0.12s',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#F0EBDD' }}
+                  style={{ ...menuItem, color: color.danger }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#FBEDEB' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
                 >
                   Sign out
@@ -371,19 +337,19 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
         </div>
       </div>
 
-      {/* ── Bottom tab bar (mobile only) — floating pill ── */}
+      {/* ── Bottom tab bar (mobile only) — the one earned glass moment ── */}
       {isMobile && (
         <nav style={{
           position: 'fixed',
-          bottom: 'max(calc(env(safe-area-inset-bottom) + 10px), 18px)',
-          left: '12px', right: '12px',
+          bottom: 'max(calc(env(safe-area-inset-bottom) + 10px), 16px)',
+          left: '14px', right: '14px',
           zIndex: 40,
-          background: 'rgba(251,248,238,0.94)',
-          backdropFilter: 'blur(52px) saturate(200%)',
-          WebkitBackdropFilter: 'blur(52px) saturate(200%)',
-          border: '1px solid rgba(255,255,255,0.78)',
-          borderRadius: '22px',
-          boxShadow: '0 8px 32px rgba(31,29,23,0.16), inset 0 1px 0 rgba(255,255,255,0.95)',
+          background: 'rgba(255,255,255,0.84)',
+          backdropFilter: 'blur(24px) saturate(170%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(170%)',
+          border: `1px solid rgba(23,26,23,0.07)`,
+          borderRadius: 26,
+          boxShadow: '0 8px 28px rgba(23,26,23,0.12)',
           display: 'flex', alignItems: 'stretch',
           transform: 'translateZ(0)',
           WebkitTransform: 'translateZ(0)',
@@ -397,53 +363,40 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                 style={{
                   flex: 1, background: 'none', border: 'none',
                   display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  justifyContent: 'center', padding: '10px 2px 8px',
+                  justifyContent: 'center', padding: '11px 2px 10px',
                   cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-                  transition: 'transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  transition: 'transform 0.12s cubic-bezier(0.22, 1, 0.36, 1)',
                 }}
-                onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.90)' }}
+                onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.92)' }}
                 onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
-                onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.90)' }}
+                onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.92)' }}
                 onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
               >
-                <div style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-                  padding: '5px 14px 4px', borderRadius: 14,
-                  background: 'transparent',
-                }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                   <div style={{ position: 'relative' }}>
-                    <item.Icon size={23} color={active ? '#1F3A2A' : '#4A4235'} />
+                    <item.Icon size={22} color={active ? color.green : color.muted} />
                     {item.id === 'messages' && msgUnread > 0 && (
                       <div style={{
-                        position: 'absolute', top: -5, right: -9,
+                        position: 'absolute', top: -4, right: -8,
                         minWidth: 15, height: 15, borderRadius: 8,
-                        background: '#D9824D', border: '1.5px solid rgba(251,248,238,0.96)',
+                        background: color.green, border: '1.5px solid rgba(255,255,255,0.92)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 8.5, fontWeight: 700, color: '#FAF6EA',
-                        fontFamily: "'DM Sans', sans-serif", padding: '0 3px',
+                        fontSize: 9, fontWeight: 600, color: color.onGreen,
+                        fontFamily: font.body, padding: '0 3px',
                       }}>
                         {msgUnread > 9 ? '9+' : msgUnread}
                       </div>
                     )}
                   </div>
                   <span style={{
-                    fontSize: 10.5, fontWeight: active ? 700 : 400,
-                    fontFamily: "'DM Sans', sans-serif",
-                    letterSpacing: active ? '-0.02em' : '0.01em',
-                    color: active ? '#1F1D17' : '#4A4235',
-                    transition: 'color 0.2s ease, font-weight 0.2s ease',
+                    fontSize: 11, fontWeight: active ? 600 : 500,
+                    fontFamily: font.body,
+                    color: active ? color.green : color.muted,
+                    transition: 'color 0.2s ease',
                   }}>
                     {item.label}
                   </span>
-                  {/* Orange dot indicator */}
-                  <div style={{
-                    width: 4, height: 4, borderRadius: 2,
-                    background: '#D9824D',
-                    opacity: active ? 1 : 0,
-                    transform: active ? 'scale(1)' : 'scale(0)',
-                    transition: 'opacity 0.22s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                  }} />
                 </div>
               </button>
             )
@@ -453,4 +406,3 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
     </>
   )
 }
-

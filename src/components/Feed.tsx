@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchFriendships } from '../lib/friends'
 import { fetchFeedPosts, toggleLike, deletePost, toggleRepost } from '../lib/posts'
 import type { Post } from '../types'
-import { HeartIcon, ChatIcon } from './Icons'
+import { HeartIcon, ChatIcon, RepostIcon } from './Icons'
 import Portal from './Portal'
 import { PostDetail } from './ProfilePosts'
 import RecapCard from './RecapCard'
@@ -13,6 +13,7 @@ import EmptyState from './EmptyState'
 import { tapHaptic } from '../lib/native'
 import { timeAgo, displayName as authorName } from '../lib/format'
 import { card } from '../lib/surfaces'
+import { color, font } from '../lib/tokens'
 
 interface Props {
   userId: string
@@ -22,11 +23,11 @@ interface Props {
 
 function FeedSkeleton({ isMobile }: { isMobile: boolean }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {[0, 1].map(i => (
-        <div key={i} style={{ ...card, borderRadius: 18, overflow: 'hidden' }}>
+        <div key={i} style={{ ...card, overflow: 'hidden' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px' }}>
-            <Skeleton width={38} height={38} radius={19} />
+            <Skeleton width={36} height={36} radius={18} />
             <div style={{ flex: 1 }}>
               <Skeleton width={130} height={13} />
               <Skeleton width={58} height={10} style={{ marginTop: 7 }} />
@@ -100,33 +101,35 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
   if (posts.length === 0) {
     return (
       <EmptyState
-        icon={<ChatIcon size={24} color="#8B8272" />}
+        icon={<ChatIcon size={24} color={color.faint} />}
         title="The clubhouse is quiet"
         subtitle="Posts from you and your friends show up here. Add friends and share your first round."
       />
     )
   }
 
+  const countText: React.CSSProperties = { fontFamily: font.body, fontSize: 14, fontWeight: 600, color: color.ink, fontVariantNumeric: 'tabular-nums' }
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {posts.map(post => (
-        <div key={`${post.id}-${post.repostedBy?.userId ?? 'orig'}`} style={{ ...card, borderRadius: 18, overflow: 'hidden' }}>
+        <div key={`${post.id}-${post.repostedBy?.userId ?? 'orig'}`} style={{ ...card, overflow: 'hidden' }}>
           {post.repostedBy && (
-            <div style={{ padding: '9px 14px 0', fontSize: 12, color: '#6B5F4E', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
-              <span style={{ fontSize: 14, lineHeight: 1 }}>↻</span> {authorName(post.repostedBy)} reposted
+            <div style={{ padding: '10px 14px 0', fontSize: 12, color: color.muted, display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
+              <RepostIcon size={13} color={color.muted} /> {authorName(post.repostedBy)} reposted
             </div>
           )}
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px' }}>
-            <Avatar profile={post.author} size={38} onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined} />
+            <Avatar profile={post.author} size={36} onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div
                 onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined}
-                style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14.5, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em', cursor: onViewProfile ? 'pointer' : 'default' }}
+                style={{ fontFamily: font.body, fontSize: 14, fontWeight: 600, color: color.ink, cursor: onViewProfile ? 'pointer' : 'default' }}
               >
                 {authorName(post.author)}
               </div>
-              <div style={{ fontSize: 11.5, color: '#8B8272' }}>{timeAgo(post.createdAt)}</div>
+              <div style={{ fontSize: 12, color: color.muted, marginTop: 1 }}>{timeAgo(post.createdAt)}</div>
             </div>
           </div>
 
@@ -134,45 +137,45 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
           <button onClick={() => onMediaTap(post)} style={{ position: 'relative', display: 'block', width: '100%', padding: 0, border: 'none', background: post.kind === 'round' ? 'none' : '#000', cursor: 'pointer' }}>
             {post.kind === 'round' && post.meta
               ? <RecapCard meta={post.meta} variant="feed" />
-              : <img src={post.imageUrl ?? ''} alt="" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', aspectRatio: '4 / 5', objectFit: 'cover', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)' }} />}
+              : <img src={post.imageUrl ?? ''} alt="" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', aspectRatio: '4 / 5', objectFit: 'cover' }} />}
             {burstId === post.id && (
               <div style={{ position: 'absolute', top: '50%', left: '50%', pointerEvents: 'none', animation: 'heartBurst 0.7s ease-out forwards', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))' }}>
-                <HeartIcon size={96} color="#FAF6EA" filled />
+                <HeartIcon size={96} color="#FFFFFF" filled />
               </div>
             )}
           </button>
 
           {/* Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18, padding: '11px 14px 4px' }}>
-            <button onClick={() => handleLike(post)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18, padding: '12px 14px 4px' }}>
+            <button onClick={() => handleLike(post)} aria-label={post.likedByMe ? 'Unlike' : 'Like'} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <span style={{ display: 'inline-flex', animation: poppingId === post.id ? 'likePop 0.42s ease' : undefined }}>
-                <HeartIcon size={23} color={post.likedByMe ? '#D9824D' : '#1F1D17'} filled={post.likedByMe} />
+                <HeartIcon size={22} color={post.likedByMe ? color.danger : color.ink} filled={post.likedByMe} />
               </span>
-              <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17' }}>{post.likeCount}</span>
+              <span style={countText}>{post.likeCount}</span>
             </button>
-            <button onClick={() => setActive(post)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              <ChatIcon size={21} color="#1F1D17" />
-              <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17' }}>{post.commentCount}</span>
+            <button onClick={() => setActive(post)} aria-label="Comments" style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <ChatIcon size={20} color={color.ink} />
+              <span style={countText}>{post.commentCount}</span>
             </button>
-            <button onClick={() => handleRepost(post)} style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              <span style={{ fontSize: 19, lineHeight: 1, color: post.repostedByMe ? '#5C7A4D' : '#1F1D17' }}>↻</span>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, fontWeight: 600, color: post.repostedByMe ? '#5C7A4D' : '#6B5F4E' }}>{post.repostedByMe ? 'Reposted' : 'Repost'}</span>
+            <button onClick={() => handleRepost(post)} style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <RepostIcon size={18} color={post.repostedByMe ? color.positive : color.inkSoft} />
+              <span style={{ fontFamily: font.body, fontSize: 13, fontWeight: 500, color: post.repostedByMe ? color.positive : color.muted }}>{post.repostedByMe ? 'Reposted' : 'Repost'}</span>
             </button>
           </div>
 
           {/* Caption */}
           {post.caption && (
-            <div style={{ padding: '4px 14px 8px', fontSize: 14, color: '#1F1D17', lineHeight: 1.45, fontFamily: "'DM Sans', sans-serif" }}>
-              <strong style={{ fontWeight: 700 }}>{authorName(post.author)}</strong> {post.caption}
+            <div style={{ padding: '4px 14px 8px', fontSize: 14, color: color.ink, lineHeight: 1.5, fontFamily: font.body }}>
+              <strong style={{ fontWeight: 600 }}>{authorName(post.author)}</strong> {post.caption}
             </div>
           )}
           {/* Inline comment preview — tap to open the comment sheet */}
           {post.commentCount > 0 && (
-            <button onClick={() => setActive(post)} style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', padding: `${post.caption ? 0 : 4}px 14px 14px`, fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: '#6B5F4E' }}>
+            <button onClick={() => setActive(post)} style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', padding: `${post.caption ? 0 : 4}px 14px 14px`, fontFamily: font.body, fontSize: 13, color: color.muted }}>
               {post.commentCount === 1 ? 'View 1 comment' : `View all ${post.commentCount} comments`}
             </button>
           )}
-          {!post.caption && post.commentCount === 0 && <div style={{ height: 8 }} />}
+          {!post.caption && post.commentCount === 0 && <div style={{ height: 10 }} />}
         </div>
       ))}
 

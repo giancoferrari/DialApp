@@ -4,10 +4,12 @@ import { fetchProfilesForIds, fetchFriendships } from '../lib/friends'
 import type { UserProfile, PublicProfile, View } from '../types'
 import { getRank, RANK_TIERS } from '../lib/points'
 import { flagEmoji, countryName } from '../lib/countries'
-import { ShieldIcon, ChatIcon, GearIcon, CameraIcon, CloseIcon } from './Icons'
+import { ShieldIcon, ChatIcon, GearIcon, CameraIcon, CloseIcon, ChevronLeftIcon } from './Icons'
 import ProfilePosts from './ProfilePosts'
 import Portal from './Portal'
+import Avatar from './Avatar'
 import { useEdgeSwipeBack } from '../hooks/useGestures'
+import { color, font, elevation, radius } from '../lib/tokens'
 
 // ── A user's friends, in a tappable sheet ──────────────────────────────
 function FriendsListModal({ userId, isMobile, onClose, onViewProfile }: {
@@ -30,32 +32,30 @@ function FriendsListModal({ userId, isMobile, onClose, onViewProfile }: {
 
   return (
     <Portal>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 220, background: 'rgba(31,29,23,0.5)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24 }}>
-        <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, maxHeight: isMobile ? '80vh' : '70vh', background: '#F5F0E6', borderRadius: isMobile ? '24px 24px 0 0' : 24, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 64px rgba(31,29,23,0.24)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 18px 12px', borderBottom: '1px solid #E0D8C5' }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 17, fontWeight: 700, color: '#1F1D17' }}>Friends</div>
-            <button onClick={onClose} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <CloseIcon size={13} color="#4A4235" />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 220, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'fadeIn 0.2s ease' }}>
+        <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 420, maxHeight: isMobile ? '80vh' : '70vh', background: color.white, borderRadius: isMobile ? '24px 24px 0 0' : radius.sheet, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 18px 12px', borderBottom: `1px solid ${color.border}` }}>
+            <div style={{ fontFamily: font.body, fontSize: 16, fontWeight: 650, color: color.ink }}>Friends</div>
+            <button onClick={onClose} aria-label="Close" style={{ background: color.sand, border: 'none', borderRadius: 15, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <CloseIcon size={13} color={color.inkSoft} />
             </button>
           </div>
           <div style={{ flex: 1, overflowY: 'auto', padding: '6px 10px 16px' }}>
             {loading ? (
-              <div style={{ textAlign: 'center', color: '#6B5F4E', fontSize: 13, padding: 24 }}>Loading…</div>
+              <div style={{ textAlign: 'center', color: color.muted, fontSize: 13, padding: 24 }}>Loading…</div>
             ) : list.length === 0 ? (
-              <div style={{ textAlign: 'center', color: '#6B5F4E', fontSize: 13, padding: 24 }}>No friends to show.</div>
+              <div style={{ textAlign: 'center', color: color.muted, fontSize: 13, padding: 24 }}>No friends to show.</div>
             ) : list.map(p => (
               <button key={p.userId} onClick={() => { onClose(); onViewProfile(p.userId) }}
-                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, background: 'transparent', border: 'none', borderRadius: 12, padding: '10px 8px', cursor: 'pointer', textAlign: 'left' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#EDE6D6' }}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, background: 'transparent', border: 'none', borderRadius: radius.sm, padding: '10px 8px', cursor: 'pointer', textAlign: 'left' }}
+                onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
-                <div style={{ width: 42, height: 42, borderRadius: 21, background: '#1F3A2A', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {p.avatarUrl ? <img src={p.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 17, color: '#D9824D' }}>{name(p)[0]?.replace('@', '').toUpperCase()}</span>}
-                </div>
+                <Avatar profile={p} size={40} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17' }}>{name(p)}</div>
-                  {p.handicapIndex != null && <div style={{ fontSize: 12, color: '#6B5F4E' }}>HCP {p.handicapIndex.toFixed(1)}</div>}
+                  <div style={{ fontFamily: font.body, fontSize: 14, fontWeight: 600, color: color.ink }}>{name(p)}</div>
+                  {p.handicapIndex != null && <div style={{ fontSize: 12, color: color.muted, marginTop: 1 }}>HCP {p.handicapIndex.toFixed(1)}</div>}
                 </div>
-                {p.country && <span style={{ fontSize: 18 }}>{flagEmoji(p.country)}</span>}
+                {p.country && <span style={{ fontSize: 17 }}>{flagEmoji(p.country)}</span>}
               </button>
             ))}
           </div>
@@ -120,74 +120,76 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
   const px = isMobile ? 20 : 40
 
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 24 : 44}px ${px}px ${isMobile ? 120 : 80}px` }}>
+    <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 20 : 36}px ${px}px ${isMobile ? 120 : 80}px` }}>
 
       {/* Top row: back (other) / settings (own) */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, minHeight: 36 }}>
         {isOwn ? (
           <>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#8B8272', textTransform: 'uppercase' }}>Your profile</div>
+            <div style={{ fontFamily: font.body, fontSize: 17, fontWeight: 650, letterSpacing: '-0.01em', color: color.ink }}>Profile</div>
             <button
               onClick={() => onNavigate('settings')}
-              style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(250,246,234,0.7)', border: '1px solid rgba(255,255,255,0.6)', borderRadius: 999, padding: '8px 14px 8px 12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 500, color: '#1F3A2A', boxShadow: '0 2px 10px rgba(31,29,23,0.06)' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 7, background: color.white, border: `1px solid ${color.borderStrong}`, borderRadius: radius.sm, padding: '8px 14px', cursor: 'pointer', fontFamily: font.body, fontSize: 13, fontWeight: 600, color: color.ink, transition: 'background 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
+              onMouseLeave={e => { e.currentTarget.style.background = color.white }}
             >
-              <GearIcon size={15} color="#1F3A2A" /> Edit profile
+              <GearIcon size={14} color={color.inkSoft} /> Edit profile
             </button>
           </>
         ) : (
           <button
             onClick={() => (onBack ? onBack() : onNavigate('friends'))}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: '#4A4235', padding: 0, display: 'flex', alignItems: 'center', gap: 6 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: font.body, fontSize: 14, fontWeight: 500, color: color.inkSoft, padding: 0, display: 'flex', alignItems: 'center', gap: 4 }}
           >
-            <span style={{ fontSize: 18, lineHeight: 1 }}>‹</span> Back
+            <ChevronLeftIcon size={18} color={color.inkSoft} /> Back
           </button>
         )}
       </div>
 
       {/* Profile header */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 22 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 24 }}>
         <div
           onClick={() => { if (isOwn) onNavigate('settings') }}
-          style={{ width: 92, height: 92, borderRadius: 46, background: '#1F3A2A', overflow: 'hidden', border: '3px solid rgba(255,255,255,0.7)', boxShadow: `0 10px 28px rgba(31,58,42,0.22), 0 0 0 5px ${rank.color}1f`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14, cursor: isOwn ? 'pointer' : 'default', position: 'relative' }}
+          style={{ width: 92, height: 92, borderRadius: 46, background: color.greenTint, overflow: 'hidden', border: `1px solid ${color.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14, cursor: isOwn ? 'pointer' : 'default', position: 'relative' }}
         >
           {avatarUrl
             ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 38, color: '#D9824D' }}>{initial}</span>}
+            : <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: 36, color: color.green }}>{initial}</span>}
           {isOwn && (
-            <div style={{ position: 'absolute', bottom: 0, right: 0, width: 28, height: 28, borderRadius: 14, background: '#D9824D', border: '2px solid #EDE8D4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <CameraIcon size={12} color="#FAF6EA" />
+            <div style={{ position: 'absolute', bottom: 0, right: 0, width: 28, height: 28, borderRadius: 14, background: color.green, border: `2px solid ${color.cream}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CameraIcon size={12} color={color.onGreen} />
             </div>
           )}
         </div>
 
-        <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.025em', lineHeight: 1.1 }}>
+        <div style={{ fontFamily: font.body, fontSize: 22, fontWeight: 650, color: color.ink, letterSpacing: '-0.02em', lineHeight: 1.15 }}>
           {displayName}
         </div>
-        {handle && <div style={{ fontSize: 13, color: '#6B5F4E', marginTop: 3 }}>{handle}</div>}
+        {handle && <div style={{ fontSize: 14, color: color.muted, marginTop: 3 }}>{handle}</div>}
         {country && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 7, fontSize: 13, color: '#4A4235', fontFamily: "'DM Sans', sans-serif" }}>
-            <span style={{ fontSize: 17, lineHeight: 1 }}>{flagEmoji(country)}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, fontSize: 13, color: color.inkSoft, fontFamily: font.body }}>
+            <span style={{ fontSize: 16, lineHeight: 1 }}>{flagEmoji(country)}</span>
             {countryName(country)}
           </div>
         )}
 
         {/* Rank badge */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: rank.color + '20', border: `1px solid ${rank.color}44`, borderRadius: 999, padding: '5px 14px 5px 10px', marginTop: 12 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: color.sand, borderRadius: 999, padding: '5px 12px', marginTop: 12 }}>
           <ShieldIcon size={13} color={rank.color} />
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 700, color: rank.color, letterSpacing: '0.04em' }}>{rank.name}</span>
+          <span style={{ fontFamily: font.body, fontSize: 13, fontWeight: 600, color: color.inkSoft }}>{rank.name}</span>
         </div>
 
         {/* Stats */}
-        <div style={{ display: 'flex', gap: isMobile ? 28 : 44, marginTop: 18 }}>
+        <div style={{ display: 'flex', gap: isMobile ? 32 : 48, marginTop: 20 }}>
           {([
-            { value: handicap != null ? handicap.toFixed(1) : '—', label: 'handicap' },
-            { value: points.toLocaleString(), label: 'points' },
-            { value: friendsCount, label: 'friends', onPress: () => (isOwn ? onNavigate('friends') : setShowFriends(true)) },
+            { value: handicap != null ? handicap.toFixed(1) : '—', label: 'Handicap' },
+            { value: points.toLocaleString(), label: 'Points' },
+            { value: friendsCount, label: 'Friends', onPress: () => (isOwn ? onNavigate('friends') : setShowFriends(true)) },
           ] as { value: string | number; label: string; onPress?: () => void }[]).map(s => {
             const content = (
               <>
-                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 26, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{s.value}</div>
-                <div style={{ fontSize: 10, color: s.onPress ? '#1F3A2A' : '#4A4235', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 5 }}>{s.label}</div>
+                <div style={{ fontFamily: font.body, fontSize: 22, fontWeight: 650, color: color.ink, letterSpacing: '-0.02em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{s.value}</div>
+                <div style={{ fontSize: 12, color: color.muted, fontWeight: 500, marginTop: 5 }}>{s.label}</div>
               </>
             )
             return s.onPress
@@ -198,28 +200,28 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
 
         {/* Win/loss */}
         {(wins + losses + ties) > 0 && (
-          <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+          <div style={{ display: 'flex', gap: 6, marginTop: 16 }}>
             {[
-              { value: wins,   label: 'W', color: '#5C7A4D', bg: 'rgba(92,122,77,0.12)' },
-              { value: losses, label: 'L', color: '#C0603A', bg: 'rgba(192,96,58,0.12)' },
-              { value: ties,   label: 'T', color: '#4A4235', bg: 'rgba(107,104,87,0.10)' },
+              { value: wins,   label: 'W', color: color.positive,   bg: color.greenTint },
+              { value: losses, label: 'L', color: color.orangeDeep, bg: '#F7EDE6' },
+              { value: ties,   label: 'T', color: color.inkSoft,    bg: color.sand },
             ].map(s => (
               <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 5, background: s.bg, borderRadius: 8, padding: '4px 10px' }}>
-                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: s.color, fontVariantNumeric: 'tabular-nums' }}>{s.value}</span>
-                <span style={{ fontSize: 10, fontWeight: 700, color: s.color, letterSpacing: '0.06em' }}>{s.label}</span>
+                <span style={{ fontFamily: font.body, fontSize: 14, fontWeight: 600, color: s.color, fontVariantNumeric: 'tabular-nums' }}>{s.value}</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: s.color }}>{s.label}</span>
               </div>
             ))}
           </div>
         )}
 
         {/* Progress to next rank */}
-        <div style={{ width: '100%', maxWidth: 320, marginTop: 18 }}>
-          <div style={{ height: 5, background: 'rgba(31,58,42,0.10)', borderRadius: 3, overflow: 'hidden', marginBottom: 6 }}>
-            <div style={{ height: '100%', borderRadius: 3, background: nextTier ? rank.color : '#D9824D', width: `${Math.round(progress * 100)}%`, transition: 'width 1s cubic-bezier(0.16,1,0.3,1)' }} />
+        <div style={{ width: '100%', maxWidth: 320, marginTop: 20 }}>
+          <div style={{ height: 4, background: color.creamDeep, borderRadius: 2, overflow: 'hidden', marginBottom: 6 }}>
+            <div style={{ height: '100%', borderRadius: 2, background: color.green, width: `${Math.round(progress * 100)}%`, transition: 'width 1s cubic-bezier(0.16,1,0.3,1)' }} />
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6B5F4E' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: color.muted, fontVariantNumeric: 'tabular-nums' }}>
             <span>{rank.name}</span>
-            {nextTier ? <span>{nextTier.minPoints - points} pts to <span style={{ color: nextTier.color, fontWeight: 600 }}>{nextTier.name}</span></span> : <span style={{ color: '#D9824D', fontWeight: 600 }}>Max rank</span>}
+            {nextTier ? <span>{nextTier.minPoints - points} pts to <span style={{ color: color.ink, fontWeight: 600 }}>{nextTier.name}</span></span> : <span style={{ color: color.green, fontWeight: 600 }}>Max rank</span>}
           </div>
         </div>
 
@@ -227,15 +229,17 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
         {!isOwn && (
           <button
             onClick={() => onMessage(viewUserId)}
-            style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 8, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '12px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", boxShadow: '0 4px 14px rgba(31,58,42,0.22)' }}
+            style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 8, background: color.green, color: color.onGreen, border: 'none', borderRadius: radius.md, padding: '12px 28px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: font.body, transition: 'background 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = color.greenDeep }}
+            onMouseLeave={e => { e.currentTarget.style.background = color.green }}
           >
-            <ChatIcon size={16} color="#FAF6EA" /> Message
+            <ChatIcon size={16} color={color.onGreen} /> Message
           </button>
         )}
       </div>
 
       {/* Divider */}
-      <div style={{ height: 1, background: 'rgba(224,216,197,0.7)', marginBottom: 22 }} />
+      <div style={{ height: 1, background: color.border, marginBottom: 20 }} />
 
       {/* Posts */}
       <ProfilePosts
