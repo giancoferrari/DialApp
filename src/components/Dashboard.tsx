@@ -14,7 +14,36 @@ import { color, font, elevation, radius } from '../lib/tokens'
 
 gsap.registerPlugin(useGSAP)
 
-// ── Ranks & points info (opened from the rank card) ────────────────────────────
+// The hero surface: deep evening green with a soft light falling from the
+// top-left — the "private club at dusk" moment of the app.
+const HERO_BG = 'radial-gradient(130% 100% at 12% -10%, #1D4731 0%, #143524 48%, #0F2718 100%)'
+
+// ── Topographic course linework — the brand landscape behind the hero ──────
+function ContourArt() {
+  return (
+    <svg
+      viewBox="0 0 420 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
+    >
+      <g fill="none" stroke={color.onGreen} strokeWidth="1">
+        {/* rolling fairway contours */}
+        <path opacity="0.07" d="M-20,236 C60,196 128,224 196,186 C262,150 330,128 448,150" />
+        <path opacity="0.05" d="M-20,272 C76,228 152,260 224,216 C292,176 356,158 448,182" />
+        <path opacity="0.06" d="M-24,196 C52,158 124,180 188,142 C254,104 330,84 448,108" />
+        <path opacity="0.04" d="M-24,310 C88,266 176,296 248,250 C316,208 380,192 452,214" />
+        {/* the green, ringed */}
+        <ellipse opacity="0.07" cx="332" cy="64" rx="86" ry="32" />
+        <ellipse opacity="0.05" cx="332" cy="64" rx="52" ry="19" />
+        {/* pin */}
+        <line opacity="0.22" x1="332" y1="64" x2="332" y2="30" strokeWidth="1.4" />
+        <path opacity="0.22" d="M332,30 L354,36 L332,43 Z" fill={color.onGreen} stroke="none" />
+        <circle opacity="0.3" cx="332" cy="64" r="2" fill={color.onGreen} stroke="none" />
+      </g>
+    </svg>
+  )
+}
+
+// ── Ranks & points info (opened from the rank hero) ────────────────────────────
 function RanksModal({ points, isMobile, onClose, onNavigate }: { points: number; isMobile: boolean; onClose: () => void; onNavigate: (v: View) => void }) {
   const current = getRank(points)
   const listRef = useRef<HTMLDivElement>(null)
@@ -39,12 +68,12 @@ function RanksModal({ points, isMobile, onClose, onNavigate }: { points: number;
 
   return (
     <Portal>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 220, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'fadeIn 0.2s ease' }}>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 220, background: 'rgba(15,23,17,0.5)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'fadeIn 0.2s ease' }}>
         <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, maxHeight: isMobile ? '90vh' : '86vh', background: color.white, borderRadius: isMobile ? '24px 24px 0 0' : radius.sheet, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}>
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 14px', borderBottom: `1px solid ${color.border}`, flexShrink: 0 }}>
             <div>
-              <div style={{ fontFamily: font.body, fontSize: 17, fontWeight: 650, color: color.ink, letterSpacing: '-0.01em' }}>Ranks &amp; points</div>
+              <div style={{ fontFamily: font.display, fontSize: 19, fontWeight: 600, color: color.ink }}>Ranks &amp; points</div>
               <div style={{ fontSize: 13, color: color.muted, marginTop: 2 }}>How ranked play works</div>
             </div>
             <button onClick={onClose} aria-label="Close" style={{ background: color.sand, border: 'none', borderRadius: 16, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
@@ -58,7 +87,7 @@ function RanksModal({ points, isMobile, onClose, onNavigate }: { points: number;
             <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
               {perMatch.map(p => (
                 <div key={p.label} style={{ flex: 1, textAlign: 'center', background: p.bg, borderRadius: radius.md, padding: '14px 8px' }}>
-                  <div style={{ fontFamily: font.body, fontSize: 22, fontWeight: 650, color: p.color, letterSpacing: '-0.02em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{p.value}</div>
+                  <div style={{ fontFamily: font.display, fontSize: 23, fontWeight: 600, color: p.color, lineHeight: 1 }}>{p.value}</div>
                   <div style={{ fontSize: 12, color: p.color, fontWeight: 500, marginTop: 6 }}>{p.label}</div>
                 </div>
               ))}
@@ -132,6 +161,12 @@ function useLiveDate() {
   return date
 }
 
+function greetingFor(date: Date): string {
+  const h = parseInt(new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: false, timeZone: TZ }).format(date))
+  if (h < 12) return 'Good morning'
+  if (h < 18) return 'Good afternoon'
+  return 'Good evening'
+}
 
 function toParLabel(diff: number | null | undefined): { text: string; color: string } {
   if (diff === null || diff === undefined) return { text: '', color: color.inkSoft }
@@ -167,8 +202,8 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
       if (containerRef.current) {
         gsap.fromTo(
           Array.from(containerRef.current.children),
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.5, stagger: 0.07, ease: 'power3.out', delay: 0.05 }
+          { opacity: 0, y: 18 },
+          { opacity: 1, y: 0, duration: 0.55, stagger: 0.09, ease: 'power3.out', delay: 0.05 }
         )
       }
     })
@@ -221,222 +256,238 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
     : null
   const lastDiff  = lastScore !== null && lastPar !== null ? lastScore - lastPar : null
 
-  const statCard: React.CSSProperties = { ...card, padding: '16px 10px 14px', textAlign: 'center' }
-  const statValue: React.CSSProperties = { fontFamily: font.body, fontSize: 22, fontWeight: 650, color: color.ink, letterSpacing: '-0.02em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }
-  const statLabel: React.CSSProperties = { fontSize: 12, color: color.muted, fontWeight: 500, marginTop: 7 }
+  const firstName = profile?.firstName || (profile?.username ? `@${profile.username}` : 'Golfer')
+
+  // ── Hero shell: full-bleed immersive on mobile, rounded block on desktop ──
+  const heroShell: React.CSSProperties = isMobile
+    ? { position: 'relative', overflow: 'hidden', background: HERO_BG, padding: `4px ${px}px 52px` }
+    : { position: 'relative', overflow: 'hidden', background: HERO_BG, borderRadius: 24, padding: '30px 30px 34px' }
+
+  // ── The porcelain content sheet, docked over the hero on mobile ──
+  const sheetShell: React.CSSProperties = isMobile
+    ? { position: 'relative', marginTop: -26, background: color.cream, borderRadius: '26px 26px 0 0', padding: `26px ${px}px 0` }
+    : { padding: '20px 0 0' }
+
+  const inner: React.CSSProperties = { maxWidth: 640, margin: '0 auto' }
+
+  const statValue: React.CSSProperties = { fontFamily: font.display, fontSize: 27, fontWeight: 600, color: color.ink, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }
+  const statLabel: React.CSSProperties = { fontSize: 12, color: color.muted, fontWeight: 500, marginTop: 8 }
 
   return (
     <main
       ref={containerRef}
-      style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 20 : 36}px ${px}px ${isMobile ? 112 : 64}px` }}
+      style={{
+        paddingBottom: isMobile ? 112 : 64,
+        ...(isMobile ? {} : { maxWidth: 720, margin: '0 auto', padding: '32px 40px 64px' }),
+      }}
     >
 
-      {/* ── Date ───────────────────────────────────────────── */}
-      <div style={{ marginBottom: 16, fontSize: 13, fontWeight: 500, color: color.muted, fontFamily: font.body }}>
-        {date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: TZ })}
-      </div>
+      {/* ════ HERO — the private-club moment ════ */}
+      <section style={heroShell}>
+        <ContourArt />
+        <div style={{ ...inner, position: 'relative' }}>
 
-      {/* ── Rank card (tap → ranks & points) — the screen's one color moment ── */}
-      <button
-        onClick={() => setShowRanks(true)}
-        style={{
-          display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer',
-          background: color.green,
-          borderRadius: radius.lg, padding: '20px 20px 18px',
-          marginBottom: 12,
-          border: 'none',
-          transition: 'transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), background 0.15s',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.background = color.greenDeep }}
-        onMouseLeave={e => { e.currentTarget.style.background = color.green; e.currentTarget.style.transform = 'scale(1)' }}
-        onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.99)' }}
-        onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-        onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.99)' }}
-        onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
-          <DialRing progress={nextTier ? progress : 1} size={64} stroke={3} color={rank.color} trackColor="rgba(242,245,241,0.18)">
-            <div style={{
-              width: 44, height: 44, borderRadius: 22,
-              background: 'rgba(255,255,255,0.10)',
-              overflow: 'hidden', flexShrink: 0,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              {profile?.avatarUrl
-                ? <img src={profile.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                : <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: 18, color: color.onGreen }}>
-                    {(profile?.firstName?.[0] ?? profile?.username?.[0] ?? '?').toUpperCase()}
-                  </span>
-              }
+          {/* Date + greeting */}
+          <div style={{ paddingTop: isMobile ? 14 : 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 500, color: 'rgba(242,245,241,0.55)', fontFamily: font.body }}>
+              {date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: TZ })}
             </div>
-          </DialRing>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: font.body, fontSize: 16, fontWeight: 600, color: color.onGreen, letterSpacing: '-0.01em', lineHeight: 1.2 }}>
-              {profile?.firstName || (profile?.username ? `@${profile.username}` : 'Golfer')}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4 }}>
-              <ShieldIcon size={12} color={rank.color} />
-              <span style={{ fontSize: 13, fontWeight: 600, color: rank.color, fontFamily: font.body }}>
-                {rank.name}
-              </span>
-              <ChevronRightIcon size={13} color="rgba(242,245,241,0.45)" />
-            </div>
+            <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 27 : 30, fontWeight: 600, fontStyle: 'italic', letterSpacing: '-0.005em', color: color.onGreen, lineHeight: 1.15, margin: '6px 0 0' }}>
+              {greetingFor(date)}, {firstName}
+            </h1>
           </div>
-          <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div ref={pointsRef} style={{ fontFamily: font.body, fontSize: 28, fontWeight: 650, color: color.onGreen, letterSpacing: '-0.025em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
-              {points.toLocaleString()}
+
+          {/* Rank block — tap for ranks & points */}
+          <button
+            onClick={() => setShowRanks(true)}
+            style={{ display: 'block', width: '100%', textAlign: 'left', background: 'transparent', border: 'none', padding: 0, marginTop: 28, cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22, 1, 0.36, 1)' }}
+            onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.99)' }}
+            onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
+            onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.99)' }}
+            onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+              <DialRing progress={nextTier ? progress : 1} size={84} stroke={3} color={rank.color} trackColor="rgba(242,245,241,0.16)">
+                <div style={{
+                  width: 58, height: 58, borderRadius: 29,
+                  background: 'rgba(255,255,255,0.10)',
+                  overflow: 'hidden', flexShrink: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {profile?.avatarUrl
+                    ? <img src={profile.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    : <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: 22, color: color.onGreen }}>
+                        {(profile?.firstName?.[0] ?? profile?.username?.[0] ?? '?').toUpperCase()}
+                      </span>
+                  }
+                </div>
+              </DialRing>
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 500, color: 'rgba(242,245,241,0.6)', fontFamily: font.body }}>Ranked points</div>
+                <div ref={pointsRef} style={{ fontFamily: font.display, fontSize: 46, fontWeight: 600, color: color.onGreen, lineHeight: 1.05, marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>
+                  {points.toLocaleString()}
+                </div>
+              </div>
+
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 999, padding: '7px 13px', flexShrink: 0 }}>
+                <ShieldIcon size={13} color={rank.color} />
+                <span style={{ fontSize: 13, fontWeight: 600, color: color.onGreen, fontFamily: font.body }}>{rank.name}</span>
+              </div>
             </div>
-            <div style={{ fontSize: 12, color: 'rgba(242,245,241,0.55)', fontWeight: 500, marginTop: 3 }}>points</div>
-          </div>
-        </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 12, color: 'rgba(242,245,241,0.5)', fontFamily: font.body }}>
-            {rank.name}
-          </span>
-          {nextTier ? (
-            <span style={{ fontSize: 12, color: 'rgba(242,245,241,0.65)', fontFamily: font.body, fontVariantNumeric: 'tabular-nums' }}>
-              {nextTier.minPoints - points} pts to <span style={{ color: rank.color, fontWeight: 600 }}>{nextTier.name}</span>
-            </span>
-          ) : (
-            <span style={{ fontSize: 12, color: rank.color, fontWeight: 600, fontFamily: font.body }}>Max rank</span>
-          )}
-        </div>
-      </button>
-
-      {/* ── Quick Stats ────────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 24 }}>
-
-        {/* Last round */}
-        <div style={statCard}>
-          {lastScore !== null ? (
-            <>
-              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4 }}>
-                <span style={statValue}>{lastScore}</span>
-                {lastDiff !== null && (
-                  <span style={{ fontSize: 13, fontWeight: 600, color: toParLabel(lastDiff).color, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
-                    {toParLabel(lastDiff).text}
+            {/* Progress to next tier */}
+            <div style={{ marginTop: 24 }}>
+              <div style={{ height: 5, background: 'rgba(242,245,241,0.14)', borderRadius: 999, overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%', borderRadius: 999, background: rank.color,
+                  width: `${pct}%`,
+                  animation: 'rankBarFill 1.2s cubic-bezier(0.22, 1, 0.36, 1)',
+                  ['--bar-width' as never]: `${pct}%`,
+                }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 9 }}>
+                <span style={{ fontSize: 12, color: 'rgba(242,245,241,0.5)', fontFamily: font.body }}>{rank.name}</span>
+                {nextTier ? (
+                  <span style={{ fontSize: 12, color: 'rgba(242,245,241,0.7)', fontFamily: font.body, fontVariantNumeric: 'tabular-nums', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                    {nextTier.minPoints - points} pts to <span style={{ color: rank.color, fontWeight: 600 }}>{nextTier.name}</span>
+                    <ChevronRightIcon size={12} color="rgba(242,245,241,0.45)" />
                   </span>
+                ) : (
+                  <span style={{ fontSize: 12, color: rank.color, fontWeight: 600, fontFamily: font.body }}>Max rank</span>
                 )}
               </div>
-              <div style={statLabel}>Last round</div>
-              <div style={{ fontSize: 12, color: color.faint, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '0 4px' }}>
-                {lastRound!.courseName.split(' ').slice(0, 3).join(' ')}
+            </div>
+          </button>
+        </div>
+      </section>
+
+      {/* ════ CONTENT SHEET ════ */}
+      <section style={sheetShell}>
+        <div style={inner}>
+
+          {/* Quick stats — one card, three columns, hairline dividers */}
+          <div style={{ ...card, display: 'flex', alignItems: 'stretch', padding: '18px 0 16px', marginBottom: 12 }}>
+            {/* Last round */}
+            <div style={{ flex: 1, textAlign: 'center', padding: '0 6px' }}>
+              {lastScore !== null ? (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 5 }}>
+                    <span style={statValue}>{lastScore}</span>
+                    {lastDiff !== null && (
+                      <span style={{ fontSize: 13, fontWeight: 600, color: toParLabel(lastDiff).color, fontFamily: font.body, fontVariantNumeric: 'tabular-nums' }}>
+                        {toParLabel(lastDiff).text}
+                      </span>
+                    )}
+                  </div>
+                  <div style={statLabel}>Last round</div>
+                </>
+              ) : (
+                <>
+                  <div style={{ ...statValue, color: color.faint }}>—</div>
+                  <div style={statLabel}>Last round</div>
+                </>
+              )}
+            </div>
+            <div style={{ width: 1, background: color.border }} />
+            {/* Handicap */}
+            <div style={{ flex: 1, textAlign: 'center', padding: '0 6px' }}>
+              <div style={statValue}>
+                {profile?.handicapIndex != null ? profile.handicapIndex.toFixed(1) : '—'}
               </div>
-            </>
-          ) : (
-            <>
-              <div style={{ ...statValue, color: color.faint }}>—</div>
-              <div style={statLabel}>Last round</div>
-              <div style={{ fontSize: 12, color: color.faint, marginTop: 2 }}>None yet</div>
-            </>
-          )}
-        </div>
-
-        {/* Handicap */}
-        <div style={statCard}>
-          <div style={statValue}>
-            {profile?.handicapIndex != null ? profile.handicapIndex.toFixed(1) : '—'}
+              <div style={statLabel}>Handicap</div>
+            </div>
+            <div style={{ width: 1, background: color.border }} />
+            {/* Record */}
+            <div style={{ flex: 1, textAlign: 'center', padding: '0 6px' }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4 }}>
+                <span style={statValue}>{profile?.wins ?? 0}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: color.positive, fontFamily: font.body }}>W</span>
+                <span style={statValue}>{profile?.losses ?? 0}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: color.orangeDeep, fontFamily: font.body }}>L</span>
+              </div>
+              <div style={statLabel}>Record</div>
+            </div>
           </div>
-          <div style={statLabel}>Handicap</div>
-          <div style={{ fontSize: 12, color: color.faint, marginTop: 2 }}>index</div>
-        </div>
 
-        {/* Record */}
-        <div style={{ ...card, padding: '16px 10px 14px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, justifyContent: 'center' }}>
-            <span style={{ ...statValue, fontSize: 18 }}>{profile?.wins ?? 0}</span>
-            <span style={{ fontSize: 12, fontWeight: 600, color: color.positive, lineHeight: 1 }}>W</span>
-            <span style={{ fontSize: 9, color: color.faint }}>·</span>
-            <span style={{ ...statValue, fontSize: 18 }}>{profile?.losses ?? 0}</span>
-            <span style={{ fontSize: 12, fontWeight: 600, color: color.orangeDeep, lineHeight: 1 }}>L</span>
+          {/* Actions */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+            <button
+              onClick={() => onNavigate('rounds')}
+              style={{
+                flex: 1.4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                background: color.green, color: color.onGreen, border: 'none', borderRadius: radius.card,
+                padding: '16px 12px', cursor: 'pointer', fontFamily: font.body,
+                fontSize: 14, fontWeight: 600,
+                transition: 'background 0.15s, transform 0.16s ease',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = color.greenDeep }}
+              onMouseLeave={e => { e.currentTarget.style.background = color.green }}
+              onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
+              onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+              onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
+              onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
+            >
+              <ScorecardIcon size={17} color={color.onGreen} />
+              Log a round
+            </button>
+            <button
+              onClick={() => onNavigate('friends')}
+              style={{
+                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                ...card,
+                padding: '16px 12px', cursor: 'pointer', fontFamily: font.body,
+                fontSize: 14, fontWeight: 600, color: color.ink, transition: 'background 0.15s, transform 0.16s ease',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
+              onMouseLeave={e => { e.currentTarget.style.background = color.white }}
+              onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
+              onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+              onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
+              onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
+            >
+              <UsersIcon size={17} color={color.inkSoft} />
+              Friends
+            </button>
           </div>
-          {(profile?.ties ?? 0) > 0 && (
-            <div style={{ fontSize: 12, color: color.muted, marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>{profile!.ties}T</div>
-          )}
-          <div style={statLabel}>Record</div>
+
+          {/* Friends leaderboard */}
+          <button
+            onClick={() => onNavigate('leaderboard')}
+            style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left',
+              ...card,
+              padding: '14px 16px',
+              cursor: 'pointer',
+              transition: 'background 0.15s, transform 0.16s ease',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
+            onMouseLeave={e => { e.currentTarget.style.background = color.white }}
+            onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.99)' }}
+            onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
+            onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.99)' }}
+            onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
+          >
+            <span style={{ width: 40, height: 40, borderRadius: radius.sm, background: color.greenTint, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <MedalIcon size={20} color={color.green} />
+            </span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontFamily: font.body, fontSize: 15, fontWeight: 600, color: color.ink }}>Friends leaderboard</div>
+              <div style={{ fontSize: 13, color: color.muted, marginTop: 1 }}>See how you rank against your friends</div>
+            </div>
+            <ChevronRightIcon size={18} color={color.faint} />
+          </button>
+
+          {/* Clubhouse */}
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, margin: '30px 0 14px' }}>
+            <span style={{ fontFamily: font.display, fontSize: 22, fontWeight: 600, fontStyle: 'italic', color: color.ink }}>The clubhouse</span>
+            <div style={{ flex: 1, height: 1, background: color.border, alignSelf: 'center' }} />
+          </div>
+          <Feed userId={userId} isMobile={isMobile} onViewProfile={onViewProfile} />
+
         </div>
-      </div>
-
-      {/* ── Actions ────────────────────────────────────────── */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-        {/* Log a round — primary */}
-        <button
-          onClick={() => onNavigate('rounds')}
-          style={{
-            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            background: color.green,
-            color: color.onGreen, border: 'none', borderRadius: radius.card,
-            padding: '15px 12px', cursor: 'pointer', fontFamily: font.body,
-            fontSize: 14, fontWeight: 600,
-            transition: 'background 0.15s, transform 0.16s ease',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = color.greenDeep }}
-          onMouseLeave={e => { e.currentTarget.style.background = color.green }}
-          onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
-          onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-          onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
-          onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
-        >
-          <ScorecardIcon size={17} color={color.onGreen} />
-          Log a round
-        </button>
-
-        {/* Friends — secondary */}
-        <button
-          onClick={() => onNavigate('friends')}
-          style={{
-            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            ...card,
-            padding: '15px 12px', cursor: 'pointer', fontFamily: font.body,
-            fontSize: 14, fontWeight: 600, color: color.ink, transition: 'background 0.15s, transform 0.16s ease',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
-          onMouseLeave={e => { e.currentTarget.style.background = color.white }}
-          onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
-          onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-          onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
-          onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
-        >
-          <UsersIcon size={17} color={color.inkSoft} />
-          Friends
-        </button>
-      </div>
-
-      {/* Friends leaderboard — quiet list row */}
-      <button
-        onClick={() => onNavigate('leaderboard')}
-        style={{
-          width: '100%', display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left',
-          ...card,
-          padding: '14px 16px',
-          cursor: 'pointer', marginBottom: 28,
-          transition: 'background 0.15s, transform 0.16s ease',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
-        onMouseLeave={e => { e.currentTarget.style.background = color.white }}
-        onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.99)' }}
-        onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-        onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.99)' }}
-        onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
-      >
-        <span style={{ width: 40, height: 40, borderRadius: radius.sm, background: color.greenTint, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <MedalIcon size={20} color={color.green} />
-        </span>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: font.body, fontSize: 15, fontWeight: 600, color: color.ink }}>Friends leaderboard</div>
-          <div style={{ fontSize: 13, color: color.muted, marginTop: 1 }}>See how you rank against your friends</div>
-        </div>
-        <ChevronRightIcon size={18} color={color.faint} />
-      </button>
-
-      {/* ── Clubhouse feed ─────────────────────────────────── */}
-      <div style={{ marginBottom: 26 }}>
-        <div style={{ fontFamily: font.body, fontSize: 17, fontWeight: 650, letterSpacing: '-0.01em', color: color.ink, marginBottom: 12 }}>
-          Clubhouse
-        </div>
-        <Feed userId={userId} isMobile={isMobile} onViewProfile={onViewProfile} />
-      </div>
+      </section>
 
       {showRanks && <RanksModal points={points} isMobile={isMobile} onClose={() => setShowRanks(false)} onNavigate={onNavigate} />}
       {rankUp && <RankUpMoment tier={rankUp} onClose={() => setRankUp(null)} />}

@@ -8,8 +8,8 @@ export default function DialWordmark({ size = 28, onDark = false }: { size?: num
       style={{
         fontFamily: font.display,
         fontSize: size,
-        fontWeight: 700,
-        letterSpacing: '-0.03em',
+        fontWeight: 600,
+        letterSpacing: '-0.01em',
         lineHeight: 1,
         display: 'inline-flex',
         color: onDark ? color.onGreen : color.ink,

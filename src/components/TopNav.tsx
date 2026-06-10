@@ -36,17 +36,20 @@ interface Props {
   isMobile: boolean
   notifCount?: number
   msgUnread?: number
+  // 'dark' blends the bar into the Home hero (deep green, light icons).
+  tone?: 'light' | 'dark'
 }
 
 // Count badge used on the bell / messages icons.
-function Badge({ n }: { n: number }) {
+function Badge({ n, dark }: { n: number; dark?: boolean }) {
   return (
     <div style={{
       position: 'absolute', top: -2, right: -3,
       minWidth: 16, height: 16, borderRadius: 8,
-      background: color.green, border: `1.5px solid ${color.cream}`,
+      background: dark ? color.onGreen : color.green,
+      border: `1.5px solid ${dark ? color.greenDark : color.cream}`,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: 10, fontWeight: 600, color: color.onGreen,
+      fontSize: 10, fontWeight: 600, color: dark ? color.greenDark : color.onGreen,
       fontFamily: font.body, padding: '0 4px',
     }}>
       {n > 9 ? '9+' : n}
@@ -54,7 +57,7 @@ function Badge({ n }: { n: number }) {
   )
 }
 
-export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, onNotif, onMessages, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0, msgUnread = 0 }: Props) {
+export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, onNotif, onMessages, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0, msgUnread = 0, tone = 'light' }: Props) {
   const [menuOpen, setMenuOpen]     = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
   const avatarRef               = useRef<HTMLDivElement>(null)
@@ -73,6 +76,11 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
     document.addEventListener('keydown', onKey)
     return () => { document.removeEventListener('mousedown', handler); document.removeEventListener('keydown', onKey) }
   }, [])
+
+  const dark = tone === 'dark'
+  const hoverWash = dark ? 'rgba(255,255,255,0.08)' : color.sand
+  const iconColor = dark ? 'rgba(242,245,241,0.85)' : color.inkSoft
+  const iconActive = dark ? color.onGreen : color.green
 
   // Borderless 40px icon button — quiet until hovered.
   const iconBtn: React.CSSProperties = {
@@ -98,10 +106,11 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
       {/* ── Top bar ── */}
       <div style={{
         position: isMobile ? 'relative' : 'sticky', top: isMobile ? undefined : 0, zIndex: 30,
-        background: color.cream,
+        background: dark ? color.greenDark : color.cream,
         paddingTop: isMobile ? 'calc(env(safe-area-inset-top) + 10px)' : '14px',
         paddingBottom: isMobile ? '10px' : '14px',
-        borderBottom: `1px solid ${color.border}`,
+        borderBottom: dark ? '1px solid rgba(255,255,255,0.0)' : `1px solid ${color.border}`,
+        transition: 'background 0.3s ease',
       }}>
         <div style={{
           maxWidth: 1320, margin: '0 auto',
@@ -113,7 +122,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
             onClick={() => onView('dashboard')}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0, display: 'flex' }}
           >
-            <DialWordmark size={isMobile ? 22 : 24} />
+            <DialWordmark size={isMobile ? 23 : 25} onDark={dark} />
           </button>
 
           {/* Segmented nav — hidden on mobile (replaced by bottom bar) */}
@@ -159,11 +168,11 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
               onClick={onMessages}
               aria-label="Messages"
               style={iconBtn}
-              onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
+              onMouseEnter={e => { e.currentTarget.style.background = hoverWash }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
             >
-              <ChatIcon size={19} color={view === 'messages' ? color.green : color.inkSoft} />
-              {msgUnread > 0 && <Badge n={msgUnread} />}
+              <ChatIcon size={19} color={view === 'messages' ? iconActive : iconColor} />
+              {msgUnread > 0 && <Badge n={msgUnread} dark={dark} />}
             </button>
           )}
 
@@ -172,11 +181,11 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
             onClick={onNotif}
             aria-label="Notifications"
             style={iconBtn}
-            onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
+            onMouseEnter={e => { e.currentTarget.style.background = hoverWash }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
           >
-            <BellIcon size={19} color={view === 'notifications' ? color.green : color.inkSoft} />
-            {notifCount > 0 && <Badge n={notifCount} />}
+            <BellIcon size={19} color={view === 'notifications' ? iconActive : iconColor} />
+            {notifCount > 0 && <Badge n={notifCount} dark={dark} />}
           </button>
 
           {/* Quick-create button + menu */}
@@ -187,17 +196,21 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
               aria-haspopup="menu"
               style={{
                 display: 'flex', alignItems: 'center', gap: 6,
-                background: createOpen ? color.greenDeep : color.green, color: color.onGreen, border: 'none',
+                background: dark
+                  ? (createOpen ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.10)')
+                  : (createOpen ? color.greenDeep : color.green),
+                color: color.onGreen,
+                border: dark ? '1px solid rgba(255,255,255,0.16)' : '1px solid transparent',
                 borderRadius: radius.md,
-                padding: isMobile ? '9px 14px' : '9px 16px',
+                padding: isMobile ? '8px 14px' : '8px 16px',
                 fontFamily: font.body,
                 fontSize: 14, fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'background 0.15s, transform 0.14s cubic-bezier(0.22, 1, 0.36, 1)',
                 whiteSpace: 'nowrap',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = color.greenDeep }}
-              onMouseLeave={e => { e.currentTarget.style.background = createOpen ? color.greenDeep : color.green }}
+              onMouseEnter={e => { e.currentTarget.style.background = dark ? 'rgba(255,255,255,0.18)' : color.greenDeep }}
+              onMouseLeave={e => { e.currentTarget.style.background = dark ? (createOpen ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.10)') : (createOpen ? color.greenDeep : color.green) }}
               onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
               onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
               onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
@@ -265,17 +278,18 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
               onClick={() => setMenuOpen(v => !v)}
               style={{
                 width: 36, height: 36, borderRadius: 18,
-                background: color.greenTint, color: color.green,
+                background: dark ? 'rgba(255,255,255,0.12)' : color.greenTint,
+                color: dark ? color.onGreen : color.green,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontFamily: font.body,
                 fontWeight: 600, fontSize: 14,
                 cursor: 'pointer', flexShrink: 0,
-                border: `1px solid ${color.border}`,
+                border: dark ? '1px solid rgba(255,255,255,0.16)' : `1px solid ${color.border}`,
                 transition: 'box-shadow 0.15s',
                 userSelect: 'none',
                 overflow: 'hidden',
               }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = `0 0 0 3px ${color.greenTint}` }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = dark ? '0 0 0 3px rgba(255,255,255,0.10)' : `0 0 0 3px ${color.greenTint}` }}
               onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none' }}
             >
               {avatarUrl

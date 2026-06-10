@@ -17,11 +17,14 @@
 //    case, 13px / 600.
 // ─────────────────────────────────────────────────────────────────────────
 
-// ── Typeface — one neutral grotesk for everything ───────────────────────
-const SANS = "'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif"
+// ── Typefaces — editorial serif for display, neutral grotesk for UI ─────
+// Fraunces carries the big moments (scores, points, headings) — the
+// "engraved scorecard" voice. Geist carries everything functional.
+const SANS  = "'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif"
+const SERIF = "'Fraunces', Georgia, 'Times New Roman', serif"
 
 export const font = {
-  display: SANS, // kept for compatibility — same family, heavier weight
+  display: SERIF, // scores, points, headings — never buttons/labels/UI
   body: SANS,
   mono: "'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
 } as const
@@ -59,6 +62,7 @@ export const color = {
   // Brand green — the only brand color. Primary actions, identity, selection.
   green: '#1E4D38',
   greenDeep: '#153B2A',   // hover / pressed
+  greenDark: '#112B1D',   // immersive hero surfaces (Home header)
   greenMid: '#35704F',
   sage: '#7A937F',
   sageLight: '#C2CFC3',
@@ -127,12 +131,12 @@ export const ease = {
 } as const
 
 // ── Type presets — spread onto a style object ──────────────────────────────
-// Tight product scale (≈1.2 ratio). Whole-pixel sizes only.
+// Display sizes are Fraunces (editorial serif); UI sizes are Geist.
 // e.g. <h2 style={{ ...type.title, color: color.ink }}>
 export const type = {
-  display: { fontFamily: SANS, fontSize: 34, lineHeight: 1.1,  letterSpacing: '-0.025em', fontWeight: 650 },
-  hero:    { fontFamily: SANS, fontSize: 28, lineHeight: 1.15, letterSpacing: '-0.02em',  fontWeight: 650 },
-  section: { fontFamily: SANS, fontSize: 22, lineHeight: 1.2,  letterSpacing: '-0.02em',  fontWeight: 650 },
+  display: { fontFamily: SERIF, fontSize: 36, lineHeight: 1.08, letterSpacing: '-0.01em', fontWeight: 600 },
+  hero:    { fontFamily: SERIF, fontSize: 28, lineHeight: 1.12, letterSpacing: '-0.01em', fontWeight: 600 },
+  section: { fontFamily: SERIF, fontSize: 21, lineHeight: 1.2,  letterSpacing: '-0.005em', fontWeight: 600 },
   title:   { fontFamily: SANS, fontSize: 17, lineHeight: 1.3,  letterSpacing: '-0.01em',  fontWeight: 600 },
   bodyStrong: { fontFamily: SANS, fontSize: 15, lineHeight: 1.5, fontWeight: 600 },
   body:    { fontFamily: SANS, fontSize: 15, lineHeight: 1.5, fontWeight: 400 },

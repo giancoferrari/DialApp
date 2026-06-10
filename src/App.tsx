@@ -360,6 +360,7 @@ function AppShell() {
       {isPasswordRecovery && <SetNewPasswordModal />}
       <TopNav
         view={view}
+        tone={isMobile && view === 'dashboard' ? 'dark' : 'light'}
         onView={handleSetView}
         onLogShot={handleLogShot}
         onLogRound={handleLogRound}

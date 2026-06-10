@@ -34,8 +34,8 @@ export default function RecapCard({ meta, variant }: { meta: RoundRecapMeta; var
       <div style={{ position: 'relative', overflow: 'hidden', width: '100%', height: '100%', background: GREEN, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
         <div style={{ position: 'absolute', right: -34, bottom: -42, opacity: 0.08, pointerEvents: 'none' }}><GreenMotif size={130} /></div>
         <span style={{ position: 'relative', fontSize: 10, fontWeight: 500, color: 'rgba(242,245,241,0.6)', fontFamily: font.body }}>Round</span>
-        <span style={{ position: 'relative', fontFamily: font.body, fontSize: 36, fontWeight: 700, color: ON, letterSpacing: '-0.03em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{meta.score}</span>
-        <span style={{ position: 'relative', fontFamily: font.body, fontSize: 13, fontWeight: 600, color: diffColor, fontVariantNumeric: 'tabular-nums' }}>{diffText}</span>
+        <span style={{ position: 'relative', fontFamily: font.display, fontSize: 38, fontWeight: 600, color: ON, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{meta.score}</span>
+        <span style={{ position: 'relative', fontFamily: font.display, fontSize: 14, fontWeight: 600, color: diffColor, fontVariantNumeric: 'tabular-nums' }}>{diffText}</span>
       </div>
     )
   }
@@ -55,14 +55,14 @@ export default function RecapCard({ meta, variant }: { meta: RoundRecapMeta; var
 
         {/* Score */}
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16 }}>
-          <div style={{ fontFamily: font.body, fontSize: big ? 72 : 60, fontWeight: 700, letterSpacing: '-0.035em', lineHeight: 0.9, fontVariantNumeric: 'tabular-nums' }}>
+          <div style={{ fontFamily: font.display, fontSize: big ? 76 : 64, fontWeight: 600, lineHeight: 0.95, fontVariantNumeric: 'tabular-nums' }}>
             {meta.score}
           </div>
-          <div style={{ paddingBottom: big ? 6 : 4 }}>
-            <div style={{ fontFamily: font.body, fontSize: big ? 28 : 24, fontWeight: 650, color: diffColor, letterSpacing: '-0.02em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+          <div style={{ paddingBottom: big ? 8 : 6 }}>
+            <div style={{ fontFamily: font.display, fontSize: big ? 30 : 26, fontWeight: 600, color: diffColor, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
               {diffText}
             </div>
-            <div style={{ fontSize: 13, fontWeight: 500, color: diffColor, opacity: 0.9, marginTop: 4, fontFamily: font.body }}>{parWord}</div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: diffColor, opacity: 0.9, marginTop: 5, fontFamily: font.body, fontStyle: 'italic' }}>{parWord}</div>
           </div>
         </div>
 
