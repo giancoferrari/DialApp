@@ -22,7 +22,7 @@
 // elsewhere. Hierarchy comes from heavy weights + tight tracking, exactly
 // like the prototype (greeting 700/-0.045em, labels 700 uppercase).
 // Bricolage Grotesque is loaded only for the multicolor wordmark.
-const SANS = "-apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Segoe UI', Helvetica, Arial, sans-serif"
+const SANS = "'Helvetica Neue', Helvetica, Arial, system-ui, -apple-system, sans-serif"
 
 export const font = {
   display: SANS, // big numbers, greetings, headings — heavy weight, tight tracking

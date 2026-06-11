@@ -1,16 +1,16 @@
 // ── Coastal golf-course hero illustration ──────────────────────────────────
 // Ported from the dial-home prototype's .course-art SVG (the brand's Home
 // hero): warm sky, ocean band, terracotta headlands, pine treeline, fairway,
-// bunker and a red flag. Rendered full-bleed; `slice` keeps the composition
-// anchored to the bottom edge so it crops gracefully at any width.
-export default function CourseHeroArt({ height = 265 }: { height?: number }) {
+// bunker and a red flag. Scales proportionally with width so the whole
+// composition is always visible (no crop-zoom) — its sky band blends into
+// the cream app background.
+export default function CourseHeroArt() {
   return (
     <svg
       viewBox="0 0 390 275"
-      preserveAspectRatio="xMidYMax slice"
       role="img"
       aria-label="Illustrated coastal golf hole with ocean, headlands, trees and a red flag"
-      style={{ display: 'block', width: '100%', height }}
+      style={{ display: 'block', width: '100%', height: 'auto', aspectRatio: '390 / 275' }}
     >
       <defs>
         <linearGradient id="heroSky" x1="0" x2="0" y1="0" y2="1">

@@ -196,32 +196,14 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
               onClick={() => setCreateOpen(v => !v)}
               aria-expanded={createOpen}
               aria-haspopup="menu"
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                background: dark
-                  ? (createOpen ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.10)')
-                  : (createOpen ? color.greenDeep : color.green),
-                color: color.onGreen,
-                border: dark ? '1px solid rgba(255,255,255,0.16)' : '1px solid transparent',
-                borderRadius: radius.md,
-                padding: isMobile ? '8px 14px' : '8px 16px',
-                fontFamily: font.body,
-                fontSize: 14, fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'background 0.15s, transform 0.14s cubic-bezier(0.22, 1, 0.36, 1)',
-                whiteSpace: 'nowrap',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = dark ? 'rgba(255,255,255,0.18)' : color.greenDeep }}
-              onMouseLeave={e => { e.currentTarget.style.background = dark ? (createOpen ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.10)') : (createOpen ? color.greenDeep : color.green) }}
-              onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
-              onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-              onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.97)' }}
-              onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
+              aria-label="Log something"
+              style={iconBtn}
+              onMouseEnter={e => { e.currentTarget.style.background = hoverWash }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
             >
               <span style={{ display: 'inline-flex', transform: createOpen ? 'rotate(45deg)' : 'rotate(0deg)', transition: 'transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)' }}>
-                <PlusIcon size={15} color={color.onGreen} />
+                <PlusIcon size={24} color={createOpen ? iconActive : iconColor} />
               </span>
-              Log
             </button>
 
             {createOpen && (

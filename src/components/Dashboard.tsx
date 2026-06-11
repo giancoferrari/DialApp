@@ -241,7 +241,8 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
   const deltaText  = lastDiff === null ? null : lastDiff === 0 ? '(E)' : lastDiff > 0 ? `(+${lastDiff})` : `(${lastDiff})`
   const deltaColor = lastDiff !== null && lastDiff < 0 ? color.birdie : color.orange
 
-  const firstName = profile?.firstName || (profile?.username ? `@${profile.username}` : 'Golfer')
+  // Greeting uses the first name only ("Good afternoon,\nGiancarlo.")
+  const firstName = (profile?.firstName || profile?.username || 'Golfer').trim().split(/\s+/)[0]
   const wins   = profile?.wins ?? 0
   const losses = profile?.losses ?? 0
   const ties   = profile?.ties ?? 0
@@ -250,9 +251,9 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
   const cardLabel: React.CSSProperties = { ...type.label, whiteSpace: 'nowrap' }
 
   const statChip = (bg: string): React.CSSProperties => ({
-    width: 30, height: 30, borderRadius: 15, background: bg,
+    width: 32, height: 32, borderRadius: 16, background: bg,
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    color: '#FFFAF1', fontSize: 17, fontWeight: 700, marginBottom: 9,
+    color: '#FFFAF1', fontSize: 17, fontWeight: 700, marginBottom: 11,
   })
 
   const pressFn = (down: boolean) => (e: React.SyntheticEvent<HTMLButtonElement>) => {
@@ -266,52 +267,52 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
     >
 
       {/* ── Greeting ─────────────────────────────────────────── */}
-      <div style={{ padding: `${isMobile ? 16 : 28}px ${px}px 0`, position: 'relative', zIndex: 2 }}>
-        <time style={{ display: 'block', color: '#3E653E', fontSize: 17, fontWeight: 600, letterSpacing: '-0.02em', fontFamily: font.body }}>
+      <div style={{ padding: `${isMobile ? 24 : 32}px ${px}px 0`, position: 'relative', zIndex: 2 }}>
+        <time style={{ display: 'block', color: '#3E653E', fontSize: 18, fontWeight: 600, letterSpacing: '-0.02em', fontFamily: font.body }}>
           {date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: TZ })}
         </time>
-        <h1 style={{ margin: '12px 0 0', maxWidth: 320, color: color.ink, fontFamily: font.display, fontSize: isMobile ? 38 : 42, fontWeight: 700, letterSpacing: '-0.045em', lineHeight: 0.98 }}>
-          {greetingFor(date)}, {firstName}.
+        <h1 style={{ margin: '14px 0 0', color: color.ink, fontFamily: font.display, fontSize: isMobile ? 40 : 44, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.97, textWrap: 'balance' as never }}>
+          {greetingFor(date)},<br />{firstName}.
         </h1>
       </div>
 
-      {/* ── Coastal hero illustration ───────────────────────── */}
-      <div style={{ position: 'relative', zIndex: 1, marginTop: isMobile ? -6 : 4, ...(isMobile ? {} : { margin: `4px ${px}px 0`, borderRadius: radius.sheet, overflow: 'hidden' }) }}>
-        <CourseHeroArt height={isMobile ? 258 : 286} />
+      {/* ── Coastal hero illustration — tucks up behind the greeting ── */}
+      <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', marginTop: isMobile ? -52 : -44, ...(isMobile ? {} : { marginLeft: px, marginRight: px, borderRadius: radius.sheet, overflow: 'hidden' }) }}>
+        <CourseHeroArt />
       </div>
 
       {/* ── Overview stack — overlaps the illustration ──────── */}
-      <div style={{ position: 'relative', zIndex: 3, marginTop: -92, padding: `0 ${px}px`, display: 'flex', flexDirection: 'column', gap: 11 }}>
+      <div style={{ position: 'relative', zIndex: 3, marginTop: -96, padding: `0 ${px}px`, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
         {/* Rank card */}
         <button
           onClick={() => setShowRanks(true)}
-          style={{ ...glassPanel, display: 'block', width: '100%', textAlign: 'left', borderRadius: radius.lg, padding: '17px 17px 15px', cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)' }}
+          style={{ ...glassPanel, display: 'block', width: '100%', textAlign: 'left', borderRadius: radius.lg, padding: '18px 18px 16px', cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)' }}
           onMouseDown={pressFn(true)} onMouseUp={pressFn(false)} onMouseLeave={pressFn(false)}
           onTouchStart={pressFn(true)} onTouchEnd={pressFn(false)}
         >
-          <div style={{ display: 'grid', gridTemplateColumns: '54px minmax(0,1fr) auto', alignItems: 'center', gap: 13 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '54px minmax(0,1.05fr) minmax(0,1fr)', alignItems: 'center', gap: 14 }}>
             <span style={{ width: 54, height: 54, borderRadius: 27, background: 'rgba(219,235,207,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <FlagGlyph size={30} color={color.green} strokeWidth={2.2} />
             </span>
             <span style={{ minWidth: 0 }}>
               <span style={cardLabel}>Ranked points</span>
-              <span style={{ display: 'flex', alignItems: 'baseline', gap: 7, marginTop: 6 }}>
-                <span ref={pointsRef} style={{ fontFamily: font.display, fontSize: 40, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.9, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>
+              <span style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 7 }}>
+                <span ref={pointsRef} style={{ fontFamily: font.display, fontSize: 44, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.9, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>
                   {points.toLocaleString()}
                 </span>
-                <span style={{ fontSize: 17, fontWeight: 500, letterSpacing: '-0.03em', color: color.ink }}>pts</span>
+                <span style={{ fontSize: 18, fontWeight: 500, letterSpacing: '-0.03em', color: color.ink }}>pts</span>
               </span>
             </span>
-            <span style={{ paddingRight: 2, textAlign: 'left' }}>
+            <span style={{ minWidth: 0, textAlign: 'left' }}>
               <span style={cardLabel}>Rank</span>
-              <span style={{ display: 'block', marginTop: 6, fontSize: 20, fontWeight: 600, letterSpacing: '-0.035em', lineHeight: 1, color: color.ink }}>{rank.name}</span>
-              <span style={{ display: 'block', marginTop: 6, fontSize: 13, fontWeight: 500, letterSpacing: '-0.01em', color: '#4D504A', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
+              <span style={{ display: 'block', marginTop: 7, fontSize: 22, fontWeight: 500, letterSpacing: '-0.04em', lineHeight: 1, color: color.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rank.name}</span>
+              <span style={{ display: 'block', marginTop: 7, fontSize: 14, fontWeight: 500, letterSpacing: '-0.02em', color: '#4D504A', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
                 {nextTier ? `${nextTier.minPoints - points} pts to ${nextTier.name}` : 'Top tier'}
               </span>
             </span>
           </div>
-          <div style={{ height: 9, marginTop: 15, overflow: 'hidden', borderRadius: 999, background: 'rgba(105,101,84,0.12)' }}>
+          <div style={{ height: 10, marginTop: 16, overflow: 'hidden', borderRadius: 999, background: 'rgba(105,101,84,0.12)' }}>
             <div style={{
               height: '100%', borderRadius: 999,
               background: 'linear-gradient(90deg, #7D9B68, #64834F)',
@@ -326,29 +327,29 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
         {/* Stats grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 10 }}>
           {/* Last round */}
-          <div style={{ ...glassPanel, borderRadius: radius.md, padding: '12px 12px 13px' }}>
+          <div style={{ ...glassPanel, borderRadius: radius.md, padding: '13px 13px 15px' }}>
             <span style={statChip(color.greenMid)}><FlagGlyph size={17} color="#FFFAF1" /></span>
             <div style={cardLabel}>Last round</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, marginTop: 7 }}>
-              <span style={{ fontFamily: font.display, fontSize: 26, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: lastScore !== null ? color.ink : color.faint, fontVariantNumeric: 'tabular-nums' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, marginTop: 8 }}>
+              <span style={{ fontFamily: font.display, fontSize: 27, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: lastScore !== null ? color.ink : color.faint, fontVariantNumeric: 'tabular-nums' }}>
                 {lastScore ?? '—'}
               </span>
               {deltaText && <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '-0.02em', color: deltaColor, fontVariantNumeric: 'tabular-nums' }}>{deltaText}</span>}
             </div>
           </div>
           {/* Handicap */}
-          <div style={{ ...glassPanel, borderRadius: radius.md, padding: '12px 12px 13px' }}>
+          <div style={{ ...glassPanel, borderRadius: radius.md, padding: '13px 13px 15px' }}>
             <span style={statChip(color.sage)}>H</span>
             <div style={cardLabel}>Handicap</div>
-            <div style={{ marginTop: 7, fontFamily: font.display, fontSize: 26, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: profile?.handicapIndex != null ? color.ink : color.faint, fontVariantNumeric: 'tabular-nums' }}>
+            <div style={{ marginTop: 8, fontFamily: font.display, fontSize: 27, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: profile?.handicapIndex != null ? color.ink : color.faint, fontVariantNumeric: 'tabular-nums' }}>
               {profile?.handicapIndex != null ? profile.handicapIndex.toFixed(1) : '—'}
             </div>
           </div>
           {/* Record */}
-          <div style={{ ...glassPanel, borderRadius: radius.md, padding: '12px 12px 13px' }}>
+          <div style={{ ...glassPanel, borderRadius: radius.md, padding: '13px 13px 15px' }}>
             <span style={statChip(color.orange)}><TrophyIcon size={16} color="#FFFAF1" /></span>
             <div style={cardLabel}>Record</div>
-            <div style={{ marginTop: 7, fontFamily: font.display, fontSize: 26, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>
+            <div style={{ marginTop: 8, fontFamily: font.display, fontSize: 27, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>
               {wins}–{losses}–{ties}
             </div>
           </div>
@@ -393,7 +394,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
         </div>
 
         {/* Clubhouse feed */}
-        <div style={{ marginTop: 13 }}>
+        <div style={{ marginTop: 18 }}>
           <div style={{ ...type.label, marginBottom: 10 }}>The clubhouse</div>
           <Feed userId={userId} isMobile={isMobile} onViewProfile={onViewProfile} />
         </div>
