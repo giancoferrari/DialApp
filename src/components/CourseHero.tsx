@@ -12,10 +12,10 @@ const HERO_SRC = '/course-hero.jpg'
 export default function CourseHero() {
   const [failed, setFailed] = useState(false)
 
-  // Fixed footprint so the layout (and the rank card's overlap) stays
-  // identical whatever image is used; `cover` crops gracefully.
+  // Footprint matches the recommended 3:2 image so the full composition
+  // shows with no cropping; `cover` still tolerates other ratios.
   return (
-    <div style={{ width: '100%', aspectRatio: '390 / 272', overflow: 'hidden' }}>
+    <div style={{ width: '100%', aspectRatio: '3 / 2', overflow: 'hidden' }}>
       {failed ? (
         <CourseHeroArt />
       ) : (
