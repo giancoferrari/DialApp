@@ -8,8 +8,8 @@ import { ShieldIcon, UsersIcon, ScorecardIcon, CloseIcon, ChevronRightIcon, Chec
 import Feed from './Feed'
 import Portal from './Portal'
 import RankUpMoment from './RankUpMoment'
-import CourseHeroArt from './CourseHeroArt'
-import { color, font, elevation, radius, glass, type } from '../lib/tokens'
+import CourseHero from './CourseHero'
+import { color, font, elevation, radius, type } from '../lib/tokens'
 
 gsap.registerPlugin(useGSAP)
 
@@ -24,13 +24,12 @@ function FlagGlyph({ size = 20, color: c = '#12371F', strokeWidth = 2 }: { size?
   )
 }
 
-// The prototype's frosted panel.
-const glassPanel: React.CSSProperties = {
-  background: glass.bg,
-  border: glass.border,
-  boxShadow: glass.shadow,
-  backdropFilter: glass.blur,
-  WebkitBackdropFilter: glass.blur,
+// Clean solid card — the reference cards are solid warm-white with a soft
+// shadow (not translucent), which reads much crisper over the illustration.
+const panel: React.CSSProperties = {
+  background: '#FFFEFB',
+  border: '1px solid rgba(120,108,78,0.08)',
+  boxShadow: '0 10px 26px rgba(58,48,28,0.07)',
 }
 
 // ── Ranks & points info (opened from the rank card) ────────────────────────────
@@ -276,9 +275,9 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
         </h1>
       </div>
 
-      {/* ── Coastal hero illustration — tucks up behind the greeting ── */}
+      {/* ── Coastal hero — real image (public/course-hero.jpg) or SVG ── */}
       <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', marginTop: isMobile ? -52 : -44, ...(isMobile ? {} : { marginLeft: px, marginRight: px, borderRadius: radius.sheet, overflow: 'hidden' }) }}>
-        <CourseHeroArt />
+        <CourseHero />
       </div>
 
       {/* ── Overview stack — overlaps the illustration ──────── */}
@@ -287,7 +286,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
         {/* Rank card */}
         <button
           onClick={() => setShowRanks(true)}
-          style={{ ...glassPanel, display: 'block', width: '100%', textAlign: 'left', borderRadius: radius.lg, padding: '18px 18px 16px', cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)' }}
+          style={{ ...panel, display: 'block', width: '100%', textAlign: 'left', borderRadius: radius.lg, padding: '18px 18px 16px', cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)' }}
           onMouseDown={pressFn(true)} onMouseUp={pressFn(false)} onMouseLeave={pressFn(false)}
           onTouchStart={pressFn(true)} onTouchEnd={pressFn(false)}
         >
@@ -327,7 +326,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
         {/* Stats grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 10 }}>
           {/* Last round */}
-          <div style={{ ...glassPanel, borderRadius: radius.md, padding: '13px 13px 15px' }}>
+          <div style={{ ...panel, borderRadius: radius.md, padding: '14px 14px 16px' }}>
             <span style={statChip(color.greenMid)}><FlagGlyph size={17} color="#FFFAF1" /></span>
             <div style={cardLabel}>Last round</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, marginTop: 8 }}>
@@ -338,7 +337,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
             </div>
           </div>
           {/* Handicap */}
-          <div style={{ ...glassPanel, borderRadius: radius.md, padding: '13px 13px 15px' }}>
+          <div style={{ ...panel, borderRadius: radius.md, padding: '14px 14px 16px' }}>
             <span style={statChip(color.sage)}>H</span>
             <div style={cardLabel}>Handicap</div>
             <div style={{ marginTop: 8, fontFamily: font.display, fontSize: 27, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: profile?.handicapIndex != null ? color.ink : color.faint, fontVariantNumeric: 'tabular-nums' }}>
@@ -346,7 +345,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
             </div>
           </div>
           {/* Record */}
-          <div style={{ ...glassPanel, borderRadius: radius.md, padding: '13px 13px 15px' }}>
+          <div style={{ ...panel, borderRadius: radius.md, padding: '14px 14px 16px' }}>
             <span style={statChip(color.orange)}><TrophyIcon size={16} color="#FFFAF1" /></span>
             <div style={cardLabel}>Record</div>
             <div style={{ marginTop: 8, fontFamily: font.display, fontSize: 27, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>
