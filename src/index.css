@@ -9,17 +9,17 @@ html { scroll-behavior: smooth; }
 
 html {
   height: 100%;
-  background: #F4F5F2; /* pre-React fallback, matches the app background */
+  background: #F8F3E7; /* pre-React fallback, matches the app background */
 }
 
 body {
   margin: 0;
   height: 100%;
-  font-family: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Segoe UI', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: transparent;
-  color: #171A17;
+  color: #0B0D0A;
   min-height: 100vh;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
@@ -38,8 +38,8 @@ body {
 /* ── Scrollbar ──────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #CDD2CC; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #9AA09A; }
+::-webkit-scrollbar-thumb { background: #D3CBB5; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #8A9085; }
 
 /* ── Input resets ───────────────────────────────────────────── */
 input, button, textarea, select { font-family: inherit; }
@@ -49,12 +49,12 @@ input:focus, textarea:focus, select:focus { outline: none; }
 /* Real, consistent focus ring on inputs — soft green halo (layers over any
    inline border-color the component sets on focus). */
 input:focus-visible, textarea:focus-visible, select:focus-visible {
-  box-shadow: 0 0 0 3px rgba(30, 77, 56, 0.15);
+  box-shadow: 0 0 0 3px rgba(18, 55, 31, 0.16);
 }
 
 /* Accessible focus ring for keyboard navigation (not mouse) */
 button:focus-visible {
-  outline: 2px solid #1E4D38;
+  outline: 2px solid #12371F;
   outline-offset: 2px;
 }
 

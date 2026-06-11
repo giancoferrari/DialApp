@@ -93,7 +93,7 @@ function SetNewPasswordModal() {
             <p style={{ fontSize: 14, color: '#494F49', marginBottom: 24 }}>You're all set. Continue using the app.</p>
             <button
               onClick={clearPasswordRecovery}
-              style={{ background: '#1E4D38', color: '#F2F5F1', border: 'none', borderRadius: 12, padding: '12px 28px', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+              style={{ background: '#12371F', color: '#F2F5F1', border: 'none', borderRadius: 12, padding: '12px 28px', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
             >
               Continue
             </button>
@@ -111,14 +111,14 @@ function SetNewPasswordModal() {
                 type="password" required value={password} placeholder="New password"
                 onChange={e => setPassword(e.target.value)}
                 style={inputStyle}
-                onFocus={e => { e.currentTarget.style.borderColor = '#1E4D38' }}
+                onFocus={e => { e.currentTarget.style.borderColor = '#12371F' }}
                 onBlur={e => { e.currentTarget.style.borderColor = '#CDD2CC' }}
               />
               <input
                 type="password" required value={confirm} placeholder="Confirm new password"
                 onChange={e => setConfirm(e.target.value)}
                 style={{ ...inputStyle, borderColor: confirm && confirm !== password ? '#BD3A2D' : '#CDD2CC' }}
-                onFocus={e => { e.currentTarget.style.borderColor = '#1E4D38' }}
+                onFocus={e => { e.currentTarget.style.borderColor = '#12371F' }}
                 onBlur={e => { e.currentTarget.style.borderColor = confirm && confirm !== password ? '#BD3A2D' : '#CDD2CC' }}
               />
               {error && (
@@ -128,7 +128,7 @@ function SetNewPasswordModal() {
               )}
               <button
                 type="submit" disabled={loading}
-                style={{ background: loading ? '#9AA09A' : '#1E4D38', color: '#F2F5F1', border: 'none', borderRadius: 12, padding: '14px', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}
+                style={{ background: loading ? '#9AA09A' : '#12371F', color: '#F2F5F1', border: 'none', borderRadius: 12, padding: '14px', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}
               >
                 {loading ? 'Saving…' : 'Update password'}
               </button>
@@ -347,10 +347,10 @@ function AppShell() {
 
   return (
     <>
-      {/* ── Background: flat cool porcelain, nothing else ── */}
+      {/* ── Background: warm cream with a soft top light (prototype screen) ── */}
       <div aria-hidden="true" style={{
         position: 'fixed', inset: 0,
-        background: '#F4F5F2',
+        background: 'radial-gradient(circle at 63% 0%, rgba(255,255,255,0.72), transparent 22rem), linear-gradient(180deg, #FFFAF0 0%, #F8F3E7 45%, #F6EFDF 100%)',
         zIndex: 0,
         pointerEvents: 'none',
       }} />
@@ -360,7 +360,6 @@ function AppShell() {
       {isPasswordRecovery && <SetNewPasswordModal />}
       <TopNav
         view={view}
-        tone={isMobile && view === 'dashboard' ? 'dark' : 'light'}
         onView={handleSetView}
         onLogShot={handleLogShot}
         onLogRound={handleLogRound}

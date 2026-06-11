@@ -13,7 +13,15 @@ import EmptyState from './EmptyState'
 import { tapHaptic } from '../lib/native'
 import { timeAgo, displayName as authorName } from '../lib/format'
 import { card } from '../lib/surfaces'
-import { color, font } from '../lib/tokens'
+import { color, font, radius, elevation } from '../lib/tokens'
+
+// Warm clubhouse card: rounded 22, warm-white border, soft pine/brown shadow.
+const feedCard: React.CSSProperties = {
+  ...card,
+  borderRadius: radius.lg,
+  border: '1px solid rgba(255,255,255,0.76)',
+  boxShadow: elevation.sm,
+}
 
 interface Props {
   userId: string
@@ -25,7 +33,7 @@ function FeedSkeleton({ isMobile }: { isMobile: boolean }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {[0, 1].map(i => (
-        <div key={i} style={{ ...card, overflow: 'hidden' }}>
+        <div key={i} style={{ ...feedCard, overflow: 'hidden' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px' }}>
             <Skeleton width={36} height={36} radius={18} />
             <div style={{ flex: 1 }}>
@@ -113,7 +121,7 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {posts.map(post => (
-        <div key={`${post.id}-${post.repostedBy?.userId ?? 'orig'}`} style={{ ...card, overflow: 'hidden' }}>
+        <div key={`${post.id}-${post.repostedBy?.userId ?? 'orig'}`} style={{ ...feedCard, overflow: 'hidden' }}>
           {post.repostedBy && (
             <div style={{ padding: '10px 14px 0', fontSize: 12, color: color.muted, display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
               <RepostIcon size={13} color={color.muted} /> {authorName(post.repostedBy)} reposted
@@ -125,7 +133,7 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
             <div style={{ flex: 1, minWidth: 0 }}>
               <div
                 onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined}
-                style={{ fontFamily: font.body, fontSize: 14, fontWeight: 600, color: color.ink, cursor: onViewProfile ? 'pointer' : 'default' }}
+                style={{ fontFamily: font.body, fontSize: 15, fontWeight: 700, letterSpacing: '-0.03em', color: color.ink, cursor: onViewProfile ? 'pointer' : 'default' }}
               >
                 {authorName(post.author)}
               </div>
@@ -149,9 +157,9 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
           <div style={{ display: 'flex', alignItems: 'center', gap: 18, padding: '12px 14px 4px' }}>
             <button onClick={() => handleLike(post)} aria-label={post.likedByMe ? 'Unlike' : 'Like'} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <span style={{ display: 'inline-flex', animation: poppingId === post.id ? 'likePop 0.42s ease' : undefined }}>
-                <HeartIcon size={22} color={post.likedByMe ? color.danger : color.ink} filled={post.likedByMe} />
+                <HeartIcon size={22} color={post.likedByMe ? color.orange : color.ink} filled={post.likedByMe} />
               </span>
-              <span style={countText}>{post.likeCount}</span>
+              <span style={{ ...countText, color: post.likedByMe ? color.orange : color.ink }}>{post.likeCount}</span>
             </button>
             <button onClick={() => setActive(post)} aria-label="Comments" style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <ChatIcon size={20} color={color.ink} />

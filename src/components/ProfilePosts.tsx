@@ -323,8 +323,8 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
           <div style={{ padding: '12px 16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
               <button onClick={onLike} aria-label={liked ? 'Unlike' : 'Like'} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                <HeartIcon size={22} color={liked ? color.danger : color.ink} filled={liked} />
-                <span style={{ fontFamily: font.body, fontSize: 14, fontWeight: 600, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>{likeCount}</span>
+                <HeartIcon size={22} color={liked ? color.orange : color.ink} filled={liked} />
+                <span style={{ fontFamily: font.body, fontSize: 14, fontWeight: 600, color: liked ? color.orange : color.ink, fontVariantNumeric: 'tabular-nums' }}>{likeCount}</span>
               </button>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <ChatIcon size={20} color={color.ink} />
@@ -360,7 +360,7 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
                       </div>
                     </div>
                     <button onClick={() => onCommentLike(c)} aria-label="Like comment" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0', flexShrink: 0 }}>
-                      <HeartIcon size={15} color={c.likedByMe ? color.danger : color.faint} filled={c.likedByMe} />
+                      <HeartIcon size={15} color={c.likedByMe ? color.orange : color.faint} filled={c.likedByMe} />
                     </button>
                   </div>
                 )

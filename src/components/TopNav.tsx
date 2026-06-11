@@ -79,8 +79,8 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
 
   const dark = tone === 'dark'
   const hoverWash = dark ? 'rgba(255,255,255,0.08)' : color.sand
-  const iconColor = dark ? 'rgba(242,245,241,0.85)' : color.inkSoft
-  const iconActive = dark ? color.onGreen : color.green
+  const iconColor = dark ? 'rgba(255,250,241,0.85)' : color.ink
+  const iconActive = dark ? color.onGreen : color.orange
 
   // Borderless 40px icon button — quiet until hovered.
   const iconBtn: React.CSSProperties = {
@@ -106,10 +106,12 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
       {/* ── Top bar ── */}
       <div style={{
         position: isMobile ? 'relative' : 'sticky', top: isMobile ? undefined : 0, zIndex: 30,
-        background: dark ? color.greenDark : color.cream,
-        paddingTop: isMobile ? 'calc(env(safe-area-inset-top) + 10px)' : '14px',
-        paddingBottom: isMobile ? '10px' : '14px',
-        borderBottom: dark ? '1px solid rgba(255,255,255,0.0)' : `1px solid ${color.border}`,
+        background: dark ? color.greenDark : (isMobile ? 'transparent' : 'rgba(255,250,239,0.82)'),
+        backdropFilter: !dark && !isMobile ? 'blur(18px) saturate(1.15)' : undefined,
+        WebkitBackdropFilter: !dark && !isMobile ? 'blur(18px) saturate(1.15)' : undefined,
+        paddingTop: isMobile ? 'calc(env(safe-area-inset-top) + 12px)' : '14px',
+        paddingBottom: isMobile ? '8px' : '14px',
+        borderBottom: dark || isMobile ? 'none' : `1px solid ${color.border}`,
         transition: 'background 0.3s ease',
       }}>
         <div style={{
@@ -122,7 +124,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
             onClick={() => onView('dashboard')}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0, display: 'flex' }}
           >
-            <DialWordmark size={isMobile ? 23 : 25} onDark={dark} />
+            <DialWordmark size={isMobile ? 26 : 27} onDark={dark} />
           </button>
 
           {/* Segmented nav — hidden on mobile (replaced by bottom bar) */}
@@ -184,7 +186,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
             onMouseEnter={e => { e.currentTarget.style.background = hoverWash }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
           >
-            <BellIcon size={19} color={view === 'notifications' ? iconActive : iconColor} />
+            <BellIcon size={22} color={view === 'notifications' ? iconActive : iconColor} />
             {notifCount > 0 && <Badge n={notifCount} dark={dark} />}
           </button>
 
@@ -351,20 +353,19 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
         </div>
       </div>
 
-      {/* ── Bottom tab bar (mobile only) — the one earned glass moment ── */}
+      {/* ── Bottom tab bar (mobile only) — docked frosted cream bar ── */}
       {isMobile && (
         <nav style={{
           position: 'fixed',
-          bottom: 'max(calc(env(safe-area-inset-bottom) + 10px), 16px)',
-          left: '14px', right: '14px',
+          bottom: 0, left: 0, right: 0,
           zIndex: 40,
-          background: 'rgba(255,255,255,0.84)',
-          backdropFilter: 'blur(24px) saturate(170%)',
-          WebkitBackdropFilter: 'blur(24px) saturate(170%)',
-          border: `1px solid rgba(23,26,23,0.07)`,
-          borderRadius: 26,
-          boxShadow: '0 8px 28px rgba(23,26,23,0.12)',
-          display: 'flex', alignItems: 'stretch',
+          background: 'rgba(255,250,239,0.78)',
+          backdropFilter: 'blur(18px) saturate(1.15)',
+          WebkitBackdropFilter: 'blur(18px) saturate(1.15)',
+          borderTop: '1px solid rgba(42,36,24,0.12)',
+          padding: '10px 14px calc(env(safe-area-inset-bottom) + 8px)',
+          display: 'grid', gridTemplateColumns: `repeat(${BOTTOM_NAV.length}, 1fr)`,
+          alignItems: 'start',
           transform: 'translateZ(0)',
           WebkitTransform: 'translateZ(0)',
         } as React.CSSProperties}>
@@ -375,9 +376,9 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                 key={item.id}
                 onClick={() => { if (!active) tapHaptic(); onView(item.id) }}
                 style={{
-                  flex: 1, background: 'none', border: 'none',
+                  position: 'relative', background: 'none', border: 'none',
                   display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  justifyContent: 'center', padding: '11px 2px 10px',
+                  justifyContent: 'center', gap: 5, padding: '2px 2px 9px',
                   cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
                   transition: 'transform 0.12s cubic-bezier(0.22, 1, 0.36, 1)',
                 }}
@@ -387,31 +388,37 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                 onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.92)' }}
                 onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
               >
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <div style={{ position: 'relative' }}>
-                    <item.Icon size={22} color={active ? color.green : color.muted} />
-                    {item.id === 'messages' && msgUnread > 0 && (
-                      <div style={{
-                        position: 'absolute', top: -4, right: -8,
-                        minWidth: 15, height: 15, borderRadius: 8,
-                        background: color.green, border: '1.5px solid rgba(255,255,255,0.92)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 9, fontWeight: 600, color: color.onGreen,
-                        fontFamily: font.body, padding: '0 3px',
-                      }}>
-                        {msgUnread > 9 ? '9+' : msgUnread}
-                      </div>
-                    )}
-                  </div>
-                  <span style={{
-                    fontSize: 11, fontWeight: active ? 600 : 500,
-                    fontFamily: font.body,
-                    color: active ? color.green : color.muted,
-                    transition: 'color 0.2s ease',
-                  }}>
-                    {item.label}
-                  </span>
+                <div style={{ position: 'relative' }}>
+                  <item.Icon size={24} color={active ? color.ink : '#4B4F49'} />
+                  {item.id === 'messages' && msgUnread > 0 && (
+                    <div style={{
+                      position: 'absolute', top: -4, right: -9,
+                      minWidth: 15, height: 15, borderRadius: 8,
+                      background: color.orange, border: '1.5px solid rgba(255,250,239,0.95)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 9, fontWeight: 700, color: '#FFFAF1',
+                      fontFamily: font.body, padding: '0 3px',
+                    }}>
+                      {msgUnread > 9 ? '9+' : msgUnread}
+                    </div>
+                  )}
                 </div>
+                <span style={{
+                  fontSize: 12, fontWeight: 600, letterSpacing: '-0.02em',
+                  fontFamily: font.body,
+                  color: active ? color.ink : '#4B4F49',
+                  transition: 'color 0.2s ease',
+                }}>
+                  {item.label}
+                </span>
+                {/* Orange active indicator */}
+                <span style={{
+                  position: 'absolute', bottom: 0, left: '50%',
+                  width: 24, height: 3, borderRadius: 999,
+                  background: color.orange,
+                  transform: `translateX(-50%) scaleX(${active ? 1 : 0})`,
+                  transition: 'transform 0.22s cubic-bezier(0.22, 1, 0.36, 1)',
+                }} />
               </button>
             )
           })}
