@@ -6,6 +6,7 @@ import { color, space, radius, font } from '../lib/tokens'
 import { CameraIcon, CheckIcon } from './Icons'
 import CountryPicker from './CountryPicker'
 import CourseSearch from './CourseSearch'
+import DialWordmark from './DialWordmark'
 import { flagEmoji, countryName } from '../lib/countries'
 
 // First-run onboarding. Gated for new users (no username yet); name + username
@@ -21,15 +22,6 @@ const SKILLS = [
   { id: 'casual', label: 'Casual' },
   { id: 'comp',   label: 'Competitive' },
 ] as const
-
-function Wordmark({ size = 24 }: { size?: number }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: size * 0.34 }}>
-      <span style={{ width: size * 0.42, height: size * 0.42, borderRadius: '50%', background: color.orange, boxShadow: '0 0 18px rgba(217,130,77,0.55)' }} />
-      <span style={{ fontFamily: font.display, fontSize: size, fontWeight: 700, color: color.cream, letterSpacing: '-0.04em' }}>Dial</span>
-    </div>
-  )
-}
 
 export default function Onboarding({ userId, existingProfile, onComplete, isMobile = false }: {
   userId: string
@@ -123,12 +115,11 @@ export default function Onboarding({ userId, existingProfile, onComplete, isMobi
 
   const PrimaryBtn = ({ label, onClick, disabled, onAccent }: { label: string; onClick: () => void; disabled?: boolean; onAccent?: boolean }) => (
     <button onClick={onClick} disabled={disabled} style={{
-      width: '100%', border: 'none', borderRadius: radius.pill, padding: '16px',
+      width: '100%', border: 'none', borderRadius: radius.md, padding: '16px',
       fontFamily: font.body, fontSize: 16, fontWeight: 600, cursor: disabled ? 'not-allowed' : 'pointer',
-      background: disabled ? color.borderStrong : (onAccent ? color.orange : color.green),
-      color: onAccent ? '#2A1206' : color.cream,
+      background: disabled ? color.borderStrong : (onAccent ? color.white : color.green),
+      color: disabled ? color.muted : (onAccent ? color.green : color.onGreen),
       transition: 'transform 0.15s cubic-bezier(0.22,1,0.36,1), background 0.15s',
-      boxShadow: disabled ? 'none' : '0 8px 24px rgba(31,58,42,0.18)',
     }}
       onMouseDown={e => { if (!disabled) e.currentTarget.style.transform = 'scale(0.97)' }}
       onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
@@ -190,12 +181,12 @@ export default function Onboarding({ userId, existingProfile, onComplete, isMobi
         {/* ── WELCOME ── */}
         {step === 'welcome' && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ paddingTop: `calc(env(safe-area-inset-top) + ${space[6]}px)` }}><Wordmark size={26} /></div>
+            <div style={{ paddingTop: `calc(env(safe-area-inset-top) + ${space[6]}px)` }}><DialWordmark size={26} onDark /></div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <h1 style={{ margin: 0, fontFamily: font.display, fontSize: isMobile ? 40 : 52, lineHeight: 1.02, letterSpacing: '-0.04em', fontWeight: 700, color: color.cream }}>
                 Welcome to the clubhouse.
               </h1>
-              <p style={{ margin: `${space[5]}px 0 0`, fontFamily: font.body, fontSize: 17, lineHeight: 1.55, color: 'rgba(250,246,234,0.72)', maxWidth: 360 }}>
+              <p style={{ margin: `${space[5]}px 0 0`, fontFamily: font.body, fontSize: 17, lineHeight: 1.55, color: 'rgba(242,245,241,0.72)', maxWidth: 360 }}>
                 Let's set up your player profile — it takes about a minute, and you can change anything later.
               </p>
             </div>
@@ -209,11 +200,11 @@ export default function Onboarding({ userId, existingProfile, onComplete, isMobi
             {headline("First, the basics", "This is how other golfers will find and recognize you.")}
             <div style={{ display: 'flex', flexDirection: 'column', gap: space[4] }}>
               <div>
-                <label style={{ display: 'block', fontFamily: font.body, fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: color.faint, marginBottom: space[2] }}>Name</label>
+                <label style={{ display: 'block', fontFamily: font.body, fontSize: 13, fontWeight: 500, color: color.inkSoft, marginBottom: space[2] }}>Name</label>
                 <input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="Your name" style={inputStyle} onFocus={focus} onBlur={blur} />
               </div>
               <div>
-                <label style={{ display: 'block', fontFamily: font.body, fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: color.faint, marginBottom: space[2] }}>Username</label>
+                <label style={{ display: 'block', fontFamily: font.body, fontSize: 13, fontWeight: 500, color: color.inkSoft, marginBottom: space[2] }}>Username</label>
                 <div style={{ position: 'relative' }}>
                   <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', fontSize: 16, color: color.faint, pointerEvents: 'none' }}>@</span>
                   <input
@@ -340,15 +331,15 @@ export default function Onboarding({ userId, existingProfile, onComplete, isMobi
         {/* ── FINISH ── */}
         {step === 'finish' && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ paddingTop: `calc(env(safe-area-inset-top) + ${space[6]}px)` }}><Wordmark size={26} /></div>
+            <div style={{ paddingTop: `calc(env(safe-area-inset-top) + ${space[6]}px)` }}><DialWordmark size={26} onDark /></div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start' }}>
-              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(139,196,122,0.18)', border: '1px solid rgba(139,196,122,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: space[5], animation: 'popIn 0.5s cubic-bezier(0.22,1,0.36,1)' }}>
-                <CheckIcon size={30} color={color.birdie} />
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(159,212,180,0.16)', border: '1px solid rgba(159,212,180,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: space[5], animation: 'popIn 0.5s cubic-bezier(0.22,1,0.36,1)' }}>
+                <CheckIcon size={30} color="#9FD4B4" />
               </div>
               <h1 style={{ margin: 0, fontFamily: font.display, fontSize: isMobile ? 38 : 48, lineHeight: 1.03, letterSpacing: '-0.04em', fontWeight: 700, color: color.cream }}>
                 You're all set{firstName.trim() ? `, ${firstName.trim()}` : ''}.
               </h1>
-              <p style={{ margin: `${space[5]}px 0 0`, fontFamily: font.body, fontSize: 17, lineHeight: 1.55, color: 'rgba(250,246,234,0.72)', maxWidth: 360 }}>
+              <p style={{ margin: `${space[5]}px 0 0`, fontFamily: font.body, fontSize: 17, lineHeight: 1.55, color: 'rgba(242,245,241,0.72)', maxWidth: 360 }}>
                 Welcome to Dial. Track your shots, log rounds, challenge friends, and climb the ranks.
               </p>
             </div>

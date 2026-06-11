@@ -5,9 +5,12 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchLeaderboard } from '../lib/leaderboard'
 import { getRank } from '../lib/points'
 import { flagEmoji } from '../lib/countries'
-import { ShieldIcon } from './Icons'
+import { ShieldIcon, ChevronLeftIcon, MedalIcon } from './Icons'
 import Skeleton from './Skeleton'
+import CourseContour from './CourseContour'
 import { useEdgeSwipeBack } from '../hooks/useGestures'
+import { color, font, radius, HERO_BG, onHero } from '../lib/tokens'
+import { card } from '../lib/surfaces'
 import type { PublicProfile } from '../types'
 
 gsap.registerPlugin(useGSAP)
@@ -19,7 +22,7 @@ interface Props {
   onViewProfile?: (userId: string) => void
 }
 
-const MEDAL = ['#C8A84B', '#9AA8AE', '#C8844A'] // gold, silver, bronze
+const MEDAL = ['#C9A23F', '#9FAAB0', '#B9783F'] // gold, silver, bronze
 
 function name(p: PublicProfile): string {
   return p.username ? `@${p.username}` : (p.firstName ?? 'Golfer')
@@ -47,108 +50,136 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
   }, { scope: listRef, dependencies: [rows.length] })
 
   const friendsOnly = rows.filter(r => r.userId !== meId)
+  const myIndex = rows.findIndex(r => r.userId === meId)
+  const myPoints = myIndex >= 0 ? (rows[myIndex].rankedPoints ?? 0) : 0
 
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 24 : 44}px ${px}px ${isMobile ? 120 : 80}px` }}>
+    <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 0 : 0}px 0 ${isMobile ? 120 : 80}px` }}>
 
-      {onBack && (
-        <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: '#4A4235', padding: 0, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
-          <span style={{ fontSize: 18, lineHeight: 1 }}>‹</span> Back
-        </button>
-      )}
+      {/* ════ Dark hero ════ */}
+      <section style={{ position: 'relative', overflow: 'hidden', background: HERO_BG, padding: `${isMobile ? 'calc(env(safe-area-inset-top) + 8px)' : '20px'} ${px}px 28px`, borderRadius: isMobile ? 0 : 24, margin: isMobile ? 0 : `12px ${px}px 0` }}>
+        <CourseContour />
+        <div style={{ position: 'relative', maxWidth: 600, margin: '0 auto' }}>
+          {onBack && (
+            <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: font.body, fontSize: 14, fontWeight: 500, color: onHero.soft, padding: 0, display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
+              <ChevronLeftIcon size={18} color={onHero.soft} /> Back
+            </button>
+          )}
+          <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 30 : 34, fontWeight: 600, color: color.onGreen, letterSpacing: '-0.02em', margin: 0, lineHeight: 1 }}>
+            Leaderboard
+          </h1>
+          <p style={{ fontSize: 13.5, color: onHero.faint, margin: '7px 0 0' }}>You and your friends, by ranked points.</p>
 
-      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#8B8272', textTransform: 'uppercase', marginBottom: 8 }}>Ranked</div>
-      <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: '0 0 6px', lineHeight: 1 }}>
-        Leaderboard
-      </h1>
-      <p style={{ fontSize: 13.5, color: '#6B5F4E', margin: '0 0 26px' }}>You and your friends, by ranked points.</p>
-
-      {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {[0, 1, 2, 3, 4].map(i => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 13, background: 'rgba(250,246,234,0.82)', border: '1px solid rgba(255,255,255,0.7)', borderRadius: 18, padding: '13px 16px' }}>
-              <Skeleton width={30} height={30} radius={15} />
-              <Skeleton width={42} height={42} radius={21} />
-              <div style={{ flex: 1 }}>
-                <Skeleton width="45%" height={13} />
-                <Skeleton width="30%" height={10} style={{ marginTop: 7 }} />
+          {myIndex >= 0 && friendsOnly.length > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 20, padding: '14px 16px', background: onHero.fill, border: `1px solid ${onHero.border}`, borderRadius: radius.card }}>
+              <div style={{ fontFamily: font.display, fontSize: 30, fontWeight: 600, color: color.onGreen, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+                #{myIndex + 1}
               </div>
-              <Skeleton width={36} height={20} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, color: onHero.soft }}>Your standing</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: color.onGreen, marginTop: 1 }}>of {rows.length} players</div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontFamily: font.display, fontSize: 22, fontWeight: 600, color: color.onGreen, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{myPoints.toLocaleString()}</div>
+                <div style={{ fontSize: 11, color: onHero.faint, marginTop: 3 }}>points</div>
+              </div>
             </div>
-          ))}
+          )}
         </div>
-      ) : friendsOnly.length === 0 ? (
-        <div style={{ background: 'rgba(250,246,234,0.78)', border: '1px solid rgba(255,255,255,0.66)', borderRadius: 22, padding: '44px 24px', textAlign: 'center', boxShadow: '0 6px 28px rgba(31,29,23,0.09), inset 0 1px 0 rgba(255,255,255,0.82)' }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 19, fontWeight: 700, color: '#1F1D17', marginBottom: 8 }}>Add friends to compete</div>
-          <div style={{ fontSize: 13.5, color: '#6B5F4E', lineHeight: 1.5 }}>Once you've added friends, you'll all be ranked here by points earned in matches.</div>
-        </div>
-      ) : (
-        <div ref={listRef} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {rows.map((p, i) => {
-            const me      = p.userId === meId
-            const rank    = getRank(p.rankedPoints ?? 0)
-            const medal   = i < 3 ? MEDAL[i] : null
-            const clickable = !!onViewProfile && !me
-            return (
-              <button
-                key={p.userId}
-                onClick={clickable ? () => onViewProfile!(p.userId) : undefined}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 13, textAlign: 'left',
-                  background: me ? 'linear-gradient(150deg, rgba(35,68,46,1) 0%, rgba(26,50,33,1) 100%)' : 'rgba(250,246,234,0.82)',
-                                    border: `1px solid ${me ? 'rgba(255,255,255,0.10)' : '#E0D8C5'}`,
-                  borderRadius: 18, padding: '13px 16px',
-                  cursor: clickable ? 'pointer' : 'default',
-                  boxShadow: me ? '0 10px 30px rgba(31,58,42,0.24)' : 'none',
-                }}
-              >
-                {/* Rank */}
-                <div style={{
-                  width: 30, height: 30, borderRadius: 15, flexShrink: 0,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: 14,
-                  background: medal ? medal : (me ? 'rgba(250,246,234,0.14)' : '#F0EBDD'),
-                  color: medal ? '#1F1D17' : (me ? '#FAF6EA' : '#6B5F4E'),
-                }}>
-                  {i + 1}
-                </div>
+      </section>
 
-                {/* Avatar */}
-                <div style={{ width: 42, height: 42, borderRadius: 21, background: me ? '#2A4D39' : '#1F3A2A', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {p.avatarUrl
-                    ? <img src={p.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 17, color: '#D9824D' }}>{name(p)[0]?.replace('@', '').toUpperCase()}</span>}
+      {/* ════ List ════ */}
+      <div style={{ padding: `22px ${px}px 0`, maxWidth: 600 + px * 2, margin: '0 auto' }}>
+        {loading ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[0, 1, 2, 3, 4].map(i => (
+              <div key={i} style={{ ...card, display: 'flex', alignItems: 'center', gap: 13, padding: '13px 16px' }}>
+                <Skeleton width={28} height={28} radius={14} />
+                <Skeleton width={42} height={42} radius={21} />
+                <div style={{ flex: 1 }}>
+                  <Skeleton width="45%" height={13} />
+                  <Skeleton width="30%" height={10} style={{ marginTop: 7 }} />
                 </div>
+                <Skeleton width={36} height={20} />
+              </div>
+            ))}
+          </div>
+        ) : friendsOnly.length === 0 ? (
+          <div style={{ ...card, padding: '40px 24px', textAlign: 'center' }}>
+            <div style={{ width: 52, height: 52, borderRadius: 26, background: color.greenTint, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+              <MedalIcon size={24} color={color.green} />
+            </div>
+            <div style={{ fontFamily: font.display, fontSize: 19, fontWeight: 600, color: color.ink, marginBottom: 8 }}>Add friends to compete</div>
+            <div style={{ fontSize: 13.5, color: color.muted, lineHeight: 1.5 }}>Once you've added friends, you'll all be ranked here by points earned in matches.</div>
+          </div>
+        ) : (
+          <div ref={listRef} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {rows.map((p, i) => {
+              const me      = p.userId === meId
+              const rank    = getRank(p.rankedPoints ?? 0)
+              const medal   = i < 3 ? MEDAL[i] : null
+              const clickable = !!onViewProfile && !me
+              return (
+                <button
+                  key={p.userId}
+                  onClick={clickable ? () => onViewProfile!(p.userId) : undefined}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 13, textAlign: 'left',
+                    background: me ? color.green : color.white,
+                    border: `1px solid ${me ? color.green : color.border}`,
+                    borderRadius: radius.card, padding: '12px 16px',
+                    cursor: clickable ? 'pointer' : 'default',
+                  }}
+                >
+                  {/* Rank */}
+                  <div style={{
+                    width: 28, height: 28, borderRadius: 14, flexShrink: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: font.display, fontWeight: 600, fontSize: 13,
+                    background: medal ?? (me ? 'rgba(255,255,255,0.12)' : color.sand),
+                    color: medal ? '#1A1206' : (me ? color.onGreen : color.muted),
+                    fontVariantNumeric: 'tabular-nums',
+                  }}>
+                    {i + 1}
+                  </div>
 
-                {/* Name + tier */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em', color: me ? '#FAF6EA' : '#1F1D17', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {me ? 'You' : name(p)}
-                    </span>
-                    {p.country && <span style={{ fontSize: 14 }}>{flagEmoji(p.country)}</span>}
+                  {/* Avatar */}
+                  <div style={{ width: 42, height: 42, borderRadius: 21, background: me ? 'rgba(255,255,255,0.12)' : color.greenTint, overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {p.avatarUrl
+                      ? <img src={p.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: 17, color: me ? color.onGreen : color.green }}>{name(p)[0]?.replace('@', '').toUpperCase()}</span>}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
-                    <ShieldIcon size={10} color={rank.color} />
-                    <span style={{ fontSize: 11, fontWeight: 700, color: rank.color, letterSpacing: '0.04em' }}>{rank.name}</span>
-                    {(p.wins ?? 0) + (p.losses ?? 0) > 0 && (
-                      <span style={{ fontSize: 11, color: me ? 'rgba(250,246,234,0.45)' : '#8B8272', marginLeft: 4 }}>{p.wins ?? 0}W · {p.losses ?? 0}L</span>
-                    )}
-                  </div>
-                </div>
 
-                {/* Points */}
-                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 22, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1, color: me ? '#FAF6EA' : '#1F1D17', fontVariantNumeric: 'tabular-nums' }}>
-                    {(p.rankedPoints ?? 0).toLocaleString()}
+                  {/* Name + tier */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontFamily: font.body, fontSize: 15, fontWeight: 600, color: me ? color.onGreen : color.ink, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {me ? 'You' : name(p)}
+                      </span>
+                      {p.country && <span style={{ fontSize: 14 }}>{flagEmoji(p.country)}</span>}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
+                      <ShieldIcon size={11} color={rank.color} />
+                      <span style={{ fontSize: 12, fontWeight: 600, color: me ? 'rgba(242,245,241,0.75)' : color.muted }}>{rank.name}</span>
+                      {(p.wins ?? 0) + (p.losses ?? 0) > 0 && (
+                        <span style={{ fontSize: 12, color: me ? onHero.faint : color.faint, marginLeft: 4, fontVariantNumeric: 'tabular-nums' }}>{p.wins ?? 0}W · {p.losses ?? 0}L</span>
+                      )}
+                    </div>
                   </div>
-                  <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 3, color: me ? 'rgba(250,246,234,0.45)' : '#8B8272' }}>pts</div>
-                </div>
-              </button>
-            )
-          })}
-        </div>
-      )}
+
+                  {/* Points */}
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{ fontFamily: font.display, fontSize: 21, fontWeight: 600, lineHeight: 1, color: me ? color.onGreen : color.ink, fontVariantNumeric: 'tabular-nums' }}>
+                      {(p.rankedPoints ?? 0).toLocaleString()}
+                    </div>
+                    <div style={{ fontSize: 11, fontWeight: 500, marginTop: 3, color: me ? onHero.faint : color.faint }}>pts</div>
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

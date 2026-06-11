@@ -5,9 +5,11 @@ import { fetchFriendships, fetchProfilesForIds, updateFriendship } from '../lib/
 import { fetchMatches, acceptMatchInvite, declineMatchInvite } from '../lib/matches'
 import { fetchNotifications, markNotificationsRead } from '../lib/notifications'
 import type { PublicProfile, Friendship, Match, AppNotification } from '../types'
-import { CheckIcon, CloseIcon, TrophyIcon, UsersIcon } from './Icons'
+import { CheckIcon, CloseIcon, TrophyIcon, UsersIcon, BellIcon, HeartIcon, ChatIcon, RepostIcon } from './Icons'
 import Avatar from './Avatar'
 import Skeleton from './Skeleton'
+import { color, font, radius } from '../lib/tokens'
+import { card } from '../lib/surfaces'
 
 type NotifData = {
   friendReqs: (Friendship & { profile?: PublicProfile })[]
@@ -30,9 +32,18 @@ interface Props {
   onCountChange: (n: number) => void
 }
 
-
 const MODE_LABELS: Record<string, string> = {
-  stroke: 'Stroke Play', match_play: 'Match Play', skins: 'Skins', wolf: 'Wolf',
+  stroke: 'Stroke play', match_play: 'Match play', skins: 'Skins', wolf: 'Wolf',
+}
+
+// Icon + tint per activity-notification type.
+function notifIcon(type: AppNotification['type']) {
+  switch (type) {
+    case 'like':     return { Icon: HeartIcon,  tint: color.danger }
+    case 'comment':  return { Icon: ChatIcon,   tint: color.green }
+    case 'repost':   return { Icon: RepostIcon, tint: color.positive }
+    default:         return { Icon: UsersIcon,  tint: color.green } // post_tag
+  }
 }
 
 export default function NotificationsView({ userId, isMobile = false, onCountChange }: Props) {
@@ -127,23 +138,23 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
   const total = friendReqs.length + matchInvites.length + notifs.length
 
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 28 : 48}px ${px}px ${isMobile ? 120 : 80}px` }}>
+    <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 28 : 44}px ${px}px ${isMobile ? 120 : 80}px` }}>
 
-      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#8B8272', textTransform: 'uppercase', marginBottom: 8 }}>Activity</div>
-      <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: '0 0 28px', lineHeight: 1 }}>
+      <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 30 : 36, fontWeight: 600, color: color.ink, letterSpacing: '-0.02em', margin: '0 0 4px', lineHeight: 1 }}>
         Notifications
       </h1>
+      <p style={{ fontSize: 14, color: color.muted, margin: '0 0 24px' }}>Requests, invites and clubhouse activity.</p>
 
       {error && (
-        <div style={{ background: 'rgba(217,130,77,0.10)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 12, padding: '10px 14px', fontSize: 13, color: '#D9824D', marginBottom: 20 }}>
+        <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: 12, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, marginBottom: 20 }}>
           {error}
         </div>
       )}
 
       {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {[0, 1, 2].map(i => (
-            <div key={i} style={{ background: 'rgba(250,246,234,0.70)', border: '1px solid rgba(255,255,255,0.62)', borderRadius: 20, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div key={i} style={{ ...card, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
               <Skeleton width={44} height={44} radius={22} />
               <div style={{ flex: 1 }}>
                 <Skeleton width="35%" height={11} />
@@ -153,55 +164,52 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
           ))}
         </div>
       ) : total === 0 ? (
-        <div style={{ background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 22, padding: '48px 24px', textAlign: 'center' }}>
-          <div style={{ width: 56, height: 56, borderRadius: 28, background: '#F0EBDD', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="#8B8272" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+        <div style={{ ...card, padding: '48px 24px', textAlign: 'center' }}>
+          <div style={{ width: 56, height: 56, borderRadius: 28, background: color.sand, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+            <BellIcon size={24} color={color.faint} />
           </div>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#8B8272', marginBottom: 8, letterSpacing: '-0.02em' }}>You're all caught up</div>
-          <div style={{ fontSize: 13, color: '#6B5F4E', lineHeight: 1.5 }}>Friend requests, match invites, tags and reposts appear here.</div>
+          <div style={{ fontFamily: font.display, fontSize: 19, fontWeight: 600, color: color.ink, marginBottom: 8, letterSpacing: '-0.01em' }}>You're all caught up</div>
+          <div style={{ fontSize: 13, color: color.muted, lineHeight: 1.5 }}>Friend requests, match invites, tags and reposts appear here.</div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
           {friendReqs.map(f => (
-            <div key={f.id} style={{ background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 20, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div key={f.id} style={{ ...card, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 13 }}>
               <Avatar profile={f.profile} size={44} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-                  <UsersIcon size={13} color="#5C7A4D" />
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#5C7A4D', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Friend Request</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                  <UsersIcon size={13} color={color.green} />
+                  <span style={{ fontSize: 12, fontWeight: 600, color: color.green }}>Friend request</span>
                 </div>
-                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>
-                  {f.profile?.username ? `@${f.profile.username}` : 'Someone'}
+                <div style={{ fontSize: 14, color: color.ink, fontFamily: font.body }}>
+                  <strong style={{ fontWeight: 600 }}>{f.profile?.username ? `@${f.profile.username}` : 'Someone'}</strong> wants to connect
                 </div>
-                <div style={{ fontSize: 12, color: '#6B5F4E', marginTop: 2 }}>wants to be friends</div>
               </div>
               <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                 <button
                   onClick={() => handleFriendDecline(f)}
                   disabled={busy === f.id}
-                  style={{ width: 38, height: 38, borderRadius: 19, background: 'rgba(240,235,221,0.80)', border: '1px solid rgba(224,216,197,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'transform 0.12s ease', flexShrink: 0 }}
-                  onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.88)' }}
+                  aria-label="Decline"
+                  style={{ width: 38, height: 38, borderRadius: 19, background: color.sand, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'transform 0.12s ease', flexShrink: 0 }}
+                  onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.9)' }}
                   onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
-                  onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.88)' }}
+                  onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.9)' }}
                   onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
                 >
-                  <CloseIcon size={14} color="#4A4235" />
+                  <CloseIcon size={14} color={color.inkSoft} />
                 </button>
                 <button
                   onClick={() => handleFriendAccept(f)}
                   disabled={busy === f.id}
-                  style={{ width: 38, height: 38, borderRadius: 19, background: '#1F3A2A', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'transform 0.12s ease', flexShrink: 0, boxShadow: '0 3px 10px rgba(31,58,42,0.28)' }}
-                  onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.88)' }}
+                  aria-label="Accept"
+                  style={{ width: 38, height: 38, borderRadius: 19, background: color.green, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'transform 0.12s ease', flexShrink: 0 }}
+                  onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.9)' }}
                   onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
-                  onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.88)' }}
+                  onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.9)' }}
                   onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
                 >
-                  <CheckIcon size={14} color="#FAF6EA" />
+                  <CheckIcon size={14} color={color.onGreen} />
                 </button>
               </div>
             </div>
@@ -210,34 +218,34 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
           {matchInvites.map(m => {
             const inviter = m.players.find(p => p.userId === m.createdBy)
             return (
-              <div key={m.id} style={{ background: '#1F3A2A', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 22, overflow: 'hidden', boxShadow: '0 12px 40px rgba(31,58,42,0.26), inset 0 1px 0 rgba(255,255,255,0.18)' }}>
-                <div style={{ background: 'transparent', padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <TrophyIcon size={14} color="#D9824D" />
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#B5C29A', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Match Invite</span>
+              <div key={m.id} style={{ background: color.green, borderRadius: radius.card, overflow: 'hidden' }}>
+                <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid rgba(255,255,255,0.10)' }}>
+                  <TrophyIcon size={14} color="#E0935E" />
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(242,245,241,0.75)' }}>Match invite</span>
                 </div>
-                <div style={{ padding: '14px 18px', background: 'rgba(250,246,234,0.06)' }}>
-                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em', marginBottom: 4 }}>
+                <div style={{ padding: '14px 16px' }}>
+                  <div style={{ fontFamily: font.display, fontSize: 18, fontWeight: 600, color: color.onGreen, letterSpacing: '-0.01em', marginBottom: 4 }}>
                     {m.courseName}
                   </div>
-                  <div style={{ fontSize: 13, color: '#B5C29A', marginBottom: 4 }}>
+                  <div style={{ fontSize: 13, color: 'rgba(242,245,241,0.7)', marginBottom: 3 }}>
                     {MODE_LABELS[m.gameMode] ?? m.gameMode} · {m.holes} holes
                     {m.wagerPerPlayer > 0 ? ` · $${m.wagerPerPlayer} wager` : ''}
                   </div>
-                  <div style={{ fontSize: 12, color: 'rgba(181,194,154,0.8)' }}>
+                  <div style={{ fontSize: 12, color: 'rgba(242,245,241,0.5)' }}>
                     Invited by {inviter?.profile?.username ? `@${inviter.profile.username}` : 'a friend'}
                   </div>
                   <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
                     <button
                       onClick={() => handleMatchDecline(m)}
                       disabled={busy === m.id}
-                      style={{ flex: 1, background: 'rgba(250,246,234,0.2)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 12, padding: '10px', fontSize: 13, color: '#B5C29A', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+                      style={{ flex: 1, background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.16)', borderRadius: radius.sm, padding: '10px', fontSize: 13, fontWeight: 600, color: 'rgba(242,245,241,0.85)', cursor: 'pointer', fontFamily: font.body }}
                     >
                       Decline
                     </button>
                     <button
                       onClick={() => handleMatchAccept(m)}
                       disabled={busy === m.id}
-                      style={{ flex: 2, background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 12, padding: '10px', fontSize: 13, fontWeight: 600, color: '#1F3A2A', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", boxShadow: '0 2px 8px rgba(31,29,23,0.08)' }}
+                      style={{ flex: 2, background: color.white, border: 'none', borderRadius: radius.sm, padding: '10px', fontSize: 13, fontWeight: 600, color: color.green, cursor: 'pointer', fontFamily: font.body }}
                     >
                       {busy === m.id ? '…' : `Accept${m.wagerPerPlayer > 0 ? ` · $${m.wagerPerPlayer}` : ''}`}
                     </button>
@@ -253,14 +261,20 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
               : n.type === 'repost'  ? 'reposted your post'
               : n.type === 'like'    ? 'liked your post'
               : 'commented on your post'
+            const { Icon, tint } = notifIcon(n.type)
             return (
-              <div key={n.id} style={{ background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 20, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 13 }}>
-                <Avatar profile={n.actor ?? null} size={42} />
+              <div key={n.id} style={{ ...card, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 13 }}>
+                <div style={{ position: 'relative', flexShrink: 0 }}>
+                  <Avatar profile={n.actor ?? null} size={42} />
+                  <span style={{ position: 'absolute', bottom: -2, right: -2, width: 20, height: 20, borderRadius: 10, background: color.white, border: `1px solid ${color.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon size={11} color={tint} filled={n.type === 'like'} />
+                  </span>
+                </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 14, color: '#1F1D17', lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif" }}>
-                    <strong style={{ fontWeight: 700 }}>{nm}</strong> {text}
+                  <div style={{ fontSize: 14, color: color.ink, lineHeight: 1.4, fontFamily: font.body }}>
+                    <strong style={{ fontWeight: 600 }}>{nm}</strong> {text}
                   </div>
-                  <div style={{ fontSize: 11.5, color: '#8B8272', marginTop: 2 }}>{notifAgo(n.createdAt)}</div>
+                  <div style={{ fontSize: 12, color: color.faint, marginTop: 2 }}>{notifAgo(n.createdAt)}</div>
                 </div>
                 {n.postImageUrl && (
                   <img src={n.postImageUrl} alt="" loading="lazy" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
@@ -274,4 +288,3 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
     </div>
   )
 }
-

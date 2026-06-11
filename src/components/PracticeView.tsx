@@ -3,6 +3,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { insertPracticeSession, deletePracticeSession } from '../lib/practice'
 import type { PracticeSession, FocusArea } from '../types'
 import { CloseIcon, PlusIcon } from './Icons'
+import { color, font, radius, elevation } from '../lib/tokens'
+import { card as cardSurface } from '../lib/surfaces'
 
 interface Props {
   sessions: PracticeSession[]
@@ -15,19 +17,10 @@ const FOCUS_AREAS: { id: FocusArea; label: string }[] = [
   { id: 'driver',     label: 'Driver'     },
   { id: 'woods',      label: 'Woods'      },
   { id: 'irons',      label: 'Irons'      },
-  { id: 'short_game', label: 'Short Game' },
+  { id: 'short_game', label: 'Short game' },
   { id: 'putting',    label: 'Putting'    },
   { id: 'bunker',     label: 'Bunker'     },
 ]
-
-const FOCUS_COLORS: Record<FocusArea, string> = {
-  driver:     '#1F3A2A',
-  woods:      '#2E5240',
-  irons:      '#5C7A4D',
-  short_game: '#8B9E6E',
-  putting:    '#D9824D',
-  bunker:     '#C8A84B',
-}
 
 const focusLabel = (id: FocusArea) => FOCUS_AREAS.find(f => f.id === id)?.label ?? id
 
@@ -42,8 +35,8 @@ function StarRating({ value, onChange }: { value: number; onChange?: (v: number)
           onMouseEnter={() => onChange && setHover(n)}
           onMouseLeave={() => onChange && setHover(0)}
           style={{
-            fontSize: 28, cursor: onChange ? 'pointer' : 'default',
-            color: n <= (hover || value) ? '#D9824D' : '#E0D8C5',
+            fontSize: onChange ? 28 : 16, cursor: onChange ? 'pointer' : 'default',
+            color: n <= (hover || value) ? color.gold : color.borderStrong,
             transition: 'color 0.1s', lineHeight: 1, display: 'inline-block',
           }}
         >★</span>
@@ -90,64 +83,46 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
     try { await deletePracticeSession(id); onDelete(id) } catch { /* silent */ }
   }
 
-  const px = isMobile ? 16 : 40
+  const px = isMobile ? 20 : 40
 
-  const card: React.CSSProperties = {
-    background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 20,
-  }
-
-  const labelStyle: React.CSSProperties = {
-    display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em',
-    color: '#4A4235', textTransform: 'uppercase', marginBottom: 10,
-  }
-
+  const labelStyle: React.CSSProperties = { display: 'block', fontSize: 13, fontWeight: 600, color: color.inkSoft, marginBottom: 10 }
   const inputStyle: React.CSSProperties = {
-    width: '100%', background: '#FAF6EA', border: '1px solid #E0D8C5',
-    borderRadius: 14, padding: '13px 16px', fontSize: 15, color: '#1F1D17',
-    outline: 'none', boxSizing: 'border-box', fontFamily: "'DM Sans', sans-serif",
-    transition: 'border-color 0.15s',
+    width: '100%', background: color.white, border: `1px solid ${color.borderStrong}`,
+    borderRadius: radius.sm, padding: '13px 14px', fontSize: 16, color: color.ink,
+    outline: 'none', boxSizing: 'border-box', fontFamily: font.body, transition: 'border-color 0.15s',
   }
+
+  const chip = (active: boolean): React.CSSProperties => ({
+    border: `1px solid ${active ? color.green : color.border}`, borderRadius: 999, padding: '7px 15px',
+    fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: font.body, whiteSpace: 'nowrap', flexShrink: 0,
+    transition: 'all 0.15s', background: active ? color.green : color.white, color: active ? color.onGreen : color.inkSoft,
+  })
 
   return (
-    <div style={{ maxWidth: 1320, margin: '0 auto', padding: `${isMobile ? 24 : 48}px ${px}px ${isMobile ? 96 : 48}px` }}>
+    <div style={{ maxWidth: 760, margin: '0 auto', padding: `${isMobile ? 28 : 44}px ${px}px ${isMobile ? 110 : 64}px` }}>
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 22, gap: 12 }}>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#5C7A4D', textTransform: 'uppercase', marginBottom: 8 }}>
-            Practice Log
-          </div>
-          <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 28 : 38, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: 0 }}>
-            Range sessions.
+          <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 30 : 36, fontWeight: 600, color: color.ink, letterSpacing: '-0.02em', margin: '0 0 4px', lineHeight: 1 }}>
+            Practice
           </h1>
+          <p style={{ fontSize: 14, color: color.muted, margin: 0 }}>Track your range and short-game work.</p>
         </div>
         <button
           onClick={openModal}
-          style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 18px 10px 20px', fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500, cursor: 'pointer', transition: 'background 0.15s', whiteSpace: 'nowrap' }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#16271D' }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 6, background: color.green, color: color.onGreen, border: 'none', borderRadius: radius.md, padding: '10px 16px', fontFamily: font.body, fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'background 0.15s', whiteSpace: 'nowrap', flexShrink: 0 }}
+          onMouseEnter={e => { e.currentTarget.style.background = color.greenDeep }}
+          onMouseLeave={e => { e.currentTarget.style.background = color.green }}
         >
-          Log session
-          <span style={{ width: 22, height: 22, borderRadius: 11, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-            <PlusIcon size={14} color="#FAF6EA" />
-          </span>
+          <PlusIcon size={14} color={color.onGreen} /> Log
         </button>
       </div>
 
       {/* Filter chips */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 24, overflowX: 'auto', paddingBottom: 4, WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
-        {[{ id: 'all', label: 'All sessions' }, ...FOCUS_AREAS.map(f => ({ id: f.id, label: f.label }))].map(f => (
-          <button
-            key={f.id}
-            onClick={() => setFilter(f.id as FocusArea | 'all')}
-            style={{
-              border: '1px solid', borderRadius: 999, padding: '7px 16px', fontSize: 13, fontWeight: 500, cursor: 'pointer',
-              fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap', flexShrink: 0, transition: 'all 0.15s',
-              background: filter === f.id ? '#1F3A2A' : 'transparent',
-              color: filter === f.id ? '#FAF6EA' : '#1F1D17',
-              borderColor: filter === f.id ? '#1F3A2A' : '#E0D8C5',
-            }}
-          >
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, overflowX: 'auto', paddingBottom: 4, WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
+        {[{ id: 'all', label: 'All' }, ...FOCUS_AREAS.map(f => ({ id: f.id, label: f.label }))].map(f => (
+          <button key={f.id} onClick={() => setFilter(f.id as FocusArea | 'all')} style={chip(filter === f.id)}>
             {f.label}
           </button>
         ))}
@@ -155,46 +130,41 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
 
       {/* Sessions list */}
       {filtered.length === 0 ? (
-        <div style={{ ...card, padding: '56px 28px', textAlign: 'center' }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#1F1D17', marginBottom: 8 }}>
+        <div style={{ ...cardSurface, padding: '48px 28px', textAlign: 'center' }}>
+          <div style={{ fontFamily: font.display, fontSize: 19, fontWeight: 600, color: color.ink, marginBottom: 8 }}>
             No sessions yet
           </div>
-          <p style={{ fontSize: 14, color: '#4A4235', margin: 0 }}>Log your first range session to start tracking your practice.</p>
+          <p style={{ fontSize: 14, color: color.muted, margin: 0 }}>Log your first range session to start tracking your practice.</p>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {filtered.map(s => (
-            <div key={s.id} style={{ ...card, padding: isMobile ? '14px 16px' : '20px 24px', display: 'flex', alignItems: 'center', gap: 14 }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                background: FOCUS_COLORS[s.focusArea],
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontFamily: "'Bricolage Grotesque', sans-serif",
-                fontSize: 11, fontWeight: 700, color: '#FAF6EA', letterSpacing: '0.02em',
-              }}>
+            <div key={s.id} style={{ ...cardSurface, padding: isMobile ? '14px 16px' : '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ width: 44, height: 44, borderRadius: radius.sm, flexShrink: 0, background: color.greenTint, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: font.display, fontSize: 12, fontWeight: 600, color: color.green }}>
                 {s.focusArea === 'short_game' ? 'SG' : focusLabel(s.focusArea).slice(0, 2).toUpperCase()}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: s.notes ? 4 : 0, flexWrap: 'wrap' }}>
-                  <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>
+                  <span style={{ fontFamily: font.body, fontSize: 15, fontWeight: 600, color: color.ink }}>
                     {focusLabel(s.focusArea)}
                   </span>
-                  <span style={{ fontSize: 12, color: '#6B5F4E' }}>·</span>
-                  <span style={{ fontSize: 12, color: '#4A4235' }}>{formatDate(s.sessionDate)}</span>
+                  <span style={{ fontSize: 12, color: color.faint }}>·</span>
+                  <span style={{ fontSize: 12, color: color.muted }}>{formatDate(s.sessionDate)}</span>
                 </div>
                 {s.notes && (
-                  <div style={{ fontSize: 13, color: '#4A4235', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.notes}</div>
+                  <div style={{ fontSize: 13, color: color.muted, lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.notes}</div>
                 )}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
                 <StarRating value={s.rating} />
                 <button
                   onClick={() => handleDelete(s.id)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, opacity: 0.35, transition: 'opacity 0.15s' }}
+                  aria-label="Delete session"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, opacity: 0.4, transition: 'opacity 0.15s' }}
                   onMouseEnter={e => { e.currentTarget.style.opacity = '1' }}
-                  onMouseLeave={e => { e.currentTarget.style.opacity = '0.35' }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = '0.4' }}
                 >
-                  <CloseIcon size={14} color="#1F1D17" />
+                  <CloseIcon size={14} color={color.inkSoft} />
                 </button>
               </div>
             </div>
@@ -206,59 +176,34 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
       {modalOpen && (
         <div
           onClick={() => setModalOpen(false)}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 200,
-            background: 'rgba(31,29,23,0.55)',
-            backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
-            display: 'flex',
-            alignItems: isMobile ? 'flex-end' : 'center',
-            justifyContent: 'center',
-            padding: isMobile ? 0 : 40,
-          }}
+          style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 40, animation: 'fadeIn 0.2s ease' }}
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{
-              width: '100%',
-              maxWidth: isMobile ? '100%' : 500,
-              background: '#F0EBDD',
-              borderRadius: isMobile ? '28px 28px 0 0' : 28,
-              border: '1px solid #E0D8C5',
-              boxShadow: '0 40px 80px rgba(0,0,0,0.25)',
-              maxHeight: isMobile ? '94vh' : 'calc(100vh - 80px)',
-              display: 'flex', flexDirection: 'column',
-              overflow: 'hidden',
-            }}
+            style={{ width: '100%', maxWidth: isMobile ? '100%' : 480, background: color.white, borderRadius: isMobile ? '24px 24px 0 0' : radius.sheet, boxShadow: elevation.lg, maxHeight: isMobile ? '94vh' : 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column', overflow: 'hidden', animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}
           >
-            {/* Mobile drag handle */}
             {isMobile && (
-              <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12, paddingBottom: 2, flexShrink: 0 }}>
-                <div style={{ width: 40, height: 4, borderRadius: 2, background: '#8B8272' }} />
+              <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 10, paddingBottom: 2, flexShrink: 0 }}>
+                <div style={{ width: 36, height: 4, borderRadius: 2, background: color.borderStrong }} />
               </div>
             )}
 
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isMobile ? '14px 20px 16px' : '28px 32px 20px', flexShrink: 0 }}>
-              <div>
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#5C7A4D', textTransform: 'uppercase', marginBottom: 5 }}>
-                  Practice Log
-                </div>
-                <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 22 : 28, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: 0, lineHeight: 1.1 }}>
-                  Log a session
-                </h2>
-              </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isMobile ? '14px 20px 14px' : '24px 28px 16px', flexShrink: 0 }}>
+              <h2 style={{ fontFamily: font.display, fontSize: isMobile ? 20 : 22, fontWeight: 600, color: color.ink, letterSpacing: '-0.02em', margin: 0 }}>
+                Log a session
+              </h2>
               <button
                 onClick={() => setModalOpen(false)}
-                style={{ width: 36, height: 36, borderRadius: 18, background: '#FAF6EA', border: '1px solid #E0D8C5', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, transition: 'background 0.15s' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#E0D8C5' }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#FAF6EA' }}
+                aria-label="Close"
+                style={{ width: 32, height: 32, borderRadius: 16, background: color.sand, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
               >
-                <CloseIcon size={14} color="#1F1D17" />
+                <CloseIcon size={14} color={color.inkSoft} />
               </button>
             </div>
 
             {/* Scrollable content */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '4px 20px 0' : '4px 32px 0', display: 'flex', flexDirection: 'column', gap: 20 } as React.CSSProperties}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '4px 20px 0' : '4px 28px 0', display: 'flex', flexDirection: 'column', gap: 20 } as React.CSSProperties}>
 
               {/* Focus area */}
               <div>
@@ -270,18 +215,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
                       <button
                         key={f.id}
                         onClick={() => setFocusArea(f.id)}
-                        style={{
-                          border: '1px solid', borderRadius: 14, padding: '11px 8px',
-                          cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
-                          fontSize: 13, fontWeight: 500, transition: 'all 0.15s',
-                          minHeight: 46,
-                          background: active ? FOCUS_COLORS[f.id] : '#FAF6EA',
-                          color: active ? '#FAF6EA' : '#1F1D17',
-                          borderColor: active ? FOCUS_COLORS[f.id] : '#E0D8C5',
-                          boxShadow: active ? `0 4px 12px ${FOCUS_COLORS[f.id]}30` : 'none',
-                        }}
-                        onMouseEnter={e => { if (!active) { e.currentTarget.style.borderColor = '#8B8272'; e.currentTarget.style.background = '#F5F0E4' } }}
-                        onMouseLeave={e => { if (!active) { e.currentTarget.style.borderColor = '#E0D8C5'; e.currentTarget.style.background = '#FAF6EA' } }}
+                        style={{ border: `1px solid ${active ? color.green : color.border}`, borderRadius: radius.sm, padding: '11px 8px', cursor: 'pointer', fontFamily: font.body, fontSize: 13, fontWeight: 600, transition: 'all 0.15s', minHeight: 46, background: active ? color.green : color.white, color: active ? color.onGreen : color.ink }}
                       >
                         {f.label}
                       </button>
@@ -297,8 +231,8 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
                   type="date" value={date} max={today}
                   onChange={e => setDate(e.target.value)}
                   style={inputStyle}
-                  onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-                  onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+                  onFocus={e => { e.currentTarget.style.borderColor = color.green }}
+                  onBlur={e => { e.currentTarget.style.borderColor = color.borderStrong }}
                 />
               </div>
 
@@ -310,42 +244,35 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
 
               {/* Notes */}
               <div>
-                <label style={labelStyle}>Notes <span style={{ textTransform: 'none', fontWeight: 400, letterSpacing: 0, color: '#6B5F4E' }}>(optional)</span></label>
+                <label style={labelStyle}>Notes <span style={{ fontWeight: 400, color: color.muted }}>(optional)</span></label>
                 <textarea
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
                   placeholder="What did you work on?"
                   rows={3}
                   style={{ ...inputStyle, resize: 'none', lineHeight: 1.55, paddingTop: 13, paddingBottom: 13 }}
-                  onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-                  onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+                  onFocus={e => { e.currentTarget.style.borderColor = color.green }}
+                  onBlur={e => { e.currentTarget.style.borderColor = color.borderStrong }}
                 />
               </div>
 
               {error && (
-                <div style={{ background: 'rgba(217,130,77,0.10)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 12, padding: '11px 14px', fontSize: 13, color: '#D9824D', lineHeight: 1.45 }}>
+                <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: 12, padding: '11px 14px', fontSize: 13, color: color.dangerDeep, lineHeight: 1.45 }}>
                   {error}
                 </div>
               )}
 
-              {/* Spacer so content doesn't flush against the save button */}
               <div style={{ height: 4 }} />
             </div>
 
             {/* Save button — pinned at bottom */}
-            <div style={{ padding: isMobile ? '14px 20px 32px' : '16px 32px 28px', borderTop: '1px solid #E0D8C5', background: '#F0EBDD', flexShrink: 0 }}>
+            <div style={{ padding: isMobile ? '14px 20px calc(env(safe-area-inset-bottom) + 16px)' : '16px 28px 24px', borderTop: `1px solid ${color.border}`, background: color.white, flexShrink: 0 }}>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                style={{
-                  width: '100%', background: saving ? '#8B8272' : '#1F3A2A',
-                  color: '#FAF6EA', border: 'none', borderRadius: 999,
-                  padding: '15px', fontSize: 15, fontWeight: 500,
-                  cursor: saving ? 'not-allowed' : 'pointer',
-                  fontFamily: "'DM Sans', sans-serif", transition: 'background 0.15s',
-                }}
-                onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#16271D' }}
-                onMouseLeave={e => { if (!saving) e.currentTarget.style.background = '#1F3A2A' }}
+                style={{ width: '100%', background: saving ? color.borderStrong : color.green, color: saving ? color.inkSoft : color.onGreen, border: 'none', borderRadius: radius.md, padding: '15px', fontSize: 15, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer', fontFamily: font.body, transition: 'background 0.15s' }}
+                onMouseEnter={e => { if (!saving) e.currentTarget.style.background = color.greenDeep }}
+                onMouseLeave={e => { if (!saving) e.currentTarget.style.background = color.green }}
               >
                 {saving ? 'Saving…' : 'Save session'}
               </button>
@@ -356,4 +283,3 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
     </div>
   )
 }
-

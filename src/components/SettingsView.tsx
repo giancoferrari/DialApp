@@ -3,9 +3,11 @@ import { supabase } from '../lib/supabase'
 import { upsertProfile, uploadAvatar } from '../lib/profile'
 import type { UserProfile, View } from '../types'
 import { getRank } from '../lib/points'
-import { CameraIcon, CheckIcon, CloseIcon, ShieldIcon, ChevronRightIcon } from './Icons'
+import { CameraIcon, CheckIcon, CloseIcon, ShieldIcon, ChevronRightIcon, ChevronLeftIcon } from './Icons'
 import CountryPicker from './CountryPicker'
 import { useEdgeSwipeBack } from '../hooks/useGestures'
+import { color, font, radius, onHero } from '../lib/tokens'
+import { card as cardSurface } from '../lib/surfaces'
 
 // ── Local preferences (no DB needed) ──────────────────────
 type Prefs = {
@@ -37,12 +39,12 @@ function savePrefs(p: Prefs) {
 }
 
 const TEE_OPTIONS = [
-  { id: 'black', hex: '#1F1D17' },
+  { id: 'black', hex: '#1A1C1A' },
   { id: 'blue',  hex: '#2563EB' },
-  { id: 'white', hex: '#E0D8C5' },
-  { id: 'red',   hex: '#DC2626' },
-  { id: 'gold',  hex: '#C8A84B' },
-  { id: 'green', hex: '#5C7A4D' },
+  { id: 'white', hex: '#E4E6E1' },
+  { id: 'red',   hex: '#C0392B' },
+  { id: 'gold',  hex: '#A8852F' },
+  { id: 'green', hex: '#35704F' },
 ]
 
 const PW_RULES = [
@@ -52,10 +54,12 @@ const PW_RULES = [
   { test: (s: string) => /[^A-Za-z0-9]/.test(s),  label: 'One special character' },
 ]
 
+const DIVIDER = `1px solid ${color.border}`
+
 // ── Primitives ──────────────────────────────────────────────
 function SectionLabel({ label }: { label: string }) {
   return (
-    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: '#4A4235', textTransform: 'uppercase', margin: '28px 0 8px 4px' }}>
+    <div style={{ fontSize: 13, fontWeight: 600, color: color.inkSoft, margin: '26px 0 8px 2px' }}>
       {label}
     </div>
   )
@@ -63,7 +67,7 @@ function SectionLabel({ label }: { label: string }) {
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ background: '#FFFDF8', border: '1px solid #E0D8C5', borderRadius: 18, overflow: 'hidden' }}>
+    <div style={{ ...cardSurface, overflow: 'hidden' }}>
       {children}
     </div>
   )
@@ -71,10 +75,10 @@ function Card({ children }: { children: React.ReactNode }) {
 
 function Row({ label, description, last, children }: { label: string; description?: string; last?: boolean; children: React.ReactNode }) {
   return (
-    <div style={{ padding: '13px 18px', borderBottom: last ? 'none' : '1px solid rgba(224,216,197,0.5)', display: 'flex', alignItems: 'center', gap: 12, minHeight: 52 }}>
+    <div style={{ padding: '13px 16px', borderBottom: last ? 'none' : DIVIDER, display: 'flex', alignItems: 'center', gap: 12, minHeight: 52 }}>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>{label}</div>
-        {description && <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2 }}>{description}</div>}
+        <div style={{ fontSize: 14, fontWeight: 500, color: color.ink, fontFamily: font.body }}>{label}</div>
+        {description && <div style={{ fontSize: 12, color: color.muted, marginTop: 2 }}>{description}</div>}
       </div>
       {children}
     </div>
@@ -85,18 +89,19 @@ function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) =>
   return (
     <button
       onClick={() => onChange(!value)}
-      style={{ width: 44, height: 26, borderRadius: 13, background: value ? '#1F3A2A' : '#8B8272', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.22s ease', padding: 0, flexShrink: 0 }}
+      aria-pressed={value}
+      style={{ width: 44, height: 26, borderRadius: 13, background: value ? color.green : color.borderStrong, border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.22s ease', padding: 0, flexShrink: 0 }}
     >
-      <div style={{ width: 20, height: 20, borderRadius: 10, background: '#FAF6EA', position: 'absolute', top: 3, left: value ? 21 : 3, transition: 'left 0.22s ease', boxShadow: '0 1px 4px rgba(0,0,0,0.18)' }} />
+      <div style={{ width: 20, height: 20, borderRadius: 10, background: color.white, position: 'absolute', top: 3, left: value ? 21 : 3, transition: 'left 0.22s ease', boxShadow: '0 1px 3px rgba(0,0,0,0.18)' }} />
     </button>
   )
 }
 
 function Segment({ options, value, onChange }: { options: string[]; value: string; onChange: (v: string) => void }) {
   return (
-    <div style={{ display: 'flex', background: '#EDE8D4', borderRadius: 10, padding: 3, gap: 2, flexShrink: 0 }}>
+    <div style={{ display: 'flex', background: color.sand, borderRadius: radius.sm, padding: 3, gap: 2, flexShrink: 0 }}>
       {options.map(opt => (
-        <button key={opt} onClick={() => onChange(opt)} style={{ padding: '5px 13px', borderRadius: 7, border: 'none', background: value === opt ? '#FAF6EA' : 'transparent', color: value === opt ? '#1F1D17' : '#4A4235', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s', boxShadow: value === opt ? '0 1px 4px rgba(31,29,23,0.10)' : 'none', fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap' }}>
+        <button key={opt} onClick={() => onChange(opt)} style={{ padding: '5px 12px', borderRadius: 7, border: 'none', background: value === opt ? color.white : 'transparent', color: value === opt ? color.ink : color.muted, fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s', boxShadow: value === opt ? '0 1px 3px rgba(23,26,23,0.08)' : 'none', fontFamily: font.body, whiteSpace: 'nowrap' }}>
           {opt}
         </button>
       ))}
@@ -129,42 +134,42 @@ function EditableRow({
   const cancel = () => { setDraft(value); setEditing(false) }
 
   return (
-    <div style={{ borderBottom: last ? 'none' : '1px solid rgba(224,216,197,0.5)' }}>
+    <div style={{ borderBottom: last ? 'none' : DIVIDER }}>
       <div
-        style={{ padding: '13px 18px', display: 'flex', alignItems: 'center', gap: 12, cursor: editing ? 'default' : 'pointer', minHeight: 52, transition: 'background 0.12s' }}
+        style={{ padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 12, cursor: editing ? 'default' : 'pointer', minHeight: 52, transition: 'background 0.12s' }}
         onClick={() => { if (!editing) setEditing(true) }}
-        onMouseEnter={e => { if (!editing) e.currentTarget.style.background = 'rgba(31,58,42,0.04)' }}
+        onMouseEnter={e => { if (!editing) e.currentTarget.style.background = color.sand }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>{label}</div>
-          {description && <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2 }}>{description}</div>}
+          <div style={{ fontSize: 14, fontWeight: 500, color: color.ink, fontFamily: font.body }}>{label}</div>
+          {description && <div style={{ fontSize: 12, color: color.muted, marginTop: 2 }}>{description}</div>}
         </div>
         {!editing && (
           <>
-            <div style={{ fontSize: 13.5, color: value ? '#4A4235' : '#8B8272', fontFamily: "'DM Sans', sans-serif", maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: 14, color: value ? color.inkSoft : color.faint, fontFamily: font.body, maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {value ? `${prefix ?? ''}${value}` : (placeholder ?? '—')}
             </div>
-            <ChevronRightIcon size={15} color="#8B8272" />
+            <ChevronRightIcon size={15} color={color.faint} />
           </>
         )}
       </div>
       {editing && (
-        <div style={{ padding: '0 18px 14px', display: 'flex', gap: 8, alignItems: 'center' }}>
-          {prefix && <span style={{ fontSize: 14, color: '#4A4235', fontFamily: "'DM Sans', sans-serif", flexShrink: 0 }}>{prefix}</span>}
+        <div style={{ padding: '0 16px 14px', display: 'flex', gap: 8, alignItems: 'center' }}>
+          {prefix && <span style={{ fontSize: 14, color: color.inkSoft, fontFamily: font.body, flexShrink: 0 }}>{prefix}</span>}
           <input
             ref={inputRef}
             type={type}
             value={draft}
             onChange={e => setDraft(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') cancel() }}
-            style={{ flex: 1, background: '#EDE8D4', border: '1.5px solid #1F3A2A', borderRadius: 10, padding: '9px 12px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif" }}
+            style={{ flex: 1, background: color.sand, border: `1px solid ${color.green}`, borderRadius: radius.sm, padding: '9px 12px', fontSize: 16, color: color.ink, outline: 'none', fontFamily: font.body }}
           />
-          <button onClick={commit} disabled={saving} style={{ width: 34, height: 34, borderRadius: 10, background: '#1F3A2A', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
-            <CheckIcon size={14} color="#FAF6EA" />
+          <button onClick={commit} disabled={saving} aria-label="Save" style={{ width: 34, height: 34, borderRadius: radius.sm, background: color.green, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+            <CheckIcon size={14} color={color.onGreen} />
           </button>
-          <button onClick={cancel} style={{ width: 34, height: 34, borderRadius: 10, background: '#EDE8D4', border: '1px solid #E0D8C5', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
-            <CloseIcon size={12} color="#4A4235" />
+          <button onClick={cancel} aria-label="Cancel" style={{ width: 34, height: 34, borderRadius: radius.sm, background: color.sand, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+            <CloseIcon size={12} color={color.inkSoft} />
           </button>
         </div>
       )}
@@ -254,78 +259,82 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
   const initial = displayName[0]?.toUpperCase() ?? '?'
   const px = isMobile ? 20 : 40
 
+  const pwInput = (extraBorder?: string): React.CSSProperties => ({
+    background: color.sand, border: `1px solid ${extraBorder ?? color.border}`, borderRadius: radius.sm, padding: '10px 14px', fontSize: 16, color: color.ink, outline: 'none', fontFamily: font.body,
+  })
+
   return (
-    <div style={{ maxWidth: 640, margin: '0 auto', padding: `${isMobile ? 28 : 48}px ${px}px ${isMobile ? 120 : 80}px` }}>
+    <div style={{ maxWidth: 640, margin: '0 auto', padding: `${isMobile ? 24 : 44}px ${px}px ${isMobile ? 120 : 80}px` }}>
 
       {/* ── Page title ── */}
       <button
         onClick={() => (onBack ? onBack() : onNavigate('profile'))}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: '#4A4235', padding: 0, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: font.body, fontSize: 14, fontWeight: 500, color: color.inkSoft, padding: 0, display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}
       >
-        <span style={{ fontSize: 18, lineHeight: 1 }}>‹</span> Back
+        <ChevronLeftIcon size={18} color={color.inkSoft} /> Back
       </button>
-      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#8B8272', textTransform: 'uppercase', marginBottom: 8 }}>Your account</div>
-      <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 32 : 44, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.035em', margin: '0 0 28px', lineHeight: 1 }}>
+      <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 30 : 36, fontWeight: 600, color: color.ink, letterSpacing: '-0.02em', margin: '0 0 22px', lineHeight: 1 }}>
         Settings
       </h1>
 
       {/* ── Flash messages ── */}
       {savedFlash && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1F3A2A', color: '#FAF6EA', borderRadius: 12, padding: '10px 16px', fontSize: 13, fontWeight: 500, marginBottom: 16, width: 'fit-content' }}>
-          <CheckIcon size={13} color="#FAF6EA" /> {savedFlash}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: color.green, color: color.onGreen, borderRadius: radius.md, padding: '10px 16px', fontSize: 13, fontWeight: 500, marginBottom: 16, width: 'fit-content' }}>
+          <CheckIcon size={13} color="#9FD4B4" /> {savedFlash}
         </div>
       )}
       {saveError && (
-        <div style={{ background: 'rgba(217,130,77,0.10)', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 12, padding: '10px 14px', fontSize: 13, color: '#D9824D', marginBottom: 16 }}>
+        <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: radius.md, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, marginBottom: 16 }}>
           {saveError}
         </div>
       )}
 
-      {/* ── Profile header card ── */}
-      <div style={{ background: '#1F3A2A', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 22, padding: '28px 24px', display: 'flex', alignItems: 'center', gap: 20, boxShadow: '0 8px 32px rgba(31,58,42,0.22), inset 0 1px 0 rgba(255,255,255,0.14)', marginBottom: 4 }}>
+      {/* ── Profile header card (dark) ── */}
+      <div style={{ background: color.green, borderRadius: radius.lg, padding: '24px 22px', display: 'flex', alignItems: 'center', gap: 18 }}>
         {/* Avatar */}
         <div style={{ position: 'relative', flexShrink: 0 }}>
           <div
             onClick={() => fileInputRef.current?.click()}
-            style={{ width: 76, height: 76, borderRadius: 38, background: '#1F3A2A', overflow: 'hidden', border: '2px solid rgba(255,255,255,0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}
+            style={{ width: 72, height: 72, borderRadius: 36, background: 'rgba(255,255,255,0.10)', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.16)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}
           >
             {profile?.avatarUrl
               ? <img src={profile.avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: 28, color: '#D9824D' }}>{initial}</span>
+              : <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: 26, color: color.onGreen }}>{initial}</span>
             }
             {uploadingAvatar && (
-              <div style={{ position: 'absolute', inset: 0, background: 'rgba(31,29,23,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ color: '#FAF6EA', fontSize: 18 }}>…</span>
+              <div style={{ position: 'absolute', inset: 0, background: 'rgba(15,23,17,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ color: color.onGreen, fontSize: 18 }}>…</span>
               </div>
             )}
           </div>
           <button
             onClick={() => fileInputRef.current?.click()}
-            style={{ position: 'absolute', bottom: 0, right: 0, width: 26, height: 26, borderRadius: 13, background: '#D9824D', border: '2px solid rgba(31,58,42,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+            aria-label="Change photo"
+            style={{ position: 'absolute', bottom: -2, right: -2, width: 26, height: 26, borderRadius: 13, background: color.white, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
           >
-            <CameraIcon size={11} color="#FAF6EA" />
+            <CameraIcon size={12} color={color.green} />
           </button>
           <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
         </div>
 
         {/* Info */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.025em', lineHeight: 1.1, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <div style={{ fontFamily: font.display, fontSize: 20, fontWeight: 600, color: color.onGreen, letterSpacing: '-0.01em', lineHeight: 1.1, marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {displayName}
           </div>
-          <div style={{ fontSize: 12, color: 'rgba(250,246,234,0.55)', marginBottom: 10, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <div style={{ fontSize: 12.5, color: onHero.faint, marginBottom: 10, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {profile?.username ? `@${profile.username}` : userEmail}
           </div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: rank.color + '22', border: `1px solid ${rank.color}44`, borderRadius: 999, padding: '3px 10px 3px 7px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: onHero.fill, border: `1px solid ${onHero.border}`, borderRadius: 999, padding: '3px 11px 3px 8px' }}>
             <ShieldIcon size={11} color={rank.color} />
-            <span style={{ fontSize: 11, fontWeight: 700, color: rank.color, letterSpacing: '0.04em', fontFamily: "'DM Sans', sans-serif" }}>{rank.name}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: color.onGreen, fontFamily: font.body }}>{rank.name}</span>
           </div>
         </div>
 
         {/* Points */}
         <div style={{ textAlign: 'center', flexShrink: 0 }}>
-          <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 28, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.04em', lineHeight: 1 }}>{profile?.rankedPoints ?? 0}</div>
-          <div style={{ fontSize: 10, color: 'rgba(250,246,234,0.5)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 3 }}>points</div>
+          <div style={{ fontFamily: font.display, fontSize: 26, fontWeight: 600, color: color.onGreen, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{profile?.rankedPoints ?? 0}</div>
+          <div style={{ fontSize: 11, color: onHero.faint, fontWeight: 500, marginTop: 3 }}>points</div>
         </div>
       </div>
 
@@ -333,7 +342,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       <SectionLabel label="Account" />
       <Card>
         <EditableRow
-          label="First Name"
+          label="First name"
           description="Shown in greetings and match history"
           value={profile?.firstName ?? ''}
           placeholder="Add your first name"
@@ -353,9 +362,9 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       {/* ── LOCATION ── */}
       <SectionLabel label="Location" />
       <Card>
-        <div style={{ padding: '14px 18px' }}>
-          <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif", marginBottom: 4 }}>Country</div>
-          <div style={{ fontSize: 11.5, color: '#6B5F4E', marginBottom: 10 }}>Your flag shows on your profile</div>
+        <div style={{ padding: '14px 16px' }}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: color.ink, fontFamily: font.body, marginBottom: 4 }}>Country</div>
+          <div style={{ fontSize: 12, color: color.muted, marginBottom: 10 }}>Your flag shows on your profile</div>
           <CountryPicker value={profile?.country ?? null} onChange={code => save({ country: code })} isMobile={isMobile} />
         </div>
       </Card>
@@ -364,7 +373,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       <SectionLabel label="Security" />
       <Card>
         <Row label="Email" description="Your sign-in address" last>
-          <div style={{ fontSize: 13.5, color: '#4A4235', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userEmail}</div>
+          <div style={{ fontSize: 14, color: color.inkSoft, maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userEmail}</div>
         </Row>
       </Card>
 
@@ -372,48 +381,47 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
         <Card>
           <div
             onClick={() => { setShowPw(v => !v); setPwError(null); setPwSuccess(false) }}
-            style={{ padding: '13px 18px', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', minHeight: 52 }}
+            style={{ padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', minHeight: 52 }}
           >
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>Change password</div>
-              {!showPw && <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2 }}>Update your account password</div>}
+              <div style={{ fontSize: 14, fontWeight: 500, color: color.ink, fontFamily: font.body }}>Change password</div>
+              {!showPw && <div style={{ fontSize: 12, color: color.muted, marginTop: 2 }}>Update your account password</div>}
             </div>
             <div style={{ transform: showPw ? 'rotate(90deg)' : 'none', transition: 'transform 0.18s ease' }}>
-              <ChevronRightIcon size={15} color="#8B8272" />
+              <ChevronRightIcon size={15} color={color.faint} />
             </div>
           </div>
 
           {showPw && (
-            <div style={{ padding: '0 18px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
               {pwSuccess ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(92,122,77,0.12)', border: '1px solid rgba(92,122,77,0.3)', borderRadius: 12, padding: '12px 14px', fontSize: 13, color: '#5C7A4D', fontWeight: 500 }}>
-                  <CheckIcon size={14} color="#5C7A4D" /> Password updated successfully
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: color.greenTint, border: `1px solid ${color.sageLight}`, borderRadius: radius.md, padding: '12px 14px', fontSize: 13, color: color.greenDeep, fontWeight: 500 }}>
+                  <CheckIcon size={14} color={color.positive} /> Password updated successfully
                 </div>
               ) : (
                 <>
                   <input
                     type="password" placeholder="New password" value={pwNew}
                     onChange={e => setPwNew(e.target.value)}
-                    style={{ background: '#EDE8D4', border: '1.5px solid #E0D8C5', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif" }}
-                    onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-                    onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+                    style={pwInput()}
+                    onFocus={e => { e.currentTarget.style.borderColor = color.green }}
+                    onBlur={e => { e.currentTarget.style.borderColor = color.border }}
                   />
                   <input
                     type="password" placeholder="Confirm new password" value={pwConfirm}
                     onChange={e => setPwConfirm(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') handlePasswordSave() }}
-                    style={{ background: '#EDE8D4', border: `1.5px solid ${pwConfirm && pwConfirm !== pwNew ? '#D9824D' : '#E0D8C5'}`, borderRadius: 10, padding: '10px 14px', fontSize: 14, color: '#1F1D17', outline: 'none', fontFamily: "'DM Sans', sans-serif" }}
-                    onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-                    onBlur={e => { e.currentTarget.style.borderColor = pwConfirm && pwConfirm !== pwNew ? '#D9824D' : '#E0D8C5' }}
+                    style={pwInput(pwConfirm && pwConfirm !== pwNew ? color.danger : color.border)}
+                    onFocus={e => { e.currentTarget.style.borderColor = color.green }}
+                    onBlur={e => { e.currentTarget.style.borderColor = pwConfirm && pwConfirm !== pwNew ? color.danger : color.border }}
                   />
-                  {/* Password strength hints */}
                   {pwNew.length > 0 && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                       {PW_RULES.map(r => {
                         const ok = r.test(pwNew)
                         return (
-                          <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: ok ? '#5C7A4D' : '#6B5F4E', fontWeight: 500 }}>
-                            <div style={{ width: 6, height: 6, borderRadius: 3, background: ok ? '#5C7A4D' : '#8B8272' }} />
+                          <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11.5, color: ok ? color.positive : color.muted, fontWeight: 500 }}>
+                            <div style={{ width: 6, height: 6, borderRadius: 3, background: ok ? color.positive : color.borderStrong }} />
                             {r.label}
                           </div>
                         )
@@ -421,12 +429,12 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
                     </div>
                   )}
                   {pwError && (
-                    <div style={{ fontSize: 12.5, color: '#D9824D', fontWeight: 500 }}>{pwError}</div>
+                    <div style={{ fontSize: 12.5, color: color.danger, fontWeight: 500 }}>{pwError}</div>
                   )}
                   <button
                     onClick={handlePasswordSave}
                     disabled={pwSaving || !pwNew || !pwConfirm}
-                    style={{ background: pwSaving || !pwNew || !pwConfirm ? '#8B8272' : '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 12, padding: '11px', fontSize: 13.5, fontWeight: 500, cursor: pwSaving || !pwNew || !pwConfirm ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'background 0.15s' }}
+                    style={{ background: pwSaving || !pwNew || !pwConfirm ? color.borderStrong : color.green, color: pwSaving || !pwNew || !pwConfirm ? color.inkSoft : color.onGreen, border: 'none', borderRadius: radius.md, padding: '11px', fontSize: 14, fontWeight: 600, cursor: pwSaving || !pwNew || !pwConfirm ? 'not-allowed' : 'pointer', fontFamily: font.body, transition: 'background 0.15s' }}
                   >
                     {pwSaving ? 'Updating…' : 'Update password'}
                   </button>
@@ -438,10 +446,10 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       </div>
 
       {/* ── GOLF PROFILE ── */}
-      <SectionLabel label="Golf Profile" />
+      <SectionLabel label="Golf profile" />
       <Card>
         <EditableRow
-          label="Handicap Index"
+          label="Handicap index"
           description="Your current official handicap"
           value={profile?.handicapIndex != null ? String(profile.handicapIndex) : ''}
           placeholder="e.g. 14.2"
@@ -449,7 +457,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
           onSave={v => save({ handicapIndex: v ? parseFloat(v) : null })}
         />
         <EditableRow
-          label="Home Course"
+          label="Home course"
           description="Your regular course"
           value={profile?.homeCourse ?? ''}
           placeholder="Add home course"
@@ -457,13 +465,14 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
         />
 
         {/* Preferred tee */}
-        <Row label="Preferred Tee" description="Default tee for scorecards" last>
+        <Row label="Preferred tee" description="Default tee for scorecards" last>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             {TEE_OPTIONS.map(t => (
               <button
                 key={t.id}
                 onClick={() => updatePref({ teePreference: t.id })}
-                style={{ width: 22, height: 22, borderRadius: 11, background: t.hex, border: prefs.teePreference === t.id ? '2px solid #1F3A2A' : '2px solid transparent', outline: prefs.teePreference === t.id ? '2px solid rgba(31,58,42,0.3)' : 'none', cursor: 'pointer', transition: 'all 0.15s', boxSizing: 'border-box' }}
+                aria-label={`${t.id} tee`}
+                style={{ width: 22, height: 22, borderRadius: 11, background: t.hex, border: `1px solid ${color.border}`, outline: prefs.teePreference === t.id ? `2px solid ${color.green}` : 'none', outlineOffset: 1, cursor: 'pointer', transition: 'all 0.15s', boxSizing: 'border-box' }}
               />
             ))}
           </div>
@@ -471,12 +480,12 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       </Card>
 
       {/* ── GAME DEFAULTS ── */}
-      <SectionLabel label="Game Defaults" />
+      <SectionLabel label="Game defaults" />
       <Card>
-        <Row label="Default Holes" description="Used when starting a new round">
+        <Row label="Default holes" description="Used when starting a new round">
           <Segment options={['9', '18']} value={String(prefs.defaultHoles)} onChange={v => updatePref({ defaultHoles: parseInt(v) as 9 | 18 })} />
         </Row>
-        <Row label="Distance Units" description="Yards or metres on scorecards" last>
+        <Row label="Distance units" description="Yards or metres on scorecards" last>
           <Segment options={['Yards', 'Meters']} value={prefs.units === 'yards' ? 'Yards' : 'Meters'} onChange={v => updatePref({ units: v === 'Yards' ? 'yards' : 'meters' })} />
         </Row>
       </Card>
@@ -485,7 +494,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       <SectionLabel label="Goals" />
       <Card>
         <EditableRow
-          label="Score Goal"
+          label="Score goal"
           description="Target score to break"
           value={profile?.goalScore != null ? String(profile.goalScore) : ''}
           placeholder="e.g. 85"
@@ -493,7 +502,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
           onSave={v => save({ goalScore: v ? parseInt(v) : null })}
         />
         <EditableRow
-          label="Target Handicap"
+          label="Target handicap"
           description="Handicap you're working toward"
           value={profile?.goalHandicap != null ? String(profile.goalHandicap) : ''}
           placeholder="e.g. 10.0"
@@ -520,26 +529,26 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       {/* ── ABOUT ── */}
       <SectionLabel label="About" />
       <Card>
-        <Row label="Version" last={false}>
-          <span style={{ fontSize: 13.5, color: '#6B5F4E', fontFamily: "'DM Sans', sans-serif" }}>1.0.0</span>
+        <Row label="Version">
+          <span style={{ fontSize: 14, color: color.muted, fontFamily: font.body }}>1.0.0</span>
         </Row>
         <div
           onClick={() => onShowLegal('privacy')}
-          style={{ padding: '13px 18px', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', borderBottom: '1px solid rgba(224,216,197,0.5)', minHeight: 52 }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.02)' }}
+          style={{ padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', borderBottom: DIVIDER, minHeight: 52 }}
+          onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
         >
-          <div style={{ flex: 1, fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>Privacy Policy</div>
-          <ChevronRightIcon size={15} color="#8B8272" />
+          <div style={{ flex: 1, fontSize: 14, fontWeight: 500, color: color.ink, fontFamily: font.body }}>Privacy Policy</div>
+          <ChevronRightIcon size={15} color={color.faint} />
         </div>
         <div
           onClick={() => onShowLegal('terms')}
-          style={{ padding: '13px 18px', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', minHeight: 52 }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.02)' }}
+          style={{ padding: '13px 16px', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', minHeight: 52 }}
+          onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
         >
-          <div style={{ flex: 1, fontSize: 14, fontWeight: 500, color: '#1F1D17', fontFamily: "'DM Sans', sans-serif" }}>Terms of Service</div>
-          <ChevronRightIcon size={15} color="#8B8272" />
+          <div style={{ flex: 1, fontSize: 14, fontWeight: 500, color: color.ink, fontFamily: font.body }}>Terms of Service</div>
+          <ChevronRightIcon size={15} color={color.faint} />
         </div>
       </Card>
 
@@ -547,9 +556,9 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       <SectionLabel label="Account actions" />
       <button
         onClick={onSignOut}
-        style={{ width: '100%', background: '#FFFDF8', border: '1px solid rgba(217,130,77,0.3)', borderRadius: 18, padding: '16px', fontSize: 14, fontWeight: 600, color: '#D9824D', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'all 0.15s' }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(217,130,77,0.10)' }}
-        onMouseLeave={e => { e.currentTarget.style.background = '#FFFDF8' }}
+        style={{ width: '100%', ...cardSurface, padding: '16px', fontSize: 14, fontWeight: 600, color: color.danger, cursor: 'pointer', fontFamily: font.body, transition: 'background 0.15s' }}
+        onMouseEnter={e => { e.currentTarget.style.background = '#FBEDEB' }}
+        onMouseLeave={e => { e.currentTarget.style.background = color.white }}
       >
         Sign out
       </button>
@@ -557,4 +566,3 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
     </div>
   )
 }
-

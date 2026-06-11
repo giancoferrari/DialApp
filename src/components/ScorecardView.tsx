@@ -4,7 +4,7 @@ import { saveCourse, deleteCourse } from '../lib/courses'
 import { createRound, upsertRoundHoles, deleteRound } from '../lib/rounds'
 import { createRoundPost } from '../lib/posts'
 import type { Course, Round, RoundHole, RoundRecapMeta } from '../types'
-import { CloseIcon, PlusIcon, ScorecardIcon } from './Icons'
+import { CloseIcon, PlusIcon, ScorecardIcon, ChevronLeftIcon } from './Icons'
 import EmptyState from './EmptyState'
 import CourseSearch from './CourseSearch'
 import type { GolfCourse, GolfTee } from '../lib/golfCourseApi'
@@ -19,12 +19,12 @@ const SANTA_MARIA_HOLES: { par: 3 | 4 | 5 }[] = [
 ]
 
 const TEE_COLORS = [
-  { id: 'black', label: 'Black', color: '#1F1D17' },
+  { id: 'black', label: 'Black', color: '#171A17' },
   { id: 'blue',  label: 'Blue',  color: '#2563EB' },
   { id: 'white', label: 'White', color: '#FFFFFF'  },
   { id: 'red',   label: 'Red',   color: '#DC2626'  },
-  { id: 'gold',  label: 'Gold',  color: '#C8A84B'  },
-  { id: 'green', label: 'Green', color: '#5C7A4D'  },
+  { id: 'gold',  label: 'Gold',  color: '#A8852F'  },
+  { id: 'green', label: 'Green', color: '#2F6E4C'  },
 ]
 
 type ScoringMode = 'score-only' | 'score-stats'
@@ -46,10 +46,10 @@ function formatDate(d: string) {
 
 function scoreName(score: number, par: number) {
   const d = score - par
-  if (d <= -2) return { label: 'Eagle',  color: '#C8A84B' }
-  if (d === -1) return { label: 'Birdie', color: '#5C7A4D' }
-  if (d === 0)  return { label: 'Par',    color: '#4A4235' }
-  if (d === 1)  return { label: 'Bogey',  color: '#D9824D' }
+  if (d <= -2) return { label: 'Eagle',  color: '#A8852F' }
+  if (d === -1) return { label: 'Birdie', color: '#2F6E4C' }
+  if (d === 0)  return { label: 'Par',    color: '#494F49' }
+  if (d === 1)  return { label: 'Bogey',  color: '#C25E33' }
   if (d === 2)  return { label: 'Double', color: '#C0392B' }
   if (d === 3)  return { label: 'Triple', color: '#991B1B' }
   return             { label: `+${d}`,  color: '#7F1D1D' }
@@ -87,15 +87,15 @@ function ScoreDecoration({ score, par, onClick, isSelected, interactive }: {
     transition: 'box-shadow 0.12s',
   }
   const num = (sz: number, col: string): React.CSSProperties => ({
-    fontFamily: "'Bricolage Grotesque', sans-serif",
+    fontFamily: "'Space Grotesk', sans-serif",
     fontSize: sz, fontWeight: 700, color: col, lineHeight: 1,
   })
 
   if (score === null) {
     return (
       <div onClick={interactive ? onClick : undefined}
-        style={{ ...base, borderRadius: 6, border: '1.5px dashed #D1C9B8' }}>
-        <span style={{ color: '#8B8272', fontSize: 14 }}>·</span>
+        style={{ ...base, borderRadius: 6, border: '1.5px dashed #CDD2CC' }}>
+        <span style={{ color: '#9AA09A', fontSize: 14 }}>·</span>
       </div>
     )
   }
@@ -105,8 +105,8 @@ function ScoreDecoration({ score, par, onClick, isSelected, interactive }: {
   if (d <= -2) {
     return (
       <div onClick={interactive ? onClick : undefined}
-        style={{ ...base, borderRadius: '50%', border: '1.5px solid #C8A84B' }}>
-        <div style={{ width: 19, height: 19, borderRadius: '50%', border: '1.5px solid #C8A84B', background: '#FFFBEB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        style={{ ...base, borderRadius: '50%', border: '1.5px solid #A8852F' }}>
+        <div style={{ width: 19, height: 19, borderRadius: '50%', border: '1.5px solid #A8852F', background: '#FFFBEB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <span style={num(9, '#92400E')}>{score}</span>
         </div>
       </div>
@@ -116,7 +116,7 @@ function ScoreDecoration({ score, par, onClick, isSelected, interactive }: {
   if (d === -1) {
     return (
       <div onClick={interactive ? onClick : undefined}
-        style={{ ...base, borderRadius: '50%', border: '2px solid #5C7A4D', background: '#F0FDF4' }}>
+        style={{ ...base, borderRadius: '50%', border: '2px solid #2F6E4C', background: '#F0FDF4' }}>
         <span style={num(12, '#166534')}>{score}</span>
       </div>
     )
@@ -125,8 +125,8 @@ function ScoreDecoration({ score, par, onClick, isSelected, interactive }: {
   if (d === 0) {
     return (
       <div onClick={interactive ? onClick : undefined}
-        style={{ ...base, borderRadius: 5, background: '#F0EBDD' }}>
-        <span style={num(12, '#1F1D17')}>{score}</span>
+        style={{ ...base, borderRadius: 5, background: '#EFF1ED' }}>
+        <span style={num(12, '#171A17')}>{score}</span>
       </div>
     )
   }
@@ -134,7 +134,7 @@ function ScoreDecoration({ score, par, onClick, isSelected, interactive }: {
   if (d === 1) {
     return (
       <div onClick={interactive ? onClick : undefined}
-        style={{ ...base, border: '2px solid #D9824D', background: '#FFF7ED' }}>
+        style={{ ...base, border: '2px solid #C25E33', background: '#FFF7ED' }}>
         <span style={num(12, '#9A3412')}>{score}</span>
       </div>
     )
@@ -175,42 +175,42 @@ function ScorecardHalf({ holes, label, mode, editingHole, activeHole, onCellClic
   const T = 44
 
   const cellBase: React.CSSProperties = { width: C, minWidth: C, textAlign: 'center', padding: 0, border: 'none', verticalAlign: 'middle' }
-  const labelCell: React.CSSProperties = { width: L, minWidth: L, textAlign: 'left', paddingLeft: 14, border: 'none', verticalAlign: 'middle', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B5F4E' }
+  const labelCell: React.CSSProperties = { width: L, minWidth: L, textAlign: 'left', paddingLeft: 14, border: 'none', verticalAlign: 'middle', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B716B' }
   const totalCell: React.CSSProperties = { width: T, minWidth: T, textAlign: 'center', border: 'none', verticalAlign: 'middle' }
 
   return (
     <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' as React.CSSProperties['WebkitOverflowScrolling'] }}>
       <table style={{ borderCollapse: 'collapse', tableLayout: 'fixed', width: '100%', minWidth: L + holes.length * C + T }}>
         <tbody>
-          <tr style={{ background: '#1F3A2A' }}>
-            <td style={{ ...labelCell, color: 'rgba(250,246,234,0.4)', padding: '8px 0 8px 14px' }}>HOLE</td>
+          <tr style={{ background: '#1E4D38' }}>
+            <td style={{ ...labelCell, color: 'rgba(242,245,241,0.4)', padding: '8px 0 8px 14px' }}>HOLE</td>
             {holes.map(h => (
-              <td key={h.holeNumber} style={{ ...cellBase, fontSize: 12, fontWeight: 700, color: '#FAF6EA', fontFamily: "'Bricolage Grotesque', sans-serif", padding: '8px 0' }}>{h.holeNumber}</td>
+              <td key={h.holeNumber} style={{ ...cellBase, fontSize: 12, fontWeight: 700, color: '#F2F5F1', fontFamily: "'Space Grotesk', sans-serif", padding: '8px 0' }}>{h.holeNumber}</td>
             ))}
-            <td style={{ ...totalCell, fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: 'rgba(250,246,234,0.4)', padding: '8px 0' }}>{label}</td>
+            <td style={{ ...totalCell, fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: 'rgba(242,245,241,0.4)', padding: '8px 0' }}>{label}</td>
           </tr>
 
-          <tr style={{ background: '#F5F0E6' }}>
+          <tr style={{ background: '#F7F8F5' }}>
             <td style={{ ...labelCell, padding: '5px 0 5px 14px' }}>YDS</td>
             {holes.map(h => (
-              <td key={h.holeNumber} style={{ ...cellBase, fontSize: 11, color: '#6B5F4E', padding: '5px 0' }}>
+              <td key={h.holeNumber} style={{ ...cellBase, fontSize: 11, color: '#6B716B', padding: '5px 0' }}>
                 {h.yardage ?? '—'}
               </td>
             ))}
-            <td style={{ ...totalCell, fontSize: 12, fontWeight: 600, color: '#6B5F4E', padding: '5px 0' }}>
+            <td style={{ ...totalCell, fontSize: 12, fontWeight: 600, color: '#6B716B', padding: '5px 0' }}>
               {holes.some(h => h.yardage) ? holes.reduce((s, h) => s + (h.yardage ?? 0), 0) : '—'}
             </td>
           </tr>
 
-          <tr style={{ background: '#EEE9DA' }}>
+          <tr style={{ background: '#EFF1ED' }}>
             <td style={{ ...labelCell, padding: '7px 0 7px 14px' }}>PAR</td>
             {holes.map(h => (
-              <td key={h.holeNumber} style={{ ...cellBase, fontSize: 13, fontWeight: 600, color: '#4A4235', padding: '7px 0' }}>{h.par}</td>
+              <td key={h.holeNumber} style={{ ...cellBase, fontSize: 13, fontWeight: 600, color: '#494F49', padding: '7px 0' }}>{h.par}</td>
             ))}
-            <td style={{ ...totalCell, fontSize: 14, fontWeight: 700, color: '#1F1D17', fontFamily: "'Bricolage Grotesque', sans-serif", padding: '7px 0' }}>{parSum}</td>
+            <td style={{ ...totalCell, fontSize: 14, fontWeight: 700, color: '#171A17', fontFamily: "'Space Grotesk', sans-serif", padding: '7px 0' }}>{parSum}</td>
           </tr>
 
-          <tr style={{ background: '#FAF6EA' }}>
+          <tr style={{ background: '#F2F5F1' }}>
             <td style={{ ...labelCell, padding: '5px 0 5px 14px' }}>SCORE</td>
             {holes.map(h => {
               const isEditing = interactive && editingHole === h.holeNumber
@@ -218,14 +218,14 @@ function ScorecardHalf({ holes, label, mode, editingHole, activeHole, onCellClic
               return (
                 <td key={h.holeNumber} style={{ ...cellBase, padding: '4px 2px' }}>
                   {isEditing ? (
-                    <div style={{ width: 28, height: 28, border: '2px solid #1F3A2A', borderRadius: 5, background: '#FAF6EA', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
+                    <div style={{ width: 28, height: 28, border: '2px solid #1E4D38', borderRadius: 5, background: '#F2F5F1', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
                       <input
                         type="text"
                         inputMode="numeric"
                         pattern="[0-9]*"
                         autoFocus
                         defaultValue={h.score !== null ? String(h.score) : ''}
-                        style={{ width: 22, height: 22, textAlign: 'center', border: 'none', outline: 'none', background: 'transparent', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 12, fontWeight: 700, color: '#1F1D17', padding: 0 }}
+                        style={{ width: 22, height: 22, textAlign: 'center', border: 'none', outline: 'none', background: 'transparent', fontFamily: "'Space Grotesk', sans-serif", fontSize: 12, fontWeight: 700, color: '#171A17', padding: 0 }}
                         onBlur={e => {
                           const v = parseInt(e.target.value.trim())
                           onScoreCommit(h.holeNumber, !isNaN(v) && v >= 1 ? Math.min(20, v) : null)
@@ -243,49 +243,49 @@ function ScorecardHalf({ holes, label, mode, editingHole, activeHole, onCellClic
                 </td>
               )
             })}
-            <td style={{ ...totalCell, fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#1F1D17', padding: '4px 0' }}>
+            <td style={{ ...totalCell, fontFamily: "'Space Grotesk', sans-serif", fontSize: 16, fontWeight: 700, color: '#171A17', padding: '4px 0' }}>
               {anyScore ? scoreSum : '—'}
             </td>
           </tr>
 
           {mode === 'score-stats' && (
             <>
-              <tr style={{ background: '#EEE9DA' }}>
+              <tr style={{ background: '#EFF1ED' }}>
                 <td style={{ ...labelCell, padding: '6px 0 6px 14px' }}>PUTTS</td>
                 {holes.map(h => (
-                  <td key={h.holeNumber} style={{ ...cellBase, fontSize: 12, fontWeight: 600, color: '#4A4235', padding: '6px 0' }}>{h.putts ?? '·'}</td>
+                  <td key={h.holeNumber} style={{ ...cellBase, fontSize: 12, fontWeight: 600, color: '#494F49', padding: '6px 0' }}>{h.putts ?? '·'}</td>
                 ))}
-                <td style={{ ...totalCell, fontSize: 13, fontWeight: 700, color: '#4A4235', padding: '6px 0' }}>
+                <td style={{ ...totalCell, fontSize: 13, fontWeight: 700, color: '#494F49', padding: '6px 0' }}>
                   {holes.some(h => h.putts !== null) ? puttsSum : '—'}
                 </td>
               </tr>
-              <tr style={{ background: '#FAF6EA' }}>
+              <tr style={{ background: '#F2F5F1' }}>
                 <td style={{ ...labelCell, padding: '6px 0 6px 14px' }}>F/W</td>
                 {holes.map(h => (
                   <td key={h.holeNumber} style={{ ...cellBase, fontSize: 11, padding: '6px 0' }}>
                     {h.par < 4
-                      ? <span style={{ color: '#D1C9B8', fontSize: 8 }}>N/A</span>
-                      : h.fairwayHit === true  ? <span style={{ color: '#5C7A4D', fontWeight: 700 }}>✓</span>
-                      : h.fairwayHit === false ? <span style={{ color: '#D9824D' }}>✗</span>
-                      : <span style={{ color: '#D1C9B8' }}>·</span>
+                      ? <span style={{ color: '#CDD2CC', fontSize: 8 }}>N/A</span>
+                      : h.fairwayHit === true  ? <span style={{ color: '#2F6E4C', fontWeight: 700 }}>✓</span>
+                      : h.fairwayHit === false ? <span style={{ color: '#C25E33' }}>✗</span>
+                      : <span style={{ color: '#CDD2CC' }}>·</span>
                     }
                   </td>
                 ))}
-                <td style={{ ...totalCell, fontSize: 11, fontWeight: 600, color: '#4A4235', padding: '6px 0' }}>
+                <td style={{ ...totalCell, fontSize: 11, fontWeight: 600, color: '#494F49', padding: '6px 0' }}>
                   {fwHoles.length > 0 ? `${fwHit}/${fwHoles.length}` : '—'}
                 </td>
               </tr>
-              <tr style={{ background: '#EEE9DA' }}>
+              <tr style={{ background: '#EFF1ED' }}>
                 <td style={{ ...labelCell, padding: '6px 0 6px 14px' }}>GIR</td>
                 {holes.map(h => (
                   <td key={h.holeNumber} style={{ ...cellBase, fontSize: 11, padding: '6px 0' }}>
-                    {h.gir === true  ? <span style={{ color: '#5C7A4D', fontWeight: 700 }}>✓</span>
-                     : h.gir === false ? <span style={{ color: '#D9824D' }}>✗</span>
-                     : <span style={{ color: '#D1C9B8' }}>·</span>
+                    {h.gir === true  ? <span style={{ color: '#2F6E4C', fontWeight: 700 }}>✓</span>
+                     : h.gir === false ? <span style={{ color: '#C25E33' }}>✗</span>
+                     : <span style={{ color: '#CDD2CC' }}>·</span>
                     }
                   </td>
                 ))}
-                <td style={{ ...totalCell, fontSize: 11, fontWeight: 600, color: '#4A4235', padding: '6px 0' }}>
+                <td style={{ ...totalCell, fontSize: 11, fontWeight: 600, color: '#494F49', padding: '6px 0' }}>
                   {holes.some(h => h.gir !== null) ? `${girHit}/${holes.length}` : '—'}
                 </td>
               </tr>
@@ -312,15 +312,15 @@ function StatsPanel({ hole, holes, onUpdate, onSelectHole, onClose }: {
   const toggleBtn = (active: boolean | null, val: boolean): React.CSSProperties => ({
     flex: 1, padding: '10px', borderRadius: 12, fontSize: 13,
     fontWeight: 500, border: '1px solid', cursor: 'pointer',
-    fontFamily: "'DM Sans', sans-serif", transition: 'all 0.15s',
-    background: active === val ? '#1F3A2A' : 'transparent',
-    color: active === val ? '#FAF6EA' : '#1F1D17',
-    borderColor: active === val ? '#1F3A2A' : '#E0D8C5',
+    fontFamily: "'Geist', sans-serif", transition: 'all 0.15s',
+    background: active === val ? '#1E4D38' : 'transparent',
+    color: active === val ? '#F2F5F1' : '#171A17',
+    borderColor: active === val ? '#1E4D38' : '#E4E6E1',
   })
   const navBtn: React.CSSProperties = {
-    width: 32, height: 32, borderRadius: 16, background: '#F0EBDD',
-    border: '1px solid #E0D8C5', fontSize: 16, cursor: 'pointer',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1F1D17',
+    width: 32, height: 32, borderRadius: 16, background: '#EFF1ED',
+    border: '1px solid #E4E6E1', fontSize: 16, cursor: 'pointer',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#171A17',
   }
 
   const sn = hole.score !== null ? scoreName(hole.score, hole.par) : null
@@ -328,16 +328,16 @@ function StatsPanel({ hole, holes, onUpdate, onSelectHole, onClose }: {
   return (
     <div style={{
       position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 90,
-      background: '#FAF6EA', borderTop: '1px solid #E0D8C5',
+      background: '#F2F5F1', borderTop: '1px solid #E4E6E1',
       borderTopLeftRadius: 22, borderTopRightRadius: 22,
       padding: '12px 20px 36px',
       boxShadow: '0 -8px 32px rgba(31,29,23,0.18)',
     }}>
-      <div style={{ width: 36, height: 4, borderRadius: 2, background: '#E0D8C5', margin: '0 auto 14px' }} />
+      <div style={{ width: 36, height: 4, borderRadius: 2, background: '#E4E6E1', margin: '0 auto 14px' }} />
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#1F1D17' }}>
+          <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 16, fontWeight: 700, color: '#171A17' }}>
             Hole {hole.holeNumber}
           </span>
           {sn && <span style={{ fontSize: 13, color: sn.color, fontWeight: 600 }}>{sn.label}</span>}
@@ -348,14 +348,14 @@ function StatsPanel({ hole, holes, onUpdate, onSelectHole, onClose }: {
           <button onClick={() => nextHole && onSelectHole(nextHole.holeNumber)} disabled={!nextHole}
             style={{ ...navBtn, opacity: nextHole ? 1 : 0.3, cursor: nextHole ? 'pointer' : 'default' }}>›</button>
           <button onClick={onClose} style={{ ...navBtn }}>
-            <CloseIcon size={11} color="#1F1D17" />
+            <CloseIcon size={11} color="#171A17" />
           </button>
         </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#4A4235', marginBottom: 8 }}>Putts</div>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#494F49', marginBottom: 8 }}>Putts</div>
           <input
             type="text" inputMode="numeric" pattern="[0-9]*"
             value={hole.putts !== null ? String(hole.putts) : ''}
@@ -364,15 +364,15 @@ function StatsPanel({ hole, holes, onUpdate, onSelectHole, onClose }: {
               onUpdate(hole.holeNumber, { putts: e.target.value === '' || isNaN(v) ? null : Math.min(10, Math.max(0, v)) })
             }}
             placeholder="—"
-            style={{ width: '100%', background: '#F0EBDD', border: '1px solid #E0D8C5', borderRadius: 12, padding: '10px 14px', fontSize: 16, fontWeight: 700, color: '#1F1D17', outline: 'none', boxSizing: 'border-box', fontFamily: "'Bricolage Grotesque', sans-serif" }}
-            onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-            onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+            style={{ width: '100%', background: '#EFF1ED', border: '1px solid #E4E6E1', borderRadius: 12, padding: '10px 14px', fontSize: 16, fontWeight: 700, color: '#171A17', outline: 'none', boxSizing: 'border-box', fontFamily: "'Space Grotesk', sans-serif" }}
+            onFocus={e => { e.currentTarget.style.borderColor = '#1E4D38' }}
+            onBlur={e => { e.currentTarget.style.borderColor = '#E4E6E1' }}
           />
         </div>
 
         {hole.par >= 4 && (
           <div>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#4A4235', marginBottom: 8 }}>Fairway hit</div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#494F49', marginBottom: 8 }}>Fairway hit</div>
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => onUpdate(hole.holeNumber, { fairwayHit: hole.fairwayHit === true ? null : true })} style={toggleBtn(hole.fairwayHit, true)}>✓ Hit</button>
               <button onClick={() => onUpdate(hole.holeNumber, { fairwayHit: hole.fairwayHit === false ? null : false })} style={toggleBtn(hole.fairwayHit, false)}>✗ Missed</button>
@@ -381,7 +381,7 @@ function StatsPanel({ hole, holes, onUpdate, onSelectHole, onClose }: {
         )}
 
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#4A4235', marginBottom: 8 }}>Green in regulation</div>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#494F49', marginBottom: 8 }}>Green in regulation</div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={() => onUpdate(hole.holeNumber, { gir: hole.gir === true ? null : true })} style={toggleBtn(hole.gir, true)}>Yes ✓</button>
             <button onClick={() => onUpdate(hole.holeNumber, { gir: hole.gir === false ? null : false })} style={toggleBtn(hole.gir, false)}>No ✗</button>
@@ -517,31 +517,31 @@ export default function ScorecardView({
   }
 
   const sectionLabel: React.CSSProperties = {
-    fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: '#5C7A4D',
-    textTransform: 'uppercase', marginBottom: 8, display: 'block',
+    fontSize: 13, fontWeight: 600, color: '#6B716B',
+    marginBottom: 8, display: 'block',
   }
   const card: React.CSSProperties = {
-    background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 20,
+    background: '#FFFFFF', border: '1px solid #E4E6E1', borderRadius: 16,
   }
   const inputStyle: React.CSSProperties = {
-    width: '100%', background: '#F0EBDD', border: '1px solid #E0D8C5',
-    borderRadius: 12, padding: '11px 14px', fontSize: 14, color: '#1F1D17',
-    outline: 'none', boxSizing: 'border-box', fontFamily: "'DM Sans', sans-serif",
+    width: '100%', background: '#FFFFFF', border: '1px solid #CDD2CC',
+    borderRadius: 10, padding: '12px 14px', fontSize: 16, color: '#171A17',
+    outline: 'none', boxSizing: 'border-box', fontFamily: "'Geist', sans-serif",
   }
   const backBtn: React.CSSProperties = {
-    background: 'none', border: 'none', color: '#4A4235', fontSize: 13.5,
-    cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", padding: 0,
-    display: 'block', marginBottom: 20,
+    background: 'none', border: 'none', color: '#494F49', fontSize: 14, fontWeight: 500,
+    cursor: 'pointer', fontFamily: "'Geist', sans-serif", padding: 0,
+    display: 'flex', alignItems: 'center', gap: 4, marginBottom: 20,
   }
   const primaryBtn = (disabled = false): React.CSSProperties => ({
-    width: '100%', background: disabled ? '#8B8272' : '#1F3A2A', color: '#FAF6EA',
-    border: 'none', borderRadius: 999, padding: '14px', fontSize: 14, fontWeight: 500,
-    cursor: disabled ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif",
+    width: '100%', background: disabled ? '#CDD2CC' : '#1E4D38', color: disabled ? '#6B716B' : '#F2F5F1',
+    border: 'none', borderRadius: 12, padding: '15px', fontSize: 15, fontWeight: 600,
+    cursor: disabled ? 'not-allowed' : 'pointer', fontFamily: "'Geist', sans-serif",
     transition: 'background 0.15s',
   })
   const errorBox: React.CSSProperties = {
-    background: 'rgba(192,57,43,0.08)', border: '1px solid rgba(192,57,43,0.25)',
-    borderRadius: 12, padding: '12px 16px', fontSize: 13, color: '#C0392B', marginTop: 16,
+    background: '#FBEDEB', border: '1px solid #EFCBC5',
+    borderRadius: 12, padding: '12px 16px', fontSize: 13, color: '#8C2A21', marginTop: 16,
   }
 
   // ══════════════════════════════════════════════════════
@@ -553,26 +553,26 @@ export default function ScorecardView({
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
           <div>
             <span style={sectionLabel}>Scorecard</span>
-            <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 28 : 38, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: 0 }}>
+            <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: isMobile ? 28 : 38, fontWeight: 700, color: '#171A17', letterSpacing: '-0.03em', margin: 0 }}>
               Rounds.
             </h1>
           </div>
           <button
             onClick={() => { setSaveError(null); setRoundDate(today); setPhase({ type: 'round_start' }) }}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1F3A2A', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '10px 18px 10px 20px', fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500, cursor: 'pointer', transition: 'background 0.15s', whiteSpace: 'nowrap' }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#16271D' }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1E4D38', color: '#F2F5F1', border: 'none', borderRadius: 999, padding: '10px 18px 10px 20px', fontFamily: "'Geist', sans-serif", fontSize: 13.5, fontWeight: 500, cursor: 'pointer', transition: 'background 0.15s', whiteSpace: 'nowrap' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#153B2A' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#1E4D38' }}
           >
             Start round
-            <span style={{ width: 22, height: 22, borderRadius: 11, background: '#D9824D', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-              <PlusIcon size={14} color="#FAF6EA" />
+            <span style={{ width: 22, height: 22, borderRadius: 11, background: '#C25E33', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+              <PlusIcon size={14} color="#F2F5F1" />
             </span>
           </button>
         </div>
 
         {rounds.length === 0 ? (
           <EmptyState
-            icon={<ScorecardIcon size={24} color="#8B8272" />}
+            icon={<ScorecardIcon size={24} color="#9AA09A" />}
             title="No rounds yet"
             subtitle="Start a round to track your scores hole by hole."
           />
@@ -585,21 +585,21 @@ export default function ScorecardView({
                 const teeInfo = TEE_COLORS.find(x => x.id === r.tee) ?? TEE_COLORS[2]
                 return (
                   <div key={r.id} style={{ ...card, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <div style={{ width: 12, height: 12, borderRadius: 6, background: teeInfo.color, border: teeInfo.id === 'white' ? '1px solid #E0D8C5' : 'none', flexShrink: 0 }} />
+                    <div style={{ width: 12, height: 12, borderRadius: 6, background: teeInfo.color, border: teeInfo.id === 'white' ? '1px solid #E4E6E1' : 'none', flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.courseName}</div>
-                      <div style={{ fontSize: 12.5, color: '#4A4235', marginTop: 2 }}>{formatDate(r.playedAt)} · {r.holes} holes</div>
+                      <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 16, fontWeight: 700, color: '#171A17', letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.courseName}</div>
+                      <div style={{ fontSize: 12.5, color: '#494F49', marginTop: 2 }}>{formatDate(r.playedAt)} · {r.holes} holes</div>
                     </div>
                     {t.played > 0 && (
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', lineHeight: 1 }}>{t.totalScore}</div>
-                        <div style={{ fontSize: 12, color: t.diff === 0 ? '#5C7A4D' : t.diff > 0 ? '#D9824D' : '#5C7A4D', marginTop: 2 }}>
+                        <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 24, fontWeight: 700, color: '#171A17', letterSpacing: '-0.03em', lineHeight: 1 }}>{t.totalScore}</div>
+                        <div style={{ fontSize: 12, color: t.diff === 0 ? '#2F6E4C' : t.diff > 0 ? '#C25E33' : '#2F6E4C', marginTop: 2 }}>
                           {t.diff === 0 ? 'E' : t.diff > 0 ? `+${t.diff}` : t.diff}
                         </div>
                       </div>
                     )}
                     <button onClick={() => setPhase({ type: 'summary', round: r, holes: r.roundHoles })}
-                      style={{ background: '#F0EBDD', border: '1px solid #E0D8C5', borderRadius: 10, padding: '7px 14px', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", color: '#1F1D17', flexShrink: 0 }}>
+                      style={{ background: '#EFF1ED', border: '1px solid #E4E6E1', borderRadius: 10, padding: '7px 14px', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: "'Geist', sans-serif", color: '#171A17', flexShrink: 0 }}>
                       View
                     </button>
                     <button
@@ -608,7 +608,7 @@ export default function ScorecardView({
                       onMouseEnter={e => { e.currentTarget.style.opacity = '1' }}
                       onMouseLeave={e => { e.currentTarget.style.opacity = '0.3' }}
                     >
-                      <CloseIcon size={12} color="#1F1D17" />
+                      <CloseIcon size={12} color="#171A17" />
                     </button>
                   </div>
                 )
@@ -627,30 +627,30 @@ export default function ScorecardView({
     const smSaved = courses.some(c => c.name === SANTA_MARIA_NAME)
     return (
       <div style={{ maxWidth: 540, margin: '0 auto', padding: `${isMobile ? 24 : 48}px ${px}px ${isMobile ? 96 : 48}px` }}>
-        <button style={backBtn} onClick={() => setPhase({ type: 'history' })}>← Back</button>
+        <button style={backBtn} onClick={() => setPhase({ type: 'history' })}><ChevronLeftIcon size={17} color="#494F49" />Back</button>
         <span style={sectionLabel}>New round</span>
-        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 32, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: '0 0 8px' }}>
+        <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 32, fontWeight: 700, color: '#171A17', letterSpacing: '-0.03em', margin: '0 0 8px' }}>
           Choose a course.
         </h1>
-        <p style={{ fontSize: 14, color: '#4A4235', marginBottom: 32 }}>Select from your saved courses or add a new one.</p>
+        <p style={{ fontSize: 14, color: '#494F49', marginBottom: 32 }}>Select from your saved courses or add a new one.</p>
 
         {!smSaved && (
           <div style={{ marginBottom: 24 }}>
-            <span style={{ ...sectionLabel, color: '#D9824D' }}>Featured</span>
+            <span style={{ ...sectionLabel, color: '#C25E33' }}>Featured</span>
             <button
               onClick={handleSelectSantaMaria} disabled={saving}
-              style={{ width: '100%', background: '#1F3A2A', border: 'none', borderRadius: 20, padding: '22px 24px', cursor: saving ? 'not-allowed' : 'pointer', textAlign: 'left', transition: 'background 0.15s' }}
-              onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#16271D' }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A' }}
+              style={{ width: '100%', background: '#1E4D38', border: 'none', borderRadius: 20, padding: '22px 24px', cursor: saving ? 'not-allowed' : 'pointer', textAlign: 'left', transition: 'background 0.15s' }}
+              onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#153B2A' }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#1E4D38' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#2563EB', flexShrink: 0 }} />
-                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(250,246,234,0.45)' }}>Blue Tees · 18 Holes · Par 72</span>
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(242,245,241,0.45)' }}>Blue Tees · 18 Holes · Par 72</span>
               </div>
-              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 20, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.025em' }}>
+              <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 20, fontWeight: 700, color: '#F2F5F1', letterSpacing: '-0.025em' }}>
                 {saving ? 'Loading…' : 'Santa Maria Golf & Country Club'}
               </div>
-              <div style={{ fontSize: 12, color: 'rgba(250,246,234,0.4)', marginTop: 5 }}>Panama · Pre-loaded</div>
+              <div style={{ fontSize: 12, color: 'rgba(242,245,241,0.4)', marginTop: 5 }}>Panama · Pre-loaded</div>
             </button>
           </div>
         )}
@@ -664,22 +664,22 @@ export default function ScorecardView({
                 return (
                   <button key={c.id} onClick={() => setPhase({ type: 'mode_select', course: c })}
                     style={{ width: '100%', ...card, padding: '16px 20px', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14, transition: 'border-color 0.15s, box-shadow 0.15s' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#1F3A2A'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(31,58,42,0.08)' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#E0D8C5'; e.currentTarget.style.boxShadow = 'none' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#1E4D38'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(31,58,42,0.08)' }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#E4E6E1'; e.currentTarget.style.boxShadow = 'none' }}
                   >
-                    <div style={{ width: 12, height: 12, borderRadius: 6, background: teeInfo.color, border: teeInfo.id === 'white' ? '1px solid #E0D8C5' : 'none', flexShrink: 0 }} />
+                    <div style={{ width: 12, height: 12, borderRadius: 6, background: teeInfo.color, border: teeInfo.id === 'white' ? '1px solid #E4E6E1' : 'none', flexShrink: 0 }} />
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 15, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em' }}>{c.name}</div>
-                      <div style={{ fontSize: 12, color: '#4A4235', marginTop: 2 }}>{c.holes} holes · {teeInfo.label} tees</div>
+                      <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 15, fontWeight: 700, color: '#171A17', letterSpacing: '-0.02em' }}>{c.name}</div>
+                      <div style={{ fontSize: 12, color: '#494F49', marginTop: 2 }}>{c.holes} holes · {teeInfo.label} tees</div>
                     </div>
-                    <span style={{ color: '#6B5F4E', fontSize: 20 }}>›</span>
+                    <span style={{ color: '#6B716B', fontSize: 20 }}>›</span>
                     <button
                       onClick={async e => { e.stopPropagation(); try { await deleteCourse(c.id); onCourseDeleted(c.id) } catch {/* */} }}
                       style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, opacity: 0.25, transition: 'opacity 0.15s' }}
                       onMouseEnter={e => { e.currentTarget.style.opacity = '1' }}
                       onMouseLeave={e => { e.currentTarget.style.opacity = '0.25' }}
                     >
-                      <CloseIcon size={11} color="#1F1D17" />
+                      <CloseIcon size={11} color="#171A17" />
                     </button>
                   </button>
                 )
@@ -690,16 +690,16 @@ export default function ScorecardView({
 
         <button
           onClick={() => { setCourseName(homeCourse ?? ''); setTee('white'); setHoleCount(18); setSaveError(null); setPhase({ type: 'course_setup' }) }}
-          style={{ width: '100%', background: 'transparent', border: '1.5px dashed #8B8272', borderRadius: 20, padding: '16px 20px', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, transition: 'border-color 0.15s' }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = '#8B8272' }}
+          style={{ width: '100%', background: 'transparent', border: '1.5px dashed #9AA09A', borderRadius: 20, padding: '16px 20px', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, transition: 'border-color 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#1E4D38' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = '#9AA09A' }}
         >
-          <span style={{ width: 28, height: 28, borderRadius: 14, background: '#F0EBDD', border: '1px solid #E0D8C5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <PlusIcon size={13} color="#4A4235" />
+          <span style={{ width: 28, height: 28, borderRadius: 14, background: '#EFF1ED', border: '1px solid #E4E6E1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <PlusIcon size={13} color="#494F49" />
           </span>
           <div>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, color: '#1F1D17' }}>Add a new course</div>
-            <div style={{ fontSize: 12, color: '#6B5F4E', marginTop: 2 }}>Enter course name, tee, and hole info</div>
+            <div style={{ fontFamily: "'Geist', sans-serif", fontSize: 14, fontWeight: 600, color: '#171A17' }}>Add a new course</div>
+            <div style={{ fontSize: 12, color: '#6B716B', marginTop: 2 }}>Enter course name, tee, and hole info</div>
           </div>
         </button>
 
@@ -714,16 +714,16 @@ export default function ScorecardView({
   if (phase.type === 'course_setup') {
     return (
       <div style={{ maxWidth: 540, margin: '0 auto', padding: `${isMobile ? 24 : 48}px ${px}px ${isMobile ? 96 : 48}px` }}>
-        <button style={backBtn} onClick={() => setPhase({ type: 'round_start' })}>← Back</button>
+        <button style={backBtn} onClick={() => setPhase({ type: 'round_start' })}><ChevronLeftIcon size={17} color="#494F49" />Back</button>
         <span style={sectionLabel}>New course</span>
-        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 32, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: '0 0 32px' }}>
+        <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 32, fontWeight: 700, color: '#171A17', letterSpacing: '-0.03em', margin: '0 0 32px' }}>
           Course details
         </h1>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {/* Course search */}
           <div>
-            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 8 }}>Course name</label>
+            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#494F49', textTransform: 'uppercase', marginBottom: 8 }}>Course name</label>
             <CourseSearch
               value={courseName}
               onChange={name => { setCourseName(name); setSelectedCourse(null); setSelectedApiTee(null); setCorrectionSaved(false) }}
@@ -751,7 +751,7 @@ export default function ScorecardView({
               }}
             />
             {selectedCourse && (
-              <div style={{ marginTop: 8, fontSize: 12, color: '#5C7A4D', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ marginTop: 8, fontSize: 12, color: '#2F6E4C', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span>✓</span>
                 <span>{[selectedCourse.location.city, selectedCourse.location.state || selectedCourse.location.country].filter(Boolean).join(', ')}</span>
               </div>
@@ -760,11 +760,11 @@ export default function ScorecardView({
 
           {/* Holes — auto-detected from API or manual */}
           <div>
-            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 10 }}>Holes</label>
+            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#494F49', textTransform: 'uppercase', marginBottom: 10 }}>Holes</label>
             <div style={{ display: 'flex', gap: 10 }}>
               {([9, 18] as (9|18)[]).map(n => (
                 <button key={n} onClick={() => { setHoleCount(n); setSelectedApiTee(null) }}
-                  style={{ flex: 1, border: '1px solid', borderRadius: 14, padding: '12px', cursor: 'pointer', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, background: holeCount === n ? '#1F3A2A' : 'transparent', color: holeCount === n ? '#FAF6EA' : '#1F1D17', borderColor: holeCount === n ? '#1F3A2A' : '#E0D8C5', transition: 'all 0.15s', letterSpacing: '-0.02em' }}>
+                  style={{ flex: 1, border: '1px solid', borderRadius: 14, padding: '12px', cursor: 'pointer', fontFamily: "'Space Grotesk', sans-serif", fontSize: 18, fontWeight: 700, background: holeCount === n ? '#1E4D38' : 'transparent', color: holeCount === n ? '#F2F5F1' : '#171A17', borderColor: holeCount === n ? '#1E4D38' : '#E4E6E1', transition: 'all 0.15s', letterSpacing: '-0.02em' }}>
                   {n}
                 </button>
               ))}
@@ -773,7 +773,7 @@ export default function ScorecardView({
 
           {/* Tee — API tees when course selected, otherwise manual */}
           <div>
-            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 10 }}>Tee</label>
+            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#494F49', textTransform: 'uppercase', marginBottom: 10 }}>Tee</label>
             {selectedCourse ? (() => {
               const seen = new Set<string>()
               // For 9-hole play, show 18-hole tees (user picks front/back) — fall back to 9-hole if they exist
@@ -788,7 +788,7 @@ export default function ScorecardView({
                     const teeColor = TEE_COLORS.find(tc => tc.label.toLowerCase() === t.tee_name.toLowerCase())
                     return (
                       <button key={t.tee_name} onClick={() => { setSelectedApiTee(t); setTee(t.tee_name.toLowerCase()) }}
-                        style={{ display: 'flex', alignItems: 'center', gap: 7, border: '1px solid', borderRadius: 999, padding: '8px 16px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 500, background: isActive ? '#1F3A2A' : 'transparent', color: isActive ? '#FAF6EA' : '#1F1D17', borderColor: isActive ? '#1F3A2A' : '#E0D8C5', transition: 'all 0.15s' }}>
+                        style={{ display: 'flex', alignItems: 'center', gap: 7, border: '1px solid', borderRadius: 999, padding: '8px 16px', cursor: 'pointer', fontFamily: "'Geist', sans-serif", fontSize: 13, fontWeight: 500, background: isActive ? '#1E4D38' : 'transparent', color: isActive ? '#F2F5F1' : '#171A17', borderColor: isActive ? '#1E4D38' : '#E4E6E1', transition: 'all 0.15s' }}>
                         {teeColor && <span style={{ width: 10, height: 10, borderRadius: 5, background: teeColor.color, border: teeColor.id === 'white' ? '1px solid #ccc' : 'none', flexShrink: 0 }} />}
                         {t.tee_name}
                         <span style={{ fontSize: 11, opacity: 0.6 }}>{t.par_total}</span>
@@ -801,7 +801,7 @@ export default function ScorecardView({
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {TEE_COLORS.map(t => (
                   <button key={t.id} onClick={() => setTee(t.id)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 7, border: '1px solid', borderRadius: 999, padding: '8px 16px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 500, background: tee === t.id ? '#1F3A2A' : 'transparent', color: tee === t.id ? '#FAF6EA' : '#1F1D17', borderColor: tee === t.id ? '#1F3A2A' : '#E0D8C5', transition: 'all 0.15s' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: 7, border: '1px solid', borderRadius: 999, padding: '8px 16px', cursor: 'pointer', fontFamily: "'Geist', sans-serif", fontSize: 13, fontWeight: 500, background: tee === t.id ? '#1E4D38' : 'transparent', color: tee === t.id ? '#F2F5F1' : '#171A17', borderColor: tee === t.id ? '#1E4D38' : '#E4E6E1', transition: 'all 0.15s' }}>
                     <span style={{ width: 10, height: 10, borderRadius: 5, background: t.color, border: t.id === 'white' ? '1px solid #ccc' : 'none', flexShrink: 0 }} />
                     {t.label}
                   </button>
@@ -813,11 +813,11 @@ export default function ScorecardView({
           {/* Front / Back 9 selector — only when playing 9 holes from an 18-hole tee */}
           {holeCount === 9 && selectedApiTee && selectedApiTee.number_of_holes === 18 && (
             <div>
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 10 }}>Nine holes</label>
+              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#494F49', textTransform: 'uppercase', marginBottom: 10 }}>Nine holes</label>
               <div style={{ display: 'flex', gap: 10 }}>
                 {(['front', 'back'] as const).map(s => (
                   <button key={s} onClick={() => setNineSection(s)}
-                    style={{ flex: 1, border: '1px solid', borderRadius: 14, padding: '12px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, background: nineSection === s ? '#1F3A2A' : 'transparent', color: nineSection === s ? '#FAF6EA' : '#1F1D17', borderColor: nineSection === s ? '#1F3A2A' : '#E0D8C5', transition: 'all 0.15s' }}>
+                    style={{ flex: 1, border: '1px solid', borderRadius: 14, padding: '12px', cursor: 'pointer', fontFamily: "'Geist', sans-serif", fontSize: 14, fontWeight: 600, background: nineSection === s ? '#1E4D38' : 'transparent', color: nineSection === s ? '#F2F5F1' : '#171A17', borderColor: nineSection === s ? '#1E4D38' : '#E4E6E1', transition: 'all 0.15s' }}>
                     {s === 'front' ? 'Front 9 (1–9)' : 'Back 9 (10–18)'}
                   </button>
                 ))}
@@ -845,8 +845,8 @@ export default function ScorecardView({
             }}
             disabled={!courseName.trim() || (selectedCourse !== null && selectedApiTee === null)}
             style={{ ...primaryBtn(!courseName.trim() || (selectedCourse !== null && selectedApiTee === null)), marginTop: 8 }}
-            onMouseEnter={e => { if (courseName.trim()) e.currentTarget.style.background = '#16271D' }}
-            onMouseLeave={e => { if (courseName.trim()) e.currentTarget.style.background = '#1F3A2A' }}
+            onMouseEnter={e => { if (courseName.trim()) e.currentTarget.style.background = '#153B2A' }}
+            onMouseLeave={e => { if (courseName.trim()) e.currentTarget.style.background = '#1E4D38' }}
           >
             {selectedApiTee ? 'Continue →' : 'Set up holes →'}
           </button>
@@ -861,23 +861,23 @@ export default function ScorecardView({
   if (phase.type === 'hole_setup') {
     return (
       <div style={{ maxWidth: 720, margin: '0 auto', padding: `${isMobile ? 24 : 48}px ${px}px ${isMobile ? 96 : 48}px` }}>
-        <button style={backBtn} onClick={() => setPhase({ type: 'course_setup' })}>← Back</button>
+        <button style={backBtn} onClick={() => setPhase({ type: 'course_setup' })}><ChevronLeftIcon size={17} color="#494F49" />Back</button>
         <span style={sectionLabel}>{phase.name}</span>
-        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 32, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: '0 0 8px' }}>
+        <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 32, fontWeight: 700, color: '#171A17', letterSpacing: '-0.03em', margin: '0 0 8px' }}>
           Hole setup
         </h1>
-        <p style={{ fontSize: 14, color: '#4A4235', marginBottom: 28 }}>Enter the par and yardage for each hole. Yardage is optional.</p>
+        <p style={{ fontSize: 14, color: '#494F49', marginBottom: 28 }}>Enter the par and yardage for each hole. Yardage is optional.</p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12, marginBottom: 28 }}>
           {holeSetup.map((h, i) => (
-            <div key={i} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, padding: '14px 16px' }}>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B5F4E', textTransform: 'uppercase', marginBottom: 10 }}>Hole {i + 1}</div>
+            <div key={i} style={{ background: '#F2F5F1', border: '1px solid #E4E6E1', borderRadius: 16, padding: '14px 16px' }}>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#6B716B', textTransform: 'uppercase', marginBottom: 10 }}>Hole {i + 1}</div>
               <div style={{ marginBottom: 8 }}>
-                <div style={{ fontSize: 11, color: '#4A4235', marginBottom: 5 }}>Par</div>
+                <div style={{ fontSize: 11, color: '#494F49', marginBottom: 5 }}>Par</div>
                 <div style={{ display: 'flex', gap: 4 }}>
                   {([3, 4, 5] as (3|4|5)[]).map(p => (
                     <button key={p} onClick={() => setHoleSetup(hs => hs.map((x, j) => j === i ? { ...x, par: p } : x))}
-                      style={{ flex: 1, border: '1px solid', borderRadius: 8, padding: '5px 0', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Bricolage Grotesque', sans-serif", background: h.par === p ? '#1F3A2A' : 'transparent', color: h.par === p ? '#FAF6EA' : '#1F1D17', borderColor: h.par === p ? '#1F3A2A' : '#E0D8C5', transition: 'all 0.12s' }}>
+                      style={{ flex: 1, border: '1px solid', borderRadius: 8, padding: '5px 0', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Space Grotesk', sans-serif", background: h.par === p ? '#1E4D38' : 'transparent', color: h.par === p ? '#F2F5F1' : '#171A17', borderColor: h.par === p ? '#1E4D38' : '#E4E6E1', transition: 'all 0.12s' }}>
                       {p}
                     </button>
                   ))}
@@ -886,9 +886,9 @@ export default function ScorecardView({
               <input
                 type="number" inputMode="numeric" placeholder="Yds" value={h.yardage}
                 onChange={e => setHoleSetup(hs => hs.map((x, j) => j === i ? { ...x, yardage: e.target.value } : x))}
-                style={{ width: '100%', background: '#F0EBDD', border: '1px solid #E0D8C5', borderRadius: 8, padding: '6px 10px', fontSize: 13, color: '#1F1D17', outline: 'none', boxSizing: 'border-box', fontFamily: "'Bricolage Grotesque', sans-serif" }}
-                onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-                onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+                style={{ width: '100%', background: '#EFF1ED', border: '1px solid #E4E6E1', borderRadius: 8, padding: '6px 10px', fontSize: 13, color: '#171A17', outline: 'none', boxSizing: 'border-box', fontFamily: "'Space Grotesk', sans-serif" }}
+                onFocus={e => { e.currentTarget.style.borderColor = '#1E4D38' }}
+                onBlur={e => { e.currentTarget.style.borderColor = '#E4E6E1' }}
               />
             </div>
           ))}
@@ -904,11 +904,11 @@ export default function ScorecardView({
           return (
             <div style={{ background: correctionSaved ? 'rgba(92,122,77,0.10)' : 'rgba(217,130,77,0.10)', border: `1px solid ${correctionSaved ? 'rgba(92,122,77,0.30)' : 'rgba(217,130,77,0.30)'}`, borderRadius: 14, padding: '12px 16px', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: correctionSaved ? '#5C7A4D' : '#D9824D', fontFamily: "'DM Sans', sans-serif" }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: correctionSaved ? '#2F6E4C' : '#C25E33', fontFamily: "'Geist', sans-serif" }}>
                   {correctionSaved ? '✓ Corrections saved for everyone' : 'You changed some hole data'}
                 </div>
                 {!correctionSaved && (
-                  <div style={{ fontSize: 11.5, color: '#4A4235', marginTop: 2, fontFamily: "'DM Sans', sans-serif" }}>
+                  <div style={{ fontSize: 11.5, color: '#494F49', marginTop: 2, fontFamily: "'Geist', sans-serif" }}>
                     Save to fix this course for all Dial users
                   </div>
                 )}
@@ -935,7 +935,7 @@ export default function ScorecardView({
                     setSavingCorrection(false)
                     setCorrectionSaved(true)
                   }}
-                  style={{ flexShrink: 0, background: '#D9824D', color: '#FAF6EA', border: 'none', borderRadius: 999, padding: '8px 16px', fontSize: 12, fontWeight: 600, cursor: savingCorrection ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: savingCorrection ? 0.6 : 1 }}
+                  style={{ flexShrink: 0, background: '#C25E33', color: '#F2F5F1', border: 'none', borderRadius: 999, padding: '8px 16px', fontSize: 12, fontWeight: 600, cursor: savingCorrection ? 'not-allowed' : 'pointer', fontFamily: "'Geist', sans-serif", opacity: savingCorrection ? 0.6 : 1 }}
                 >
                   {savingCorrection ? 'Saving…' : 'Save corrections'}
                 </button>
@@ -947,8 +947,8 @@ export default function ScorecardView({
         {saveError && <div style={errorBox}>{saveError}</div>}
         <button onClick={handleSaveNewCourse} disabled={saving}
           style={{ ...primaryBtn(saving), marginTop: saveError ? 8 : 0 }}
-          onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#16271D' }}
-          onMouseLeave={e => { if (!saving) e.currentTarget.style.background = '#1F3A2A' }}
+          onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#153B2A' }}
+          onMouseLeave={e => { if (!saving) e.currentTarget.style.background = '#1E4D38' }}
         >
           {saving ? 'Saving…' : 'Continue →'}
         </button>
@@ -966,48 +966,48 @@ export default function ScorecardView({
       <div style={{ maxWidth: 480, margin: '0 auto', padding: `${isMobile ? 24 : 48}px ${px}px ${isMobile ? 96 : 48}px` }}>
 
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 14, marginBottom: 28 }}>
-          <button style={{ ...backBtn, marginBottom: 0 }} onClick={() => setPhase({ type: 'round_start' })}>← Back</button>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#F0EBDD', border: '1px solid #E0D8C5', borderRadius: 999, padding: '6px 14px' }}>
+          <button style={{ ...backBtn, marginBottom: 0 }} onClick={() => setPhase({ type: 'round_start' })}><ChevronLeftIcon size={17} color="#494F49" />Back</button>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#EFF1ED', border: '1px solid #E4E6E1', borderRadius: 999, padding: '6px 14px' }}>
             <div style={{ width: 8, height: 8, borderRadius: 4, background: teeInfo.color, border: teeInfo.id === 'white' ? '1px solid #ccc' : 'none' }} />
-            <span style={{ fontSize: 12.5, color: '#4A4235', fontFamily: "'DM Sans', sans-serif" }}>
+            <span style={{ fontSize: 12.5, color: '#494F49', fontFamily: "'Geist', sans-serif" }}>
               {course.name} · {teeInfo.label} tees
             </span>
           </div>
         </div>
 
-        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 32, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em', margin: '0 0 8px' }}>
+        <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 32, fontWeight: 700, color: '#171A17', letterSpacing: '-0.03em', margin: '0 0 8px' }}>
           How are you scoring?
         </h1>
-        <p style={{ fontSize: 14, color: '#4A4235', marginBottom: 28 }}>Choose how detailed you'd like to track this round.</p>
+        <p style={{ fontSize: 14, color: '#494F49', marginBottom: 28 }}>Choose how detailed you'd like to track this round.</p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 28 }}>
           <button
             onClick={() => handleStartRound(course, 'score-only')} disabled={saving}
-            style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 20, padding: '22px 24px', cursor: saving ? 'not-allowed' : 'pointer', textAlign: 'left', transition: 'border-color 0.15s, box-shadow 0.15s' }}
-            onMouseEnter={e => { if (!saving) { e.currentTarget.style.borderColor = '#1F3A2A'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(31,58,42,0.08)' } }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#E0D8C5'; e.currentTarget.style.boxShadow = 'none' }}
+            style={{ background: '#F2F5F1', border: '1px solid #E4E6E1', borderRadius: 20, padding: '22px 24px', cursor: saving ? 'not-allowed' : 'pointer', textAlign: 'left', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+            onMouseEnter={e => { if (!saving) { e.currentTarget.style.borderColor = '#1E4D38'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(31,58,42,0.08)' } }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#E4E6E1'; e.currentTarget.style.boxShadow = 'none' }}
           >
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.02em', marginBottom: 5 }}>Score only</div>
-            <div style={{ fontSize: 13.5, color: '#4A4235', lineHeight: 1.5 }}>Just enter your score per hole. Fast and simple.</div>
+            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 18, fontWeight: 700, color: '#171A17', letterSpacing: '-0.02em', marginBottom: 5 }}>Score only</div>
+            <div style={{ fontSize: 13.5, color: '#494F49', lineHeight: 1.5 }}>Just enter your score per hole. Fast and simple.</div>
           </button>
 
           <button
             onClick={() => handleStartRound(course, 'score-stats')} disabled={saving}
-            style={{ background: '#1F3A2A', border: '1px solid #1F3A2A', borderRadius: 20, padding: '22px 24px', cursor: saving ? 'not-allowed' : 'pointer', textAlign: 'left', transition: 'background 0.15s', position: 'relative', overflow: 'hidden' }}
-            onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#16271D' }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A' }}
+            style={{ background: '#1E4D38', border: '1px solid #1E4D38', borderRadius: 20, padding: '22px 24px', cursor: saving ? 'not-allowed' : 'pointer', textAlign: 'left', transition: 'background 0.15s', position: 'relative', overflow: 'hidden' }}
+            onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#153B2A' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#1E4D38' }}
           >
-            <div style={{ position: 'absolute', top: 16, right: 16, background: '#D9824D', borderRadius: 999, padding: '3px 10px', fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: '#FAF6EA', textTransform: 'uppercase' }}>
+            <div style={{ position: 'absolute', top: 16, right: 16, background: 'rgba(255,255,255,0.12)', borderRadius: 999, padding: '4px 11px', fontSize: 12, fontWeight: 600, color: '#F2F5F1' }}>
               Recommended
             </div>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 18, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.02em', marginBottom: 5 }}>Score + Stats</div>
-            <div style={{ fontSize: 13.5, color: 'rgba(250,246,234,0.6)', lineHeight: 1.5 }}>Track putts, fairways hit, and greens in regulation alongside your score.</div>
+            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 18, fontWeight: 700, color: '#F2F5F1', letterSpacing: '-0.02em', marginBottom: 5 }}>Score + Stats</div>
+            <div style={{ fontSize: 13.5, color: 'rgba(242,245,241,0.6)', lineHeight: 1.5 }}>Track putts, fairways hit, and greens in regulation alongside your score.</div>
           </button>
         </div>
 
         {/* Date picker */}
-        <div style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 16, padding: '16px 20px' }}>
-          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 10 }}>
+        <div style={{ background: '#F2F5F1', border: '1px solid #E4E6E1', borderRadius: 16, padding: '16px 20px' }}>
+          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: '#494F49', textTransform: 'uppercase', marginBottom: 10 }}>
             Date played
           </label>
           <input
@@ -1015,18 +1015,18 @@ export default function ScorecardView({
             value={roundDate}
             max={today}
             onChange={e => setRoundDate(e.target.value)}
-            style={{ ...inputStyle, background: '#F0EBDD' }}
-            onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-            onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+            style={{ ...inputStyle, background: '#EFF1ED' }}
+            onFocus={e => { e.currentTarget.style.borderColor = '#1E4D38' }}
+            onBlur={e => { e.currentTarget.style.borderColor = '#E4E6E1' }}
           />
           {roundDate !== today && (
-            <p style={{ fontSize: 12, color: '#D9824D', marginTop: 8, marginBottom: 0 }}>
+            <p style={{ fontSize: 12, color: '#C25E33', marginTop: 8, marginBottom: 0 }}>
               Logging a past round — {formatDate(roundDate)}
             </p>
           )}
         </div>
 
-        {saving && <p style={{ textAlign: 'center', color: '#4A4235', fontSize: 13, marginTop: 20, fontFamily: "'DM Sans', sans-serif" }}>Setting up your round…</p>}
+        {saving && <p style={{ textAlign: 'center', color: '#494F49', fontSize: 13, marginTop: 20, fontFamily: "'Geist', sans-serif" }}>Setting up your round…</p>}
         {saveError && <div style={errorBox}>{saveError}</div>}
       </div>
     )
@@ -1071,30 +1071,30 @@ export default function ScorecardView({
       <>
         <div style={{ maxWidth: 720, margin: '0 auto', padding: `${isMobile ? 16 : 48}px ${isMobile ? 10 : 40}px ${activeHoleData ? 260 : isMobile ? 120 : 80}px` }}>
           <button style={{ ...backBtn, marginBottom: 20 }} onClick={() => setPhase({ type: 'history' })}>
-            ← All rounds
+            <ChevronLeftIcon size={17} color="#494F49" />All rounds
           </button>
 
-          <div style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 24, overflow: 'hidden', marginBottom: 16 }}>
-            <div style={{ background: '#1F3A2A', padding: '22px 22px 20px' }}>
+          <div style={{ background: '#F2F5F1', border: '1px solid #E4E6E1', borderRadius: 24, overflow: 'hidden', marginBottom: 16 }}>
+            <div style={{ background: '#1E4D38', padding: '22px 22px 20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: teeInfo.color, border: teeInfo.id === 'white' ? '1px solid rgba(255,255,255,0.4)' : 'none', flexShrink: 0 }} />
-                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(250,246,234,0.45)' }}>
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(242,245,241,0.45)' }}>
                   {teeInfo.label} Tees · {formatDate(round.playedAt)}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <div>
-                  <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: isMobile ? 16 : 20, fontWeight: 700, color: '#FAF6EA', letterSpacing: '-0.025em', marginBottom: 4 }}>
+                  <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: isMobile ? 16 : 20, fontWeight: 700, color: '#F2F5F1', letterSpacing: '-0.025em', marginBottom: 4 }}>
                     {round.courseName}
                   </div>
-                  <div style={{ fontSize: 12, color: 'rgba(250,246,234,0.45)' }}>Par {totalPar} · {round.holes} holes</div>
+                  <div style={{ fontSize: 12, color: 'rgba(242,245,241,0.45)' }}>Par {totalPar} · {round.holes} holes</div>
                 </div>
                 {diff !== null && (
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 32, fontWeight: 800, color: '#FAF6EA', letterSpacing: '-0.04em', lineHeight: 1 }}>
+                    <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 32, fontWeight: 800, color: '#F2F5F1', letterSpacing: '-0.04em', lineHeight: 1 }}>
                       {totalScore}
                     </div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: diff === 0 ? 'rgba(250,246,234,0.7)' : diff > 0 ? '#D9824D' : '#8BC47A', marginTop: 2 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: diff === 0 ? 'rgba(242,245,241,0.7)' : diff > 0 ? '#C25E33' : '#9FD4B4', marginTop: 2 }}>
                       {diff === 0 ? 'Even' : diff > 0 ? `+${diff}` : diff}
                     </div>
                   </div>
@@ -1102,7 +1102,7 @@ export default function ScorecardView({
               </div>
             </div>
 
-            <div style={{ height: 1, background: '#E0D8C5' }} />
+            <div style={{ height: 1, background: '#E4E6E1' }} />
 
             <div style={{ padding: '14px 0 10px' }}>
               <div style={{ paddingLeft: 10, paddingRight: 10, marginBottom: 4 }}>
@@ -1115,7 +1115,7 @@ export default function ScorecardView({
               </div>
               {round.holes === 18 && (
                 <>
-                  <div style={{ height: 1, background: '#E0D8C5', margin: '8px 0' }} />
+                  <div style={{ height: 1, background: '#E4E6E1', margin: '8px 0' }} />
                   <div style={{ paddingLeft: 10, paddingRight: 10 }}>
                     <ScorecardHalf
                       holes={back9} label="IN" mode={mode}
@@ -1129,7 +1129,7 @@ export default function ScorecardView({
             </div>
           </div>
 
-          <p style={{ textAlign: 'center', fontSize: 12, color: '#6B5F4E', marginBottom: 20, fontFamily: "'DM Sans', sans-serif" }}>
+          <p style={{ textAlign: 'center', fontSize: 12, color: '#6B716B', marginBottom: 20, fontFamily: "'Geist', sans-serif" }}>
             Tap any score cell to type your result
           </p>
 
@@ -1138,8 +1138,8 @@ export default function ScorecardView({
           <button
             onClick={() => handleFinishRound(round, holes)} disabled={saving}
             style={{ ...primaryBtn(saving), marginTop: saveError ? 8 : 0 }}
-            onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#16271D' }}
-            onMouseLeave={e => { if (!saving) e.currentTarget.style.background = '#1F3A2A' }}
+            onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#153B2A' }}
+            onMouseLeave={e => { if (!saving) e.currentTarget.style.background = '#1E4D38' }}
           >
             {saving ? 'Saving…' : 'Submit scorecard →'}
           </button>
@@ -1204,29 +1204,29 @@ export default function ScorecardView({
 
     return (
       <div style={{ maxWidth: 720, margin: '0 auto', padding: `${isMobile ? 20 : 48}px ${isMobile ? 12 : 40}px ${isMobile ? 96 : 48}px` }}>
-        <button style={backBtn} onClick={() => setPhase({ type: 'history' })}>← All rounds</button>
+        <button style={backBtn} onClick={() => setPhase({ type: 'history' })}><ChevronLeftIcon size={17} color="#494F49" />All rounds</button>
 
-        <div style={{ background: '#1F3A2A', borderRadius: 24, padding: '36px 32px', marginBottom: 20, color: '#FAF6EA', boxShadow: t.diff < 0 ? '0 0 0 1px rgba(139,196,122,0.45), 0 12px 50px rgba(139,196,122,0.28)' : 'none', transition: 'box-shadow 0.4s ease' }}>
+        <div style={{ background: '#1E4D38', borderRadius: 24, padding: '36px 32px', marginBottom: 20, color: '#F2F5F1', boxShadow: t.diff < 0 ? '0 0 0 1px rgba(139,196,122,0.45), 0 12px 50px rgba(139,196,122,0.28)' : 'none', transition: 'box-shadow 0.4s ease' }}>
           {t.diff < 0 && (
-            <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8BC47A', marginBottom: 8 }}>
+            <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#9FD4B4', marginBottom: 8 }}>
               Under par
             </div>
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: teeInfo.color, border: teeInfo.id === 'white' ? '1px solid rgba(255,255,255,0.4)' : 'none' }} />
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(250,246,234,0.45)' }}>
+            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(242,245,241,0.45)' }}>
               {round.courseName} · {formatDate(round.playedAt)}
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, marginTop: 12 }}>
-            <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 72, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
+            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 72, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
               {t.totalScore}
             </div>
             <div style={{ paddingBottom: 10 }}>
-              <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 28, fontWeight: 700, color: t.diff === 0 ? '#FAF6EA' : t.diff > 0 ? '#D9824D' : '#8BC47A', letterSpacing: '-0.02em' }}>
+              <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 28, fontWeight: 700, color: t.diff === 0 ? '#F2F5F1' : t.diff > 0 ? '#C25E33' : '#9FD4B4', letterSpacing: '-0.02em' }}>
                 {t.diff === 0 ? 'Even' : t.diff > 0 ? `+${t.diff}` : t.diff}
               </div>
-              <div style={{ fontSize: 13, color: 'rgba(250,246,234,0.45)', marginTop: 2 }}>vs par {totalPar}</div>
+              <div style={{ fontSize: 13, color: 'rgba(242,245,241,0.45)', marginTop: 2 }}>vs par {totalPar}</div>
             </div>
           </div>
         </div>
@@ -1235,14 +1235,13 @@ export default function ScorecardView({
           onClick={shareRound}
           disabled={sharing || isShared}
           style={{
-            width: '100%', marginBottom: 20, borderRadius: 16, padding: '14px',
-            fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, fontWeight: 600,
-            cursor: isShared ? 'default' : 'pointer', letterSpacing: '-0.005em',
+            width: '100%', marginBottom: 20, borderRadius: 12, padding: '14px',
+            fontFamily: "'Geist', sans-serif", fontSize: 15, fontWeight: 600,
+            cursor: isShared ? 'default' : 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            background: isShared ? 'rgba(92,122,77,0.12)' : '#D9824D',
-            color: isShared ? '#5C7A4D' : '#FAF6EA',
-            border: isShared ? '1px solid rgba(92,122,77,0.35)' : 'none',
-            boxShadow: isShared ? 'none' : '0 4px 14px rgba(217,130,77,0.30)',
+            background: isShared ? '#E8EFEA' : '#1E4D38',
+            color: isShared ? '#2F6E4C' : '#F2F5F1',
+            border: 'none',
             transition: 'all 0.15s ease',
           }}
         >
@@ -1258,35 +1257,35 @@ export default function ScorecardView({
               { label: 'Fairways', value: t.fairwaysPossible ? `${t.fairways}/${t.fairwaysPossible}` : '—' },
               { label: 'GIR', value: t.girPossible ? `${t.girHoles}/${t.girPossible}` : '—' },
             ].map(s => (
-              <div key={s.label} style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 20, padding: '18px 16px', textAlign: 'center' }}>
-                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 24, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.03em' }}>{s.value}</div>
-                <div style={{ fontSize: 12, color: '#4A4235', marginTop: 4 }}>{s.label}</div>
+              <div key={s.label} style={{ background: '#F2F5F1', border: '1px solid #E4E6E1', borderRadius: 20, padding: '18px 16px', textAlign: 'center' }}>
+                <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 24, fontWeight: 700, color: '#171A17', letterSpacing: '-0.03em' }}>{s.value}</div>
+                <div style={{ fontSize: 12, color: '#494F49', marginTop: 4 }}>{s.label}</div>
               </div>
             ))}
           </div>
         )}
 
-        <div style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 20, padding: '20px 22px', marginBottom: 20 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase', marginBottom: 14 }}>Scoring</div>
+        <div style={{ background: '#F2F5F1', border: '1px solid #E4E6E1', borderRadius: 20, padding: '20px 22px', marginBottom: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#494F49', textTransform: 'uppercase', marginBottom: 14 }}>Scoring</div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {[
-              { label: 'Eagles', count: scoreCounts.eagle, color: '#C8A84B' },
-              { label: 'Birdies', count: scoreCounts.birdie, color: '#5C7A4D' },
-              { label: 'Pars', count: scoreCounts.par, color: '#1F3A2A' },
-              { label: 'Bogeys', count: scoreCounts.bogey, color: '#D9824D' },
+              { label: 'Eagles', count: scoreCounts.eagle, color: '#A8852F' },
+              { label: 'Birdies', count: scoreCounts.birdie, color: '#2F6E4C' },
+              { label: 'Pars', count: scoreCounts.par, color: '#1E4D38' },
+              { label: 'Bogeys', count: scoreCounts.bogey, color: '#C25E33' },
               { label: 'Double+', count: scoreCounts.double, color: '#C0392B' },
             ].filter(x => x.count > 0).map(x => (
               <div key={x.label} style={{ background: x.color + '18', border: `1px solid ${x.color}40`, borderRadius: 999, padding: '6px 14px', display: 'flex', gap: 6, alignItems: 'center' }}>
-                <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 16, fontWeight: 700, color: x.color }}>{x.count}</span>
-                <span style={{ fontSize: 12.5, color: '#4A4235' }}>{x.label}</span>
+                <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 16, fontWeight: 700, color: x.color }}>{x.count}</span>
+                <span style={{ fontSize: 12.5, color: '#494F49' }}>{x.label}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div style={{ background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 20, overflow: 'hidden', marginBottom: 20 }}>
-          <div style={{ borderBottom: '1px solid #E0D8C5', padding: '16px 20px' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#4A4235', textTransform: 'uppercase' }}>Scorecard</div>
+        <div style={{ background: '#F2F5F1', border: '1px solid #E4E6E1', borderRadius: 20, overflow: 'hidden', marginBottom: 20 }}>
+          <div style={{ borderBottom: '1px solid #E4E6E1', padding: '16px 20px' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#494F49', textTransform: 'uppercase' }}>Scorecard</div>
           </div>
           <div style={{ padding: '12px 8px 12px' }}>
             <ScorecardHalf holes={front9} label="OUT" mode={statsMode as ScoringMode}
@@ -1294,7 +1293,7 @@ export default function ScorecardView({
               onCellClick={() => {}} onScoreCommit={() => {}} interactive={false} />
             {round.holes === 18 && (
               <>
-                <div style={{ height: 1, background: '#E0D8C5', margin: '8px 0' }} />
+                <div style={{ height: 1, background: '#E4E6E1', margin: '8px 0' }} />
                 <ScorecardHalf holes={back9} label="IN" mode={statsMode as ScoringMode}
                   editingHole={null} activeHole={null}
                   onCellClick={() => {}} onScoreCommit={() => {}} interactive={false} />
@@ -1305,12 +1304,12 @@ export default function ScorecardView({
 
         {struggle.length > 0 && (
           <div style={{ background: 'rgba(217,130,77,0.08)', border: '1px solid rgba(217,130,77,0.25)', borderRadius: 20, padding: '20px 24px', marginBottom: 20 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#D9824D', textTransform: 'uppercase', marginBottom: 12 }}>Holes to work on</div>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: '#C25E33', textTransform: 'uppercase', marginBottom: 12 }}>Holes to work on</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {struggle.map(s => (
                 <div key={s.hole} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 8, background: '#D9824D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: '#FAF6EA', flexShrink: 0 }}>{s.hole}</div>
-                  <div style={{ fontSize: 13.5, color: '#1F1D17' }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: '#C25E33', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Space Grotesk', sans-serif", fontSize: 14, fontWeight: 700, color: '#F2F5F1', flexShrink: 0 }}>{s.hole}</div>
+                  <div style={{ fontSize: 13.5, color: '#171A17' }}>
                     Averaging <strong>+{s.avg.toFixed(1)}</strong> over par across all rounds
                   </div>
                 </div>
@@ -1322,15 +1321,14 @@ export default function ScorecardView({
         <button
           onClick={() => setPhase({ type: 'history' })}
           style={{
-            width: '100%', background: '#1F3A2A', color: '#FAF6EA',
-            border: 'none', borderRadius: 999, padding: '15px',
-            fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 600,
-            cursor: 'pointer', letterSpacing: '-0.005em',
-            boxShadow: '0 4px 14px rgba(31,58,42,0.22)',
-            transition: 'all 0.15s cubic-bezier(0.22, 1, 0.36, 1)',
+            width: '100%', background: '#1E4D38', color: '#F2F5F1',
+            border: 'none', borderRadius: 12, padding: '15px',
+            fontFamily: "'Geist', sans-serif", fontSize: 15, fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'background 0.15s, transform 0.15s cubic-bezier(0.22, 1, 0.36, 1)',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#16271D'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(31,58,42,0.30)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#1F3A2A'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(31,58,42,0.22)' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#153B2A' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#1E4D38' }}
           onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
           onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
           onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.98)' }}

@@ -9,39 +9,11 @@ import Feed from './Feed'
 import Portal from './Portal'
 import RankUpMoment from './RankUpMoment'
 import DialRing from './DialRing'
+import CourseContour from './CourseContour'
 import { card } from '../lib/surfaces'
-import { color, font, elevation, radius } from '../lib/tokens'
+import { color, font, elevation, radius, HERO_BG, onHero } from '../lib/tokens'
 
 gsap.registerPlugin(useGSAP)
-
-// The hero surface: deep evening green with a soft light falling from the
-// top-left — the "private club at dusk" moment of the app.
-const HERO_BG = 'radial-gradient(130% 100% at 12% -10%, #1D4731 0%, #143524 48%, #0F2718 100%)'
-
-// ── Topographic course linework — the brand landscape behind the hero ──────
-function ContourArt() {
-  return (
-    <svg
-      viewBox="0 0 420 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"
-      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
-    >
-      <g fill="none" stroke={color.onGreen} strokeWidth="1">
-        {/* rolling fairway contours */}
-        <path opacity="0.07" d="M-20,236 C60,196 128,224 196,186 C262,150 330,128 448,150" />
-        <path opacity="0.05" d="M-20,272 C76,228 152,260 224,216 C292,176 356,158 448,182" />
-        <path opacity="0.06" d="M-24,196 C52,158 124,180 188,142 C254,104 330,84 448,108" />
-        <path opacity="0.04" d="M-24,310 C88,266 176,296 248,250 C316,208 380,192 452,214" />
-        {/* the green, ringed */}
-        <ellipse opacity="0.07" cx="332" cy="64" rx="86" ry="32" />
-        <ellipse opacity="0.05" cx="332" cy="64" rx="52" ry="19" />
-        {/* pin */}
-        <line opacity="0.22" x1="332" y1="64" x2="332" y2="30" strokeWidth="1.4" />
-        <path opacity="0.22" d="M332,30 L354,36 L332,43 Z" fill={color.onGreen} stroke="none" />
-        <circle opacity="0.3" cx="332" cy="64" r="2" fill={color.onGreen} stroke="none" />
-      </g>
-    </svg>
-  )
-}
 
 // ── Ranks & points info (opened from the rank hero) ────────────────────────────
 function RanksModal({ points, isMobile, onClose, onNavigate }: { points: number; isMobile: boolean; onClose: () => void; onNavigate: (v: View) => void }) {
@@ -284,15 +256,15 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
 
       {/* ════ HERO — the private-club moment ════ */}
       <section style={heroShell}>
-        <ContourArt />
+        <CourseContour />
         <div style={{ ...inner, position: 'relative' }}>
 
           {/* Date + greeting */}
           <div style={{ paddingTop: isMobile ? 14 : 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 500, color: 'rgba(242,245,241,0.55)', fontFamily: font.body }}>
+            <div style={{ fontSize: 13, fontWeight: 500, color: onHero.faint, fontFamily: font.body }}>
               {date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: TZ })}
             </div>
-            <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 27 : 30, fontWeight: 600, fontStyle: 'italic', letterSpacing: '-0.005em', color: color.onGreen, lineHeight: 1.15, margin: '6px 0 0' }}>
+            <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 27 : 31, fontWeight: 600, letterSpacing: '-0.02em', color: color.onGreen, lineHeight: 1.12, margin: '6px 0 0' }}>
               {greetingFor(date)}, {firstName}
             </h1>
           </div>
@@ -481,7 +453,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
 
           {/* Clubhouse */}
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, margin: '30px 0 14px' }}>
-            <span style={{ fontFamily: font.display, fontSize: 22, fontWeight: 600, fontStyle: 'italic', color: color.ink }}>The clubhouse</span>
+            <span style={{ fontFamily: font.display, fontSize: 21, fontWeight: 600, letterSpacing: '-0.01em', color: color.ink }}>The clubhouse</span>
             <div style={{ flex: 1, height: 1, background: color.border, alignSelf: 'center' }} />
           </div>
           <Feed userId={userId} isMobile={isMobile} onViewProfile={onViewProfile} />

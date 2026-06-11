@@ -50,9 +50,9 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
   }
 
   const base: React.CSSProperties = {
-    background: '#FAF6EA', border: '1px solid #E0D8C5', borderRadius: 14,
-    padding: '12px 16px', fontSize: 14, fontFamily: "'DM Sans', sans-serif",
-    color: '#1F1D17', width: '100%', outline: 'none', boxSizing: 'border-box',
+    background: '#FFFFFF', border: '1px solid #CDD2CC', borderRadius: 10,
+    padding: '12px 14px', fontSize: 16, fontFamily: "'Geist', sans-serif",
+    color: '#171A17', width: '100%', outline: 'none', boxSizing: 'border-box',
     transition: 'border-color 0.15s',
     ...inputStyle,
   }
@@ -65,13 +65,13 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         style={base}
-        onFocus={e => { e.currentTarget.style.borderColor = '#1F3A2A' }}
-        onBlur={e => { e.currentTarget.style.borderColor = '#E0D8C5' }}
+        onFocus={e => { e.currentTarget.style.borderColor = '#1E4D38' }}
+        onBlur={e => { e.currentTarget.style.borderColor = '#CDD2CC' }}
         autoComplete="off"
       />
 
       {loading && (
-        <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#6B5F4E', fontFamily: "'DM Sans', sans-serif" }}>
+        <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#6B716B', fontFamily: "'Geist', sans-serif" }}>
           Searching…
         </div>
       )}
@@ -79,9 +79,9 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
       {open && results.length > 0 && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, zIndex: 100,
-          background: 'rgba(250,246,234,0.96)', backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.7)', borderRadius: 16,
-          boxShadow: '0 8px 32px rgba(31,29,23,0.12), inset 0 1px 0 rgba(255,255,255,0.8)',
+          background: '#FFFFFF',
+          border: '1px solid #E4E6E1', borderRadius: 14,
+          boxShadow: '0 12px 32px rgba(23,26,23,0.12)',
           overflow: 'hidden', maxHeight: 320, overflowY: 'auto',
           animation: 'slideDown 0.18s cubic-bezier(0.22, 1, 0.36, 1)',
         }}>
@@ -94,18 +94,18 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
                 onMouseDown={() => pick(course)}
                 style={{
                   width: '100%', textAlign: 'left', background: 'none', border: 'none',
-                  borderTop: i > 0 ? '1px solid rgba(224,216,197,0.4)' : 'none',
-                  padding: '12px 16px', cursor: 'pointer', transition: 'background 0.12s',
+                  borderTop: i > 0 ? '1px solid #E4E6E1' : 'none',
+                  padding: '12px 14px', cursor: 'pointer', transition: 'background 0.12s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(31,58,42,0.05)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#EFF1ED' }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
               >
-                <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 14, fontWeight: 700, color: '#1F1D17', letterSpacing: '-0.01em' }}>
+                <div style={{ fontFamily: "'Geist', sans-serif", fontSize: 14, fontWeight: 600, color: '#171A17' }}>
                   {courseDisplayName(course)}
                 </div>
-                <div style={{ fontSize: 11.5, color: '#6B5F4E', marginTop: 2, display: 'flex', gap: 8 }}>
+                <div style={{ fontSize: 12, color: '#6B716B', marginTop: 2, display: 'flex', gap: 8 }}>
                   <span>{loc}</span>
-                  {teeCount > 0 && <span style={{ color: '#D9824D' }}>{teeCount} tee{teeCount !== 1 ? 's' : ''}</span>}
+                  {teeCount > 0 && <span style={{ color: '#2F6E4C' }}>{teeCount} tee{teeCount !== 1 ? 's' : ''}</span>}
                 </div>
               </button>
             )

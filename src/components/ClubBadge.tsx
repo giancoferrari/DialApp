@@ -1,10 +1,11 @@
-type Variant = 'default' | 'dark' | 'coral' | 'sage'
+import { color, font } from '../lib/tokens'
+
+type Variant = 'default' | 'dark' | 'sage'
 
 const VARIANTS: Record<Variant, React.CSSProperties> = {
-  default: { background: '#FAF6EA', color: '#1F3A2A', border: '1px solid #E0D8C5' },
-  dark:    { background: '#1F3A2A', color: '#FAF6EA' },
-  coral:   { background: '#D9824D', color: '#FAF6EA' },
-  sage:    { background: '#5C7A4D', color: '#FAF6EA' },
+  default: { background: color.greenTint, color: color.green },
+  dark:    { background: color.green, color: color.onGreen },
+  sage:    { background: color.green, color: color.onGreen },
 }
 
 interface Props {
@@ -20,15 +21,15 @@ export default function ClubBadge({ abbr, size = 44, variant = 'default' }: Prop
       style={{
         width: size,
         height: size,
-        borderRadius: Math.round(size * 0.3),
+        borderRadius: Math.round(size * 0.28),
         flexShrink: 0,
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontFamily: "'Bricolage Grotesque', sans-serif",
-        fontWeight: 700,
-        fontSize: abbr.length > 2 ? size * 0.30 : size * 0.36,
-        letterSpacing: '-0.03em',
+        fontFamily: font.display,
+        fontWeight: 600,
+        fontSize: abbr.length > 2 ? size * 0.3 : size * 0.36,
+        letterSpacing: '-0.02em',
         transition: 'all 0.18s ease',
         ...s,
       }}
@@ -37,4 +38,3 @@ export default function ClubBadge({ abbr, size = 44, variant = 'default' }: Prop
     </div>
   )
 }
-

@@ -17,15 +17,17 @@
 //    case, 13px / 600.
 // ─────────────────────────────────────────────────────────────────────────
 
-// ── Typefaces — editorial serif for display, neutral grotesk for UI ─────
-// Fraunces carries the big moments (scores, points, headings) — the
-// "engraved scorecard" voice. Geist carries everything functional.
-const SANS  = "'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif"
-const SERIF = "'Fraunces', Georgia, 'Times New Roman', serif"
+// ── Typefaces — geometric grotesk for display, neutral grotesk for UI ───
+// Space Grotesk carries the big moments (scores, points, headings) — sharp,
+// athletic, precise numerals. Geist carries everything functional. Bricolage
+// Grotesque is loaded only for the multicolor wordmark (see DialWordmark).
+const SANS    = "'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif"
+const DISPLAY = "'Space Grotesk', 'Geist', system-ui, sans-serif"
 
 export const font = {
-  display: SERIF, // scores, points, headings — never buttons/labels/UI
+  display: DISPLAY, // scores, points, headings — never buttons/labels/UI
   body: SANS,
+  wordmark: "'Bricolage Grotesque', 'Space Grotesk', sans-serif", // logo only
   mono: "'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
 } as const
 
@@ -131,12 +133,12 @@ export const ease = {
 } as const
 
 // ── Type presets — spread onto a style object ──────────────────────────────
-// Display sizes are Fraunces (editorial serif); UI sizes are Geist.
+// Display sizes are Space Grotesk (athletic grotesk); UI sizes are Geist.
 // e.g. <h2 style={{ ...type.title, color: color.ink }}>
 export const type = {
-  display: { fontFamily: SERIF, fontSize: 36, lineHeight: 1.08, letterSpacing: '-0.01em', fontWeight: 600 },
-  hero:    { fontFamily: SERIF, fontSize: 28, lineHeight: 1.12, letterSpacing: '-0.01em', fontWeight: 600 },
-  section: { fontFamily: SERIF, fontSize: 21, lineHeight: 1.2,  letterSpacing: '-0.005em', fontWeight: 600 },
+  display: { fontFamily: DISPLAY, fontSize: 34, lineHeight: 1.05, letterSpacing: '-0.02em', fontWeight: 600 },
+  hero:    { fontFamily: DISPLAY, fontSize: 27, lineHeight: 1.1,  letterSpacing: '-0.02em', fontWeight: 600 },
+  section: { fontFamily: DISPLAY, fontSize: 21, lineHeight: 1.15, letterSpacing: '-0.01em', fontWeight: 600 },
   title:   { fontFamily: SANS, fontSize: 17, lineHeight: 1.3,  letterSpacing: '-0.01em',  fontWeight: 600 },
   bodyStrong: { fontFamily: SANS, fontSize: 15, lineHeight: 1.5, fontWeight: 600 },
   body:    { fontFamily: SANS, fontSize: 15, lineHeight: 1.5, fontWeight: 400 },
@@ -144,6 +146,19 @@ export const type = {
   caption: { fontFamily: SANS, fontSize: 12, lineHeight: 1.4, fontWeight: 500 },
   // Section label: sentence case, quiet. (The old uppercase eyebrow is retired.)
   label:   { fontFamily: SANS, fontSize: 13, lineHeight: 1.3, fontWeight: 600, color: color.inkSoft },
+} as const
+
+// ── Hero — the immersive deep-green "private club" surface ─────────────────
+// Used on identity/trophy screens (Home, Profile, Matches, Leaderboard, Stats).
+export const HERO_BG = 'radial-gradient(130% 100% at 12% -10%, #1D4731 0%, #143524 48%, #0F2718 100%)'
+export const onHero = {
+  text: '#F2F5F1',
+  soft: 'rgba(242,245,241,0.7)',
+  faint: 'rgba(242,245,241,0.5)',
+  line: 'rgba(242,245,241,0.14)',
+  fill: 'rgba(255,255,255,0.08)',
+  fillStrong: 'rgba(255,255,255,0.12)',
+  border: 'rgba(255,255,255,0.14)',
 } as const
 
 export const FONT_STACK = SANS

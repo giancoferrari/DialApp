@@ -62,7 +62,7 @@ export default function RecapCard({ meta, variant }: { meta: RoundRecapMeta; var
             <div style={{ fontFamily: font.display, fontSize: big ? 30 : 26, fontWeight: 600, color: diffColor, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
               {diffText}
             </div>
-            <div style={{ fontSize: 13, fontWeight: 500, color: diffColor, opacity: 0.9, marginTop: 5, fontFamily: font.body, fontStyle: 'italic' }}>{parWord}</div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: diffColor, opacity: 0.9, marginTop: 5, fontFamily: font.body }}>{parWord}</div>
           </div>
         </div>
 
