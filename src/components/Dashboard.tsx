@@ -285,9 +285,9 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
             green and flag low near the rank card (matches the reference). ── */
         <div style={{ position: 'relative' }}>
           <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none' }}>
-            <CourseHero aspect="390 / 430" fadeStart={67} />
+            <CourseHero aspect="390 / 490" fadeStart={71} />
           </div>
-          <div style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top) + 56px)', left: 0, right: 0, padding: `0 ${px}px`, zIndex: 2 }}>
+          <div style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top) + 46px)', left: 0, right: 0, padding: `0 ${px}px`, zIndex: 2 }}>
             {greetingBlock}
           </div>
         </div>
