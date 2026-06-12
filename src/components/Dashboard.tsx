@@ -184,8 +184,8 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
       if (containerRef.current) {
         gsap.fromTo(
           Array.from(containerRef.current.children),
-          { opacity: 0, y: 18 },
-          { opacity: 1, y: 0, duration: 0.55, stagger: 0.1, ease: 'power3.out', delay: 0.05 }
+          { opacity: 0, y: 22 },
+          { opacity: 1, y: 0, duration: 0.58, stagger: 0.07, ease: 'power3.out', delay: 0.04 }
         )
       }
     })
@@ -289,7 +289,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
             desktop hero so the extra height is sky up top — keeping the sea,
             green and flag low near the rank card (matches the reference). ── */
         <div style={{ position: 'relative' }}>
-          <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none' }}>
+          <div className="hero-settle" style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', overflow: 'hidden' }}>
             <CourseHero aspect="390 / 500" fadeStart={72} />
           </div>
           <div style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top) + 62px)', left: 0, right: 0, padding: `0 ${px}px`, zIndex: 2 }}>

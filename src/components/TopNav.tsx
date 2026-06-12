@@ -369,7 +369,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
 
       {/* ── Bottom tab bar (mobile only) — floating frosted pill ── */}
       {isMobile && (
-        <nav style={{
+        <nav className="nav-pill-in" style={{
           position: 'fixed',
           bottom: 'calc(env(safe-area-inset-bottom) + 10px)',
           left: 14, right: 14,
@@ -405,7 +405,11 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                 onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.92)' }}
                 onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)' }}
               >
-                <div style={{ position: 'relative' }}>
+                <div style={{
+                  position: 'relative',
+                  transform: active ? 'translateY(-1px)' : 'translateY(0)',
+                  transition: 'transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+                }}>
                   <item.Icon size={24} color={active ? color.ink : '#4B4F49'} />
                   {item.id === 'messages' && msgUnread > 0 && (
                     <div style={{
@@ -428,11 +432,13 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                 }}>
                   {item.label}
                 </span>
-                {/* Orange active dot */}
+                {/* Orange active dot — springs in on activation */}
                 <span style={{
                   width: 5, height: 5, borderRadius: 999,
-                  background: active ? color.orange : 'transparent',
-                  transition: 'background 0.2s ease',
+                  background: color.orange,
+                  opacity: active ? 1 : 0,
+                  transform: active ? 'scale(1)' : 'scale(0.2)',
+                  transition: 'transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 200ms ease-out',
                 }} />
               </button>
             )

@@ -146,6 +146,22 @@ button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent
   to   { transform: translateY(0);    opacity: 1; }
 }
 
+/* Home hero — a slow cinematic settle on mount (eases down to rest), so the
+   illustration "arrives" rather than snapping in. Clipped by the wrapper so
+   the zoom never pushes layout. */
+@keyframes heroSettle {
+  from { transform: scale(1.06); }
+  to   { transform: scale(1);    }
+}
+.hero-settle { animation: heroSettle 1.1s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Bottom nav pill — gentle rise + fade on first mount. */
+@keyframes navPillIn {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0);    }
+}
+.nav-pill-in { animation: navPillIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
 /* ── Mobile: hide horizontal scrollbar on chips ─────────────── */
 @media (max-width: 768px) {
   /* Date input styling on mobile */
