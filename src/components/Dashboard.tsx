@@ -276,12 +276,14 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
       </div>
 
       {/* ── Coastal hero — real image (public/course-hero.jpg) or SVG ── */}
-      <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', marginTop: isMobile ? -52 : -44, ...(isMobile ? {} : { marginLeft: px, marginRight: px, borderRadius: radius.sheet, overflow: 'hidden' }) }}>
+      {/* Sits just below the greeting (only the pale sky tucks behind the
+          last line); shown in full so the green/flag/bunker are visible. */}
+      <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', marginTop: isMobile ? -14 : -8, ...(isMobile ? {} : { marginLeft: px, marginRight: px, borderRadius: radius.sheet, overflow: 'hidden' }) }}>
         <CourseHero />
       </div>
 
-      {/* ── Overview stack — overlaps the illustration ──────── */}
-      <div style={{ position: 'relative', zIndex: 3, marginTop: -96, padding: `0 ${px}px`, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {/* ── Overview stack — overlaps only the illustration's bottom edge ── */}
+      <div style={{ position: 'relative', zIndex: 3, marginTop: -56, padding: `0 ${px}px`, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
         {/* Rank card */}
         <button
