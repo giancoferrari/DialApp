@@ -336,8 +336,16 @@ function AppShell() {
     ? { height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }
     : { minHeight: '100vh', position: 'relative' }
 
+  // The mobile top bar is now an absolute overlay, so the scroll area starts at
+  // the very top of the screen. The Home hero fills behind the header (no top
+  // padding); every other view gets padding equal to the header height so its
+  // content clears the floating logo/bell/avatar.
   const contentStyle: React.CSSProperties = isMobile
-    ? { flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never, paddingBottom: 'calc(env(safe-area-inset-bottom) + 92px)' }
+    ? {
+        flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never,
+        paddingTop: view === 'dashboard' ? 0 : 'calc(env(safe-area-inset-top) + 60px)',
+        paddingBottom: 'calc(env(safe-area-inset-bottom) + 92px)',
+      }
     : {}
 
   // New users (no username yet) must complete onboarding before entering.

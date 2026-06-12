@@ -103,9 +103,13 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
 
   return (
     <>
-      {/* ── Top bar ── */}
+      {/* ── Top bar ──
+          On mobile it's an absolute overlay (transparent) so the Home hero
+          illustration can fill the screen behind it — the logo / bell / avatar
+          float over the pale sky. On desktop it stays a sticky frosted bar. */}
       <div style={{
-        position: isMobile ? 'relative' : 'sticky', top: isMobile ? undefined : 0, zIndex: 30,
+        position: isMobile ? 'absolute' : 'sticky',
+        top: 0, left: isMobile ? 0 : undefined, right: isMobile ? 0 : undefined, zIndex: 30,
         background: dark ? color.greenDark : (isMobile ? 'transparent' : 'rgba(255,250,239,0.82)'),
         backdropFilter: !dark && !isMobile ? 'blur(18px) saturate(1.15)' : undefined,
         WebkitBackdropFilter: !dark && !isMobile ? 'blur(18px) saturate(1.15)' : undefined,

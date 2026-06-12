@@ -259,29 +259,49 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
     (e.currentTarget as HTMLButtonElement).style.transform = down ? 'scale(0.98)' : 'scale(1)'
   }
 
+  // Greeting (date + "Good afternoon, <name>.") — shared by both layouts.
+  const greetingBlock = (
+    <>
+      <time style={{ display: 'block', color: '#3E653E', fontSize: 15, fontWeight: 600, letterSpacing: '-0.02em', fontFamily: font.body }}>
+        {date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: TZ })}
+      </time>
+      <h1 style={{ margin: '9px 0 0', color: color.ink, fontFamily: font.display, fontSize: isMobile ? 33 : 38, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.98, textWrap: 'balance' as never }}>
+        {greetingFor(date)},<br />{firstName}.
+      </h1>
+    </>
+  )
+
   return (
     <main
       ref={containerRef}
       style={{ maxWidth: isMobile ? '100%' : 560, margin: '0 auto', paddingBottom: isMobile ? 116 : 72 }}
     >
 
-      {/* ── Greeting — floats over the illustration's pale sky ── */}
-      <div style={{ padding: `${isMobile ? 14 : 24}px ${px}px 0`, position: 'relative', zIndex: 2 }}>
-        <time style={{ display: 'block', color: '#3E653E', fontSize: 15, fontWeight: 600, letterSpacing: '-0.02em', fontFamily: font.body }}>
-          {date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: TZ })}
-        </time>
-        <h1 style={{ margin: '9px 0 0', color: color.ink, fontFamily: font.display, fontSize: isMobile ? 33 : 38, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.98, textWrap: 'balance' as never }}>
-          {greetingFor(date)},<br />{firstName}.
-        </h1>
-      </div>
-
-      {/* ── Coastal hero — the reference composition: the illustration's
-          sky runs up BEHIND the date + greeting, the full scene (sea,
-          green, flag) shows below the text, and the rank card overlaps
-          only the bottom edge. ── */}
-      <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', marginTop: isMobile ? -104 : -96, ...(isMobile ? {} : { marginLeft: px, marginRight: px, borderRadius: radius.sheet, overflow: 'hidden' }) }}>
-        <CourseHero />
-      </div>
+      {isMobile ? (
+        /* ── Mobile: the illustration fills from the very top of the screen,
+            running up BEHIND the floating header (transparent top bar). The
+            greeting floats over its pale sky. The band is taller than the
+            desktop hero so the extra height is sky up top — keeping the sea,
+            green and flag low near the rank card (matches the reference). ── */
+        <div style={{ position: 'relative' }}>
+          <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none' }}>
+            <CourseHero aspect="390 / 430" fadeStart={67} />
+          </div>
+          <div style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top) + 56px)', left: 0, right: 0, padding: `0 ${px}px`, zIndex: 2 }}>
+            {greetingBlock}
+          </div>
+        </div>
+      ) : (
+        /* ── Desktop: greeting above a rounded hero card ── */
+        <>
+          <div style={{ padding: `24px ${px}px 0`, position: 'relative', zIndex: 2 }}>
+            {greetingBlock}
+          </div>
+          <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', marginTop: -96, marginLeft: px, marginRight: px, borderRadius: radius.sheet, overflow: 'hidden' }}>
+            <CourseHero />
+          </div>
+        </>
+      )}
 
       {/* ── Overview stack — overlaps only the illustration's bottom edge ── */}
       <div style={{ position: 'relative', zIndex: 3, marginTop: -54, padding: `0 ${px}px`, display: 'flex', flexDirection: 'column', gap: 13 }}>

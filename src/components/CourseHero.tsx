@@ -9,21 +9,30 @@ import CourseHeroArt from './CourseHeroArt'
 //     into the cream background; the green/flag toward the lower-middle.
 const HERO_SRC = '/course-hero.jpg'
 
-export default function CourseHero() {
+interface Props {
+  // Hero band proportions. Mobile uses a taller band so the illustration's
+  // pale sky fills up behind the floating header (reaching the very top of the
+  // screen) while the green/flag stay low near the rank card.
+  aspect?: string
+  // Where the bottom fade begins (% of height). Tuned per-aspect so the faded
+  // band above the rank card is the same visual size regardless of height.
+  fadeStart?: number
+}
+
+export default function CourseHero({ aspect = '390 / 318', fadeStart = 55 }: Props) {
   const [failed, setFailed] = useState(false)
 
-  // Slightly taller than 3:2 (matches the reference's hero band, whose sky
-  // runs up behind the greeting). `cover` trims a little off the sides of a
-  // 3:2 photo; position biases toward the green/flag in the lower half.
+  // `cover` trims a little off the sides of a 3:2 photo; the full image height
+  // shows, so the horizon sits at a fixed fraction of the band.
   //
   // Bottom fade — the reference dissolves the illustration's foreground green
   // into the cream background (no hard rectangle edge). A bottom mask gradient
-  // fades the last ~45% of the image to transparent so the cream shows through
-  // and the rank card sits over a soft, blended transition rather than a seam.
-  const fade = 'linear-gradient(to bottom, #000 0%, #000 55%, rgba(0,0,0,0) 100%)'
+  // fades the lower band to transparent so the cream shows through and the rank
+  // card sits over a soft, blended transition rather than a seam.
+  const fade = `linear-gradient(to bottom, #000 0%, #000 ${fadeStart}%, rgba(0,0,0,0) 100%)`
   return (
     <div style={{
-      width: '100%', aspectRatio: '390 / 318', overflow: 'hidden',
+      width: '100%', aspectRatio: aspect, overflow: 'hidden',
       WebkitMaskImage: fade, maskImage: fade,
     }}>
       {failed ? (
