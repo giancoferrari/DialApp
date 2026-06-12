@@ -12,10 +12,11 @@ const HERO_SRC = '/course-hero.jpg'
 export default function CourseHero() {
   const [failed, setFailed] = useState(false)
 
-  // Footprint matches the recommended 3:2 image so the full composition
-  // shows with no cropping; `cover` still tolerates other ratios.
+  // Slightly taller than 3:2 (matches the reference's hero band, whose sky
+  // runs up behind the greeting). `cover` trims a little off the sides of a
+  // 3:2 photo; position biases toward the green/flag in the lower half.
   return (
-    <div style={{ width: '100%', aspectRatio: '3 / 2', overflow: 'hidden' }}>
+    <div style={{ width: '100%', aspectRatio: '390 / 318', overflow: 'hidden' }}>
       {failed ? (
         <CourseHeroArt />
       ) : (
@@ -23,7 +24,7 @@ export default function CourseHero() {
           src={HERO_SRC}
           alt=""
           onError={() => setFailed(true)}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 56%', display: 'block' }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 62%', display: 'block' }}
         />
       )}
     </div>

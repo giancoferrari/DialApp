@@ -120,8 +120,76 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      {posts.map(post => (
-        <div key={`${post.id}-${post.repostedBy?.userId ?? 'orig'}`} style={{ ...feedCard, overflow: 'hidden' }}>
+      {posts.map(post => {
+        const key = `${post.id}-${post.repostedBy?.userId ?? 'orig'}`
+        const displayedName = post.author?.firstName || authorName(post.author)
+
+        // ── Compact clubhouse card (the reference layout): caption on the
+        //    left, photo thumbnail on the right. Used for captioned photos.
+        if (post.kind === 'photo' && post.caption && post.imageUrl) {
+          return (
+            <div key={key} style={{ ...feedCard, padding: '13px 14px 14px' }}>
+              {post.repostedBy && (
+                <div style={{ paddingBottom: 9, fontSize: 12, color: color.muted, display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
+                  <RepostIcon size={13} color={color.muted} /> {authorName(post.repostedBy)} reposted
+                </div>
+              )}
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 116px', gap: 12 }}>
+                <div style={{ minWidth: 0 }}>
+                  {/* Header */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <Avatar profile={post.author} size={38} onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined} />
+                    <div style={{ minWidth: 0 }}>
+                      <div
+                        onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined}
+                        style={{ fontFamily: font.body, fontSize: 16, fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 1.05, color: color.ink, cursor: onViewProfile ? 'pointer' : 'default', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                      >
+                        {displayedName}
+                      </div>
+                      <div style={{ fontSize: 12, color: color.muted, fontWeight: 500, marginTop: 4 }}>{timeAgo(post.createdAt)}</div>
+                    </div>
+                  </div>
+                  {/* Caption */}
+                  <div
+                    onClick={() => setActive(post)}
+                    style={{ margin: '11px 0 0', cursor: 'pointer', fontSize: 15, fontWeight: 500, letterSpacing: '-0.03em', lineHeight: 1.3, color: color.ink, fontFamily: font.body, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' as never, overflow: 'hidden' }}
+                  >
+                    {post.caption}
+                  </div>
+                  {/* Reactions */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 22, marginTop: 12 }}>
+                    <button onClick={() => handleLike(post)} aria-label={post.likedByMe ? 'Unlike' : 'Like'} style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                      <span style={{ display: 'inline-flex', animation: poppingId === post.id ? 'likePop 0.42s ease' : undefined }}>
+                        <HeartIcon size={19} color={post.likedByMe ? color.orange : '#41443F'} filled={post.likedByMe} />
+                      </span>
+                      <span style={{ fontFamily: font.body, fontSize: 15, fontWeight: 500, color: post.likedByMe ? color.orange : '#41443F', fontVariantNumeric: 'tabular-nums' }}>{post.likeCount}</span>
+                    </button>
+                    <button onClick={() => setActive(post)} aria-label="Comments" style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                      <ChatIcon size={18} color="#41443F" />
+                      <span style={{ fontFamily: font.body, fontSize: 15, fontWeight: 500, color: '#41443F', fontVariantNumeric: 'tabular-nums' }}>{post.commentCount}</span>
+                    </button>
+                    <button onClick={() => handleRepost(post)} aria-label={post.repostedByMe ? 'Undo repost' : 'Repost'} style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                      <RepostIcon size={17} color={post.repostedByMe ? color.positive : '#9AA095'} />
+                    </button>
+                  </div>
+                </div>
+                {/* Thumbnail */}
+                <button onClick={() => onMediaTap(post)} style={{ position: 'relative', alignSelf: 'start', marginTop: 5, width: 116, height: 86, borderRadius: 14, overflow: 'hidden', border: 'none', padding: 0, cursor: 'pointer', background: '#B8D8D9' }}>
+                  <img src={post.imageUrl} alt="" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  {burstId === post.id && (
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', pointerEvents: 'none', animation: 'heartBurst 0.7s ease-out forwards', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.35))' }}>
+                      <HeartIcon size={44} color="#FFFFFF" filled />
+                    </div>
+                  )}
+                </button>
+              </div>
+            </div>
+          )
+        }
+
+        // ── Full-width card: caption-less photos + round recaps ──
+        return (
+        <div key={key} style={{ ...feedCard, overflow: 'hidden' }}>
           {post.repostedBy && (
             <div style={{ padding: '10px 14px 0', fontSize: 12, color: color.muted, display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
               <RepostIcon size={13} color={color.muted} /> {authorName(post.repostedBy)} reposted
@@ -133,9 +201,9 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
             <div style={{ flex: 1, minWidth: 0 }}>
               <div
                 onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined}
-                style={{ fontFamily: font.body, fontSize: 15, fontWeight: 700, letterSpacing: '-0.03em', color: color.ink, cursor: onViewProfile ? 'pointer' : 'default' }}
+                style={{ fontFamily: font.body, fontSize: 16, fontWeight: 700, letterSpacing: '-0.04em', color: color.ink, cursor: onViewProfile ? 'pointer' : 'default' }}
               >
-                {authorName(post.author)}
+                {displayedName}
               </div>
               <div style={{ fontSize: 12, color: color.muted, marginTop: 1 }}>{timeAgo(post.createdAt)}</div>
             </div>
@@ -185,7 +253,8 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
           )}
           {!post.caption && post.commentCount === 0 && <div style={{ height: 10 }} />}
         </div>
-      ))}
+        )
+      })}
 
       {active && (
         <Portal>

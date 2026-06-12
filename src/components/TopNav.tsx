@@ -190,7 +190,9 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
             {notifCount > 0 && <Badge n={notifCount} dark={dark} />}
           </button>
 
-          {/* Quick-create button + menu */}
+          {/* Quick-create button + menu — desktop only; on mobile the reference
+              header is just bell + avatar (Log a shot lives in the avatar menu) */}
+          {!isMobile && (
           <div ref={createRef} style={{ position: 'relative', flexShrink: 0 }}>
             <button
               onClick={() => setCreateOpen(v => !v)}
@@ -255,6 +257,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
               </div>
             )}
           </div>
+          )}
 
           {/* Avatar + dropdown */}
           <div ref={avatarRef} style={{ position: 'relative' }}>
@@ -318,6 +321,31 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                   <UsersIcon size={16} color={color.inkSoft} />
                   Friends
                 </button>
+
+                {/* Mobile-only create actions (the + menu lives here on phones) */}
+                {isMobile && (
+                  <>
+                    <div style={{ height: 1, background: color.border, margin: '4px 8px' }} />
+                    <button
+                      onClick={() => { setMenuOpen(false); onPost() }}
+                      style={menuItem}
+                      onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                    >
+                      <CameraIcon size={16} color={color.inkSoft} />
+                      Share a post
+                    </button>
+                    <button
+                      onClick={() => { setMenuOpen(false); onLogShot() }}
+                      style={menuItem}
+                      onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                    >
+                      <TargetIcon size={16} color={color.inkSoft} />
+                      Log a shot
+                    </button>
+                  </>
+                )}
 
                 <div style={{ height: 1, background: color.border, margin: '4px 8px' }} />
 

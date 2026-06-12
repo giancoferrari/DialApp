@@ -265,25 +265,26 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
       style={{ maxWidth: isMobile ? '100%' : 560, margin: '0 auto', paddingBottom: isMobile ? 116 : 72 }}
     >
 
-      {/* ── Greeting ─────────────────────────────────────────── */}
-      <div style={{ padding: `${isMobile ? 24 : 32}px ${px}px 0`, position: 'relative', zIndex: 2 }}>
-        <time style={{ display: 'block', color: '#3E653E', fontSize: 18, fontWeight: 600, letterSpacing: '-0.02em', fontFamily: font.body }}>
+      {/* ── Greeting — floats over the illustration's pale sky ── */}
+      <div style={{ padding: `${isMobile ? 14 : 24}px ${px}px 0`, position: 'relative', zIndex: 2 }}>
+        <time style={{ display: 'block', color: '#3E653E', fontSize: 17, fontWeight: 600, letterSpacing: '-0.02em', fontFamily: font.body }}>
           {date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: TZ })}
         </time>
-        <h1 style={{ margin: '14px 0 0', color: color.ink, fontFamily: font.display, fontSize: isMobile ? 40 : 44, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.97, textWrap: 'balance' as never }}>
+        <h1 style={{ margin: '10px 0 0', color: color.ink, fontFamily: font.display, fontSize: isMobile ? 38 : 42, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.97, textWrap: 'balance' as never }}>
           {greetingFor(date)},<br />{firstName}.
         </h1>
       </div>
 
-      {/* ── Coastal hero — real image (public/course-hero.jpg) or SVG ── */}
-      {/* Sits just below the greeting (only the pale sky tucks behind the
-          last line); shown in full so the green/flag/bunker are visible. */}
-      <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', marginTop: isMobile ? -14 : -8, ...(isMobile ? {} : { marginLeft: px, marginRight: px, borderRadius: radius.sheet, overflow: 'hidden' }) }}>
+      {/* ── Coastal hero — the reference composition: the illustration's
+          sky runs up BEHIND the date + greeting, the full scene (sea,
+          green, flag) shows below the text, and the rank card overlaps
+          only the bottom edge. ── */}
+      <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', marginTop: isMobile ? -104 : -96, ...(isMobile ? {} : { marginLeft: px, marginRight: px, borderRadius: radius.sheet, overflow: 'hidden' }) }}>
         <CourseHero />
       </div>
 
       {/* ── Overview stack — overlaps only the illustration's bottom edge ── */}
-      <div style={{ position: 'relative', zIndex: 3, marginTop: -56, padding: `0 ${px}px`, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ position: 'relative', zIndex: 3, marginTop: -54, padding: `0 ${px}px`, display: 'flex', flexDirection: 'column', gap: 13 }}>
 
         {/* Rank card */}
         <button
@@ -394,9 +395,8 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
           </button>
         </div>
 
-        {/* Clubhouse feed */}
-        <div style={{ marginTop: 18 }}>
-          <div style={{ ...type.label, marginBottom: 10 }}>The clubhouse</div>
+        {/* Clubhouse feed — sits directly under the CTAs (reference) */}
+        <div style={{ marginTop: 3 }}>
           <Feed userId={userId} isMobile={isMobile} onViewProfile={onViewProfile} />
         </div>
       </div>
