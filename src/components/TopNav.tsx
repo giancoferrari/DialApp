@@ -367,17 +367,20 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
         </div>
       </div>
 
-      {/* ── Bottom tab bar (mobile only) — docked frosted cream bar ── */}
+      {/* ── Bottom tab bar (mobile only) — floating frosted pill ── */}
       {isMobile && (
         <nav style={{
           position: 'fixed',
-          bottom: 0, left: 0, right: 0,
+          bottom: 'calc(env(safe-area-inset-bottom) + 10px)',
+          left: 14, right: 14,
           zIndex: 40,
-          background: 'rgba(255,250,239,0.78)',
-          backdropFilter: 'blur(18px) saturate(1.15)',
-          WebkitBackdropFilter: 'blur(18px) saturate(1.15)',
-          borderTop: '1px solid rgba(42,36,24,0.12)',
-          padding: '10px 14px calc(env(safe-area-inset-bottom) + 8px)',
+          background: 'rgba(255,250,239,0.86)',
+          backdropFilter: 'blur(20px) saturate(1.2)',
+          WebkitBackdropFilter: 'blur(20px) saturate(1.2)',
+          border: '1px solid rgba(42,36,24,0.10)',
+          borderRadius: 28,
+          boxShadow: '0 14px 32px rgba(40,34,20,0.18), 0 2px 8px rgba(40,34,20,0.06)',
+          padding: '10px 8px 9px',
           display: 'grid', gridTemplateColumns: `repeat(${BOTTOM_NAV.length}, 1fr)`,
           alignItems: 'start',
           transform: 'translateZ(0)',
@@ -392,7 +395,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                 style={{
                   position: 'relative', background: 'none', border: 'none',
                   display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  justifyContent: 'center', gap: 5, padding: '2px 2px 9px',
+                  justifyContent: 'center', gap: 4, padding: '2px 2px 2px',
                   cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
                   transition: 'transform 0.12s cubic-bezier(0.22, 1, 0.36, 1)',
                 }}
@@ -425,13 +428,11 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                 }}>
                   {item.label}
                 </span>
-                {/* Orange active indicator */}
+                {/* Orange active dot */}
                 <span style={{
-                  position: 'absolute', bottom: 0, left: '50%',
-                  width: 24, height: 3, borderRadius: 999,
-                  background: color.orange,
-                  transform: `translateX(-50%) scaleX(${active ? 1 : 0})`,
-                  transition: 'transform 0.22s cubic-bezier(0.22, 1, 0.36, 1)',
+                  width: 5, height: 5, borderRadius: 999,
+                  background: active ? color.orange : 'transparent',
+                  transition: 'background 0.2s ease',
                 }} />
               </button>
             )

@@ -249,6 +249,11 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
   // ── Prototype building blocks ──
   const cardLabel: React.CSSProperties = { ...type.label, whiteSpace: 'nowrap' }
 
+  // Record (W–L–T): give each number room and set the dashes as quiet, lighter
+  // separators so the trio reads cleanly instead of cramming together.
+  const recNum: React.CSSProperties = { fontFamily: font.display, fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', color: color.ink, fontVariantNumeric: 'tabular-nums' }
+  const recSep: React.CSSProperties = { fontFamily: font.display, fontSize: 14, fontWeight: 500, color: color.faint, transform: 'translateY(-1px)' }
+
   const statChip = (bg: string): React.CSSProperties => ({
     width: 30, height: 30, borderRadius: 15, background: bg,
     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -285,9 +290,9 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
             green and flag low near the rank card (matches the reference). ── */
         <div style={{ position: 'relative' }}>
           <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none' }}>
-            <CourseHero aspect="390 / 490" fadeStart={71} />
+            <CourseHero aspect="390 / 500" fadeStart={72} />
           </div>
-          <div style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top) + 46px)', left: 0, right: 0, padding: `0 ${px}px`, zIndex: 2 }}>
+          <div style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top) + 62px)', left: 0, right: 0, padding: `0 ${px}px`, zIndex: 2 }}>
             {greetingBlock}
           </div>
         </div>
@@ -371,8 +376,12 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
           <div style={{ ...panel, borderRadius: radius.md, padding: '13px 13px 14px' }}>
             <span style={statChip(color.orange)}><TrophyIcon size={15} color="#FFFAF1" /></span>
             <div style={cardLabel}>Record</div>
-            <div style={{ marginTop: 7, fontFamily: font.display, fontSize: 24, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>
-              {wins}–{losses}–{ties}
+            <div style={{ marginTop: 7, display: 'flex', alignItems: 'baseline', gap: 6, lineHeight: 1 }}>
+              <span style={recNum}>{wins}</span>
+              <span style={recSep}>–</span>
+              <span style={recNum}>{losses}</span>
+              <span style={recSep}>–</span>
+              <span style={recNum}>{ties}</span>
             </div>
           </div>
         </div>
