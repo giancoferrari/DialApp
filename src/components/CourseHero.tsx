@@ -15,8 +15,17 @@ export default function CourseHero() {
   // Slightly taller than 3:2 (matches the reference's hero band, whose sky
   // runs up behind the greeting). `cover` trims a little off the sides of a
   // 3:2 photo; position biases toward the green/flag in the lower half.
+  //
+  // Bottom fade — the reference dissolves the illustration's foreground green
+  // into the cream background (no hard rectangle edge). A bottom mask gradient
+  // fades the last ~45% of the image to transparent so the cream shows through
+  // and the rank card sits over a soft, blended transition rather than a seam.
+  const fade = 'linear-gradient(to bottom, #000 0%, #000 55%, rgba(0,0,0,0) 100%)'
   return (
-    <div style={{ width: '100%', aspectRatio: '390 / 318', overflow: 'hidden' }}>
+    <div style={{
+      width: '100%', aspectRatio: '390 / 318', overflow: 'hidden',
+      WebkitMaskImage: fade, maskImage: fade,
+    }}>
       {failed ? (
         <CourseHeroArt />
       ) : (

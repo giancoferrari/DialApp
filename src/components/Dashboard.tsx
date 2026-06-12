@@ -60,55 +60,55 @@ function RanksModal({ points, isMobile, onClose, onNavigate }: { points: number;
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 220, background: 'rgba(20,18,10,0.45)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'fadeIn 0.2s ease' }}>
         <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, maxHeight: isMobile ? '90vh' : '86vh', background: color.sheet, borderRadius: isMobile ? '28px 28px 0 0' : radius.sheet, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}>
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 14px', borderBottom: `1px solid ${color.border}`, flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 18px 12px', borderBottom: `1px solid ${color.border}`, flexShrink: 0 }}>
             <div>
-              <div style={{ fontFamily: font.display, fontSize: 19, fontWeight: 700, letterSpacing: '-0.03em', color: color.ink }}>Ranks &amp; points</div>
-              <div style={{ fontSize: 13, color: color.muted, marginTop: 2 }}>How ranked play works</div>
+              <div style={{ fontFamily: font.display, fontSize: 17, fontWeight: 700, letterSpacing: '-0.03em', color: color.ink }}>Ranks &amp; points</div>
+              <div style={{ fontSize: 12, color: color.muted, marginTop: 2 }}>How ranked play works</div>
             </div>
-            <button onClick={onClose} aria-label="Close" style={{ background: color.sand, border: 'none', borderRadius: 16, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <CloseIcon size={14} color={color.inkSoft} />
+            <button onClick={onClose} aria-label="Close" style={{ background: color.sand, border: 'none', borderRadius: 15, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <CloseIcon size={13} color={color.inkSoft} />
             </button>
           </div>
 
-          <div style={{ flex: 1, overflowY: 'auto', padding: '18px 20px 24px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 18px 22px' }}>
             {/* Points per match */}
-            <div style={{ ...type.label, marginBottom: 10 }}>Points per match</div>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+            <div style={{ ...type.label, marginBottom: 9 }}>Points per match</div>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
               {perMatch.map(p => (
-                <div key={p.label} style={{ flex: 1, textAlign: 'center', background: p.bg, borderRadius: radius.md, padding: '14px 8px' }}>
-                  <div style={{ fontFamily: font.display, fontSize: 23, fontWeight: 700, letterSpacing: '-0.04em', color: p.color, lineHeight: 1 }}>{p.value}</div>
-                  <div style={{ fontSize: 12, color: p.color, fontWeight: 600, marginTop: 6 }}>{p.label}</div>
+                <div key={p.label} style={{ flex: 1, textAlign: 'center', background: p.bg, borderRadius: radius.md, padding: '12px 8px' }}>
+                  <div style={{ fontFamily: font.display, fontSize: 20, fontWeight: 700, letterSpacing: '-0.04em', color: p.color, lineHeight: 1 }}>{p.value}</div>
+                  <div style={{ fontSize: 11, color: p.color, fontWeight: 600, marginTop: 5 }}>{p.label}</div>
                 </div>
               ))}
             </div>
 
             {/* Tiers */}
-            <div style={{ ...type.label, marginBottom: 10 }}>Tiers</div>
-            <div ref={listRef} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ ...type.label, marginBottom: 9 }}>Tiers</div>
+            <div ref={listRef} style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
               {RANK_TIERS.map(t => {
                 const isCurrent = t.name === current.name
                 const reached   = points >= t.minPoints
                 return (
                   <div key={t.name} style={{
-                    display: 'flex', alignItems: 'center', gap: 12,
+                    display: 'flex', alignItems: 'center', gap: 11,
                     background: isCurrent ? color.green : color.sand,
-                    borderRadius: radius.md, padding: '12px 14px',
+                    borderRadius: radius.md, padding: '10px 12px',
                   }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 16, background: isCurrent ? 'rgba(255,255,255,0.12)' : color.white, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <ShieldIcon size={15} color={t.color} />
+                    <div style={{ width: 28, height: 28, borderRadius: 14, background: isCurrent ? 'rgba(255,255,255,0.12)' : color.white, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <ShieldIcon size={14} color={t.color} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ fontFamily: font.body, fontSize: 15, fontWeight: 700, letterSpacing: '-0.02em', color: isCurrent ? color.onGreen : color.ink }}>{t.name}</span>
-                        {isCurrent && <span style={{ fontSize: 11, fontWeight: 700, color: color.green, background: color.white, borderRadius: 999, padding: '2px 8px' }}>Current</span>}
+                        <span style={{ fontFamily: font.body, fontSize: 14, fontWeight: 700, letterSpacing: '-0.02em', color: isCurrent ? color.onGreen : color.ink }}>{t.name}</span>
+                        {isCurrent && <span style={{ fontSize: 10, fontWeight: 700, color: color.green, background: color.white, borderRadius: 999, padding: '2px 7px' }}>Current</span>}
                       </div>
-                      <div style={{ fontSize: 12, color: isCurrent ? 'rgba(255,250,241,0.65)' : color.muted, marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>
+                      <div style={{ fontSize: 11, color: isCurrent ? 'rgba(255,250,241,0.65)' : color.muted, marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>
                         {t.minPoints.toLocaleString()}+ points
                       </div>
                     </div>
                     {reached
-                      ? <CheckIcon size={15} color={isCurrent ? color.onGreen : color.positive} />
-                      : <span style={{ fontSize: 12, color: color.muted, fontWeight: 500, flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>{(t.minPoints - points).toLocaleString()} to go</span>}
+                      ? <CheckIcon size={14} color={isCurrent ? color.onGreen : color.positive} />
+                      : <span style={{ fontSize: 11, color: color.muted, fontWeight: 500, flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>{(t.minPoints - points).toLocaleString()} to go</span>}
                   </div>
                 )
               })}
@@ -116,7 +116,7 @@ function RanksModal({ points, isMobile, onClose, onNavigate }: { points: number;
 
             <button
               onClick={() => { onClose(); onNavigate('leaderboard') }}
-              style={{ width: '100%', marginTop: 20, background: color.green, color: color.onGreen, border: 'none', borderRadius: radius.md, padding: '14px', fontSize: 15, fontWeight: 700, letterSpacing: '-0.02em', cursor: 'pointer', fontFamily: font.body }}
+              style={{ width: '100%', marginTop: 18, background: color.green, color: color.onGreen, border: 'none', borderRadius: radius.md, padding: '12px', fontSize: 14, fontWeight: 700, letterSpacing: '-0.02em', cursor: 'pointer', fontFamily: font.body }}
             >
               See friends leaderboard
             </button>
@@ -250,9 +250,9 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
   const cardLabel: React.CSSProperties = { ...type.label, whiteSpace: 'nowrap' }
 
   const statChip = (bg: string): React.CSSProperties => ({
-    width: 32, height: 32, borderRadius: 16, background: bg,
+    width: 30, height: 30, borderRadius: 15, background: bg,
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    color: '#FFFAF1', fontSize: 17, fontWeight: 700, marginBottom: 11,
+    color: '#FFFAF1', fontSize: 16, fontWeight: 700, marginBottom: 10,
   })
 
   const pressFn = (down: boolean) => (e: React.SyntheticEvent<HTMLButtonElement>) => {
@@ -267,10 +267,10 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
 
       {/* ── Greeting — floats over the illustration's pale sky ── */}
       <div style={{ padding: `${isMobile ? 14 : 24}px ${px}px 0`, position: 'relative', zIndex: 2 }}>
-        <time style={{ display: 'block', color: '#3E653E', fontSize: 17, fontWeight: 600, letterSpacing: '-0.02em', fontFamily: font.body }}>
+        <time style={{ display: 'block', color: '#3E653E', fontSize: 15, fontWeight: 600, letterSpacing: '-0.02em', fontFamily: font.body }}>
           {date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: TZ })}
         </time>
-        <h1 style={{ margin: '10px 0 0', color: color.ink, fontFamily: font.display, fontSize: isMobile ? 38 : 42, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.97, textWrap: 'balance' as never }}>
+        <h1 style={{ margin: '9px 0 0', color: color.ink, fontFamily: font.display, fontSize: isMobile ? 33 : 38, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.98, textWrap: 'balance' as never }}>
           {greetingFor(date)},<br />{firstName}.
         </h1>
       </div>
@@ -289,32 +289,32 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
         {/* Rank card */}
         <button
           onClick={() => setShowRanks(true)}
-          style={{ ...panel, display: 'block', width: '100%', textAlign: 'left', borderRadius: radius.lg, padding: '18px 18px 16px', cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)' }}
+          style={{ ...panel, display: 'block', width: '100%', textAlign: 'left', borderRadius: radius.lg, padding: '16px 16px 14px', cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)' }}
           onMouseDown={pressFn(true)} onMouseUp={pressFn(false)} onMouseLeave={pressFn(false)}
           onTouchStart={pressFn(true)} onTouchEnd={pressFn(false)}
         >
-          <div style={{ display: 'grid', gridTemplateColumns: '54px minmax(0,1.05fr) minmax(0,1fr)', alignItems: 'center', gap: 14 }}>
-            <span style={{ width: 54, height: 54, borderRadius: 27, background: 'rgba(219,235,207,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <FlagGlyph size={30} color={color.green} strokeWidth={2.2} />
+          <div style={{ display: 'grid', gridTemplateColumns: '48px minmax(0,1.05fr) minmax(0,1fr)', alignItems: 'center', gap: 13 }}>
+            <span style={{ width: 48, height: 48, borderRadius: 24, background: 'rgba(219,235,207,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <FlagGlyph size={26} color={color.green} strokeWidth={2.2} />
             </span>
             <span style={{ minWidth: 0 }}>
               <span style={cardLabel}>Ranked points</span>
-              <span style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 7 }}>
-                <span ref={pointsRef} style={{ fontFamily: font.display, fontSize: 44, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.9, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>
+              <span style={{ display: 'flex', alignItems: 'baseline', gap: 7, marginTop: 6 }}>
+                <span ref={pointsRef} style={{ fontFamily: font.display, fontSize: 38, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.9, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>
                   {points.toLocaleString()}
                 </span>
-                <span style={{ fontSize: 18, fontWeight: 500, letterSpacing: '-0.03em', color: color.ink }}>pts</span>
+                <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: '-0.03em', color: color.ink }}>pts</span>
               </span>
             </span>
             <span style={{ minWidth: 0, textAlign: 'left' }}>
               <span style={cardLabel}>Rank</span>
-              <span style={{ display: 'block', marginTop: 7, fontSize: 22, fontWeight: 500, letterSpacing: '-0.04em', lineHeight: 1, color: color.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rank.name}</span>
-              <span style={{ display: 'block', marginTop: 7, fontSize: 14, fontWeight: 500, letterSpacing: '-0.02em', color: '#4D504A', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
+              <span style={{ display: 'block', marginTop: 6, fontSize: 20, fontWeight: 500, letterSpacing: '-0.04em', lineHeight: 1, color: color.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rank.name}</span>
+              <span style={{ display: 'block', marginTop: 6, fontSize: 13, fontWeight: 500, letterSpacing: '-0.02em', color: '#4D504A', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
                 {nextTier ? `${nextTier.minPoints - points} pts to ${nextTier.name}` : 'Top tier'}
               </span>
             </span>
           </div>
-          <div style={{ height: 10, marginTop: 16, overflow: 'hidden', borderRadius: 999, background: 'rgba(105,101,84,0.12)' }}>
+          <div style={{ height: 9, marginTop: 14, overflow: 'hidden', borderRadius: 999, background: 'rgba(105,101,84,0.12)' }}>
             <div style={{
               height: '100%', borderRadius: 999,
               background: 'linear-gradient(90deg, #7D9B68, #64834F)',
@@ -329,29 +329,29 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
         {/* Stats grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 10 }}>
           {/* Last round */}
-          <div style={{ ...panel, borderRadius: radius.md, padding: '14px 14px 16px' }}>
-            <span style={statChip(color.greenMid)}><FlagGlyph size={17} color="#FFFAF1" /></span>
+          <div style={{ ...panel, borderRadius: radius.md, padding: '13px 13px 14px' }}>
+            <span style={statChip(color.greenMid)}><FlagGlyph size={16} color="#FFFAF1" /></span>
             <div style={cardLabel}>Last round</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, marginTop: 8 }}>
-              <span style={{ fontFamily: font.display, fontSize: 27, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: lastScore !== null ? color.ink : color.faint, fontVariantNumeric: 'tabular-nums' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, marginTop: 7 }}>
+              <span style={{ fontFamily: font.display, fontSize: 24, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: lastScore !== null ? color.ink : color.faint, fontVariantNumeric: 'tabular-nums' }}>
                 {lastScore ?? '—'}
               </span>
-              {deltaText && <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '-0.02em', color: deltaColor, fontVariantNumeric: 'tabular-nums' }}>{deltaText}</span>}
+              {deltaText && <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '-0.02em', color: deltaColor, fontVariantNumeric: 'tabular-nums' }}>{deltaText}</span>}
             </div>
           </div>
           {/* Handicap */}
-          <div style={{ ...panel, borderRadius: radius.md, padding: '14px 14px 16px' }}>
+          <div style={{ ...panel, borderRadius: radius.md, padding: '13px 13px 14px' }}>
             <span style={statChip(color.sage)}>H</span>
             <div style={cardLabel}>Handicap</div>
-            <div style={{ marginTop: 8, fontFamily: font.display, fontSize: 27, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: profile?.handicapIndex != null ? color.ink : color.faint, fontVariantNumeric: 'tabular-nums' }}>
+            <div style={{ marginTop: 7, fontFamily: font.display, fontSize: 24, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: profile?.handicapIndex != null ? color.ink : color.faint, fontVariantNumeric: 'tabular-nums' }}>
               {profile?.handicapIndex != null ? profile.handicapIndex.toFixed(1) : '—'}
             </div>
           </div>
           {/* Record */}
-          <div style={{ ...panel, borderRadius: radius.md, padding: '14px 14px 16px' }}>
-            <span style={statChip(color.orange)}><TrophyIcon size={16} color="#FFFAF1" /></span>
+          <div style={{ ...panel, borderRadius: radius.md, padding: '13px 13px 14px' }}>
+            <span style={statChip(color.orange)}><TrophyIcon size={15} color="#FFFAF1" /></span>
             <div style={cardLabel}>Record</div>
-            <div style={{ marginTop: 8, fontFamily: font.display, fontSize: 27, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>
+            <div style={{ marginTop: 7, fontFamily: font.display, fontSize: 24, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>
               {wins}–{losses}–{ties}
             </div>
           </div>
@@ -362,9 +362,9 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
           <button
             onClick={() => onNavigate('rounds')}
             style={{
-              display: 'grid', gridTemplateColumns: '24px 1fr auto', alignItems: 'center', gap: 9,
-              minHeight: 55, padding: '0 12px 0 16px', borderRadius: radius.md, border: 'none',
-              color: '#FFFAF1', fontFamily: font.body, fontSize: 16, fontWeight: 700, letterSpacing: '-0.03em',
+              display: 'grid', gridTemplateColumns: '22px 1fr auto', alignItems: 'center', gap: 9,
+              minHeight: 52, padding: '0 12px 0 16px', borderRadius: radius.md, border: 'none',
+              color: '#FFFAF1', fontFamily: font.body, fontSize: 15, fontWeight: 700, letterSpacing: '-0.03em',
               background: 'radial-gradient(circle at 62% 45%, rgba(85,123,74,0.38), transparent 42%), linear-gradient(135deg, #174824 0%, #10361E 100%)',
               boxShadow: '0 9px 15px rgba(18,55,31,0.2)',
               cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)',
@@ -372,16 +372,16 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
             onMouseDown={pressFn(true)} onMouseUp={pressFn(false)} onMouseLeave={pressFn(false)}
             onTouchStart={pressFn(true)} onTouchEnd={pressFn(false)}
           >
-            <ScorecardIcon size={21} color="#FFFAF1" />
+            <ScorecardIcon size={20} color="#FFFAF1" />
             <span style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>Log a round</span>
             <ChevronRightIcon size={18} color="rgba(255,250,241,0.85)" />
           </button>
           <button
             onClick={() => onNavigate('friends')}
             style={{
-              display: 'grid', gridTemplateColumns: '24px 1fr auto', alignItems: 'center', gap: 9,
-              minHeight: 55, padding: '0 12px 0 16px', borderRadius: radius.md, border: 'none',
-              color: '#132F1D', fontFamily: font.body, fontSize: 16, fontWeight: 700, letterSpacing: '-0.03em',
+              display: 'grid', gridTemplateColumns: '22px 1fr auto', alignItems: 'center', gap: 9,
+              minHeight: 52, padding: '0 12px 0 16px', borderRadius: radius.md, border: 'none',
+              color: '#132F1D', fontFamily: font.body, fontSize: 15, fontWeight: 700, letterSpacing: '-0.03em',
               background: 'linear-gradient(135deg, rgba(224,235,214,0.95), rgba(237,241,220,0.85))',
               boxShadow: elevation.sm,
               cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)',
@@ -389,7 +389,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
             onMouseDown={pressFn(true)} onMouseUp={pressFn(false)} onMouseLeave={pressFn(false)}
             onTouchStart={pressFn(true)} onTouchEnd={pressFn(false)}
           >
-            <UsersIcon size={21} color="#132F1D" />
+            <UsersIcon size={20} color="#132F1D" />
             <span style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>Friends</span>
             <ChevronRightIcon size={18} color="rgba(19,47,29,0.7)" />
           </button>
