@@ -38,6 +38,9 @@ interface Props {
   msgUnread?: number
   // 'dark' blends the bar into the Home hero (deep green, light icons).
   tone?: 'light' | 'dark'
+  // Mobile: once content has scrolled under the overlay bar, fade in a frosted
+  // surface so the logo/bell/avatar stay legible over the cards.
+  scrolled?: boolean
 }
 
 // Count badge used on the bell / messages icons.
@@ -57,7 +60,7 @@ function Badge({ n, dark }: { n: number; dark?: boolean }) {
   )
 }
 
-export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, onNotif, onMessages, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0, msgUnread = 0, tone = 'light' }: Props) {
+export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, onNotif, onMessages, onProfile, userEmail, avatarUrl, onSignOut, isMobile, notifCount = 0, msgUnread = 0, tone = 'light', scrolled = false }: Props) {
   const [menuOpen, setMenuOpen]     = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
   const avatarRef               = useRef<HTMLDivElement>(null)
@@ -78,6 +81,10 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
   }, [])
 
   const dark = tone === 'dark'
+  // Mobile bar frosts in once content scrolls under it; desktop is always
+  // frosted (unless the dark hero tone is active).
+  const mobileFrost = isMobile && scrolled && !dark
+  const showFrost   = !dark && (mobileFrost || !isMobile)
   const hoverWash = dark ? 'rgba(255,255,255,0.08)' : color.sand
   const iconColor = dark ? 'rgba(255,250,241,0.85)' : color.ink
   const iconActive = dark ? color.onGreen : color.orange
@@ -104,19 +111,22 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
   return (
     <>
       {/* ── Top bar ──
-          On mobile it's an absolute overlay (transparent) so the Home hero
-          illustration can fill the screen behind it — the logo / bell / avatar
-          float over the pale sky. On desktop it stays a sticky frosted bar. */}
+          On mobile it's an absolute overlay that's transparent at the top (so
+          the Home hero shows through) and fades into a frosted cream bar once
+          content scrolls under it — keeping the logo / bell / avatar legible
+          and letting the cards blur cleanly beneath. On desktop it stays a
+          sticky frosted bar. */}
       <div style={{
         position: isMobile ? 'absolute' : 'sticky',
         top: 0, left: isMobile ? 0 : undefined, right: isMobile ? 0 : undefined, zIndex: 30,
-        background: dark ? color.greenDark : (isMobile ? 'transparent' : 'rgba(255,250,239,0.82)'),
-        backdropFilter: !dark && !isMobile ? 'blur(18px) saturate(1.15)' : undefined,
-        WebkitBackdropFilter: !dark && !isMobile ? 'blur(18px) saturate(1.15)' : undefined,
+        background: dark ? color.greenDark : (showFrost ? 'rgba(255,250,239,0.82)' : 'transparent'),
+        backdropFilter: showFrost ? 'blur(18px) saturate(1.15)' : undefined,
+        WebkitBackdropFilter: showFrost ? 'blur(18px) saturate(1.15)' : undefined,
         paddingTop: isMobile ? 'calc(env(safe-area-inset-top) + 12px)' : '14px',
         paddingBottom: isMobile ? '8px' : '14px',
-        borderBottom: dark || isMobile ? 'none' : `1px solid ${color.border}`,
-        transition: 'background 0.3s ease',
+        borderBottom: `1px solid ${dark ? 'transparent' : (showFrost ? color.border : 'transparent')}`,
+        boxShadow: mobileFrost ? '0 4px 16px rgba(40,34,20,0.06)' : 'none',
+        transition: 'background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease',
       }}>
         <div style={{
           maxWidth: 1320, margin: '0 auto',

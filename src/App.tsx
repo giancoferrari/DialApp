@@ -162,6 +162,10 @@ function AppShell() {
   const [composing, setComposing]     = useState(false)
   const qc = useQueryClient()
   const [roundAutoKey, setRoundAutoKey] = useState(0)
+  // Mobile header is a transparent overlay; once content scrolls under it we
+  // fade in a frosted bar so the logo/bell/avatar never clash with the cards.
+  const [navScrolled, setNavScrolled] = useState(false)
+  const navScrolledRef = useRef(false)
 
   const pageRef    = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -171,11 +175,28 @@ function AppShell() {
   const pendingScroll = useRef(0)                            // scroll to restore after the next view change
   const navDir        = useRef<'forward' | 'back'>('forward') // drives directional page transitions
 
-  // Restore the saved scroll for the view we just switched to (before paint).
+  // Restore the saved scroll for the view we just switched to (before paint),
+  // and sync the header's frosted state to that restored position.
   useLayoutEffect(() => {
-    if (isMobile && contentRef.current) contentRef.current.scrollTop = pendingScroll.current
-    else if (!isMobile) window.scrollTo(0, pendingScroll.current)
+    if (isMobile && contentRef.current) {
+      contentRef.current.scrollTop = pendingScroll.current
+      const s = pendingScroll.current > 30
+      navScrolledRef.current = s
+      setNavScrolled(s)
+    } else if (!isMobile) window.scrollTo(0, pendingScroll.current)
   }, [view, isMobile])
+
+  // Toggle the frosted header only when crossing the threshold (cheap — no
+  // per-frame re-renders).
+  const handleContentScroll = useCallback(() => {
+    const el = contentRef.current
+    if (!el) return
+    const s = el.scrollTop > 30
+    if (s !== navScrolledRef.current) {
+      navScrolledRef.current = s
+      setNavScrolled(s)
+    }
+  }, [])
 
   const refreshNotifCount = useCallback(async () => {
     if (!user) return
@@ -381,9 +402,10 @@ function AppShell() {
         isMobile={isMobile}
         notifCount={notifCount}
         msgUnread={msgUnread}
+        scrolled={navScrolled}
       />
 
-      <div ref={contentRef} style={contentStyle}>
+      <div ref={contentRef} style={contentStyle} onScroll={isMobile ? handleContentScroll : undefined}>
         <div ref={pageRef}>
           {view === 'dashboard' && (
             <Dashboard
