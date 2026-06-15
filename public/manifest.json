@@ -10,15 +10,15 @@
   "icons": [
     {
       "src": "/icon-pwa.png",
-      "sizes": "192x192",
+      "sizes": "1254x1254",
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "/icon-pwa.png",
-      "sizes": "512x512",
+      "sizes": "1254x1254",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ],
   "categories": ["sports", "health", "lifestyle"],
