@@ -81,11 +81,12 @@ Supabase Postgres, all tables have **Row Level Security**. The live DB has been 
 - **`profileUserId`** (null = own profile) and **`messageUserId`** (null = inbox) drive `ProfileView` and `MessagesView`.
 - **Global modals rendered in the shell (not inside the transformed page):** `LogShotModal`, `LegalModal`, `SetNewPasswordModal`, and the global post `Composer` (opened via `composing` state from the "Share a post" menu item).
 - **Live badges:** `notifCount` (friend requests + match invites) and `msgUnread` (unread DMs), kept live via Supabase realtime subscriptions on `friendships`, `match_players`, `messages`.
+- **Mobile scroll-aware header:** `App` tracks the mobile scroll container (`scrollTop > 30` → `navScrolled` state + `navScrolledRef`), passes it to `TopNav` as `scrolled`, and syncs it on view change in the `useLayoutEffect` scroll-restore. `TopNav` uses this to fade in the frosted bar (see §5).
 
 ### TopNav (`src/components/TopNav.tsx`)
-- **Top bar (always):** wordmark, spacer, [desktop-only chat icon w/ unread badge], bell (notifications) w/ badge, **"Log +" create menu** (Share a post / Log a shot / Start a round / New match), avatar dropdown (Profile, Sign out).
-- **Mobile bottom nav (floating glass pill):** Home · Messages (unread badge) · Matches · Tools · Profile.
-- **Desktop pill nav:** Home · Friends · Matches · Tools · Profile.
+- **Top bar — mobile:** `position: absolute` transparent overlay floating over the page. Transparent when content is at the top; **frosts in** (cream 82% opacity + blur 18 + hairline + shadow) smoothly once content scrolls under it (`mobileFrost`/`showFrost`). Logo, bell, avatar only (no pill nav — that's the bottom tab).
+- **Top bar — desktop:** `position: sticky`, always frosted cream, with a horizontal pill nav (Home · Friends · Matches · Tools · Profile) + desktop-only chat icon + create menu.
+- **Mobile bottom nav:** **floating frosted pill** — inset 14px from screen edges, `borderRadius 28`, blur 20, soft drop shadow, floats `safe-area-bottom + 10px`. Five tabs: Home · Messages (unread badge) · Matches · Tools · Profile. Active state = **ink label + orange dot** below the icon (dot springs in with overshoot on tab switch; icon lifts 1px). Pill rises in on first mount (`.nav-pill-in`). Press scales the tab to 0.92.
 - Menus close on outside-click and **Escape**.
 
 ### Critical mobile rule — **Portals**
@@ -94,27 +95,85 @@ All modals/sheets/overlays must render through **`src/components/Portal.tsx`** (
 ### Mobile height chain
 `index.css` sets `html, body, #root { height: 100% }` so the mobile app-shell's `height: 100%` resolves and the inner area scrolls correctly under the fixed bottom nav. `index.html` viewport meta uses `maximum-scale=1.0` + `interactive-widget=resizes-content` to **prevent iOS input-focus auto-zoom**.
 
+### Mobile content padding
+Because the mobile top bar is an absolute overlay, `contentStyle` in `App.tsx` sets `paddingTop: 0` for the `dashboard` view (the hero fills behind the header) and `paddingTop: calc(env(safe-area-inset-top) + 60px)` for all other views so their content clears the floating header.
+
 ---
 
-## 5. Design system — **v3 "Warm Clubhouse" (June 2026, from the owner's prototype)**
+## 5. Design system — **v3 "Warm Clubhouse" (current)**
 
 > The current visual identity comes from the owner's own prototype at **`public/dial-home.html` + `public/dial-home.css`** (kept in the repo as the design reference — do not delete). Direction: warm premium golf/social identity — cream surfaces, pine/sage/orange palette, bold iOS-style system typography, restrained glass, an illustrated coastal-course Home hero. The **Home screen** is fully on v3; other screens inherit the v3 tokens (warm cream bg, pine CTAs, system font) over their v2 layouts and get refined when touched.
 
-- **Design tokens — `src/lib/tokens.ts` is the single source of truth.** Exports `font`, `space`, `radius` (prototype scale: 12 sm → 18 md/card → 22 lg → 28 sheet → pill), `color`, `elevation` (soft warm shadows), **`glass`** (the prototype's frosted panel: translucent cream + warm-white border + blur 18), `z`, `motion`/`ease`, `type` presets, plus `HERO_BG`/`onHero` (retoned to pine) for the v2 dark-hero screens.
-- **Palette:** cream `#F8F3E7` bg (`sheet #FFFAF0`, `creamDeep #EFE7D4`), **pine `#12371F`** (primary CTAs/active), `greenMid #356D3D`, **sage `#7D9667`** (progress/secondary), **orange `#C86718`** (reactions, deltas, active-nav indicator), `sky #9FCFD7` (illustration), ink `#0B0D0A`, muted `#5C625A`, warm borders `#E6DFCC`.
-- **Typography:** bold iOS-style **system sans** (`-apple-system / Helvetica Neue / Segoe UI`) for everything — heavy weights (600–800) + tight tracking; greeting 38–42/700/-0.045em; **card labels are 12px/700 uppercase** (the prototype's label voice — this is back by design). **Bricolage Grotesque** is loaded only for the unchanged multicolor `DialWordmark` logo.
-- **Home screen (v3 reference implementation, `Dashboard.tsx`):** greeting (green date + huge bold greeting) → **`CourseHero.tsx`** full-bleed coastal-course illustration (real `public/course-hero.jpg`, falls back to the `CourseHeroArt.tsx` SVG) → frosted **glass rank card** overlapping the art (flag chip, RANKED POINTS number, RANK + pts-to-next, sage progress bar; tap → RanksModal) → 3 glass **stat cards** with colored icon chips (pine flag / sage H / orange trophy) → **CTA pair** (pine-gradient "Log a round" + sage-tint "Friends") → THE CLUBHOUSE feed (warm rounded cards, orange likes). **Hero blend:** `CourseHero` applies a bottom **mask-image gradient** so the illustration's foreground green dissolves into the cream rather than ending in a hard rectangle (`aspect`/`fadeStart` props tune the band per layout). **Mobile hero is full-bleed to the very top (2026-06-13):** the mobile top bar is now an **absolute transparent overlay** (`TopNav`) so the page starts at screen-top and the illustration fills behind the floating logo/bell/avatar — no seam under the header. Dashboard renders a **taller mobile hero** (`aspect="390 / 430"`, `fadeStart={67}`) with the greeting **absolutely positioned over the pale sky**; the extra height is sky up top so the sea/green/flag stay low by the rank card. Because the header overlays, `App.tsx` `contentStyle` adds `paddingTop` (≈ header height) for **every non-`dashboard` view** so their content clears the floating header. **Type scale tightened (2026-06-13):** greeting 33/38, rank number 38, stat numbers 24, and the RanksModal padding/type reduced for a cleaner, smaller look per the reference. **Record stat card** renders W–L–T as three spaced `recNum` numbers with quiet lighter `recSep` dashes (was a cramped `1–0–0` string).
-- **Mobile bottom nav (TopNav):** **floating frosted pill** (2026-06-13) — inset 14px from the screen edges, `borderRadius 28`, blur 20, soft drop shadow, floats `safe-area-bottom + 10px` above the bottom; icon + 12/600 label, active = ink label + a small **orange dot** below it. **Motion (2026-06-13, Emil pass):** the pill **rises in** on first mount (`.nav-pill-in`); on tab switch the active **dot springs in** (scale 0.2→1 with a subtle overshoot `cubic-bezier(0.34,1.56,0.64,1)`) and the active **icon lifts** 1px; press scales the tab to 0.92. Top bar on mobile is a transparent **absolute overlay** (logo, bell, avatar) floating over the hero. **Scroll-aware frost (2026-06-13):** the overlay is transparent only at the very top; once content scrolls under it (`App.tsx` tracks the mobile scroll container's `scrollTop > 30` → `navScrolled` → TopNav `scrolled` prop), a **frosted cream bar** (blur + hairline + soft shadow) fades in (`mobileFrost`/`showFrost`), so the logo/bell/avatar stay legible and the cards blur cleanly beneath instead of clashing with the black logo. Desktop bar is always frosted.
-- **Logo (`DialWordmark`):** **monochrome + adaptive (2026-06-13)** — solid near-black `#0B0D0A` on light surfaces, solid white on dark (`onDark`). (Previously multicolor green/orange/sage; changed per owner request for full contrast on any background.)
-- **Colors:** cool porcelain bg `#F4F5F2`, white cards `#FFFFFF` + hairline `#E4E6E1`, sunken wells `#EFF1ED`. **One brand color: green `#1E4D38`** (hover `#153B2A`, tint `#E8EFEA`) — reserved for primary actions, identity moments (rank card, RecapCard) and selected states. Text ramp: ink `#171A17` / `#494F49` / `#6B716B` / `#9AA09A`. Golf semantics (data only): birdie `#3F8761`, over-par `#9E4A26`, eagle `#A8852F`, danger `#BD3A2D`. The old orange accent is retired as decoration.
-- **Background:** flat `#F4F5F2`, nothing else (vignettes and paper-grain texture removed in v2).
-- **Surfaces (`src/lib/surfaces.ts`):** `card` (white + hairline border, **no blur, no shadow, no gradients**), `cardRaised` (whisper of `elevation.sm`), `inputSurface` (sunken well), `sectionLabel` (sentence case). **Glass exists in exactly two places:** the floating mobile bottom nav (`rgba(255,255,255,0.84)` + blur 24) and modal scrims (`rgba(23,26,23,0.45)` + blur 8). **Banned v1 patterns:** gradient card fills, inset white glows, stacked shadows, uppercase tracked micro-labels, text glyphs as icons (use `Icons.tsx` — `RepostIcon`, `ChevronLeftIcon` added in v2).
-- **Shared primitives:** `components/Avatar.tsx` (the one avatar — photo or initial), `components/EmptyState.tsx` (icon + headline + subline + CTA), `lib/format.ts` (`timeAgo`, `displayName`, `initialOf`, `scoreToPar`, `formatHandicap`, `formatYards`). Use these instead of re-implementing per screen.
-- **Buttons & inputs (`components/Button.tsx`, `components/Field.tsx`):** the canonical, tokens-based components for new UI. `Button` has a real tier hierarchy — `primary` (one key action per screen), `secondary`, `tertiary` — plus built-in pressed (scale 0.97) and disabled states. `Field` is a 44px labelled input on the sunken sand surface (16px font → no iOS zoom) that picks up the global focus ring. Existing inline buttons/inputs are already visually consistent; migrate them to these as files are touched rather than in one mass refactor.
-- **The "Dial" motif (`components/DialRing.tsx`):** a precision dial/gauge — faint tick marks around the full circle + a bright animated progress arc, with arbitrary center content. The brand signature. Used on the Dashboard rank card (the avatar sits inside the ring, which fills to show progress toward the next rank tier). Reusable for any radial progress.
+### Design tokens — `src/lib/tokens.ts`
+Single source of truth. Exports:
+- **`font`** — `body` (system Helvetica stack), `display` (same), `wordmark` (Bricolage Grotesque, logo only).
+- **`space`**, **`radius`** — prototype scale: 12 sm → 18 md/card → 22 lg → 28 sheet → pill.
+- **`color`** — see palette below.
+- **`elevation`** — soft warm shadows (sm / md / lg).
+- **`glass`** — frosted panel: translucent cream + warm-white border + blur 18.
+- **`z`**, **`motion`/`ease`**, **`type`** presets.
+- **`HERO_BG`/`onHero`** — retoned to pine (for v2 dark-hero screens still in use on non-Home tabs).
+
+### Palette
+- **Cream** `#F8F3E7` (app bg), `sheet #FFFAF0` (elevated), `creamDeep #EFE7D4`.
+- **Pine** `#12371F` — primary CTAs, active states.
+- **GreenMid** `#356D3D` — stat chip bg.
+- **Sage** `#7D9667` — progress bar, secondary actions, handicap chip.
+- **Orange** `#C86718` — reactions, deltas, active nav indicator.
+- **Sky** `#9FCFD7` — illustration tones.
+- **Ink** `#0B0D0A`, **muted** `#5C625A`, **faint** (disabled), warm borders `#E6DFCC`.
+- Golf semantics (data only): birdie `#3F8761`, over-par / orange `#C86718`, eagle `#A8852F`, danger `#BD3A2D`.
+
+### Typography
+Bold iOS-style **system sans** (`-apple-system / Helvetica Neue / Segoe UI / Arial`) for everything — heavy weights (600–800) + tight tracking. **Bricolage Grotesque** loads only for the `DialWordmark` logo. **Card labels are 12px/700 uppercase** (intentional, from the prototype spec).
+
+### Logo — `components/DialWordmark.tsx`
+**Monochrome + adaptive:** solid near-black `#0B0D0A` on light surfaces, solid white on dark surfaces (`onDark` prop). Single-color "Dial." in Bricolage Grotesque. ⚠️ Do NOT revert to multicolour — this was changed per owner request for contrast on any background.
+
+### Favicon / browser icon — `public/favicon.svg`
+Dark pine-green rounded-square (`rx 110` in a 512×512 viewBox), bold white "D" letterform with the golf putting green + flag visible through the inner cutout of the D. Referenced in `index.html` as `<link rel="icon" type="image/svg+xml" href="/favicon.svg">`. Apple touch icon is `public/icon-pwa.png` (unchanged).
+
+### Home screen — `components/Dashboard.tsx` + `components/CourseHero.tsx`
+
+**Layout order (mobile):**
+1. **Illustration** — `CourseHero` fills from the very top of the screen, running behind the floating transparent header.
+2. **Greeting** — absolutely positioned over the pale sky (`top: safe-area + 62px`); green date (15/600) + bold heading (33px mobile / 38px desktop, 700, −0.05em tracking).
+3. **Rank card** (overlaps illustration bottom) — flag chip (48px circle), RANKED POINTS (38px), RANK name (20px) + pts-to-next; sage progress bar; tappable → `RanksModal`.
+4. **3 stat cards** (grid) — Last round (pine chip + flag), Handicap (sage H chip), Record (orange trophy chip). Record renders W–L–T as three spaced numbers with quiet lighter dashes (not a cramped string).
+5. **CTA pair** — "Log a round" (pine gradient, 52px) + "Friends" (sage tint, 52px).
+6. **Clubhouse Feed** (`Feed.tsx`).
+
+**Hero (`CourseHero.tsx`):**
+- Loads `public/course-hero.jpg` (the coastal illustration photo); falls back to `CourseHeroArt.tsx` (the SVG version) on error.
+- Props: `aspect` (default `"390 / 318"`) and `fadeStart` (default `55`) — the mobile hero uses `aspect="390 / 500"` and `fadeStart={72}` so it's taller and the fade starts later, leaving more blended illustration below the greeting.
+- **Bottom fade:** a CSS `mask-image` gradient (`#000 0%→fadeStart%, transparent 100%`) dissolves the foreground green into the cream background — no hard rectangle edge.
+- **Wrapper has `overflow: hidden`** so the `.hero-settle` scale animation never shifts layout.
+
+**Motion (Emil pass, 2026-06-13) — Home only:**
+- `.hero-settle` CSS class: illustration scales `1.06 → 1` over 1.1s on mount (cinematic "arrive" feel). Gated by `prefers-reduced-motion` (global CSS block neutralizes it).
+- Cards **stagger up** on mount via GSAP: `y:22 → 0`, `duration 0.58`, `stagger 0.07`, `power3.out`. Gated via `gsap.matchMedia`.
+- Points **count up** (GSAP to tween) + rank **bar fills** (`rankBarFill` keyframe).
+- Press feedback: scale `0.98` on rank card + CTA buttons.
+
+**RanksModal:** smaller than it used to be — 17px header, 20px points-per-match numbers, 14px tier rows, 12px padding, 14px button. Tier rows stagger in (GSAP). "See friends leaderboard" CTA navigates to `leaderboard` view.
+
+### Bottom tab bar — `components/TopNav.tsx` (mobile only)
+Floating frosted pill: `position: fixed`, inset 14px, `borderRadius 28`, `background rgba(255,250,239,0.86)`, `backdropFilter blur(20px) saturate(1.2)`, 1px warm border, drop shadow. Floats `safe-area-bottom + 10px` above screen bottom.
+
+**Active state:** ink icon + ink label + small orange dot (`width/height 5`, `borderRadius 999`) below the label.
+
+**Motion:** pill rises in on first mount (`.nav-pill-in`). On tab switch: dot scales `0.2→1` with overshoot (`cubic-bezier(0.34, 1.56, 0.64, 1)`); icon lifts 1px (`translateY(-1px)`, 260ms same curve). Press scales the entire tab button to `0.92`.
+
+### Mobile header scroll-frost
+The mobile top bar is transparent at the top (`background: transparent`, no blur) so the hero illustration shows through. Once the scroll container's `scrollTop` exceeds 30px, `App.tsx` sets `navScrolled = true` → passes `scrolled` prop to `TopNav` → the bar transitions to `background rgba(255,250,239,0.82)` + `backdropFilter blur(18px)` + hairline border + soft shadow over 0.25s. This keeps the logo / bell / avatar legible over scrolled card content on every screen.
+
+### Other design notes
 - **Paper grain:** a fixed ~4%-opacity SVG `feTurbulence` noise layer over the cream (in `App.tsx`, `zIndex 1`, `mix-blend-mode: multiply`) — tactile, premium.
-- **Motion (Phase 4):** one spring easing standard — `cubic-bezier(0.22, 1, 0.36, 1)` (`motion.spring`; GSAP `power3.out`). **Directional page transitions** (`App.tsx` `navDir` ref: forward enters from the right, back from the left). Modal/sheet entrances are standardized: backdrop `fadeIn`, mobile sheets `slideUp`, desktop modals `scaleIn` (the feed post→detail "expand"). All gated by `prefers-reduced-motion`.
-- **Mobile detection:** `useIsMobile()` hook (`src/hooks/useIsMobile.ts`), passed as `isMobile` prop widely.
+- **Directional page transitions:** forward enters from the right, back from the left (`navDir` ref in `App.tsx`; GSAP `power3.out`). All gated by `prefers-reduced-motion`.
+- **Glass** exists only on: the floating mobile bottom nav + frosted mobile header (when scrolled) + modal scrims.
+- **Shared primitives:** `Avatar.tsx`, `EmptyState.tsx`, `lib/format.ts` (`timeAgo`, `displayName`, `initialOf`, `scoreToPar`, `formatHandicap`, `formatYards`). Use these, never re-implement.
+- **`Button.tsx` / `Field.tsx`:** canonical token-based components. `Button` has `primary / secondary / tertiary` tiers + press scale. `Field` is 44px / 16px font (no iOS zoom).
+- **`DialRing.tsx`:** precision dial/gauge with tick marks + animated progress arc. Used for rank progress.
 
 ---
 
@@ -124,13 +183,13 @@ All modals/sheets/overlays must render through **`src/components/Portal.tsx`** (
 Email/password. Sign-in accepts email **or** `@username` (resolved via `get_email_by_username` RPC). Email confirmation on signup; password reset + recovery (`SetNewPasswordModal` in App). **Signup collects:** first name, last name, username, **country** (CountryPicker), password (strength meter), legal/age agreement. `signUp(...)` then `upsertProfile({ username, country })`.
 
 ### Home / Dashboard — `components/Dashboard.tsx`
-Order: **date pill → rank card → quick stats → actions → Clubhouse feed.** Quick stats = last round (score vs par), handicap, W/L/T record. **Actions:** a row of two equal buttons — **Log a round** (primary, green → opens the Rounds page) and **Friends** — plus a bigger **Friends leaderboard** card below them. (Recent Rounds and the Start-a-Match CTA were removed from Home per request — matches live in the top "Log +" menu + Matches tab; rounds list is one tap from "Log a round".) **Clubhouse Feed** (`Feed.tsx`) sits below the actions. The **rank card is tappable → `RanksModal`** (all tiers, current highlighted, points per match: Win +25 / Tie +5 / Loss −10, and a "See friends leaderboard" link). **Motion (2026-06-13, Emil pass):** on mount the cards **stagger up** (GSAP, y22 / stagger 0.07 / power3.out) while the hero **cinematically settles** (`.hero-settle` scale 1.06→1, 1.1s, wrapper `overflow:hidden` so the zoom never shifts layout); points **count up** + rank **bar fills**; press feedback (scale 0.98) on the rank card + CTAs. All gated behind `prefers-reduced-motion` (the global reduce block neutralizes CSS animations; GSAP uses `matchMedia`). Scope was Home + bottom nav only — rest of app pending a later pass.
+See §5 for full layout + motion detail. **Rank card is tappable → `RanksModal`** (all tiers, current highlighted, points per match Win +25 / Tie +5 / Loss −10, "See friends leaderboard" link). **Clubhouse Feed** (`Feed.tsx`) sits below the CTAs.
 
 ### Clubhouse Feed — `components/Feed.tsx`
 Full-width post cards from **you + accepted friends** (`fetchFeedPosts`). Inline like (heart, optimistic), comment count, tap media/comment → shared `PostDetail`. Tap author → their profile (`onViewProfile`). Images `loading="lazy"`. Posts are either **photos** or **round recaps** (`post.kind`): recaps render via `RecapCard` instead of an `<img>`.
 
 ### Round recap posts — `components/RecapCard.tsx`, `lib/posts.createRoundPost`
-Posts can be a **round recap** (no photo): `posts.kind` ('photo' | 'round') + `posts.meta` jsonb (`RoundRecapMeta`: course, score, par, toPar, holes, GIR, fairways, putts). After finishing a round, **ScorecardView's summary has a "Share this round to your feed" button** (`createRoundPost`). `RecapCard` renders a green scorecard-style card in three variants: `feed`, `detail`, `tile` (profile grid). This is the Strava-style flywheel — the feed fills with activity even without photos. Requires `SOCIAL_V5.sql` (makes `image_url` nullable, adds `kind` + `meta`).
+Posts can be a **round recap** (no photo): `posts.kind` ('photo' | 'round') + `posts.meta` jsonb (`RoundRecapMeta`: course, score, par, toPar, holes, GIR, fairways, putts). After finishing a round, **ScorecardView's summary has a "Share this round to your feed" button** (`createRoundPost`). `RecapCard` renders a green scorecard-style card in three variants: `feed`, `detail`, `tile` (profile grid). Requires `SOCIAL_V5.sql` (makes `image_url` nullable, adds `kind` + `meta`).
 
 ### Rounds / Scorecard — `components/ScorecardView.tsx`
 Phases: history → round_start (pick saved course / featured **Santa Maria** / search via `CourseSearch` / add new) → course_setup → hole_setup → mode_select (**Score only** vs **Score + Stats**) → scorecard (golf-notation cells, tap to type) → summary (stats, scoring breakdown, struggle holes). Uses `lib/rounds.ts`, `lib/courses.ts`, `lib/courseCorrections.ts`.
@@ -142,43 +201,43 @@ Virtual **wallet** (top up / withdraw, USD). Create match: course, 9/18, format 
 Hub → **Stats** (`StatsView.tsx`), **Bag** (`BagView.tsx`, club distances from shots), **Dial In** (`DialInView.tsx`, shot/wind calculator), **Rounds** (Scorecard), **Practice** (`PracticeView.tsx`, training log).
 
 ### Stats / Trends — `components/StatsView.tsx`, `lib/stats.ts`
-Read-only, computed from logged rounds + shots (no schema). Shows an **estimated handicap** (best 8 of last 20 complete 18-hole rounds' to-par × 0.96), a **recent-rounds bar chart** colored by to-par, **averages** (GIR%, fairways%, putts/18, scrambling%), and **bag gap analysis** (consecutive club-distance gaps, flags "full club" gaps ≥18yd). Pure functions live in `lib/stats.ts` (`roundTotals`, `aggregateStats`, `scoreTrend`, `estimateHandicap`, `bagGaps`).
+Read-only, computed from logged rounds + shots (no schema). Shows an **estimated handicap** (best 8 of last 20 complete 18-hole rounds' to-par × 0.96), a **recent-rounds bar chart** colored by to-par, **averages** (GIR%, fairways%, putts/18, scrambling%), and **bag gap analysis** (consecutive club-distance gaps, flags "full club" gaps ≥18yd). Pure functions live in `lib/stats.ts`.
 
 ### Log a shot — `components/LogShotModal.tsx`
 Quick club-distance capture (numpad + club picker + note). Opened from the "Log a shot" create-menu item; saves a `shots` row.
 
 ### Leaderboard — `components/LeaderboardView.tsx`, `lib/leaderboard.ts`
-Ranks **you + your accepted friends by all-time ranked points** (read from `user_profiles`, which is readable for others). Medals for top 3, your row highlighted in dark green, rank tier + W/L + country flag, tap a row → their profile. Reached from a card at the top of **Friends**, and from a "See friends leaderboard" button in the Home rank card's `RanksModal`. (Weekly/monthly would need a points-event ledger — not built; this is all-time.)
+Ranks **you + your accepted friends by all-time ranked points** (read from `user_profiles`). Medals for top 3, your row highlighted in dark green, rank tier + W/L + country flag, tap a row → their profile. Reached from the Friends tab and from the RanksModal "See friends leaderboard" button.
 
 ### Friends — `components/FriendsView.tsx`, `lib/friends.ts`
-Search users by username, send/accept/decline/remove requests, friends list. **Tapping a friend opens their full profile page** (`onViewProfile` → ProfileView). (The old popup modal was removed.)
+Search users by username, send/accept/decline/remove requests, friends list. **Tapping a friend opens their full profile page** (`onViewProfile` → ProfileView).
 
 ### Messages / DMs — `components/MessagesView.tsx`, `lib/messages.ts`
-Conversation list (avatar, last-message preview, time, unread badge) + **chat thread** (`Thread`): realtime delivery, optimistic send, read receipts, **per-message timestamps + day separators**, grouped bubbles. **Mobile keyboard:** the thread pins to `window.visualViewport` (tracks height + offsetTop) so the header stays fixed and only the chat shifts — Instagram-style; input is 16px to avoid iOS zoom. **Header is tappable → opens the other player's profile.** New-message picker searches friends + any user. Conversations keyed by sorted user pair (`lib/messages.ts pair()`). Failed sends show an inline **error banner** above the composer (no more silent failures). Friends is also reachable from the avatar dropdown menu.
+Conversation list (avatar, last-message preview, time, unread badge) + **chat thread** (`Thread`): realtime delivery, optimistic send, read receipts, **per-message timestamps + day separators**, grouped bubbles. **Mobile keyboard:** thread pins to `window.visualViewport`. Input 16px to avoid iOS zoom. **Header tappable → opens other player's profile.** New-message picker searches friends + any user. Failed sends show an inline error banner. Conversations keyed by sorted user pair (`lib/messages.ts pair()`).
 
 ### Profile — `components/ProfileView.tsx`, `components/ProfilePosts.tsx`
-**Full page** (own + other users). Header: avatar, name, `@username`, **country + flag**, rank badge, stats (handicap / points / friends), W/L/T, rank progress. **Own:** "Edit profile" gear → Settings; tap avatar → Settings. **Other:** back arrow (`onBack`/goBack) + **Message** button. The **friends stat is tappable** → own profile goes to the Friends view; another user's opens a `FriendsListModal` of their friends. Below: **`ProfilePosts`** — 3-col posts grid; composer (image + caption, own only); `PostDetail` modal (big image, like, comments, delete own). **Comments support likes (heart) and Reply** (Reply prefills `@username` into the comment box and focuses it). The post detail has a **3-dot (`MoreIcon`) menu**: **Delete post** on your own posts, **Report post** on others' → a `ReportSheet` with reasons (`reportPost` → `post_reports`). `PostDetail` and `Composer` are **exported** for reuse (Feed + global post button).
+**Full page** (own + other users). Header: avatar, name, `@username`, **country + flag**, rank badge, stats (handicap / points / friends), W/L/T, rank progress. **Own:** gear → Settings; tap avatar → Settings. **Other:** back arrow + **Message** button. Friends stat tappable. Below: **`ProfilePosts`** — 3-col grid; composer (own only); `PostDetail` (big image, like, comments, delete own). Comments support likes + Reply. 3-dot menu: Delete (own) / Report (others' → `ReportSheet` → `post_reports`).
 
 ### Settings — `components/SettingsView.tsx`
-Back arrow. Sections: Account (first name, username), **Location (CountryPicker)**, Security (email, change password), Golf Profile (handicap, home course, preferred tee), Game Defaults, Goals, Privacy toggles, About (legal links via `LegalModal`), Sign out. Saves via `upsertProfile`. Avatar upload here + on ProfileView.
+Back arrow. Sections: Account, Location (CountryPicker), Security, Golf Profile, Game Defaults, Goals, Privacy, About (LegalModal), Sign out. Saves via `upsertProfile`. Avatar upload here + on ProfileView.
 
 ### Notifications — `components/NotificationsView.tsx`, `lib/notifications.ts`
-Friend requests + match invites with accept/decline, **plus an activity feed** from the `notifications` table — "@X tagged you in a post / reposted your post / **liked your post** / **commented on your post**", with post thumbnail. A notification is created on every post like (`toggleLike`), comment (`addComment`), repost, and tag (recipient ≠ actor). Realtime. Opening the page marks notifications read. The bell badge (`notifCount` in App) = pending friend requests + match invites + unread notifications.
+Friend requests + match invites with accept/decline + activity feed from `notifications` table (tagged, reposted, liked, commented). Realtime. Opening marks read. Bell badge = pending friend requests + match invites + unread notifications.
 
 ### Tagging & reposts — `lib/posts.ts`, `lib/notifications.ts`
-**Composer** has a "Tag players" friend-multiselect → `createPost(..., taggedIds)` inserts `post_tags` + a `post_tag` notification to each. **Feed** cards (and the feed query `fetchFeedPosts`) include **reposts**: a card shows "↻ @X reposted" and posts have a **Repost** button (`toggleRepost`) that adds a `reposts` row + a `repost` notification to the original author. Reposts surface in friends' Home feeds attributed to the original poster.
+Composer has "Tag players" friend-multiselect → `createPost(..., taggedIds)` inserts `post_tags` + notifications. Feed includes reposts: "↻ @X reposted" header, Repost button (`toggleRepost`) → `reposts` row + notification to original author.
 
 ### Country picker — `components/CountryPicker.tsx`, `lib/countries.ts`
-Searchable modal sheet (Portal) listing ~195 countries with flag emojis (`flagEmoji(code)` builds the emoji from the ISO alpha-2 code). Used in signup + settings. Flags shown on profiles.
+Searchable modal sheet (Portal) listing ~195 countries with flag emojis. Used in signup + settings.
 
 ---
 
 ## 7. Data layer conventions (`src/lib/`)
-- **Caching = TanStack React Query.** App is wrapped in `QueryClientProvider` (`lib/queryClient.ts`: 30s staleTime, background refetch on focus). Data views use `useQuery` so returning to a tab is **instant from cache** then refreshes in the background; mutations update the cache optimistically via `setQueryData` or invalidate. Query keys in use: `['feed', userId]`, `['conversations', userId]`, `['leaderboard', meId]`, `['userPosts', target, me]`, `['friends', userId]`, `['notifications', userId]`, `['matchesData', userId]`. First loads render a shimmer **`Skeleton`** (`components/Skeleton.tsx`) — never a "Loading…" string. Scroll position is preserved per tab in `App` (saved on leave, restored before paint via `useLayoutEffect`).
-- **DB is snake_case, TS is camelCase.** Each lib has `toX(row)` converter functions mapping rows → typed objects.
-- Files: `supabase.ts`, `profile.ts`, `friends.ts`, `rounds.ts`, `courses.ts`, `courseCorrections.ts`, `shots.ts`, `practice.ts`, `matches.ts`, `wallet.ts`, `points.ts`, `feed.ts` (the **round/match activity feed** — distinct from the posts `Feed.tsx`), `messages.ts`, `posts.ts`, `notifications.ts` (tag/repost notifications), `golfCourseApi.ts`, `countries.ts`, `imageCompress.ts`.
-- **Image uploads are auto-compressed** client-side via `imageCompress.compressImage()` (canvas downscale + JPEG re-encode) in `uploadAvatar` (≤512px) and `uploadPostImage` (≤1440px) to save storage.
-- **Course naming:** golfcourseapi.com sometimes returns a generic `course_name`; `golfCourseApi.courseDisplayName()` prefers `club_name` plus explicit overrides — **14916 → "Club de Golf de Panama"**, **25374 → "Santa Maria Golf & Country Club"**. Used in `CourseSearch` and `MatchesView`.
+- **Caching = TanStack React Query.** `lib/queryClient.ts`: 30s staleTime, background refetch on focus. Query keys: `['feed', userId]`, `['conversations', userId]`, `['leaderboard', meId]`, `['userPosts', target, me]`, `['friends', userId]`, `['notifications', userId]`, `['matchesData', userId]`. First loads render shimmer `Skeleton` — never a "Loading…" string. Scroll position preserved per tab (`scrollPos`/`pendingScroll` refs, restored via `useLayoutEffect`).
+- **DB is snake_case, TS is camelCase.** Each lib has `toX(row)` converter functions.
+- **Files:** `supabase.ts`, `profile.ts`, `friends.ts`, `rounds.ts`, `courses.ts`, `courseCorrections.ts`, `shots.ts`, `practice.ts`, `matches.ts`, `wallet.ts`, `points.ts`, `feed.ts`, `messages.ts`, `posts.ts`, `notifications.ts`, `golfCourseApi.ts`, `countries.ts`, `imageCompress.ts`.
+- **Image uploads auto-compressed** client-side (`imageCompress.compressImage()`): avatars ≤512px, post images ≤1440px.
+- **Course naming:** `golfCourseApi.courseDisplayName()` prefers `club_name` + explicit overrides — **14916 → "Club de Golf de Panama"**, **25374 → "Santa Maria Golf & Country Club"**.
 
 ---
 
@@ -188,7 +247,8 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis (`flagEm
 - The native app (`DialApp-Native`) is far behind the web app.
 - `react-hooks/set-state-in-effect` lint messages are intentional/accepted.
 - Every modal must use `<Portal>`.
-- **iOS app (Capacitor):** **set up** — `@capacitor/*` v8 installed, `capacitor.config.ts` (appId `xyz.dialgolf.app`, appName Dial, webDir `dist`), and `src/lib/native.ts` (`initNative()` for status bar/keyboard/splash/haptics, all guarded by `Capacitor.isNativePlatform()` so the web is unaffected). The native `ios/` project + Xcode build/submit must be done **on a Mac** (`npx cap add ios` → `npx cap open ios`). Full steps in `IOS_APP_MORPH.md`.
+- **Motion pass scope:** Emil-style motion has been applied to **Home screen + bottom nav only** (2026-06-13). Rest of app is pending a future pass using the same vocabulary (hero settles, spring dots, staggers).
+- **iOS app (Capacitor):** set up — `@capacitor/*` v8 installed, `capacitor.config.ts` (appId `xyz.dialgolf.app`, appName Dial, webDir `dist`), `src/lib/native.ts` (`initNative()` for status bar/keyboard/splash/haptics, guarded by `Capacitor.isNativePlatform()`). Native `ios/` project + Xcode build must be done **on a Mac**. Full steps in `IOS_APP_MORPH.md`.
 
 ---
 
@@ -201,23 +261,22 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis (`flagEm
 
 ---
 
-### Feel / interaction polish (Phases 1–7)
-A multi-phase effort to make the app feel like a production-grade native app. Done so far:
-- **Phase 1 — Instant & alive:** React Query (cached, stale-while-revalidate) across Feed/Messages/Leaderboard/Profile/Friends/Notifications/Matches; shimmer `Skeleton` loaders everywhere; per-tab scroll-position preservation (`scrollPos`/`pendingScroll` refs in `App.tsx`, restored in a `useLayoutEffect`); optimistic mutations via `queryClient.setQueryData`.
-- **Phase 2 — Feedback & delight (subtle only):** global toast system (`components/Toast.tsx` → `ToastProvider`/`useToast`, rendered through Portal); double-tap-to-like on feed media with a heart-burst overlay + like-button pop (`heartBurst`/`likePop` keyframes in `index.css`); `RankUpMoment.tsx` celebration (Dashboard compares current rank-tier index vs `localStorage['dial_lastTierIdx']`); under-par round highlight in `ScorecardView`. No confetti / no new delight libraries (deliberate).
-- **Phase 3 — Native interactions:** `src/hooks/useGestures.ts` exports **`useEdgeSwipeBack(onBack, enabled?)`** (left-edge ≤26px swipe right → back; wired into other-user `ProfileView`, `SettingsView`, `LeaderboardView`, `StatsView`, and the chat `Thread`) and **`useSwipeDownDismiss(onClose)`** (returns `{ dragStyle, dragHandlers }`; applied to the `Composer`, `PostDetail`, and `NewMessageSheet` bottom sheets on mobile, each with a small drag `Grabber` handle). **Haptics:** `tapHaptic()` from `lib/native.ts` (no-op on web, fires in the Capacitor shell) is called on like, send-message, share-post, and bottom-nav tab switches.
-- **Phase 4 — Motion with intent:** one spring easing standard (`motion.spring` = `cubic-bezier(0.22, 1, 0.36, 1)`). **Directional page transitions** in `App.tsx` via a `navDir` ref — forward views slide in from the right + exit left, back navigation reverses it (`goBack`/`handleSetView` set the direction; the `useGSAP` enter and `applyView` exit read it). Standardized modal/sheet entrances: backdrop `fadeIn`, mobile sheets `slideUp`, desktop modals `scaleIn` — including the feed **post→detail "expand."** All motion gated by `prefers-reduced-motion`.
-- **Phase 5 — Consistency / design tokens (font = system Helvetica):** created **`src/lib/tokens.ts`** (the design system — see §5). **Switched the entire app to the system Helvetica stack** (removed Google Fonts from `index.html`, set `body` font in `index.css`, replaced all 327 `Bricolage`/`DM Sans` literals app-wide). Added shared primitives — **`components/Avatar.tsx`**, **`components/EmptyState.tsx`**, **`lib/format.ts`** — and adopted them across Feed, ProfilePosts, MessagesView, FriendsView, NotificationsView, MatchesView (removed 6 duplicated local `Avatar`s + 3 `timeAgo`/`relTime`/`name` copies). Locked the feed photo to a **4:5** aspect ratio; added a `.tnum` tabular-numbers helper. **In progress:** converting the remaining legacy inline spacing/color literals to `space`/`color` token references (done in touched files; the palette is already uniform, so this is a maintainability pass, not a visual one).
+## 10. Changelog (most recent first)
 
-- **Phase 6 — Onboarding (`components/Onboarding.tsx`):** first-run flow gated for new users (no username), wired in `App.tsx` (`profileLoaded` + username check → render `Onboarding` instead of the shell). Steps: branded green **welcome** → **name + username** (required, with live username-availability check against `user_profiles`) → **country** (reuses `CountryPicker`) → **handicap or skill chips** → **home course** (reuses `CourseSearch`) → **photo** (reuses `uploadAvatar`) → branded green **finish**. Top progress bar, spring `onboardIn` step transitions, one `upsertProfile` commit at the end. Optional steps are skippable.
-- **Phase 7 — Social feel:** **inline comment preview** on feed posts ("View all N comments" → opens the `PostDetail` comment sheet, which is already a swipe-dismiss bottom sheet on mobile). **Profile polish:** tabular numbers on all profile stats (handicap/points/friends/W-L-T) and a subtle rank-colored halo behind the avatar.
+| Date | Change |
+|------|--------|
+| 2026-06-13 | **Favicon** replaced with new D+golf-green icon (dark pine rounded square, white D, flag through cutout) — `public/favicon.svg` |
+| 2026-06-13 | **Scroll-aware frosted header** — mobile top bar frosts in (blur + hairline + shadow) once content scrolls > 30px under it; transparent at top to preserve the hero look |
+| 2026-06-13 | **Motion pass (Emil) — Home + bottom nav:** hero settle (scale 1.06→1), tightened stagger (y22, 0.07), spring active-dot + icon lift, nav pill entrance |
+| 2026-06-13 | **Floating pill bottom nav** — inset, rounded-28, shadow; orange dot active indicator (was docked bar + underline) |
+| 2026-06-13 | **Monochrome adaptive logo** — `DialWordmark` is now solid black on light / white on dark (was multicolour green/orange/sage) |
+| 2026-06-13 | **Record stat card** — W–L–T rendered as three spaced numbers with quiet dashes (was cramped `1–0–0` string) |
+| 2026-06-13 | **Greeting offset** tuned to clear the logo; mobile hero grew to `390/500` to keep horizon below greeting |
+| 2026-06-13 | **Mobile hero full-bleed to top** — TopNav is `position: absolute` overlay; hero fills from y=0 behind floating header; non-Home views get `paddingTop` to clear it |
+| 2026-06-13 | **Hero bottom fade** — `mask-image` gradient dissolves foreground green into cream; `CourseHero` gains `aspect`/`fadeStart` props |
+| 2026-06-13 | **Type scale tightened** — greeting 33/38px, rank number 38px, stat numbers 24px, RanksModal padding reduced |
+| 2026-06-11 | **Redesign v3 "Warm Clubhouse"** — Home rebuilt from owner's prototype; warm tokens app-wide; `CourseHeroArt.tsx`; frosted glass rank card; pine/sage/orange palette |
 
-Streaks deferred (needs data plumbing). The "feel" roadmap (Phases 1–7) is complete.
-
-### Redesign v3 (2026-06-11 — "Warm Clubhouse", from the owner's prototype)
-The owner supplied a full HTML/CSS design prototype (`public/dial-home.html` + `.css`, with a written handoff spec inside the HTML) and reference imagery, and asked for the **Home screen** to be rebuilt to that direction — improved, not copied pixel-for-pixel. Implemented: warm cream palette + system-sans bold typography in `tokens.ts` (all keys preserved so every screen re-tones automatically), new **`CourseHeroArt.tsx`** (the prototype's coastal-course SVG), `Dashboard.tsx` rebuilt to the prototype hierarchy with the frosted-glass rank card overlapping the illustration, docked frosted bottom nav with orange active indicator in `TopNav.tsx` (existing 5 tabs kept), warm app bg in `App.tsx` (Home dark-tone TopNav removed — Home is light now), Feed/PostDetail reactions switched to orange. The "Friends leaderboard" row was removed from Home per the prototype hierarchy (still reachable via Friends and the RanksModal). Logo untouched. Google Fonts now loads only Bricolage (Geist/Space Grotesk dropped; their hardcoded references in v2 screens fall back to system sans by design).
-
-### Redesign v2 (2026-06, superseded by v3 tokens — "Private Club")
-A ground-up visual redesign to a professional, art-directed, non-"AI-looking" language, applied to **every screen**. Cool light-neutral content (`#F4F5F2` bg, white flat cards, hairline borders) + **immersive deep-green heroes** on identity/trophy screens (`HERO_BG` + `CourseContour` topographic linework + `onHero` tokens, full-bleed on mobile with a docking porcelain sheet). **Space Grotesk** display + **Geist** UI (the original multicolor **Bricolage wordmark** restored). Green `#1E4D38` is the single brand color; glass only on the mobile bottom nav + modal scrims; sentence-case labels; whole-pixel type scale; SVG icons (added `RepostIcon`, `ChevronLeftIcon`) instead of text glyphs. **Every screen migrated:** tokens/surfaces/fonts, App shell, TopNav (incl. dark tone), AuthScreen, Dashboard (Private Club hero), Feed, RecapCard, RankUpMoment, ProfileView (dark hero + docked posts sheet), ProfilePosts, Messages, Matches, ScorecardView, Tools, Stats (dark handicap hero), Bag, DialIn, Practice, Settings, Notifications, Friends, Leaderboard (dark hero), Onboarding, LogShotModal, LegalModal, CountryPicker, CourseSearch, Toast, Avatar, Button, Field, Skeleton, ClubBadge, EmptyState. New shared component: `CourseContour.tsx`. (Orphaned by the redesign, now unused: `OrganicGraphic`, `FairwayStrip`, `FlagPin`.) Two earlier reverted experiments: an all-Geist flat pass (too plain) and Fraunces serif display (too dated). Full spec: repo-root `DESIGN.md`.
-
-_Last updated: 2026-06-13 — **Motion pass (Emil)** on Home + bottom nav: hero settle, tightened card stagger, spring active-dot + icon lift, nav pill entrance (rest of app pending). Earlier same day: **Monochrome adaptive logo** (black on light / white on dark), **floating pill bottom nav** (orange-dot active indicator), **Record card** spaced W–L–T, greeting offset tuned to clear the logo. Earlier same day: Home hero **full-bleed to the top on mobile** (absolute transparent TopNav overlay + taller hero behind the floating header), hero **blend** (bottom mask-gradient fade into cream) + **tighter type scale** on the Dashboard and RanksModal, matching the owner's reference. Earlier: 2026-06-11 — **Redesign v3 "Warm Clubhouse"** (Home rebuilt from the owner's prototype; warm tokens app-wide). Earlier: Redesign v2 "Private Club" (all screens), Phases 6–7 onboarding + social feel, Phases 1–5 React Query/skeletons/toasts/gestures/tokens/transitions. 
+### Older history
+- **Redesign v2 "Private Club" (2026-06):** cool light-neutral content + deep-green heroes — superseded by v3 tokens but the `HERO_BG`/`onHero` tokens + `CourseContour.tsx` remain for non-Home screens.
+- **Phases 1–7:** React Query caching, shimmer skeletons, toast system, gestures (edge-swipe back, swipe-down dismiss), haptics, directional page transitions, design tokens, onboarding flow, social feel (comment previews, profile polish).
