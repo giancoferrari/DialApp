@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../contexts/AuthContext'
 import { upsertProfile, uploadAvatar } from '../lib/profile'
 import type { UserProfile } from '../types'
 import { color, space, radius, font } from '../lib/tokens'
@@ -9,13 +10,13 @@ import CourseSearch from './CourseSearch'
 import DialWordmark from './DialWordmark'
 import { flagEmoji, countryName } from '../lib/countries'
 
-// First-run onboarding. Gated for new users (no username yet); name + username
-// are required, every other step is skippable. Green branded welcome/finish
-// bookends a calm, cream, one-question-per-screen flow.
+// First-run onboarding. Gated for new users (no username yet). Name, username
+// and country are already collected at sign-up — so we PREFILL them from the
+// auth metadata / existing profile and skip those steps entirely, never asking
+// twice. Onboarding then only adds what sign-up didn't: handicap, home course
+// and a photo. Green branded welcome/finish bookends a calm, cream flow.
 
 type StepKey = 'welcome' | 'name' | 'country' | 'handicap' | 'course' | 'photo' | 'finish'
-const STEPS: StepKey[] = ['welcome', 'name', 'country', 'handicap', 'course', 'photo', 'finish']
-const INPUT_STEPS: StepKey[] = ['name', 'country', 'handicap', 'course', 'photo']
 
 const SKILLS = [
   { id: 'new',    label: 'New to golf' },
@@ -29,12 +30,31 @@ export default function Onboarding({ userId, existingProfile, onComplete, isMobi
   onComplete: (profile: UserProfile) => void
   isMobile?: boolean
 }) {
+  // Sign-up already captured name, username and country. Prefer the saved
+  // profile, then fall back to the auth metadata stored at sign-up.
+  const { user } = useAuth()
+  const meta = (user?.user_metadata ?? {}) as { first_name?: string; username?: string }
+  const initFirst    = (existingProfile?.firstName ?? meta.first_name ?? '').trim()
+  const initUsername = (existingProfile?.username ?? meta.username ?? '').trim().toLowerCase()
+  const initCountry  = existingProfile?.country ?? null
+
+  // Only ask for things sign-up didn't already give us.
+  const haveName    = initFirst.length >= 1 && /^[a-z0-9_]{3,20}$/.test(initUsername)
+  const haveCountry = !!initCountry
+  const STEPS: StepKey[] = [
+    'welcome',
+    ...(haveName ? [] : ['name'] as StepKey[]),
+    ...(haveCountry ? [] : ['country'] as StepKey[]),
+    'handicap', 'course', 'photo', 'finish',
+  ]
+  const INPUT_STEPS: StepKey[] = STEPS.filter(s => s !== 'welcome' && s !== 'finish')
+
   const [step, setStep] = useState<StepKey>('welcome')
   const [dir, setDir]   = useState(0) // bump to retrigger the step-in animation
 
-  const [firstName, setFirstName] = useState(existingProfile?.firstName ?? '')
-  const [username, setUsername]   = useState(existingProfile?.username ?? '')
-  const [country, setCountry]     = useState<string | null>(existingProfile?.country ?? null)
+  const [firstName, setFirstName] = useState(initFirst)
+  const [username, setUsername]   = useState(initUsername)
+  const [country, setCountry]     = useState<string | null>(initCountry)
   const [handicap, setHandicap]   = useState(existingProfile?.handicapIndex != null ? String(existingProfile.handicapIndex) : '')
   const [skill, setSkill]         = useState<string | null>(null)
   const [homeCourse, setHomeCourse] = useState(existingProfile?.homeCourse ?? '')

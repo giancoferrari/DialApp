@@ -50,6 +50,7 @@ Supabase Postgres, all tables have **Row Level Security**. The live DB has been 
 - **`SOCIAL_V2.sql`** — adds `post_comment_likes` (likes on individual comments).
 - **`SOCIAL_V3.sql`** — adds `post_tags` (players tagged in a post), `reposts`, and `notifications` (+ realtime). Powers post tagging, reposts, and tag/repost notifications.
 - **`SOCIAL_V4.sql`** — adds `post_reports` (reporting posts with a reason).
+- **`DELETE_ACCOUNT.sql`** — creates the `delete_my_account()` SECURITY DEFINER function powering Settings → Danger zone → Delete account. Wipes all of the caller's rows (guarded by `to_regclass` + per-statement exception handling, so it survives whatever migrations have run) then deletes their `auth.users` row. ⚠️ Must be run for account deletion to work.
 
 ### Tables (key columns)
 - **`user_profiles`** — `user_id`, `username`, `first_name`, `avatar_url`, `country`, `handicap_index`, `home_course`, `goal_score`, `goal_handicap`, `goal_notes`, `equipment` (jsonb), `ranked_points`, `wins`, `losses`, `ties`.
@@ -72,7 +73,7 @@ Supabase Postgres, all tables have **Row Level Security**. The live DB has been 
 
 `App` → `AuthProvider` gate → `AppShell`. If not signed in → `AuthScreen`.
 
-- **Onboarding gate (`components/Onboarding.tsx`):** once the profile has loaded (`profileLoaded`), if the signed-in user has **no `username`** (a new account), `AppShell` returns the full-screen `Onboarding` flow instead of the app — name + username are **required**, country / handicap / home-course / photo are skippable. On finish it `setProfile(savedProfile)` and the gate falls through to the app. Existing users (who already have a username) never see it. Branded green welcome/finish bookends a cream one-question-per-screen flow with a top progress bar.
+- **Onboarding gate (`components/Onboarding.tsx`):** once the profile has loaded (`profileLoaded`), if the signed-in user has **no `username`** (a new account), `AppShell` returns the full-screen `Onboarding` flow. **No duplicate questions:** name, username and country are already collected at sign-up, so Onboarding **prefills them from `existingProfile` → falls back to `user.user_metadata`** (set by `signUp`) and **skips the `name`/`country` steps entirely** when they're already known. It then only asks what sign-up didn't: handicap, home course, photo (all skippable). The step list is computed dynamically (`haveName`/`haveCountry`). On finish it `upsertProfile(...)` (persisting name/username/country too, so the gate clears) and `setProfile(savedProfile)`. Branded green welcome/finish bookends a cream one-question-per-screen flow with a top progress bar.
 
 - **`view` state** (`View` union in `types.ts`): `dashboard | bag | dialin | rounds | practice | profile | friends | matches | notifications | tools | settings | messages`.
 - **Always opens on `dashboard`** on load/reload (no view persistence — intentional).
@@ -216,10 +217,10 @@ Search users by username, send/accept/decline/remove requests, friends list. **T
 Conversation list (avatar, last-message preview, time, unread badge) + **chat thread** (`Thread`): realtime delivery, optimistic send, read receipts, **per-message timestamps + day separators**, grouped bubbles. **Mobile keyboard:** thread pins to `window.visualViewport`. Input 16px to avoid iOS zoom. **Header tappable → opens other player's profile.** New-message picker searches friends + any user. Failed sends show an inline error banner. Conversations keyed by sorted user pair (`lib/messages.ts pair()`).
 
 ### Profile — `components/ProfileView.tsx`, `components/ProfilePosts.tsx`
-**Full page** (own + other users). Header: avatar, name, `@username`, **country + flag**, rank badge, stats (handicap / points / friends), W/L/T, rank progress. **Own:** gear → Settings; tap avatar → Settings. **Other:** back arrow + **Message** button. Friends stat tappable. Below: **`ProfilePosts`** — 3-col grid; composer (own only); `PostDetail` (big image, like, comments, delete own). Comments support likes + Reply. 3-dot menu: Delete (own) / Report (others' → `ReportSheet` → `post_reports`).
+**Full page** (own + other users). **v3 "Warm Clubhouse" identity card** (redesigned 2026-06-16, replacing the old dark-pine hero): a cream/white raised card whose cover banner is the same coastal `CourseHero` illustration as Home (short aspect, fades into the card). The avatar overlaps the banner inside a pine/tier-colored `DialRing`; below it sit name, `@username`, **country flag chip + rank chip**, the stats row (handicap / points / friends, ink numbers on cream), **W/L/T as three tinted tiles** (sage / orange / sand), and a sage→tier gradient rank-progress bar. **Own:** "Edit profile" pill + camera badge → Settings; tap avatar → Settings. **Other:** frosted Back pill + full-width pine **Message** button. Friends stat tappable. Below: **`ProfilePosts`** — 3-col grid; composer (own only); `PostDetail` (big image, like, comments, delete own). Comments support likes + Reply. 3-dot menu: Delete (own) / Report (others' → `ReportSheet` → `post_reports`).
 
 ### Settings — `components/SettingsView.tsx`
-Back arrow. Sections: Account, Location (CountryPicker), Security, Golf Profile, Game Defaults, Goals, Privacy, About (LegalModal), Sign out. Saves via `upsertProfile`. Avatar upload here + on ProfileView.
+Back arrow. Sections: Account, Location (CountryPicker), Security, Golf Profile, Game Defaults, Goals, Privacy, About (LegalModal), Sign out, **Danger zone**. Saves via `upsertProfile`. Avatar upload here + on ProfileView. **Danger zone → Delete account:** opens a Portal confirmation sheet requiring the user to type `DELETE`, then calls `deleteAccount()` (`lib/profile.ts` → `supabase.rpc('delete_my_account')`, see `DELETE_ACCOUNT.sql`) and signs out. This permanently erases all their data **and** their `auth.users` row.
 
 ### Notifications — `components/NotificationsView.tsx`, `lib/notifications.ts`
 Friend requests + match invites with accept/decline + activity feed from `notifications` table (tagged, reposted, liked, commented). Realtime. Opening marks read. Bell badge = pending friend requests + match invites + unread notifications.
@@ -235,7 +236,7 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis. Used in
 ## 7. Data layer conventions (`src/lib/`)
 - **Caching = TanStack React Query.** `lib/queryClient.ts`: 30s staleTime, background refetch on focus. Query keys: `['feed', userId]`, `['conversations', userId]`, `['leaderboard', meId]`, `['userPosts', target, me]`, `['friends', userId]`, `['notifications', userId]`, `['matchesData', userId]`. First loads render shimmer `Skeleton` — never a "Loading…" string. Scroll position preserved per tab (`scrollPos`/`pendingScroll` refs, restored via `useLayoutEffect`).
 - **DB is snake_case, TS is camelCase.** Each lib has `toX(row)` converter functions.
-- **Files:** `supabase.ts`, `profile.ts`, `friends.ts`, `rounds.ts`, `courses.ts`, `courseCorrections.ts`, `shots.ts`, `practice.ts`, `matches.ts`, `wallet.ts`, `points.ts`, `feed.ts`, `messages.ts`, `posts.ts`, `notifications.ts`, `golfCourseApi.ts`, `countries.ts`, `imageCompress.ts`.
+- **Files:** `supabase.ts`, `profile.ts` (incl. `deleteAccount()`), `friends.ts`, `rounds.ts`, `courses.ts`, `courseCorrections.ts`, `shots.ts`, `practice.ts`, `matches.ts`, `wallet.ts`, `points.ts`, `feed.ts`, `messages.ts`, `posts.ts`, `notifications.ts`, `golfCourseApi.ts`, `countries.ts`, `imageCompress.ts`.
 - **Image uploads auto-compressed** client-side (`imageCompress.compressImage()`): avatars ≤512px, post images ≤1440px.
 - **Course naming:** `golfCourseApi.courseDisplayName()` prefers `club_name` + explicit overrides — **14916 → "Club de Golf de Panama"**, **25374 → "Santa Maria Golf & Country Club"**.
 
@@ -243,6 +244,8 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis. Used in
 
 ## 8. Known pending / gotchas
 - **Run `MORE_SCHEMA.sql`** (country column) — otherwise profile queries error.
+- **Run `DELETE_ACCOUNT.sql`** — otherwise Settings → Delete account errors (`delete_my_account` RPC missing).
+- **Warm-cream conversion:** Home, Profile, Leaderboard and Stats are now on the v3 warm-cream look; the deep-pine `HERO_BG`/`onHero` tokens + `CourseContour.tsx` remain only for the Messages thread header (intentional pine accent).
 - Match formats other than **stroke** are UI-stubbed ("coming soon").
 - The native app (`DialApp-Native`) is far behind the web app.
 - `react-hooks/set-state-in-effect` lint messages are intentional/accepted.
@@ -265,6 +268,11 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis. Used in
 
 | Date | Change |
 |------|--------|
+| 2026-06-16 | **Delete account** — Settings → Danger zone, type-`DELETE` confirm sheet → `delete_my_account()` RPC wipes all user data + `auth.users` row (`DELETE_ACCOUNT.sql`, `lib/profile.deleteAccount`) |
+| 2026-06-16 | **No duplicate onboarding** — Onboarding prefills name/username/country from sign-up (profile → `user_metadata`) and skips those steps; only asks handicap/course/photo. `signUp` now also persists `first_name` |
+| 2026-06-16 | **Profile screen redesigned** to v3 warm cream — coastal `CourseHero` cover banner, pine `DialRing` avatar, cream stat row, tinted W/L/T tiles, sage→tier progress (was dark-pine hero) |
+| 2026-06-16 | **Leaderboard + Stats** dark-pine heroes converted to warm cream headers to match Home |
+| 2026-06-16 | **PWA icon / OG share image** updated; OG cache-busted (`?v=2`); manifest icon sizes corrected to 1254×1254, `any`/`maskable` split |
 | 2026-06-13 | **Favicon** replaced with new D+golf-green icon (dark pine rounded square, white D, flag through cutout) — `public/favicon.svg` |
 | 2026-06-13 | **Scroll-aware frosted header** — mobile top bar frosts in (blur + hairline + shadow) once content scrolls > 30px under it; transparent at top to preserve the hero look |
 | 2026-06-13 | **Motion pass (Emil) — Home + bottom nav:** hero settle (scale 1.06→1), tightened stagger (y22, 0.07), spring active-dot + icon lift, nav pill entrance |

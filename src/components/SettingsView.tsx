@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { upsertProfile, uploadAvatar } from '../lib/profile'
+import { upsertProfile, uploadAvatar, deleteAccount } from '../lib/profile'
 import type { UserProfile, View } from '../types'
 import { getRank } from '../lib/points'
 import { CameraIcon, CheckIcon, CloseIcon, ShieldIcon, ChevronRightIcon, ChevronLeftIcon } from './Icons'
 import CountryPicker from './CountryPicker'
+import Portal from './Portal'
 import { useEdgeSwipeBack } from '../hooks/useGestures'
 import { color, font, radius, onHero } from '../lib/tokens'
 import { card as cardSurface } from '../lib/surfaces'
@@ -206,6 +207,12 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
   const [pwError, setPwError] = useState<string | null>(null)
   const [pwSuccess, setPwSuccess] = useState(false)
 
+  // Delete account
+  const [showDelete, setShowDelete] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState('')
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+
   const updatePref = (patch: Partial<Prefs>) => {
     const next = { ...prefs, ...patch }
     setPrefs(next)
@@ -252,6 +259,19 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
     setPwSuccess(true)
     setPwNew(''); setPwConfirm('')
     setTimeout(() => { setPwSuccess(false); setShowPw(false) }, 2000)
+  }
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirm.trim().toUpperCase() !== 'DELETE') return
+    setDeleting(true); setDeleteError(null)
+    try {
+      await deleteAccount()
+      // Account + session are gone server-side; clear local state and bounce out.
+      onSignOut()
+    } catch (e: unknown) {
+      setDeleteError(e instanceof Error ? e.message : 'Could not delete your account. Please try again.')
+      setDeleting(false)
+    }
   }
 
   const rank = getRank(profile?.rankedPoints ?? 0)
@@ -556,12 +576,86 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       <SectionLabel label="Account actions" />
       <button
         onClick={onSignOut}
-        style={{ width: '100%', ...cardSurface, padding: '16px', fontSize: 14, fontWeight: 600, color: color.danger, cursor: 'pointer', fontFamily: font.body, transition: 'background 0.15s' }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#FBEDEB' }}
+        style={{ width: '100%', ...cardSurface, padding: '16px', fontSize: 14, fontWeight: 600, color: color.ink, cursor: 'pointer', fontFamily: font.body, transition: 'background 0.15s' }}
+        onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
         onMouseLeave={e => { e.currentTarget.style.background = color.white }}
       >
         Sign out
       </button>
+
+      {/* ── DANGER ZONE ── */}
+      <SectionLabel label="Danger zone" />
+      <Card>
+        <div
+          onClick={() => { setShowDelete(true); setDeleteConfirm(''); setDeleteError(null) }}
+          style={{ padding: '15px 16px', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', minHeight: 52 }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#FBEDEB' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+        >
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: color.danger, fontFamily: font.body }}>Delete account</div>
+            <div style={{ fontSize: 12, color: color.muted, marginTop: 2 }}>Permanently erase your account and all your data</div>
+          </div>
+          <ChevronRightIcon size={15} color={color.danger} />
+        </div>
+      </Card>
+
+      {/* ── DELETE CONFIRMATION ── */}
+      {showDelete && (
+        <Portal>
+          <div
+            onClick={() => { if (!deleting) setShowDelete(false) }}
+            style={{ position: 'fixed', inset: 0, zIndex: 220, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'fadeIn 0.2s ease' }}
+          >
+            <div
+              onClick={e => e.stopPropagation()}
+              style={{ width: '100%', maxWidth: 420, background: color.sheet, borderRadius: isMobile ? '24px 24px 0 0' : radius.sheet, padding: '26px 24px calc(env(safe-area-inset-bottom) + 24px)', boxShadow: '0 24px 52px rgba(42,36,24,0.30)', animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}
+            >
+              <div style={{ width: 48, height: 48, borderRadius: 24, background: '#FBEDEB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                <span style={{ fontSize: 24, lineHeight: 1 }}>⚠️</span>
+              </div>
+              <h2 style={{ margin: 0, fontFamily: font.display, fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', color: color.ink }}>
+                Delete your account?
+              </h2>
+              <p style={{ margin: '10px 0 0', fontFamily: font.body, fontSize: 14, lineHeight: 1.55, color: color.muted }}>
+                This is permanent. Your profile, rounds, matches, posts, messages and stats will be erased and cannot be recovered.
+              </p>
+              <div style={{ marginTop: 18, fontFamily: font.body, fontSize: 13, fontWeight: 500, color: color.inkSoft, marginBottom: 8 }}>
+                Type <span style={{ fontWeight: 700, color: color.ink }}>DELETE</span> to confirm
+              </div>
+              <input
+                value={deleteConfirm}
+                onChange={e => setDeleteConfirm(e.target.value)}
+                placeholder="DELETE"
+                autoFocus
+                style={{ width: '100%', boxSizing: 'border-box', background: color.white, border: `1.5px solid ${deleteConfirm && deleteConfirm.trim().toUpperCase() !== 'DELETE' ? color.danger : color.border}`, borderRadius: radius.sm, padding: '13px 14px', fontSize: 16, color: color.ink, outline: 'none', fontFamily: font.body, letterSpacing: '0.04em' }}
+                onKeyDown={e => { if (e.key === 'Enter') handleDeleteAccount() }}
+              />
+              {deleteError && (
+                <div style={{ marginTop: 12, background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: radius.sm, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, lineHeight: 1.45 }}>
+                  {deleteError}
+                </div>
+              )}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 18 }}>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={deleting || deleteConfirm.trim().toUpperCase() !== 'DELETE'}
+                  style={{ width: '100%', border: 'none', borderRadius: radius.md, padding: '14px', fontFamily: font.body, fontSize: 15, fontWeight: 600, cursor: deleting || deleteConfirm.trim().toUpperCase() !== 'DELETE' ? 'not-allowed' : 'pointer', background: deleting || deleteConfirm.trim().toUpperCase() !== 'DELETE' ? color.borderStrong : color.danger, color: deleting || deleteConfirm.trim().toUpperCase() !== 'DELETE' ? color.muted : '#FFFFFF', transition: 'background 0.15s' }}
+                >
+                  {deleting ? 'Deleting…' : 'Delete my account'}
+                </button>
+                <button
+                  onClick={() => { if (!deleting) setShowDelete(false) }}
+                  disabled={deleting}
+                  style={{ width: '100%', border: 'none', borderRadius: radius.md, padding: '14px', fontFamily: font.body, fontSize: 15, fontWeight: 600, cursor: deleting ? 'not-allowed' : 'pointer', background: 'transparent', color: color.inkSoft }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </Portal>
+      )}
 
     </div>
   )

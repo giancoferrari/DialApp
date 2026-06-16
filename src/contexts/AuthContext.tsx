@@ -79,7 +79,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
     if (error) return { error: error.message }
     if (data.user) {
-      try { await upsertProfile(data.user.id, { username, country: country || null }) } catch { /* non-fatal */ }
+      // Persist what sign-up collected so onboarding never has to ask again.
+      // (If email confirmation is on there's no session yet and RLS blocks this —
+      // harmless: the same data lives in user_metadata and Onboarding reads it.)
+      try { await upsertProfile(data.user.id, { username, firstName: firstName.trim() || null, country: country || null }) } catch { /* non-fatal */ }
     }
     return { error: null }
   }

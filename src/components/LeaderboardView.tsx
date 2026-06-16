@@ -7,9 +7,8 @@ import { getRank } from '../lib/points'
 import { flagEmoji } from '../lib/countries'
 import { ShieldIcon, ChevronLeftIcon, MedalIcon } from './Icons'
 import Skeleton from './Skeleton'
-import CourseContour from './CourseContour'
 import { useEdgeSwipeBack } from '../hooks/useGestures'
-import { color, font, radius, HERO_BG, onHero } from '../lib/tokens'
+import { color, font, radius, onHero, elevation } from '../lib/tokens'
 import { card } from '../lib/surfaces'
 import type { PublicProfile } from '../types'
 
@@ -56,23 +55,22 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
   return (
     <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 0 : 0}px 0 ${isMobile ? 120 : 80}px` }}>
 
-      {/* ════ Dark hero ════ */}
-      <section style={{ position: 'relative', overflow: 'hidden', background: HERO_BG, padding: `${isMobile ? 'calc(env(safe-area-inset-top) + 8px)' : '20px'} ${px}px 28px`, borderRadius: isMobile ? 0 : 24, margin: isMobile ? 0 : `12px ${px}px 0` }}>
-        <CourseContour />
-        <div style={{ position: 'relative', maxWidth: 600, margin: '0 auto' }}>
+      {/* ════ Warm header ════ */}
+      <section style={{ padding: `${isMobile ? 22 : 28}px ${px}px 0` }}>
+        <div style={{ maxWidth: 600, margin: '0 auto' }}>
           {onBack && (
-            <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: font.body, fontSize: 14, fontWeight: 500, color: onHero.soft, padding: 0, display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
-              <ChevronLeftIcon size={18} color={onHero.soft} /> Back
+            <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: font.body, fontSize: 14, fontWeight: 500, color: color.inkSoft, padding: 0, display: 'flex', alignItems: 'center', gap: 4, marginBottom: 14 }}>
+              <ChevronLeftIcon size={18} color={color.inkSoft} /> Back
             </button>
           )}
-          <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 30 : 34, fontWeight: 600, color: color.onGreen, letterSpacing: '-0.02em', margin: 0, lineHeight: 1 }}>
+          <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 32 : 38, fontWeight: 700, color: color.ink, letterSpacing: '-0.035em', margin: 0, lineHeight: 1 }}>
             Leaderboard
           </h1>
-          <p style={{ fontSize: 13.5, color: onHero.faint, margin: '7px 0 0' }}>You and your friends, by ranked points.</p>
+          <p style={{ fontSize: 14, color: color.muted, margin: '8px 0 0' }}>You and your friends, by ranked points.</p>
 
           {myIndex >= 0 && friendsOnly.length > 0 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 20, padding: '14px 16px', background: onHero.fill, border: `1px solid ${onHero.border}`, borderRadius: radius.card }}>
-              <div style={{ fontFamily: font.display, fontSize: 30, fontWeight: 600, color: color.onGreen, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 18, padding: '16px 18px', background: color.green, borderRadius: radius.lg, boxShadow: elevation.sm }}>
+              <div style={{ fontFamily: font.display, fontSize: 32, fontWeight: 700, color: color.onGreen, lineHeight: 1, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums' }}>
                 #{myIndex + 1}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -80,7 +78,7 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
                 <div style={{ fontSize: 14, fontWeight: 600, color: color.onGreen, marginTop: 1 }}>of {rows.length} players</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontFamily: font.display, fontSize: 22, fontWeight: 600, color: color.onGreen, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{myPoints.toLocaleString()}</div>
+                <div style={{ fontFamily: font.display, fontSize: 22, fontWeight: 700, color: color.onGreen, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{myPoints.toLocaleString()}</div>
                 <div style={{ fontSize: 11, color: onHero.faint, marginTop: 3 }}>points</div>
               </div>
             </div>

@@ -4,9 +4,8 @@ import gsap from 'gsap'
 import type { Round, Shot, View } from '../types'
 import { aggregateStats, scoreTrend, estimateHandicap, bagGaps } from '../lib/stats'
 import { ChevronLeftIcon } from './Icons'
-import CourseContour from './CourseContour'
 import { useEdgeSwipeBack } from '../hooks/useGestures'
-import { color, font, radius, HERO_BG, onHero } from '../lib/tokens'
+import { color, font, radius, elevation } from '../lib/tokens'
 import { card } from '../lib/surfaces'
 
 gsap.registerPlugin(useGSAP)
@@ -68,38 +67,39 @@ export default function StatsView({ rounds, shots, isMobile = false, onNavigate 
   return (
     <div ref={ref} style={{ maxWidth: 680, margin: '0 auto', padding: `0 0 ${isMobile ? 120 : 80}px` }}>
 
-      {/* ════ Dark hero — estimated handicap ════ */}
-      <section style={{ position: 'relative', overflow: 'hidden', background: HERO_BG, padding: `${isMobile ? 'calc(env(safe-area-inset-top) + 8px)' : '20px'} ${px}px 28px`, borderRadius: isMobile ? 0 : 24, margin: isMobile ? 0 : `12px ${px}px 0` }}>
-        <CourseContour />
-        <div style={{ position: 'relative', maxWidth: 600, margin: '0 auto' }}>
-          <button onClick={() => onNavigate('tools')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: font.body, fontSize: 14, fontWeight: 500, color: onHero.soft, padding: 0, display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
-            <ChevronLeftIcon size={18} color={onHero.soft} /> Tools
+      {/* ════ Warm header — estimated handicap ════ */}
+      <section style={{ padding: `${isMobile ? 22 : 28}px ${px}px 0` }}>
+        <div style={{ maxWidth: 600, margin: '0 auto' }}>
+          <button onClick={() => onNavigate('tools')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: font.body, fontSize: 14, fontWeight: 500, color: color.inkSoft, padding: 0, display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
+            <ChevronLeftIcon size={18} color={color.inkSoft} /> Tools
           </button>
 
-          <div style={{ fontSize: 13.5, color: onHero.faint, marginBottom: 6 }}>Estimated handicap</div>
-          {hcp.value !== null ? (
-            <>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14 }}>
-                <div style={{ fontFamily: font.display, fontSize: isMobile ? 56 : 64, fontWeight: 600, color: color.onGreen, letterSpacing: '-0.02em', lineHeight: 0.95, fontVariantNumeric: 'tabular-nums' }}>
-                  {hcp.value > 0 ? hcp.value.toFixed(1) : (hcp.value === 0 ? 'E' : hcp.value.toFixed(1))}
-                </div>
-                {agg.bestToPar !== null && (
-                  <div style={{ paddingBottom: 8 }}>
-                    <div style={{ fontFamily: font.display, fontSize: 20, fontWeight: 600, color: '#9FD4B4', fontVariantNumeric: 'tabular-nums' }}>{toParText(agg.bestToPar)}</div>
-                    <div style={{ fontSize: 12, color: onHero.faint, marginTop: 1 }}>best round</div>
+          <div style={{ background: color.card, border: `1px solid ${color.border}`, borderRadius: radius.lg, boxShadow: elevation.sm, padding: isMobile ? '22px 22px' : '26px 26px' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: color.faint, letterSpacing: '0.03em', textTransform: 'uppercase', marginBottom: 8 }}>Estimated handicap</div>
+            {hcp.value !== null ? (
+              <>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16 }}>
+                  <div style={{ fontFamily: font.display, fontSize: isMobile ? 54 : 62, fontWeight: 700, color: color.ink, letterSpacing: '-0.04em', lineHeight: 0.92, fontVariantNumeric: 'tabular-nums' }}>
+                    {hcp.value > 0 ? hcp.value.toFixed(1) : (hcp.value === 0 ? 'E' : hcp.value.toFixed(1))}
                   </div>
-                )}
+                  {agg.bestToPar !== null && (
+                    <div style={{ paddingBottom: 6, display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-start', background: color.greenTint, borderRadius: radius.sm, padding: '8px 12px' }}>
+                      <div style={{ fontFamily: font.display, fontSize: 20, fontWeight: 700, color: color.positive, fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>{toParText(agg.bestToPar)}</div>
+                      <div style={{ fontSize: 11, color: color.muted, marginTop: 3, fontWeight: 600 }}>best round</div>
+                    </div>
+                  )}
+                </div>
+                <div style={{ fontSize: 12.5, color: color.muted, marginTop: 14 }}>From your best {Math.min(8, hcp.basedOn)} of {hcp.basedOn} recent 18-hole rounds.</div>
+              </>
+            ) : (
+              <div style={{ paddingTop: 2 }}>
+                <div style={{ fontFamily: font.display, fontSize: 24, fontWeight: 700, color: color.ink, letterSpacing: '-0.02em', marginBottom: 6 }}>
+                  Play {hcp.roundsNeeded} more 18-hole round{hcp.roundsNeeded !== 1 ? 's' : ''}
+                </div>
+                <div style={{ fontSize: 13.5, color: color.muted, lineHeight: 1.5 }}>Log complete 18-hole rounds and Dial will estimate your handicap automatically.</div>
               </div>
-              <div style={{ fontSize: 12.5, color: onHero.faint, marginTop: 12 }}>From your best {Math.min(8, hcp.basedOn)} of {hcp.basedOn} recent 18-hole rounds.</div>
-            </>
-          ) : (
-            <div style={{ paddingTop: 2 }}>
-              <div style={{ fontFamily: font.display, fontSize: 24, fontWeight: 600, color: color.onGreen, letterSpacing: '-0.01em', marginBottom: 6 }}>
-                Play {hcp.roundsNeeded} more 18-hole round{hcp.roundsNeeded !== 1 ? 's' : ''}
-              </div>
-              <div style={{ fontSize: 13, color: onHero.soft, lineHeight: 1.5 }}>Log complete 18-hole rounds and Dial will estimate your handicap automatically.</div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </section>
 

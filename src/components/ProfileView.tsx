@@ -9,9 +9,9 @@ import ProfilePosts from './ProfilePosts'
 import Portal from './Portal'
 import Avatar from './Avatar'
 import DialRing from './DialRing'
-import CourseContour from './CourseContour'
+import CourseHero from './CourseHero'
 import { useEdgeSwipeBack } from '../hooks/useGestures'
-import { color, font, elevation, radius, HERO_BG, onHero } from '../lib/tokens'
+import { color, font, elevation, radius } from '../lib/tokens'
 
 // ── A user's friends, in a tappable sheet ──────────────────────────────
 function FriendsListModal({ userId, isMobile, onClose, onViewProfile }: {
@@ -121,11 +121,13 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
 
   const px = isMobile ? 20 : 40
 
-  const heroStat = (value: string | number, label: string, onPress?: () => void) => {
+  // Warm "Clubhouse" identity card — matches the Home screen's cream surfaces,
+  // pine/sage/orange accents and the coastal illustration.
+  const statItem = (value: string | number, label: string, onPress?: () => void) => {
     const content = (
       <>
-        <div style={{ fontFamily: font.display, fontSize: 22, fontWeight: 600, color: color.onGreen, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
-        <div style={{ fontSize: 12, color: onHero.faint, fontWeight: 500, marginTop: 6 }}>{label}</div>
+        <div style={{ fontFamily: font.display, fontSize: 22, fontWeight: 700, color: color.ink, lineHeight: 1, letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>{value}</div>
+        <div style={{ fontSize: 11.5, color: color.faint, fontWeight: 600, marginTop: 6, letterSpacing: '0.02em', textTransform: 'uppercase' }}>{label}</div>
       </>
     )
     return onPress
@@ -133,99 +135,112 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
       : <div key={label} style={{ textAlign: 'center' }}>{content}</div>
   }
 
+  const wlt = [
+    { value: wins,   label: 'Wins',   bg: color.greenTint, fg: color.positive },
+    { value: losses, label: 'Losses', bg: '#F6E6D6',       fg: color.orangeDeep },
+    { value: ties,   label: 'Ties',   bg: color.sand,      fg: color.muted },
+  ]
+
   return (
     <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: isMobile ? 120 : 80 }}>
 
-      {/* ════ Dark hero ════ */}
-      <section style={{ position: 'relative', overflow: 'hidden', background: HERO_BG, padding: `${isMobile ? 'calc(env(safe-area-inset-top) + 10px)' : '18px'} ${px}px 30px`, borderRadius: isMobile ? 0 : 24, margin: isMobile ? 0 : `12px ${px}px 0` }}>
-        <CourseContour />
-        <div style={{ position: 'relative', maxWidth: 600, margin: '0 auto' }}>
+      {/* ════ Warm identity card ════ */}
+      <section style={{ padding: isMobile ? 0 : `12px ${px}px 0` }}>
+        <div style={{
+          position: 'relative', overflow: 'hidden',
+          background: color.card,
+          border: isMobile ? 'none' : `1px solid ${color.border}`,
+          borderRadius: isMobile ? 0 : 24,
+          boxShadow: isMobile ? 'none' : elevation.sm,
+        }}>
+          {/* Coastal cover banner (same illustration as Home), fading into the card */}
+          <div style={{ position: 'relative' }}>
+            <CourseHero aspect={isMobile ? '390 / 150' : '640 / 190'} fadeStart={58} />
 
-          {/* Top row: back (other) / edit (own) */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: isOwn ? 'flex-end' : 'space-between', marginBottom: 18, minHeight: 36 }}>
-            {!isOwn && (
-              <button
-                onClick={() => (onBack ? onBack() : onNavigate('friends'))}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: font.body, fontSize: 14, fontWeight: 500, color: onHero.soft, padding: 0, display: 'flex', alignItems: 'center', gap: 4 }}
-              >
-                <ChevronLeftIcon size={18} color={onHero.soft} /> Back
-              </button>
-            )}
-            {isOwn && (
-              <button
-                onClick={() => onNavigate('settings')}
-                style={{ display: 'flex', alignItems: 'center', gap: 7, background: onHero.fill, border: `1px solid ${onHero.border}`, borderRadius: radius.sm, padding: '8px 14px', cursor: 'pointer', fontFamily: font.body, fontSize: 13, fontWeight: 600, color: color.onGreen }}
-              >
-                <GearIcon size={14} color={onHero.soft} /> Edit profile
-              </button>
-            )}
+            {/* Top controls float over the pale sky */}
+            <div style={{ position: 'absolute', top: isMobile ? 'calc(env(safe-area-inset-top) + 6px)' : 14, left: 14, right: 14, display: 'flex', alignItems: 'center', justifyContent: isOwn ? 'flex-end' : 'space-between' }}>
+              {!isOwn && (
+                <button
+                  onClick={() => (onBack ? onBack() : onNavigate('friends'))}
+                  style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(255,250,239,0.86)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', border: `1px solid ${color.border}`, borderRadius: radius.pill, padding: '7px 14px 7px 10px', cursor: 'pointer', fontFamily: font.body, fontSize: 13, fontWeight: 600, color: color.ink }}
+                >
+                  <ChevronLeftIcon size={16} color={color.ink} /> Back
+                </button>
+              )}
+              {isOwn && (
+                <button
+                  onClick={() => onNavigate('settings')}
+                  style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(255,250,239,0.86)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', border: `1px solid ${color.border}`, borderRadius: radius.pill, padding: '8px 14px', cursor: 'pointer', fontFamily: font.body, fontSize: 13, fontWeight: 600, color: color.green }}
+                >
+                  <GearIcon size={14} color={color.green} /> Edit profile
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* Avatar + identity */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          {/* Identity + stats body */}
+          <div style={{ position: 'relative', padding: `0 ${isMobile ? 22 : 30}px ${isMobile ? 26 : 30}px`, marginTop: -52, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div onClick={() => { if (isOwn) onNavigate('settings') }} style={{ cursor: isOwn ? 'pointer' : 'default', position: 'relative', marginBottom: 14 }}>
-              <DialRing progress={nextTier ? progress : 1} size={104} stroke={3} color={rank.color} trackColor="rgba(242,245,241,0.16)">
-                <div style={{ width: 80, height: 80, borderRadius: 40, background: 'rgba(255,255,255,0.10)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <DialRing progress={nextTier ? progress : 1} size={108} stroke={3.5} color={rank.color} trackColor={color.creamDeep}>
+                <div style={{ width: 84, height: 84, borderRadius: 42, background: color.creamDeep, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `3px solid ${color.card}` }}>
                   {avatarUrl
                     ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    : <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: 32, color: color.onGreen }}>{initial}</span>}
+                    : <span style={{ fontFamily: font.display, fontWeight: 700, fontSize: 34, color: color.green }}>{initial}</span>}
                 </div>
               </DialRing>
               {isOwn && (
-                <div style={{ position: 'absolute', bottom: 4, right: 4, width: 28, height: 28, borderRadius: 14, background: color.white, border: `2px solid ${color.greenDark}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <CameraIcon size={12} color={color.green} />
+                <div style={{ position: 'absolute', bottom: 4, right: 4, width: 28, height: 28, borderRadius: 14, background: color.green, border: `2px solid ${color.card}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <CameraIcon size={12} color={color.onGreen} />
                 </div>
               )}
             </div>
 
-            <div style={{ fontFamily: font.display, fontSize: 24, fontWeight: 600, color: color.onGreen, letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+            <div style={{ fontFamily: font.display, fontSize: 25, fontWeight: 700, color: color.ink, letterSpacing: '-0.03em', lineHeight: 1.12, textAlign: 'center' }}>
               {displayName}
             </div>
-            {handle && <div style={{ fontSize: 14, color: onHero.faint, marginTop: 3 }}>{handle}</div>}
-            {country && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 13, color: onHero.soft, fontFamily: font.body }}>
-                <span style={{ fontSize: 16, lineHeight: 1 }}>{flagEmoji(country)}</span>
-                {countryName(country)}
-              </div>
-            )}
+            {handle && <div style={{ fontSize: 14, color: color.muted, marginTop: 3, fontWeight: 500 }}>{handle}</div>}
 
-            {/* Rank badge */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: onHero.fill, border: `1px solid ${onHero.border}`, borderRadius: 999, padding: '5px 13px', marginTop: 12 }}>
-              <ShieldIcon size={13} color={rank.color} />
-              <span style={{ fontFamily: font.body, fontSize: 13, fontWeight: 600, color: color.onGreen }}>{rank.name}</span>
+            {/* Country + rank chips */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+              {country && (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: color.sand, border: `1px solid ${color.border}`, borderRadius: 999, padding: '5px 12px 5px 9px', fontSize: 13, fontWeight: 600, color: color.inkSoft, fontFamily: font.body }}>
+                  <span style={{ fontSize: 16, lineHeight: 1 }}>{flagEmoji(country)}</span>
+                  {countryName(country)}
+                </div>
+              )}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: color.greenTint, border: `1px solid ${color.sageLight}`, borderRadius: 999, padding: '5px 13px' }}>
+                <ShieldIcon size={13} color={rank.color} />
+                <span style={{ fontFamily: font.body, fontSize: 13, fontWeight: 700, color: color.greenDeep }}>{rank.name}</span>
+              </div>
             </div>
 
             {/* Stats */}
-            <div style={{ display: 'flex', gap: isMobile ? 36 : 52, marginTop: 22 }}>
-              {heroStat(handicap != null ? handicap.toFixed(1) : '—', 'Handicap')}
-              {heroStat(points.toLocaleString(), 'Points')}
-              {heroStat(friendsCount, 'Friends', () => (isOwn ? onNavigate('friends') : setShowFriends(true)))}
+            <div style={{ display: 'flex', gap: isMobile ? 40 : 56, marginTop: 22 }}>
+              {statItem(handicap != null ? handicap.toFixed(1) : '—', 'Handicap')}
+              {statItem(points.toLocaleString(), 'Points')}
+              {statItem(friendsCount, 'Friends', () => (isOwn ? onNavigate('friends') : setShowFriends(true)))}
             </div>
 
-            {/* Win/loss */}
+            {/* Win/loss/tie */}
             {(wins + losses + ties) > 0 && (
-              <div style={{ display: 'flex', gap: 6, marginTop: 18 }}>
-                {[
-                  { value: wins,   label: 'W', color: '#9FD4B4' },
-                  { value: losses, label: 'L', color: '#E8C9A8' },
-                  { value: ties,   label: 'T', color: onHero.soft },
-                ].map(s => (
-                  <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 5, background: onHero.fill, borderRadius: 8, padding: '4px 11px' }}>
-                    <span style={{ fontFamily: font.display, fontSize: 14, fontWeight: 600, color: s.color, fontVariantNumeric: 'tabular-nums' }}>{s.value}</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: s.color }}>{s.label}</span>
+              <div style={{ display: 'flex', gap: 8, marginTop: 20, width: '100%', maxWidth: 320 }}>
+                {wlt.map(s => (
+                  <div key={s.label} style={{ flex: 1, textAlign: 'center', background: s.bg, borderRadius: radius.sm, padding: '10px 6px' }}>
+                    <div style={{ fontFamily: font.display, fontSize: 18, fontWeight: 700, color: s.fg, fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>{s.value}</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: s.fg, marginTop: 4, opacity: 0.85 }}>{s.label}</div>
                   </div>
                 ))}
               </div>
             )}
 
             {/* Progress to next rank */}
-            <div style={{ width: '100%', maxWidth: 320, marginTop: 20 }}>
-              <div style={{ height: 4, background: 'rgba(242,245,241,0.14)', borderRadius: 999, overflow: 'hidden', marginBottom: 7 }}>
-                <div style={{ height: '100%', borderRadius: 999, background: rank.color, width: `${Math.round(progress * 100)}%`, transition: 'width 1s cubic-bezier(0.16,1,0.3,1)' }} />
+            <div style={{ width: '100%', maxWidth: 320, marginTop: 22 }}>
+              <div style={{ height: 6, background: color.creamDeep, borderRadius: 999, overflow: 'hidden', marginBottom: 8 }}>
+                <div style={{ height: '100%', borderRadius: 999, background: `linear-gradient(90deg, ${color.sage}, ${rank.color})`, width: `${Math.round(progress * 100)}%`, transition: 'width 1s cubic-bezier(0.16,1,0.3,1)' }} />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: onHero.faint, fontVariantNumeric: 'tabular-nums' }}>
-                <span>{rank.name}</span>
-                {nextTier ? <span>{nextTier.minPoints - points} pts to <span style={{ color: rank.color, fontWeight: 600 }}>{nextTier.name}</span></span> : <span style={{ color: rank.color, fontWeight: 600 }}>Max rank</span>}
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: color.muted, fontVariantNumeric: 'tabular-nums' }}>
+                <span style={{ fontWeight: 600 }}>{rank.name}</span>
+                {nextTier ? <span>{(nextTier.minPoints - points).toLocaleString()} pts to <span style={{ color: color.greenDeep, fontWeight: 700 }}>{nextTier.name}</span></span> : <span style={{ color: color.greenDeep, fontWeight: 700 }}>Max rank</span>}
               </div>
             </div>
 
@@ -233,17 +248,17 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
             {!isOwn && (
               <button
                 onClick={() => onMessage(viewUserId)}
-                style={{ marginTop: 22, display: 'flex', alignItems: 'center', gap: 8, background: color.white, color: color.green, border: 'none', borderRadius: radius.md, padding: '12px 28px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: font.body }}
+                style={{ marginTop: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', maxWidth: 320, background: color.green, color: color.onGreen, border: 'none', borderRadius: radius.md, padding: '14px 28px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: font.body }}
               >
-                <ChatIcon size={16} color={color.green} /> Message
+                <ChatIcon size={16} color={color.onGreen} /> Message
               </button>
             )}
           </div>
         </div>
       </section>
 
-      {/* ════ Posts sheet ════ */}
-      <div style={{ position: 'relative', marginTop: isMobile ? -20 : 24, background: isMobile ? color.cream : 'transparent', borderRadius: isMobile ? '24px 24px 0 0' : 0, padding: `${isMobile ? 24 : 0}px ${px}px 0` }}>
+      {/* ════ Posts ════ */}
+      <div style={{ position: 'relative', marginTop: isMobile ? 20 : 24, padding: `0 ${px}px` }}>
         <div style={{ maxWidth: 600, margin: '0 auto' }}>
           <ProfilePosts
             targetUserId={viewUserId}

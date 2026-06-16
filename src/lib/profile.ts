@@ -85,6 +85,14 @@ export async function upsertProfile(
   return toProfile(data as DbProfile)
 }
 
+// Permanently delete the signed-in user's account — all their app data plus
+// their auth.users row — via the delete_my_account() SQL function
+// (see DELETE_ACCOUNT.sql). The caller should sign out afterwards.
+export async function deleteAccount(): Promise<void> {
+  const { error } = await supabase.rpc('delete_my_account')
+  if (error) throw error
+}
+
 export async function uploadAvatar(userId: string, file: File): Promise<string> {
   const compressed = await compressImage(file, 512, 0.85) // avatars don't need to be large
   const path = `${userId}/avatar.jpg`
