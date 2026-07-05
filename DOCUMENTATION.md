@@ -32,7 +32,7 @@ There are **two codebases**:
 
 ### Build / verify commands (run from `dial-app/`)
 - Typecheck: `npx tsc -b`
-- Lint: `npx eslint .` — **note:** the only lint messages that remain are `react-hooks/set-state-in-effect` (loading-flag patterns) and one `react-refresh/only-export-components` (AuthContext). These are **accepted non-bugs** — do not churn code to "fix" them.
+- Lint: `npx eslint .` — **note:** the only lint messages that remain are `react-hooks/set-state-in-effect` (loading-flag patterns) and two `react-refresh/only-export-components` (`AuthContext`, `Toast` — both export a hook alongside a component). These are **accepted non-bugs** — do not churn code to "fix" them.
 - Build: `npx vite build`
 - Dev server: `npx vite`
 - **Always run tsc + build before committing.**
@@ -102,32 +102,66 @@ Because the mobile top bar is an absolute overlay, `contentStyle` in `App.tsx` s
 
 ---
 
-## 5. Design system — **v3 "Warm Clubhouse" (current)**
+## 5. Design system — **v4 "Warm Clubhouse — Editorial" (current)**
 
-> The current visual identity comes from the owner's own prototype at **`public/dial-home.html` + `public/dial-home.css`** (kept in the repo as the design reference — do not delete). Direction: warm premium golf/social identity — cream surfaces, pine/sage/orange palette, bold iOS-style system typography, restrained glass, an illustrated coastal-course Home hero. The **Home screen** is fully on v3; other screens inherit the v3 tokens (warm cream bg, pine CTAs, system font) over their v2 layouts and get refined when touched.
+> The visual identity originates from the owner's own prototype at **`public/dial-home.html` + `public/dial-home.css`** (kept in the repo as the design reference — do not delete). Direction unchanged from v3: warm premium golf/social identity — cream surfaces, pine/sage/orange palette, bold Helvetica Neue typography, restrained glass, an illustrated coastal-course Home hero. **v4 "Editorial" is a convergence pass**, not a new look: one card system instead of four, one type scale, one screen-header pattern, one motion vocabulary, strict accent discipline, and a real webfont. Full source of truth in code: `src/lib/tokens.ts` + `src/lib/surfaces.ts`.
+>
+> **Adoption status:** tokens/primitives below are in place app-wide. **Home** (`Dashboard.tsx`) and **Feed** (`Feed.tsx`) have adopted the new card system. **Leaderboard, Stats, Bag** have adopted the shared motion hook only (their layout/cards still predate this pass). Every other screen — including the still-v2 **Rounds/Scorecard** and **Matches** — gets converted screen-by-screen in the redesign prompts tracked in `REDESIGN_PROMPTS.md` (one level above this repo). Don't assume a screen is fully v4 just because it reads warm-cream; check this doc's §6 entry for that screen.
+
+### Layout tokens — `src/lib/tokens.ts` → `page`
+One set of widths/padding for every list/content screen — no more ad-hoc `maxWidth`/padding numbers per file:
+- `maxW: 680` — outer wrapper on every list/content screen.
+- `contentW: 600` — inner column for hero/feed screens.
+- `pxMobile: 20` / `pxDesktop: 40` — horizontal padding.
+- `topMobile: 24` / `topDesktop: 44`, `bottomMobile: 120` (clears the floating pill nav) / `bottomDesktop: 80`.
+- Dashboard keeps its own full-bleed hero handling but still adopts the px/bottom values.
 
 ### Design tokens — `src/lib/tokens.ts`
 Single source of truth. Exports:
-- **`font`** — `body` (system Helvetica stack), `display` (same), `wordmark` (Bricolage Grotesque, logo only).
-- **`space`**, **`radius`** — prototype scale: 12 sm → 18 md/card → 22 lg → 28 sheet → pill.
-- **`color`** — see palette below.
+- **`font`** — `body`/`display` (Helvetica Neue LT Pro, see Typography below), `wordmark` (Bricolage Grotesque, logo only).
+- **`page`** — layout widths/padding, see above.
+- **`space`** — strict 4/8pt scale. **`radius`** — 12 sm → 18 md → 22 lg → 28 sheet → 999 pill (see Radius law below; the legacy `radius.card` key = 18 still exists for old call sites but is NOT the v4 card radius — don't use it in new code).
+- **`color`** — see palette below; header comment documents accent discipline inline.
+- **`type`** — presets incl. `stat` (new, see Typography below).
 - **`elevation`** — soft warm shadows (sm / md / lg).
 - **`glass`** — frosted panel: translucent cream + warm-white border + blur 18.
-- **`z`**, **`motion`/`ease`**, **`type`** presets.
-- **`HERO_BG`/`onHero`** — retoned to pine (for v2 dark-hero screens still in use on non-Home tabs).
+- **`z`**, **`motion`/`ease`** presets.
+- **`HERO_BG`/`onHero`** — retoned pine, still consumed by a handful of non-Home screens (Messages thread header, and others pending conversion) — kept until nothing imports them.
+
+### Surfaces — `src/lib/surfaces.ts`
+Exactly **three** surfaces app-wide. Nothing else:
+- **`card`** — the default. `#FFFFFF` bg, `1px solid color.border`, `radius.lg` (22). Flat, no shadow.
+- **`raised`** — **ONE per screen max**, the hero/stat moment (rank card, estimated-handicap card, wallet card, identity card). `#FFFEFB` bg, `1px solid rgba(120,108,78,0.08)`, `radius.lg` (22), soft shadow `0 10px 26px rgba(58,48,28,0.07)`.
+- **`well`** — sunken surface for inputs, numpads, segmented-control tracks. `color.sand` bg, `1px solid color.border`, `radius.sm` (12).
+- **`sectionLabel`** — sentence-case section headers, 13px/600, `color.inkSoft`. (Uppercase eyebrow labels are `type.label`, reserved for stat/hero cards only.)
+
+### Radius law
+No values outside this scale: **12** (`radius.sm` — inputs, chips, thumbnails, wells) · **18** (`radius.md` — buttons, stat tiles) · **22** (`radius.lg` — cards, default + raised) · **28** (`radius.sheet` — sheets/modals) · **999** (`radius.pill` — true pills only).
+
+### Accent discipline
+- **Pine** (`color.green`) — the ONLY CTA/selected color. Never decorative.
+- **Orange** (`color.orange`) — ONLY live/attention: badges, unread counts, the active nav dot, over-par deltas, "big gap" flags. Never a button background.
+- **Sage** (`color.sage`) — ONLY progress fills and quiet secondary chips.
+- **Golf semantics** (birdie/eagle/danger) — data only, never chrome.
+
+### Motion — `src/hooks/useStaggerMount.ts`
+The one shared mount animation. `useStaggerMount(ref, { dependencies?, delay? })` animates a container's direct children (`y:22 → 0`, opacity `0 → 1`, `0.58s`, `stagger 0.07`, `power3.out`), gated on `prefers-reduced-motion` via `gsap.matchMedia` (reduced → snaps straight to the visible end state). `dependencies` re-triggers the animation (e.g. a filtered list, a query that just resolved); `delay` is used sparingly (Home passes `0.04` to match its original feel). Replaces hand-rolled per-screen GSAP blocks — adopted so far by Home, Leaderboard, Stats, Bag.
+
+### Screen header — `src/components/PageHeader.tsx`
+The one header pattern for list/content screens: optional back row (chevron + "Back") → title (`font.display`, 32 mobile/38 desktop, 700, `-0.04em`) with an optional right-aligned action → optional subtitle (15/400 muted). **Built but not yet adopted anywhere** — screens switch to it one at a time in later redesign passes so each stays independently verifiable.
 
 ### Palette
 - **Cream** `#F8F3E7` (app bg), `sheet #FFFAF0` (elevated), `creamDeep #EFE7D4`.
 - **Pine** `#12371F` — primary CTAs, active states.
 - **GreenMid** `#356D3D` — stat chip bg.
 - **Sage** `#7D9667` — progress bar, secondary actions, handicap chip.
-- **Orange** `#C86718` — reactions, deltas, active nav indicator.
+- **Orange** `#C86718` — see Accent discipline above.
 - **Sky** `#9FCFD7` — illustration tones.
 - **Ink** `#0B0D0A`, **muted** `#5C625A`, **faint** (disabled), warm borders `#E6DFCC`.
 - Golf semantics (data only): birdie `#3F8761`, over-par / orange `#C86718`, eagle `#A8852F`, danger `#BD3A2D`.
 
 ### Typography
-**Helvetica Neue LT Pro** (real licensed webfont via Adobe Fonts/Typekit, kit `mci8gnc`, loaded in `index.html`) for everything — heavy weights (600–800) + tight tracking, in the same bold iOS-style voice as before (system Helvetica Neue / Segoe UI / Arial remain as fallbacks in the stack, used offline and in the Capacitor shell). **Bricolage Grotesque** loads only for the `DialWordmark` logo — do not touch `font.wordmark`. **Card labels are 12px/700 uppercase** (intentional, from the prototype spec). ⚠️ The Typekit kit currently serves only weights 400/700; 500/600/650/800 usages are pending a normalization pass once Medium + Heavy are added to the kit (see §2, §10).
+**Helvetica Neue LT Pro** — a real licensed webfont via **Adobe Fonts (Typekit)**, kit `mci8gnc`, `<link>`'d in `index.html`, family name `helvetica-neue-lt-pro` — for everything. Heavy weights + tight tracking, same bold voice as before (system `Helvetica Neue`/Segoe UI/Arial remain as fallbacks, used offline and in the Capacitor shell). **Bricolage Grotesque** loads only for the `DialWordmark` logo — do not touch `font.wordmark`. **Card labels are 12px/700 uppercase**, now reserved for stat/hero cards only (see Accent discipline / Surfaces above) — everywhere else, section labels are sentence case via `surfaces.sectionLabel`. `type.stat` (new) is the preset for big numerals (points, scores, balances, handicaps, distances) — 700 weight, `-0.04em` tracking, tabular-nums, no fixed size (callers spread it + a local `fontSize`). ⚠️ The Typekit kit currently serves only weights 400/700 — `type.bodyStrong` is spec'd at weight 500 (Medium) but deliberately left at 600 until Medium is added to the kit; other 500/600/650/800 usages across the app are likewise deferred (see §2, §10).
 
 ### Logo — `components/DialWordmark.tsx`
 **Monochrome + adaptive:** solid near-black `#0B0D0A` on light surfaces, solid white on dark surfaces (`onDark` prop). Single-color "Dial." in Bricolage Grotesque. ⚠️ Do NOT revert to multicolour — this was changed per owner request for contrast on any background.
@@ -153,7 +187,7 @@ Dark pine-green rounded-square (`rx 110` in a 512×512 viewBox), bold white "D" 
 
 **Motion (Emil pass, 2026-06-13) — Home only:**
 - `.hero-settle` CSS class: illustration scales `1.06 → 1` over 1.1s on mount (cinematic "arrive" feel). Gated by `prefers-reduced-motion` (global CSS block neutralizes it).
-- Cards **stagger up** on mount via GSAP: `y:22 → 0`, `duration 0.58`, `stagger 0.07`, `power3.out`. Gated via `gsap.matchMedia`.
+- Cards **stagger up** on mount via the shared `useStaggerMount` hook (§5) — `y:22 → 0`, `duration 0.58`, `stagger 0.07`, `power3.out`, gated via `gsap.matchMedia`. Home passes `delay: 0.04` to preserve its original feel.
 - Points **count up** (GSAP to tween) + rank **bar fills** (`rankBarFill` keyframe).
 - Press feedback: scale `0.98` on rank card + CTA buttons.
 
@@ -174,7 +208,7 @@ The mobile top bar is transparent at the top (`background: transparent`, no blur
 - **Directional page transitions:** forward enters from the right, back from the left (`navDir` ref in `App.tsx`; GSAP `power3.out`). All gated by `prefers-reduced-motion`.
 - **Glass** exists only on: the floating mobile bottom nav + frosted mobile header (when scrolled) + modal scrims.
 - **Shared primitives:** `Avatar.tsx`, `EmptyState.tsx`, `lib/format.ts` (`timeAgo`, `displayName`, `initialOf`, `scoreToPar`, `formatHandicap`, `formatYards`). Use these, never re-implement.
-- **`Button.tsx` / `Field.tsx`:** canonical token-based components. `Button` has `primary / secondary / tertiary` tiers + press scale. `Field` is 44px / 16px font (no iOS zoom).
+- **`Button.tsx` / `Field.tsx`:** canonical token-based components. `Button` has `primary / secondary / tertiary` tiers + press scale. `Field` is 44px / 16px font (no iOS zoom), background is the `well` recipe (sand, not white). Neither is widely adopted yet (`Field` currently has zero call sites; `Button` has one) — both exist ahead of adoption for later redesign passes to use.
 - **`DialRing.tsx`:** precision dial/gauge with tick marks + animated progress arc. Used for rank progress.
 
 ---
@@ -269,6 +303,7 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis. Used in
 
 | Date | Change |
 |------|--------|
+| 2026-07-06 | **Design system v4 "Warm Clubhouse — Editorial"** — `lib/tokens.ts` gains `page` (layout widths/padding) and `type.stat` (tabular-nums numeral preset); `lib/surfaces.ts` rewritten to exactly three surfaces (`card`/`raised`/`well`, replacing `cardRaised`/`inputSurface`, both unused); new `src/hooks/useStaggerMount.ts` (shared mount-stagger, adopted by Home/Leaderboard/Stats/Bag) and `src/components/PageHeader.tsx` (built, not yet adopted). Dashboard + Feed drop their local `panel`/`feedCard` card recipes for the shared `card`/`raised`. `Field.tsx` background switched to the `well` (sand) recipe. Accent-discipline + radius-law rules documented inline in tokens.ts. Second prompt of the redesign pass (`REDESIGN_PROMPTS.md`) — screen-by-screen adoption (headers, widths, remaining card conversions) continues in later prompts |
 | 2026-07-06 | **Helvetica Neue LT Pro loaded via Adobe Fonts** (kit `mci8gnc`) — replaces the unloaded 'Space Grotesk'/'Geist' font-family strings that had been silently falling back to system fonts in `ScorecardView`, `MatchesView`, `CourseSearch`, `LegalModal`, `Toast` (now import `font` from `lib/tokens`). `lib/tokens.ts` `SANS` stack now leads with `helvetica-neue-lt-pro`. Bricolage wordmark untouched. Font-weight normalization (500/600/650/800 → kit's actual weights) deferred until Medium/Heavy are added to the Typekit kit (currently only 400/700 are live) — first prompt of a larger redesign pass tracked in `REDESIGN_PROMPTS.md` (one level above `dial-app/`, outside this repo) |
 | 2026-06-16 | **Delete account** — Settings → Danger zone, type-`DELETE` confirm sheet → `delete_my_account()` RPC wipes all user data + `auth.users` row (`DELETE_ACCOUNT.sql`, `lib/profile.deleteAccount`) |
 | 2026-06-16 | **No duplicate onboarding** — Onboarding prefills name/username/country from sign-up (profile → `user_metadata`) and skips those steps; only asks handicap/course/photo. `signUp` now also persists `first_name` |

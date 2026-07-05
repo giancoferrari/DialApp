@@ -1,37 +1,39 @@
 import type { CSSProperties } from 'react'
-import { color, radius, elevation } from './tokens'
+import { color, radius } from './tokens'
 
 // ─────────────────────────────────────────────────────────────────────────
-// Surface presets — the "subtract" rule in code form.
-// Most things are FLAT: a white card on the porcelain bg with a hairline
-// border and no shadow. Reserve elevation for true overlays (menus, sheets).
+// Surfaces — exactly THREE, per the v4 design system. Nothing else.
+//   card   — the default. Flat, hairline border, no shadow.
+//   raised — the ONE hero card per screen (rank / estimated-handicap /
+//            wallet / identity card). A whisper of lift, no blur.
+//   well   — sunken surface for inputs, numpads, segmented-control tracks.
 // Backdrop-blur is intentionally NOT used here — it's kept only for the
 // floating mobile bottom nav and modal scrims.
 // ─────────────────────────────────────────────────────────────────────────
 
-// The default card. Flat, hairline border, sits calmly on the bg.
 export const card: CSSProperties = {
-  background: color.card,
-  border: `1px solid ${color.border}`,
-  borderRadius: radius.card,
-}
-
-// The one hero element per screen — a whisper of lift, no blur.
-export const cardRaised: CSSProperties = {
-  background: color.card,
+  background: '#FFFFFF',
   border: `1px solid ${color.border}`,
   borderRadius: radius.lg,
-  boxShadow: elevation.sm,
 }
 
-// Sunken surface for inputs / wells / segmented-control tracks.
-export const inputSurface: CSSProperties = {
+// ONE per screen max — the hero/stat moment (rank card, estimated-handicap
+// card, wallet card, identity card).
+export const raised: CSSProperties = {
+  background: '#FFFEFB',
+  border: '1px solid rgba(120,108,78,0.08)',
+  borderRadius: radius.lg,
+  boxShadow: '0 10px 26px rgba(58,48,28,0.07)',
+}
+
+export const well: CSSProperties = {
   background: color.sand,
   border: `1px solid ${color.border}`,
   borderRadius: radius.sm,
 }
 
 // Section label — sentence case, quiet weight. No uppercase, no tracking.
+// (Uppercase eyebrow labels are `type.label`, reserved for stat/hero cards.)
 export const sectionLabel: CSSProperties = {
   fontSize: 13,
   fontWeight: 600,

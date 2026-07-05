@@ -40,7 +40,7 @@ export default function Field({
           maxLength={maxLength}
           style={{
             width: '100%', boxSizing: 'border-box', minHeight: 44,
-            background: color.white, color: color.ink,
+            background: color.sand, color: color.ink,
             border: `1px solid ${error ? color.danger : color.borderStrong}`,
             borderRadius: radius.sm, padding: prefix ? '13px 16px 13px 30px' : '13px 16px',
             fontSize: 16, fontFamily: font.body, outline: 'none',

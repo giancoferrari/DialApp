@@ -1,14 +1,11 @@
 import { useRef } from 'react'
-import { useGSAP } from '@gsap/react'
-import gsap from 'gsap'
 import type { Round, Shot, View } from '../types'
 import { aggregateStats, scoreTrend, estimateHandicap, bagGaps } from '../lib/stats'
 import { ChevronLeftIcon } from './Icons'
 import { useEdgeSwipeBack } from '../hooks/useGestures'
+import { useStaggerMount } from '../hooks/useStaggerMount'
 import { color, font, radius, elevation } from '../lib/tokens'
 import { card } from '../lib/surfaces'
-
-gsap.registerPlugin(useGSAP)
 
 interface Props {
   rounds: Round[]
@@ -34,16 +31,7 @@ export default function StatsView({ rounds, shots, isMobile = false, onNavigate 
   const px  = isMobile ? 20 : 40
   useEdgeSwipeBack(() => onNavigate('tools'))
 
-  useGSAP(() => {
-    const mm = gsap.matchMedia()
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
-      if (ref.current) {
-        gsap.fromTo(Array.from(ref.current.children),
-          { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.07, ease: 'power3.out' })
-      }
-    })
-    return () => mm.revert()
-  }, { scope: ref })
+  useStaggerMount(ref)
 
   const agg   = aggregateStats(rounds)
   const trend = scoreTrend(rounds, 8)

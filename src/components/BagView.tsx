@@ -1,14 +1,11 @@
 import { useRef, useState } from 'react'
-import { useGSAP } from '@gsap/react'
-import gsap from 'gsap'
 import type { Shot, Club, ClubCat } from '../types'
 import { CLUBS_DATA, CAT_LABELS, BAR_MAX, getClubLast } from '../data'
 import ClubBadge from './ClubBadge'
 import { PlusIcon, CloseIcon } from './Icons'
+import { useStaggerMount } from '../hooks/useStaggerMount'
 import { color, font, radius, elevation } from '../lib/tokens'
 import { card as cardSurface } from '../lib/surfaces'
-
-gsap.registerPlugin(useGSAP)
 
 const CUSTOM_CLUBS_KEY = 'dial_custom_clubs'
 
@@ -271,18 +268,7 @@ export default function BagView({ shots, onSetDistance, isMobile = false }: Prop
     saveCustomClubs(updated)
   }
 
-  useGSAP(() => {
-    const mm = gsap.matchMedia()
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
-      if (gridRef.current) {
-        const cards = gridRef.current.querySelectorAll('.club-card')
-        gsap.fromTo(cards,
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.42, stagger: 0.04, ease: 'power3.out' })
-      }
-    })
-    return () => mm.revert()
-  }, { scope: containerRef, dependencies: [filter] })
+  useStaggerMount(gridRef, { dependencies: [filter] })
 
   const px = isMobile ? 20 : 40
   const catCount = (cat: ClubCat | 'all') =>

@@ -13,15 +13,7 @@ import EmptyState from './EmptyState'
 import { tapHaptic } from '../lib/native'
 import { timeAgo, displayName as authorName } from '../lib/format'
 import { card } from '../lib/surfaces'
-import { color, font, radius, elevation } from '../lib/tokens'
-
-// Warm clubhouse card: rounded 22, warm-white border, soft pine/brown shadow.
-const feedCard: React.CSSProperties = {
-  ...card,
-  borderRadius: radius.lg,
-  border: '1px solid rgba(255,255,255,0.76)',
-  boxShadow: elevation.sm,
-}
+import { color, font } from '../lib/tokens'
 
 interface Props {
   userId: string
@@ -33,7 +25,7 @@ function FeedSkeleton({ isMobile }: { isMobile: boolean }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {[0, 1].map(i => (
-        <div key={i} style={{ ...feedCard, overflow: 'hidden' }}>
+        <div key={i} style={{ ...card, overflow: 'hidden' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px' }}>
             <Skeleton width={36} height={36} radius={18} />
             <div style={{ flex: 1 }}>
@@ -128,7 +120,7 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
         //    left, photo thumbnail on the right. Used for captioned photos.
         if (post.kind === 'photo' && post.caption && post.imageUrl) {
           return (
-            <div key={key} style={{ ...feedCard, padding: '13px 14px 14px' }}>
+            <div key={key} style={{ ...card, padding: '13px 14px 14px' }}>
               {post.repostedBy && (
                 <div style={{ paddingBottom: 9, fontSize: 12, color: color.muted, display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
                   <RepostIcon size={13} color={color.muted} /> {authorName(post.repostedBy)} reposted
@@ -189,7 +181,7 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
 
         // ── Full-width card: caption-less photos + round recaps ──
         return (
-        <div key={key} style={{ ...feedCard, overflow: 'hidden' }}>
+        <div key={key} style={{ ...card, overflow: 'hidden' }}>
           {post.repostedBy && (
             <div style={{ padding: '10px 14px 0', fontSize: 12, color: color.muted, display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
               <RepostIcon size={13} color={color.muted} /> {authorName(post.repostedBy)} reposted

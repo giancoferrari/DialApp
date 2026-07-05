@@ -10,6 +10,8 @@ import Portal from './Portal'
 import RankUpMoment from './RankUpMoment'
 import CourseHero from './CourseHero'
 import { color, font, elevation, radius, type } from '../lib/tokens'
+import { card, raised } from '../lib/surfaces'
+import { useStaggerMount } from '../hooks/useStaggerMount'
 
 gsap.registerPlugin(useGSAP)
 
@@ -22,14 +24,6 @@ function FlagGlyph({ size = 20, color: c = '#12371F', strokeWidth = 2 }: { size?
       <path d="M5.5 20c2.5-.8 5.5-.8 8 0" stroke={c} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
-}
-
-// Clean solid card — the reference cards are solid warm-white with a soft
-// shadow (not translucent), which reads much crisper over the illustration.
-const panel: React.CSSProperties = {
-  background: '#FFFEFB',
-  border: '1px solid rgba(120,108,78,0.08)',
-  boxShadow: '0 10px 26px rgba(58,48,28,0.07)',
 }
 
 // ── Ranks & points info (opened from the rank card) ────────────────────────────
@@ -178,19 +172,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
   const [rankUp, setRankUp]       = useState<RankTier | null>(null)
   const pointsRef = useRef<HTMLSpanElement>(null)
 
-  useGSAP(() => {
-    const mm = gsap.matchMedia()
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
-      if (containerRef.current) {
-        gsap.fromTo(
-          Array.from(containerRef.current.children),
-          { opacity: 0, y: 22 },
-          { opacity: 1, y: 0, duration: 0.58, stagger: 0.07, ease: 'power3.out', delay: 0.04 }
-        )
-      }
-    })
-    return () => mm.revert()
-  }, { scope: containerRef })
+  useStaggerMount(containerRef, { delay: 0.04 })
 
   // ── Rank math ──
   const points   = profile?.rankedPoints ?? 0
@@ -314,7 +296,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
         {/* Rank card */}
         <button
           onClick={() => setShowRanks(true)}
-          style={{ ...panel, display: 'block', width: '100%', textAlign: 'left', borderRadius: radius.lg, padding: '16px 16px 14px', cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)' }}
+          style={{ ...raised, display: 'block', width: '100%', textAlign: 'left', padding: '16px 16px 14px', cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)' }}
           onMouseDown={pressFn(true)} onMouseUp={pressFn(false)} onMouseLeave={pressFn(false)}
           onTouchStart={pressFn(true)} onTouchEnd={pressFn(false)}
         >
@@ -354,7 +336,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
         {/* Stats grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 10 }}>
           {/* Last round */}
-          <div style={{ ...panel, borderRadius: radius.md, padding: '13px 13px 14px' }}>
+          <div style={{ ...card, padding: '13px 13px 14px' }}>
             <span style={statChip(color.greenMid)}><FlagGlyph size={16} color="#FFFAF1" /></span>
             <div style={cardLabel}>Last round</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, marginTop: 7 }}>
@@ -365,7 +347,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
             </div>
           </div>
           {/* Handicap */}
-          <div style={{ ...panel, borderRadius: radius.md, padding: '13px 13px 14px' }}>
+          <div style={{ ...card, padding: '13px 13px 14px' }}>
             <span style={statChip(color.sage)}>H</span>
             <div style={cardLabel}>Handicap</div>
             <div style={{ marginTop: 7, fontFamily: font.display, fontSize: 24, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: profile?.handicapIndex != null ? color.ink : color.faint, fontVariantNumeric: 'tabular-nums' }}>
@@ -373,7 +355,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
             </div>
           </div>
           {/* Record */}
-          <div style={{ ...panel, borderRadius: radius.md, padding: '13px 13px 14px' }}>
+          <div style={{ ...card, padding: '13px 13px 14px' }}>
             <span style={statChip(color.orange)}><TrophyIcon size={15} color="#FFFAF1" /></span>
             <div style={cardLabel}>Record</div>
             <div style={{ marginTop: 7, display: 'flex', alignItems: 'baseline', gap: 6, lineHeight: 1 }}>

@@ -1,22 +1,46 @@
 // ─────────────────────────────────────────────────────────────────────────
-// Dial design system v2 — the single source of truth for spacing, type,
-// color, elevation, radius and motion. Import what you need:
+// Dial design system v4 "Warm Clubhouse — Editorial" — the single source of
+// truth for layout, spacing, type, color, surfaces, radius and motion.
+// Import what you need:
 //
-//   import { color, space, radius, font, type, elevation, motion } from '../lib/tokens'
+//   import { color, space, radius, font, type, page, elevation, motion } from '../lib/tokens'
+//   import { card, raised, well, sectionLabel } from '../lib/surfaces'
 //
 // Rules of the house:
 //  • One typeface (Helvetica Neue LT Pro, via Adobe Fonts) — hierarchy via
 //    size + weight, never font-switching. Bricolage Grotesque is reserved
 //    for the "Dial." wordmark only.
-//  • Cool light-neutral surfaces. Green is the single brand color and is
-//    reserved for primary actions, identity moments and selected states.
+//  • Warm cream field, pine ink, sage support, orange signal. Green
+//    (`color.green`) is the ONLY CTA/selected color.
+//  • Layout comes from `page` (max widths, padding, top/bottom clearance) —
+//    no ad-hoc maxWidth/padding numbers per screen.
 //  • Spacing comes from `space` (a strict 4/8pt scale) — no magic numbers.
-//  • Type sizes come from `type` — no decimal font sizes (14.5, 10.5…).
-//  • Cards are FLAT (white + hairline border, no shadow, no blur). Elevation
-//    only for things that float: menus, sheets, toasts. Backdrop-blur only
-//    on the mobile bottom nav and modal scrims.
-//  • No uppercase letter-spaced eyebrow labels. Section labels are sentence
-//    case, 13px / 600.
+//  • Type sizes come from `type` — no decimal font sizes (14.5, 10.5…). Big
+//    numerals (points, scores, balances, handicaps) spread `type.stat` + a
+//    local fontSize. `type.label` (uppercase eyebrow) is reserved for
+//    stat/hero cards only — everywhere else, section labels are sentence
+//    case via `surfaces.sectionLabel`.
+//  • Exactly THREE surfaces (see `lib/surfaces.ts`): `card` (flat default),
+//    `raised` (the ONE hero card per screen — rank/handicap/wallet/identity),
+//    `well` (sunken — inputs, numpads, segmented tracks). Elevation/blur
+//    otherwise reserved for things that float: menus, sheets, toasts, the
+//    mobile bottom nav, modal scrims.
+//  • Radius law — no values outside this scale:
+//      12 (radius.sm)   inputs, chips, thumbnails, wells
+//      18 (radius.md)   buttons, stat tiles
+//      22 (radius.lg)   cards (default + raised)
+//      28 (radius.sheet) sheets / modals
+//      999 (radius.pill) true pills only
+//  • Accent discipline:
+//      – Pine (`color.green`): the ONLY CTA/selected color.
+//      – Orange (`color.orange`): ONLY live/attention — badges, unread
+//        counts, the active nav dot, over-par deltas, "big gap" flags.
+//        Never decorative, never a button background.
+//      – Sage (`color.sage`): ONLY progress fills and quiet secondary chips.
+//      – Golf semantics (birdie/eagle/danger): data only, never chrome.
+//  • One motion vocabulary: `useStaggerMount` (see `hooks/useStaggerMount.ts`)
+//    for every screen's mount animation — y:22→0, 0.58s, stagger 0.07,
+//    power3.out, gated on prefers-reduced-motion.
 // ─────────────────────────────────────────────────────────────────────────
 
 // ── Typeface — Helvetica Neue LT Pro, served via Adobe Fonts (Typekit) ──
@@ -55,24 +79,48 @@ export const space = {
   10: 64,
 } as const
 
+// ── Layout — one set of widths/padding for every list/content screen ───────
+// Dashboard keeps its own full-bleed hero handling but still adopts the
+// px/bottom values here. Hero/feed screens use `contentW` for the inner
+// column; everything else just uses `maxW` as its single outer wrapper.
+export const page = {
+  maxW: 680,          // outer wrapper on every list/content screen
+  contentW: 600,      // inner column for hero/feed screens
+  pxMobile: 20,
+  pxDesktop: 40,
+  topMobile: 24,
+  topDesktop: 44,
+  bottomMobile: 120,  // clears the floating pill nav
+  bottomDesktop: 80,
+} as const
+
 // ── Radius — the prototype's scale (12 / 18 / 22 / 28 / pill) ──────────────
 export const radius = {
-  sm: 12,   // thumbnails, chips, inputs, small controls
-  md: 18,   // stat cards, buttons
-  card: 18, // cards
-  lg: 22,   // rank / feed cards
+  sm: 12,   // thumbnails, chips, inputs, small controls, wells
+  md: 18,   // buttons, stat tiles
+  // NOTE: legacy key, kept for existing call sites — under the v4 radius
+  // law cards are `lg` (22), not this. Don't use `card` in new code; it's
+  // migrated away screen-by-screen in later redesign prompts.
+  card: 18,
+  lg: 22,   // cards (default + raised), rank / feed cards
   sheet: 28,// modals / bottom sheets
   pill: 999,
 } as const
 
 // ── Color — warm premium golf palette (from the dial-home prototype) ───────
+// Accent discipline (enforce in every new component):
+//   • green  — the ONLY CTA/selected color. Never decorative.
+//   • orange — ONLY live/attention: badges, unread counts, the active nav
+//     dot, over-par deltas, "big gap" flags. Never a button background.
+//   • sage   — ONLY progress fills and quiet secondary chips.
+//   • birdie/gold/danger (golf semantics) — data only, never chrome.
 export const color = {
   // Brand pine — primary CTAs, active icons, identity.
   green: '#12371F',
   greenDeep: '#0C2A17',   // hover / pressed
   greenDark: '#0A2413',   // immersive dark hero surfaces
   greenMid: '#356D3D',    // stat icon chips
-  sage: '#7D9667',        // progress, secondary accents
+  sage: '#7D9667',        // progress, secondary accents — ONLY those two roles
   sageLight: '#DDE8D3',
   greenTint: '#E3ECD8',   // selected backgrounds, badges, soft chips
 
@@ -96,7 +144,7 @@ export const color = {
   borderStrong: '#D3CBB5',
 
   // Accent + illustration tones
-  orange: '#C86718',      // reactions, deltas, active nav indicator
+  orange: '#C86718',      // attention ONLY: badges, unread, active nav dot, over-par deltas, gap flags — never decorative, never a button bg
   orangeDeep: '#9E4F0E',
   sky: '#9FCFD7',         // ocean / sky illustration tone
   gold: '#B08828',        // eagle
@@ -153,16 +201,23 @@ export const ease = {
 // Bold iOS-style system type: heavy weights, tight tracking (prototype scale).
 // e.g. <h2 style={{ ...type.title, color: color.ink }}>
 export const type = {
-  display: { fontFamily: SANS, fontSize: 40, lineHeight: 0.98, letterSpacing: '-0.045em', fontWeight: 700 },
-  hero:    { fontFamily: SANS, fontSize: 28, lineHeight: 1.06, letterSpacing: '-0.035em', fontWeight: 700 },
+  display: { fontFamily: SANS, fontSize: 44, lineHeight: 0.98, letterSpacing: '-0.045em', fontWeight: 700 },
+  hero:    { fontFamily: SANS, fontSize: 30, lineHeight: 1.05, letterSpacing: '-0.035em', fontWeight: 700 },
   section: { fontFamily: SANS, fontSize: 21, lineHeight: 1.15, letterSpacing: '-0.03em',  fontWeight: 700 },
-  title:   { fontFamily: SANS, fontSize: 17, lineHeight: 1.3,  letterSpacing: '-0.025em', fontWeight: 700 },
+  title:   { fontFamily: SANS, fontSize: 17, lineHeight: 1.3,  letterSpacing: '-0.02em',  fontWeight: 700 },
+  // NOTE: spec calls for weight 500 here (Medium) — deferred to weight 600
+  // because the Typekit kit currently only serves 400/700; revisit once
+  // Medium is added (see DOCUMENTATION.md §2/§10).
   bodyStrong: { fontFamily: SANS, fontSize: 15, lineHeight: 1.5, letterSpacing: '-0.01em', fontWeight: 600 },
   body:    { fontFamily: SANS, fontSize: 15, lineHeight: 1.5, fontWeight: 400 },
   small:   { fontFamily: SANS, fontSize: 13, lineHeight: 1.45, fontWeight: 400 },
   caption: { fontFamily: SANS, fontSize: 12, lineHeight: 1.4, fontWeight: 500 },
   // Card label — small, heavy, uppercase (the prototype's label voice).
+  // Reserved for stat/hero cards only; elsewhere use surfaces.sectionLabel.
   label:   { fontFamily: SANS, fontSize: 12, lineHeight: 1.3, fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase' as const, color: '#30332F' },
+  // Big numerals — points, scores, balances, handicaps, distances. Callers
+  // spread this + a local fontSize (no fixed size here, sizes vary a lot).
+  stat: { fontFamily: SANS, fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' as const },
 } as const
 
 // ── Hero — the immersive deep-pine surface (Profile, Leaderboard, Stats…) ──

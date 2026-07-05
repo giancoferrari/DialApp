@@ -1,6 +1,4 @@
 import { useRef } from 'react'
-import { useGSAP } from '@gsap/react'
-import gsap from 'gsap'
 import { useQuery } from '@tanstack/react-query'
 import { fetchLeaderboard } from '../lib/leaderboard'
 import { getRank } from '../lib/points'
@@ -8,11 +6,10 @@ import { flagEmoji } from '../lib/countries'
 import { ShieldIcon, ChevronLeftIcon, MedalIcon } from './Icons'
 import Skeleton from './Skeleton'
 import { useEdgeSwipeBack } from '../hooks/useGestures'
+import { useStaggerMount } from '../hooks/useStaggerMount'
 import { color, font, radius, onHero, elevation } from '../lib/tokens'
 import { card } from '../lib/surfaces'
 import type { PublicProfile } from '../types'
-
-gsap.registerPlugin(useGSAP)
 
 interface Props {
   meId: string
@@ -37,16 +34,7 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
     queryFn: () => fetchLeaderboard(meId),
   })
 
-  useGSAP(() => {
-    const mm = gsap.matchMedia()
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
-      if (listRef.current) {
-        gsap.fromTo(Array.from(listRef.current.children),
-          { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.4, stagger: 0.05, ease: 'power3.out' })
-      }
-    })
-    return () => mm.revert()
-  }, { scope: listRef, dependencies: [rows.length] })
+  useStaggerMount(listRef, { dependencies: [rows.length] })
 
   const friendsOnly = rows.filter(r => r.userId !== meId)
   const myIndex = rows.findIndex(r => r.userId === meId)
