@@ -1,4 +1,5 @@
 import { CloseIcon } from './Icons'
+import { font } from '../lib/tokens'
 
 const SITE_NAME = 'Dial Golf'
 const COMPANY_NAME = 'Dial Golf'
@@ -9,7 +10,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <div style={{ marginBottom: 28 }}>
       <h2 style={{
-        fontFamily: "'Space Grotesk', sans-serif",
+        fontFamily: font.display,
         fontSize: 18, fontWeight: 700, color: '#171A17',
         letterSpacing: '-0.02em', marginBottom: 10, marginTop: 0,
       }}>
@@ -265,7 +266,7 @@ export default function LegalModal({ doc, onClose }: Props) {
           padding: '22px 24px 18px', borderBottom: '1px solid #E4E6E1', flexShrink: 0,
         }}>
           <h1 style={{
-            fontFamily: "'Space Grotesk', sans-serif",
+            fontFamily: font.display,
             fontSize: 22, fontWeight: 600, color: '#171A17',
             letterSpacing: '-0.02em', margin: 0,
           }}>

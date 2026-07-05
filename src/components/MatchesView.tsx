@@ -13,6 +13,7 @@ import Portal from './Portal'
 import Skeleton from './Skeleton'
 import { useToast } from './Toast'
 import { courseDisplayName, type GolfCourse } from '../lib/golfCourseApi'
+import { font } from '../lib/tokens'
 
 interface Props {
   userId: string
@@ -56,7 +57,7 @@ function MatchScoreDecoration({ score, par, isMe, onClick }: {
     display: 'flex', alignItems: 'center', justifyContent: 'center',
   }
   const num = (sz: number, col: string): React.CSSProperties => ({
-    fontFamily: "'Space Grotesk', sans-serif",
+    fontFamily: font.display,
     fontSize: sz, fontWeight: 700, color: col, lineHeight: 1,
   })
 
@@ -174,7 +175,7 @@ function NewMatchModal({
     width: '100%', boxSizing: 'border-box', background: '#F2F5F1',
     border: '1px solid #E4E6E1', borderRadius: 12, padding: '12px 14px',
     fontSize: 14, color: '#171A17', outline: 'none',
-    fontFamily: "'Geist', sans-serif", transition: 'border-color 0.15s',
+    fontFamily: font.body, transition: 'border-color 0.15s',
   }
 
   return (
@@ -182,7 +183,7 @@ function NewMatchModal({
       <div style={{ background: '#FFFFFF', border: '1px solid #E4E6E1', borderRadius: isMobile ? '28px 28px 0 0' : 28, width: '100%', maxWidth: 520, maxHeight: isMobile ? '92vh' : '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: isMobile ? '0 -16px 48px rgba(31,29,23,0.18), inset 0 1px 0 rgba(255,255,255,0.7)' : '0 32px 80px rgba(31,29,23,0.22), inset 0 1px 0 rgba(255,255,255,0.7)' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px 16px', borderBottom: '1px solid #E4E6E1', flexShrink: 0 }}>
-          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 20, fontWeight: 700, color: '#171A17', letterSpacing: '-0.02em' }}>New Match</div>
+          <div style={{ fontFamily: font.display, fontSize: 20, fontWeight: 700, color: '#171A17', letterSpacing: '-0.02em' }}>New Match</div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
             <CloseIcon size={18} color="#494F49" />
           </button>
@@ -218,7 +219,7 @@ function NewMatchModal({
             <label style={{ fontSize: 13, fontWeight: 600, color: '#494F49', display: 'block', marginBottom: 8 }}>Holes</label>
             <div style={{ display: 'flex', gap: 8 }}>
               {([9, 18] as const).map(h => (
-                <button key={h} onClick={() => setHoles(h)} style={{ flex: 1, padding: '10px', borderRadius: 10, border: '1px solid', cursor: 'pointer', fontFamily: "'Space Grotesk', sans-serif", fontSize: 15, fontWeight: 700, transition: 'all 0.15s', background: holes === h ? '#1E4D38' : 'transparent', color: holes === h ? '#F2F5F1' : '#171A17', borderColor: holes === h ? '#1E4D38' : '#E4E6E1' }}>
+                <button key={h} onClick={() => setHoles(h)} style={{ flex: 1, padding: '10px', borderRadius: 10, border: '1px solid', cursor: 'pointer', fontFamily: font.display, fontSize: 15, fontWeight: 700, transition: 'all 0.15s', background: holes === h ? '#1E4D38' : 'transparent', color: holes === h ? '#F2F5F1' : '#171A17', borderColor: holes === h ? '#1E4D38' : '#E4E6E1' }}>
                   {h}
                 </button>
               ))}
@@ -239,7 +240,7 @@ function NewMatchModal({
                     disabled={!available}
                     style={{
                       padding: '10px 8px', borderRadius: 10, border: '1px solid', cursor: available ? 'pointer' : 'default',
-                      fontFamily: "'Geist', sans-serif", fontSize: 13, fontWeight: 500, transition: 'all 0.15s', textAlign: 'center',
+                      fontFamily: font.body, fontSize: 13, fontWeight: 500, transition: 'all 0.15s', textAlign: 'center',
                       background: active ? '#1E4D38' : 'transparent',
                       color: active ? '#F2F5F1' : available ? '#171A17' : '#6B716B',
                       borderColor: active ? '#1E4D38' : '#E4E6E1',
@@ -264,7 +265,7 @@ function NewMatchModal({
             )}
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
               {WAGER_OPTS.map(w => (
-                <button key={w} onClick={() => { setWager(w); setCustomWager('') }} style={{ padding: '8px 14px', borderRadius: 999, border: '1px solid', cursor: 'pointer', fontFamily: "'Space Grotesk', sans-serif", fontSize: 13, fontWeight: 600, transition: 'all 0.15s', background: wager === w && customWager === '' ? '#C25E33' : 'transparent', color: wager === w && customWager === '' ? '#F2F5F1' : '#171A17', borderColor: wager === w && customWager === '' ? '#C25E33' : '#E4E6E1' }}>
+                <button key={w} onClick={() => { setWager(w); setCustomWager('') }} style={{ padding: '8px 14px', borderRadius: 999, border: '1px solid', cursor: 'pointer', fontFamily: font.display, fontSize: 13, fontWeight: 600, transition: 'all 0.15s', background: wager === w && customWager === '' ? '#C25E33' : 'transparent', color: wager === w && customWager === '' ? '#F2F5F1' : '#171A17', borderColor: wager === w && customWager === '' ? '#C25E33' : '#E4E6E1' }}>
                   {w === 0 ? 'No wager' : `$${w}`}
                 </button>
               ))}
@@ -292,7 +293,7 @@ function NewMatchModal({
                       <button key={friendId} onClick={() => toggleFriend(friendId)} style={{ display: 'flex', alignItems: 'center', gap: 12, background: selected ? 'rgba(31,58,42,0.06)' : '#F2F5F1', border: `1px solid ${selected ? '#1E4D38' : '#E4E6E1'}`, borderRadius: 12, padding: '10px 14px', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'left' }}>
                         <Avatar profile={profile} size={36} />
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 14, fontWeight: 700, color: '#171A17', letterSpacing: '-0.01em' }}>
+                          <div style={{ fontFamily: font.display, fontSize: 14, fontWeight: 700, color: '#171A17', letterSpacing: '-0.01em' }}>
                             {profile?.username ? `@${profile.username}` : friendId.slice(0, 8)}
                           </div>
                           {profile?.handicapIndex != null && (
@@ -315,7 +316,7 @@ function NewMatchModal({
         </div>
 
         <div style={{ padding: '16px 24px', borderTop: '1px solid #E4E6E1', flexShrink: 0 }}>
-          <button onClick={handleCreate} disabled={loading} style={{ width: '100%', background: loading ? '#9AA09A' : '#1E4D38', color: '#F2F5F1', border: 'none', borderRadius: 14, padding: '14px', fontFamily: "'Geist', sans-serif", fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}>
+          <button onClick={handleCreate} disabled={loading} style={{ width: '100%', background: loading ? '#9AA09A' : '#1E4D38', color: '#F2F5F1', border: 'none', borderRadius: 14, padding: '14px', fontFamily: font.body, fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}>
             {loading ? 'Creating…' : 'Create & Invite'}
           </button>
         </div>
@@ -353,7 +354,7 @@ function ScorecardGrid({
           <tr style={{ background: '#1E4D38' }}>
             <td style={{ ...labelCell, color: 'rgba(242,245,241,0.4)', padding: '8px 0 8px 14px' }}>HOLE</td>
             {holes.map(h => (
-              <td key={h} style={{ ...cellBase, fontSize: 12, fontWeight: 700, color: '#F2F5F1', fontFamily: "'Space Grotesk', sans-serif", padding: '8px 0' }}>{h}</td>
+              <td key={h} style={{ ...cellBase, fontSize: 12, fontWeight: 700, color: '#F2F5F1', fontFamily: font.display, padding: '8px 0' }}>{h}</td>
             ))}
             <td style={{ ...totalCell, fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: 'rgba(242,245,241,0.4)', padding: '8px 0' }}>{subtotalLabel}</td>
           </tr>
@@ -363,7 +364,7 @@ function ScorecardGrid({
             {holes.map((h, i) => (
               <td key={h} style={{ ...cellBase, fontSize: 13, fontWeight: 600, color: '#494F49', padding: '7px 0' }}>{pars[i]}</td>
             ))}
-            <td style={{ ...totalCell, fontSize: 14, fontWeight: 700, color: '#171A17', fontFamily: "'Space Grotesk', sans-serif", padding: '7px 0' }}>{parTotal}</td>
+            <td style={{ ...totalCell, fontSize: 14, fontWeight: 700, color: '#171A17', fontFamily: font.display, padding: '7px 0' }}>{parTotal}</td>
           </tr>
 
           {players.map((player, pi) => {
@@ -384,7 +385,7 @@ function ScorecardGrid({
                     />
                   </td>
                 ))}
-                <td style={{ ...totalCell, fontFamily: "'Space Grotesk', sans-serif", fontSize: 16, fontWeight: 700, color: '#171A17', padding: '4px 0' }}>
+                <td style={{ ...totalCell, fontFamily: font.display, fontSize: 16, fontWeight: 700, color: '#171A17', padding: '4px 0' }}>
                   {hasAnyScore ? subtotal : '—'}
                 </td>
               </tr>
@@ -490,11 +491,11 @@ function ScoringModal({
       {/* Top bar */}
       <div style={{ background: '#1E4D38', color: '#F2F5F1', padding: `${isMobile ? 'calc(env(safe-area-inset-top) + 14px)' : '18px'} 20px 14px`, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, maxWidth: 680, margin: '0 auto' }}>
-          <button onClick={onClose} style={{ background: 'rgba(242,245,241,0.15)', border: 'none', borderRadius: 8, padding: '6px 12px', color: '#F2F5F1', cursor: 'pointer', fontSize: 13, fontFamily: "'Geist', sans-serif" }}>
+          <button onClick={onClose} style={{ background: 'rgba(242,245,241,0.15)', border: 'none', borderRadius: 8, padding: '6px 12px', color: '#F2F5F1', cursor: 'pointer', fontSize: 13, fontFamily: font.body }}>
             ← Back
           </button>
           <div style={{ flex: 1, textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em' }}>{liveMatch.courseName}</div>
+            <div style={{ fontFamily: font.display, fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em' }}>{liveMatch.courseName}</div>
             <div style={{ fontSize: 11, color: '#A7C0AC', marginTop: 1 }}>
               {MODE_LABELS[liveMatch.gameMode]} · {liveMatch.holes} holes{liveMatch.wagerPerPlayer > 0 ? ` · $${liveMatch.wagerPerPlayer} each` : ''}
             </div>
@@ -510,7 +511,7 @@ function ScoringModal({
           {/* Match result banner */}
           {liveMatch.status === 'completed' && (
             <div style={{ background: isWinner ? '#1E4D38' : '#F2F5F1', border: `1px solid ${isWinner ? '#1E4D38' : '#E4E6E1'}`, borderRadius: 16, padding: '14px 20px', marginBottom: 16, textAlign: 'center' }}>
-              <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 20, fontWeight: 700, color: isWinner ? '#F2F5F1' : '#171A17', letterSpacing: '-0.02em', marginBottom: 4 }}>
+              <div style={{ fontFamily: font.display, fontSize: 20, fontWeight: 700, color: isWinner ? '#F2F5F1' : '#171A17', letterSpacing: '-0.02em', marginBottom: 4 }}>
                 {liveMatch.winnerId ? (isWinner ? 'You won!' : `${accepted.find(p => p.userId === liveMatch.winnerId)?.profile?.username ? `@${accepted.find(p => p.userId === liveMatch.winnerId)?.profile?.username}` : 'Opponent'} won`) : "It's a tie!"}
               </div>
               {liveMatch.wagerPerPlayer > 0 && liveMatch.winnerId && (
@@ -536,7 +537,7 @@ function ScoringModal({
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
               <div>
-                <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#F2F5F1', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+                <div style={{ fontFamily: font.display, fontSize: isMobile ? 20 : 24, fontWeight: 700, color: '#F2F5F1', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
                   {liveMatch.courseName}
                 </div>
                 <div style={{ fontSize: 12, color: '#A7C0AC', marginTop: 6 }}>
@@ -545,7 +546,7 @@ function ScoringModal({
               </div>
               {myTotal > 0 && (
                 <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: 16 }}>
-                  <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 48, fontWeight: 700, color: '#F2F5F1', letterSpacing: '-0.04em', lineHeight: 1 }}>
+                  <div style={{ fontFamily: font.display, fontSize: 48, fontWeight: 700, color: '#F2F5F1', letterSpacing: '-0.04em', lineHeight: 1 }}>
                     {myTotal}
                   </div>
                   {myVsPar !== null && (
@@ -596,7 +597,7 @@ function ScoringModal({
             <button
               onClick={handleComplete}
               disabled={completing}
-              style={{ width: '100%', background: '#C25E33', border: 'none', borderRadius: 14, padding: '16px', color: '#F2F5F1', fontSize: 15, fontWeight: 600, cursor: completing ? 'not-allowed' : 'pointer', fontFamily: "'Geist', sans-serif", transition: 'background 0.15s' }}
+              style={{ width: '100%', background: '#C25E33', border: 'none', borderRadius: 14, padding: '16px', color: '#F2F5F1', fontSize: 15, fontWeight: 600, cursor: completing ? 'not-allowed' : 'pointer', fontFamily: font.body, transition: 'background 0.15s' }}
             >
               {completing ? 'Finalising…' : 'Submit scorecard →'}
             </button>
@@ -609,7 +610,7 @@ function ScoringModal({
         <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#EFF1ED', borderTop: '1px solid #E4E6E1', borderRadius: '20px 20px 0 0', padding: '20px 24px', paddingBottom: 'calc(env(safe-area-inset-bottom) + 24px)', zIndex: 10, boxShadow: '0 -8px 24px rgba(31,58,42,0.10)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <div>
-              <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 18, fontWeight: 700, color: '#171A17', letterSpacing: '-0.02em' }}>
+              <div style={{ fontFamily: font.display, fontSize: 18, fontWeight: 700, color: '#171A17', letterSpacing: '-0.02em' }}>
                 Hole {activeHole}
               </div>
               <div style={{ fontSize: 12, color: '#494F49', marginTop: 2 }}>
@@ -627,7 +628,7 @@ function ScoringModal({
             >
               −
             </button>
-            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 64, fontWeight: 700, color: '#171A17', letterSpacing: '-0.04em', lineHeight: 1, minWidth: 72, textAlign: 'center' }}>
+            <div style={{ fontFamily: font.display, fontSize: 64, fontWeight: 700, color: '#171A17', letterSpacing: '-0.04em', lineHeight: 1, minWidth: 72, textAlign: 'center' }}>
               {scoreVal}
             </div>
             <button
@@ -640,7 +641,7 @@ function ScoringModal({
           <button
             onClick={handleSave}
             disabled={saving}
-            style={{ width: '100%', background: saving ? '#9AA09A' : '#1E4D38', color: '#F2F5F1', border: 'none', borderRadius: 14, padding: '14px', fontSize: 15, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer', fontFamily: "'Geist', sans-serif" }}
+            style={{ width: '100%', background: saving ? '#9AA09A' : '#1E4D38', color: '#F2F5F1', border: 'none', borderRadius: 14, padding: '14px', fontSize: 15, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer', fontFamily: font.body }}
           >
             {saving ? 'Saving…' : 'Save Score'}
           </button>
@@ -771,7 +772,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
         <div style={{ background: 'transparent', padding: '15px 18px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: isDark ? '1px solid rgba(255,255,255,0.09)' : '1px solid rgba(31,58,42,0.07)' }}>
           <TrophyIcon size={18} color={isDark ? '#C25E33' : '#494F49'} />
           <div style={{ flex: 1 }}>
-            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 16, fontWeight: 700, color: isDark ? '#F2F5F1' : '#171A17', letterSpacing: '-0.02em' }}>{match.courseName}</div>
+            <div style={{ fontFamily: font.display, fontSize: 16, fontWeight: 700, color: isDark ? '#F2F5F1' : '#171A17', letterSpacing: '-0.02em' }}>{match.courseName}</div>
             <div style={{ fontSize: 12, color: isDark ? '#A7C0AC' : '#494F49', marginTop: 2 }}>
               {MODE_LABELS[match.gameMode]} · {match.holes} holes{match.wagerPerPlayer > 0 && ` · $${match.wagerPerPlayer} each`}
             </div>
@@ -791,7 +792,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
           ))}
           {isActive && (
             <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-              <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 20, fontWeight: 700, color: '#F2F5F1', letterSpacing: '-0.03em' }}>{myTotal || '—'}</div>
+              <div style={{ fontFamily: font.display, fontSize: 20, fontWeight: 700, color: '#F2F5F1', letterSpacing: '-0.03em' }}>{myTotal || '—'}</div>
               <div style={{ fontSize: 10, color: '#A7C0AC' }}>{holesPlayed}/{match.holes} holes</div>
             </div>
           )}
@@ -803,13 +804,13 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
             <>
               <button
                 onClick={() => handleDecline(match.id)}
-                style={{ flex: 1, background: '#EFF1ED', border: '1px solid #E4E6E1', borderRadius: 13, padding: '11px', fontSize: 13, color: '#494F49', cursor: 'pointer', fontFamily: "'Geist', sans-serif", transition: 'transform 0.12s ease' }}
+                style={{ flex: 1, background: '#EFF1ED', border: '1px solid #E4E6E1', borderRadius: 13, padding: '11px', fontSize: 13, color: '#494F49', cursor: 'pointer', fontFamily: font.body, transition: 'transform 0.12s ease' }}
                 onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
                 onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
               >Decline</button>
               <button
                 onClick={() => handleAccept(match.id, match.wagerPerPlayer)}
-                style={{ flex: 2, background: '#1E4D38', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 13, padding: '11px', fontSize: 13, fontWeight: 600, color: '#F2F5F1', cursor: 'pointer', fontFamily: "'Geist', sans-serif", transition: 'transform 0.12s ease' }}
+                style={{ flex: 2, background: '#1E4D38', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 13, padding: '11px', fontSize: 13, fontWeight: 600, color: '#F2F5F1', cursor: 'pointer', fontFamily: font.body, transition: 'transform 0.12s ease' }}
                 onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
                 onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
               >Accept{match.wagerPerPlayer > 0 ? ` · $${match.wagerPerPlayer}` : ''}</button>
@@ -819,13 +820,13 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
             <>
               <button
                 onClick={() => setScoring(match)}
-                style={{ flex: 2, background: '#FFFFFF', border: '1px solid #E4E6E1', borderRadius: 13, padding: '11px', fontSize: 13, fontWeight: 600, color: '#1E4D38', cursor: 'pointer', fontFamily: "'Geist', sans-serif", boxShadow: '0 2px 10px rgba(31,29,23,0.07)', transition: 'transform 0.12s ease' }}
+                style={{ flex: 2, background: '#FFFFFF', border: '1px solid #E4E6E1', borderRadius: 13, padding: '11px', fontSize: 13, fontWeight: 600, color: '#1E4D38', cursor: 'pointer', fontFamily: font.body, boxShadow: '0 2px 10px rgba(31,29,23,0.07)', transition: 'transform 0.12s ease' }}
                 onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
                 onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
               >Enter Scores →</button>
               <button
                 onClick={() => handleCancel(match)}
-                style={{ flex: 1, background: 'rgba(242,245,241,0.20)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 13, padding: '11px', fontSize: 12, color: '#A7C0AC', cursor: 'pointer', fontFamily: "'Geist', sans-serif", transition: 'transform 0.12s ease' }}
+                style={{ flex: 1, background: 'rgba(242,245,241,0.20)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 13, padding: '11px', fontSize: 12, color: '#A7C0AC', cursor: 'pointer', fontFamily: font.body, transition: 'transform 0.12s ease' }}
                 onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
                 onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
               >Cancel</button>
@@ -834,7 +835,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
           {isDone && (
             <button
               onClick={() => setScoring(match)}
-              style={{ flex: 1, background: isDark ? '#FFFFFF' : '#EFF1ED', border: '1px solid #E4E6E1', borderRadius: 13, padding: '11px', fontSize: 13, fontWeight: 600, color: '#171A17', cursor: 'pointer', fontFamily: "'Geist', sans-serif", boxShadow: '0 2px 10px rgba(31,29,23,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'transform 0.12s ease' }}
+              style={{ flex: 1, background: isDark ? '#FFFFFF' : '#EFF1ED', border: '1px solid #E4E6E1', borderRadius: 13, padding: '11px', fontSize: 13, fontWeight: 600, color: '#171A17', cursor: 'pointer', fontFamily: font.body, boxShadow: '0 2px 10px rgba(31,29,23,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'transform 0.12s ease' }}
               onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
               onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
             >View Scorecard <span style={{ fontSize: 12, opacity: 0.45 }}>›</span></button>
@@ -843,13 +844,13 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
             <>
               <button
                 onClick={() => handleStart(match)}
-                style={{ flex: 2, background: 'rgba(92,122,77,0.92)', border: '1px solid rgba(255,255,255,0.16)', borderRadius: 13, padding: '11px', fontSize: 13, fontWeight: 600, color: '#F2F5F1', cursor: 'pointer', fontFamily: "'Geist', sans-serif", transition: 'transform 0.12s ease' }}
+                style={{ flex: 2, background: 'rgba(92,122,77,0.92)', border: '1px solid rgba(255,255,255,0.16)', borderRadius: 13, padding: '11px', fontSize: 13, fontWeight: 600, color: '#F2F5F1', cursor: 'pointer', fontFamily: font.body, transition: 'transform 0.12s ease' }}
                 onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
                 onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
               >Start Match →</button>
               <button
                 onClick={() => handleCancel(match)}
-                style={{ flex: 1, background: 'rgba(240,235,221,0.72)', border: '1px solid rgba(255,255,255,0.50)', borderRadius: 13, padding: '11px', fontSize: 12, color: '#494F49', cursor: 'pointer', fontFamily: "'Geist', sans-serif", transition: 'transform 0.12s ease' }}
+                style={{ flex: 1, background: 'rgba(240,235,221,0.72)', border: '1px solid rgba(255,255,255,0.50)', borderRadius: 13, padding: '11px', fontSize: 12, color: '#494F49', cursor: 'pointer', fontFamily: font.body, transition: 'transform 0.12s ease' }}
                 onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
                 onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
               >Cancel</button>
@@ -858,7 +859,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
           {match.status === 'pending' && me?.status === 'accepted' && !canStart && (
             <button
               onClick={() => handleCancel(match)}
-              style={{ flex: 1, background: 'rgba(240,235,221,0.72)', border: '1px solid rgba(255,255,255,0.50)', borderRadius: 13, padding: '11px', fontSize: 13, color: '#494F49', cursor: 'pointer', fontFamily: "'Geist', sans-serif", transition: 'transform 0.12s ease' }}
+              style={{ flex: 1, background: 'rgba(240,235,221,0.72)', border: '1px solid rgba(255,255,255,0.50)', borderRadius: 13, padding: '11px', fontSize: 13, color: '#494F49', cursor: 'pointer', fontFamily: font.body, transition: 'transform 0.12s ease' }}
               onMouseDown={e => pressFn(e.currentTarget, true)} onMouseUp={e => pressFn(e.currentTarget, false)} onMouseLeave={e => pressFn(e.currentTarget, false)}
               onTouchStart={e => pressFn(e.currentTarget, true)} onTouchEnd={e => pressFn(e.currentTarget, false)}
             >Cancel</button>
@@ -872,7 +873,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
     <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 28 : 48}px ${px}px ${isMobile ? 120 : 80}px` }}>
 
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: isMobile ? 30 : 36, fontWeight: 600, color: '#171A17', letterSpacing: '-0.02em', margin: '0 0 4px', lineHeight: 1 }}>
+        <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 30 : 36, fontWeight: 600, color: '#171A17', letterSpacing: '-0.02em', margin: '0 0 4px', lineHeight: 1 }}>
           Matches
         </h1>
         <p style={{ fontSize: 14, color: '#6B716B', margin: '0 0 18px' }}>Wagered rounds against your friends.</p>
@@ -882,20 +883,20 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: walletAction ? 14 : 0 }}>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 500, color: 'rgba(242,245,241,0.6)', marginBottom: 4 }}>Wallet balance</div>
-                <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 30, fontWeight: 600, color: '#F2F5F1', letterSpacing: '-0.02em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+                <div style={{ fontFamily: font.display, fontSize: 30, fontWeight: 600, color: '#F2F5F1', letterSpacing: '-0.02em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
                   ${wallet.balance.toLocaleString()}<span style={{ fontSize: 13, color: 'rgba(242,245,241,0.55)', fontWeight: 400, marginLeft: 4 }}>USD</span>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={() => setWalletAction(walletAction === 'add' ? null : 'add')} style={{ background: '#FFFFFF', color: '#1E4D38', border: 'none', borderRadius: 10, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Geist', sans-serif" }}>Add</button>
-                <button onClick={() => setWalletAction(walletAction === 'withdraw' ? null : 'withdraw')} style={{ background: 'rgba(255,255,255,0.10)', color: '#F2F5F1', border: '1px solid rgba(255,255,255,0.16)', borderRadius: 10, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Geist', sans-serif" }}>Withdraw</button>
+                <button onClick={() => setWalletAction(walletAction === 'add' ? null : 'add')} style={{ background: '#FFFFFF', color: '#1E4D38', border: 'none', borderRadius: 10, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: font.body }}>Add</button>
+                <button onClick={() => setWalletAction(walletAction === 'withdraw' ? null : 'withdraw')} style={{ background: 'rgba(255,255,255,0.10)', color: '#F2F5F1', border: '1px solid rgba(255,255,255,0.16)', borderRadius: 10, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: font.body }}>Withdraw</button>
               </div>
             </div>
             {walletAction && (
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <span style={{ fontSize: 16, color: '#F2F5F1', fontWeight: 500 }}>$</span>
-                <input type="number" min="1" max="10000" value={walletInput} onChange={e => setWalletInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleWalletSubmit() }} placeholder={walletAction === 'add' ? 'Amount to add (max $10,000)' : 'Amount to withdraw'} autoFocus style={{ flex: 1, background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.16)', borderRadius: 10, padding: '10px 12px', fontSize: 16, color: '#F2F5F1', outline: 'none', fontFamily: "'Geist', sans-serif" }} />
-                <button onClick={handleWalletSubmit} disabled={walletLoading} style={{ background: '#FFFFFF', color: '#1E4D38', border: 'none', borderRadius: 10, padding: '10px 16px', fontSize: 13, fontWeight: 600, cursor: walletLoading ? 'not-allowed' : 'pointer', fontFamily: "'Geist', sans-serif", whiteSpace: 'nowrap' }}>
+                <input type="number" min="1" max="10000" value={walletInput} onChange={e => setWalletInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleWalletSubmit() }} placeholder={walletAction === 'add' ? 'Amount to add (max $10,000)' : 'Amount to withdraw'} autoFocus style={{ flex: 1, background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.16)', borderRadius: 10, padding: '10px 12px', fontSize: 16, color: '#F2F5F1', outline: 'none', fontFamily: font.body }} />
+                <button onClick={handleWalletSubmit} disabled={walletLoading} style={{ background: '#FFFFFF', color: '#1E4D38', border: 'none', borderRadius: 10, padding: '10px 16px', fontSize: 13, fontWeight: 600, cursor: walletLoading ? 'not-allowed' : 'pointer', fontFamily: font.body, whiteSpace: 'nowrap' }}>
                   {walletLoading ? '…' : walletAction === 'add' ? 'Add funds' : 'Withdraw'}
                 </button>
               </div>
@@ -922,7 +923,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
           <PlusIcon size={20} color="#1E4D38" />
         </div>
         <div style={{ textAlign: 'left', flex: 1 }}>
-          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 16, fontWeight: 600, color: '#171A17', letterSpacing: '-0.01em' }}>Start a new match</div>
+          <div style={{ fontFamily: font.display, fontSize: 16, fontWeight: 600, color: '#171A17', letterSpacing: '-0.01em' }}>Start a new match</div>
           <div style={{ fontSize: 13, color: '#6B716B', marginTop: 2 }}>Pick a course, invite friends, set a wager</div>
         </div>
       </button>

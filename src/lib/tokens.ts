@@ -5,7 +5,9 @@
 //   import { color, space, radius, font, type, elevation, motion } from '../lib/tokens'
 //
 // Rules of the house:
-//  • One typeface (Geist) — hierarchy via size + weight, never font-switching.
+//  • One typeface (Helvetica Neue LT Pro, via Adobe Fonts) — hierarchy via
+//    size + weight, never font-switching. Bricolage Grotesque is reserved
+//    for the "Dial." wordmark only.
 //  • Cool light-neutral surfaces. Green is the single brand color and is
 //    reserved for primary actions, identity moments and selected states.
 //  • Spacing comes from `space` (a strict 4/8pt scale) — no magic numbers.
@@ -17,12 +19,16 @@
 //    case, 13px / 600.
 // ─────────────────────────────────────────────────────────────────────────
 
-// ── Typeface — bold iOS-style system sans (per the dial-home prototype) ──
-// One stack for everything: SF Pro on Apple devices, Helvetica/Segoe
-// elsewhere. Hierarchy comes from heavy weights + tight tracking, exactly
-// like the prototype (greeting 700/-0.045em, labels 700 uppercase).
-// Bricolage Grotesque is loaded only for the multicolor wordmark.
-const SANS = "'Helvetica Neue', Helvetica, Arial, system-ui, -apple-system, sans-serif"
+// ── Typeface — Helvetica Neue LT Pro, served via Adobe Fonts (Typekit) ──
+// The kit ("mci8gnc", loaded in index.html) serves the real licensed
+// Helvetica Neue LT Pro family under the font-family name
+// 'helvetica-neue-lt-pro'. System 'Helvetica Neue' is the offline/Capacitor
+// fallback (iOS ships it natively), then Helvetica/Arial/system-ui.
+// Hierarchy comes from weight + tight tracking, exactly like the prototype
+// (greeting 700/-0.045em, labels 700 uppercase).
+// Bricolage Grotesque is loaded only for the "Dial." wordmark — never touch
+// font.wordmark when working on body/display type.
+const SANS = "'helvetica-neue-lt-pro', 'Helvetica Neue', Helvetica, Arial, system-ui, -apple-system, sans-serif"
 
 export const font = {
   display: SANS, // big numbers, greetings, headings — heavy weight, tight tracking

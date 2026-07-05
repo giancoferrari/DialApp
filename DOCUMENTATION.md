@@ -24,6 +24,7 @@ There are **two codebases**:
 - **Supabase** (`@supabase/supabase-js`) for auth, Postgres DB (with RLS), realtime, and storage.
 - **Hosting:** Vercel, **auto-deploys on push to `main`**. Repo: `https://github.com/giancoferrari/DialApp.git`.
 - **Edge function:** `api/golf-search.ts` (Vercel Edge) proxies golfcourseapi.com so the API key stays server-side.
+- **Fonts:** **Helvetica Neue LT Pro**, served via **Adobe Fonts (Typekit)** kit `mci8gnc` (`<link>` in `index.html`, family name `helvetica-neue-lt-pro`, referenced first in `lib/tokens.ts`'s `SANS` stack with system `'Helvetica Neue'` as the offline/Capacitor fallback). This is the one typeface for the whole app. **`DialWordmark`'s "Dial." logo is the only exception** — it stays in **Bricolage Grotesque** (Google Fonts) via `font.wordmark`; never repoint it. ⚠️ As of 2026, the Typekit kit only serves weights **400 and 700** — the app's 500/600/650/800 `fontWeight` values are unchanged and rely on browser weight-matching/synthesis until Medium (500) and Heavy (800) are added to the kit, at which point a follow-up normalization pass is needed.
 
 ### Environment variables
 - `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` — client (in `.env`, used by `lib/supabase.ts`).
@@ -126,7 +127,7 @@ Single source of truth. Exports:
 - Golf semantics (data only): birdie `#3F8761`, over-par / orange `#C86718`, eagle `#A8852F`, danger `#BD3A2D`.
 
 ### Typography
-Bold iOS-style **system sans** (`-apple-system / Helvetica Neue / Segoe UI / Arial`) for everything — heavy weights (600–800) + tight tracking. **Bricolage Grotesque** loads only for the `DialWordmark` logo. **Card labels are 12px/700 uppercase** (intentional, from the prototype spec).
+**Helvetica Neue LT Pro** (real licensed webfont via Adobe Fonts/Typekit, kit `mci8gnc`, loaded in `index.html`) for everything — heavy weights (600–800) + tight tracking, in the same bold iOS-style voice as before (system Helvetica Neue / Segoe UI / Arial remain as fallbacks in the stack, used offline and in the Capacitor shell). **Bricolage Grotesque** loads only for the `DialWordmark` logo — do not touch `font.wordmark`. **Card labels are 12px/700 uppercase** (intentional, from the prototype spec). ⚠️ The Typekit kit currently serves only weights 400/700; 500/600/650/800 usages are pending a normalization pass once Medium + Heavy are added to the kit (see §2, §10).
 
 ### Logo — `components/DialWordmark.tsx`
 **Monochrome + adaptive:** solid near-black `#0B0D0A` on light surfaces, solid white on dark surfaces (`onDark` prop). Single-color "Dial." in Bricolage Grotesque. ⚠️ Do NOT revert to multicolour — this was changed per owner request for contrast on any background.
@@ -268,6 +269,7 @@ Searchable modal sheet (Portal) listing ~195 countries with flag emojis. Used in
 
 | Date | Change |
 |------|--------|
+| 2026-07-06 | **Helvetica Neue LT Pro loaded via Adobe Fonts** (kit `mci8gnc`) — replaces the unloaded 'Space Grotesk'/'Geist' font-family strings that had been silently falling back to system fonts in `ScorecardView`, `MatchesView`, `CourseSearch`, `LegalModal`, `Toast` (now import `font` from `lib/tokens`). `lib/tokens.ts` `SANS` stack now leads with `helvetica-neue-lt-pro`. Bricolage wordmark untouched. Font-weight normalization (500/600/650/800 → kit's actual weights) deferred until Medium/Heavy are added to the Typekit kit (currently only 400/700 are live) — first prompt of a larger redesign pass tracked in `REDESIGN_PROMPTS.md` (one level above `dial-app/`, outside this repo) |
 | 2026-06-16 | **Delete account** — Settings → Danger zone, type-`DELETE` confirm sheet → `delete_my_account()` RPC wipes all user data + `auth.users` row (`DELETE_ACCOUNT.sql`, `lib/profile.deleteAccount`) |
 | 2026-06-16 | **No duplicate onboarding** — Onboarding prefills name/username/country from sign-up (profile → `user_metadata`) and skips those steps; only asks handicap/course/photo. `signUp` now also persists `first_name` |
 | 2026-06-16 | **Profile screen redesigned** to v3 warm cream — coastal `CourseHero` cover banner, pine `DialRing` avatar, cream stat row, tinted W/L/T tiles, sage→tier progress (was dark-pine hero) |

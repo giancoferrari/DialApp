@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useRef } from 'react'
 import Portal from './Portal'
 import { CheckIcon, CloseIcon } from './Icons'
+import { font } from '../lib/tokens'
 
 type ToastType = 'success' | 'error' | 'info'
 interface ToastItem { id: number; message: string; type: ToastType }
@@ -26,7 +27,7 @@ function ToastCard({ message, type }: ToastItem) {
       background: s.bg, color: s.fg,
       backdropFilter: 'blur(20px) saturate(160%)', WebkitBackdropFilter: 'blur(20px) saturate(160%)',
       borderRadius: 12, padding: '11px 16px',
-      fontFamily: "'Geist', system-ui, sans-serif", fontSize: 13, fontWeight: 500,
+      fontFamily: font.body, fontSize: 13, fontWeight: 500,
       maxWidth: 420, boxShadow: '0 10px 34px rgba(23,26,23,0.25)',
       animation: 'toastIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1)',
     }}>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { searchCourses, courseDisplayName, type GolfCourse } from '../lib/golfCourseApi'
+import { font } from '../lib/tokens'
 
 interface Props {
   value:        string
@@ -51,7 +52,7 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
 
   const base: React.CSSProperties = {
     background: '#FFFFFF', border: '1px solid #CDD2CC', borderRadius: 10,
-    padding: '12px 14px', fontSize: 16, fontFamily: "'Geist', sans-serif",
+    padding: '12px 14px', fontSize: 16, fontFamily: font.body,
     color: '#171A17', width: '100%', outline: 'none', boxSizing: 'border-box',
     transition: 'border-color 0.15s',
     ...inputStyle,
@@ -71,7 +72,7 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
       />
 
       {loading && (
-        <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#6B716B', fontFamily: "'Geist', sans-serif" }}>
+        <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#6B716B', fontFamily: font.body }}>
           Searching…
         </div>
       )}
@@ -100,7 +101,7 @@ export default function CourseSearch({ value, onChange, onSelect, placeholder = 
                 onMouseEnter={e => { e.currentTarget.style.background = '#EFF1ED' }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
               >
-                <div style={{ fontFamily: "'Geist', sans-serif", fontSize: 14, fontWeight: 600, color: '#171A17' }}>
+                <div style={{ fontFamily: font.body, fontSize: 14, fontWeight: 600, color: '#171A17' }}>
                   {courseDisplayName(course)}
                 </div>
                 <div style={{ fontSize: 12, color: '#6B716B', marginTop: 2, display: 'flex', gap: 8 }}>
