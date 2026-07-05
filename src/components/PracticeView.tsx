@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { insertPracticeSession, deletePracticeSession } from '../lib/practice'
 import type { PracticeSession, FocusArea } from '../types'
 import { CloseIcon, PlusIcon } from './Icons'
-import { color, font, radius, elevation } from '../lib/tokens'
+import PageHeader from './PageHeader'
+import { useStaggerMount } from '../hooks/useStaggerMount'
+import { color, font, radius, elevation, page } from '../lib/tokens'
 import { card as cardSurface } from '../lib/surfaces'
 
 interface Props {
@@ -83,7 +85,9 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
     try { await deletePracticeSession(id); onDelete(id) } catch { /* silent */ }
   }
 
-  const px = isMobile ? 20 : 40
+  const px = isMobile ? page.pxMobile : page.pxDesktop
+  const containerRef = useRef<HTMLDivElement>(null)
+  useStaggerMount(containerRef)
 
   const labelStyle: React.CSSProperties = { display: 'block', fontSize: 13, fontWeight: 600, color: color.inkSoft, marginBottom: 10 }
   const inputStyle: React.CSSProperties = {
@@ -98,25 +102,22 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
     transition: 'all 0.15s', background: active ? color.green : color.white, color: active ? color.onGreen : color.inkSoft,
   })
 
-  return (
-    <div style={{ maxWidth: 760, margin: '0 auto', padding: `${isMobile ? 28 : 44}px ${px}px ${isMobile ? 110 : 64}px` }}>
+  const logButton = (
+    <button
+      onClick={openModal}
+      style={{ display: 'flex', alignItems: 'center', gap: 6, background: color.green, color: color.onGreen, border: 'none', borderRadius: radius.md, padding: '10px 16px', fontFamily: font.body, fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'background 0.15s', whiteSpace: 'nowrap', flexShrink: 0 }}
+      onMouseEnter={e => { e.currentTarget.style.background = color.greenDeep }}
+      onMouseLeave={e => { e.currentTarget.style.background = color.green }}
+    >
+      <PlusIcon size={14} color={color.onGreen} /> Log
+    </button>
+  )
 
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 22, gap: 12 }}>
-        <div>
-          <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 30 : 36, fontWeight: 600, color: color.ink, letterSpacing: '-0.02em', margin: '0 0 4px', lineHeight: 1 }}>
-            Practice
-          </h1>
-          <p style={{ fontSize: 14, color: color.muted, margin: 0 }}>Track your range and short-game work.</p>
-        </div>
-        <button
-          onClick={openModal}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, background: color.green, color: color.onGreen, border: 'none', borderRadius: radius.md, padding: '10px 16px', fontFamily: font.body, fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'background 0.15s', whiteSpace: 'nowrap', flexShrink: 0 }}
-          onMouseEnter={e => { e.currentTarget.style.background = color.greenDeep }}
-          onMouseLeave={e => { e.currentTarget.style.background = color.green }}
-        >
-          <PlusIcon size={14} color={color.onGreen} /> Log
-        </button>
+  return (
+    <div ref={containerRef} style={{ maxWidth: page.maxW, margin: '0 auto', padding: `${isMobile ? page.topMobile : page.topDesktop}px ${px}px ${isMobile ? page.bottomMobile : page.bottomDesktop}px` }}>
+
+      <div style={{ marginBottom: 22 }}>
+        <PageHeader title="Practice" subtitle="Track your range and short-game work." action={logButton} isMobile={isMobile} />
       </div>
 
       {/* Filter chips */}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { fetchProfilesForIds, fetchFriendships } from '../lib/friends'
 import type { UserProfile, PublicProfile, View } from '../types'
@@ -11,7 +11,8 @@ import Avatar from './Avatar'
 import DialRing from './DialRing'
 import CourseHero from './CourseHero'
 import { useEdgeSwipeBack } from '../hooks/useGestures'
-import { color, font, elevation, radius } from '../lib/tokens'
+import { useStaggerMount } from '../hooks/useStaggerMount'
+import { color, font, elevation, radius, page } from '../lib/tokens'
 
 // ── A user's friends, in a tappable sheet ──────────────────────────────
 function FriendsListModal({ userId, isMobile, onClose, onViewProfile }: {
@@ -82,6 +83,8 @@ interface Props {
 export default function ProfileView({ profile, meId, viewUserId, userEmail, isMobile = false, onNavigate, onBack, onMessage, onViewProfile }: Props) {
   const isOwn = viewUserId === meId
   useEdgeSwipeBack(() => (onBack ? onBack() : onNavigate('friends')), !isOwn)
+  const containerRef = useRef<HTMLDivElement>(null)
+  useStaggerMount(containerRef)
   const [other, setOther] = useState<PublicProfile | null>(null)
   const [friendsCount, setFriendsCount] = useState(0)
   const [showFriends, setShowFriends] = useState(false)
@@ -119,7 +122,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
   const progress    = nextTier ? Math.min(1, (points - rank.minPoints) / (nextTier.minPoints - rank.minPoints)) : 1
   const initial     = (firstName?.[0] ?? username?.[0] ?? (isOwn ? userEmail[0] : '?'))?.toUpperCase() ?? '?'
 
-  const px = isMobile ? 20 : 40
+  const px = isMobile ? page.pxMobile : page.pxDesktop
 
   // Warm "Clubhouse" identity card — matches the Home screen's cream surfaces,
   // pine/sage/orange accents and the coastal illustration.
@@ -142,16 +145,16 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
   ]
 
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: isMobile ? 120 : 80 }}>
+    <div ref={containerRef} style={{ maxWidth: page.maxW, margin: '0 auto', paddingBottom: isMobile ? page.bottomMobile : page.bottomDesktop }}>
 
-      {/* ════ Warm identity card ════ */}
+      {/* ════ Warm identity card — surfaces.raised chrome on desktop; mobile stays full-bleed (intentional) ════ */}
       <section style={{ padding: isMobile ? 0 : `12px ${px}px 0` }}>
         <div style={{
           position: 'relative', overflow: 'hidden',
-          background: color.card,
-          border: isMobile ? 'none' : `1px solid ${color.border}`,
-          borderRadius: isMobile ? 0 : 24,
-          boxShadow: isMobile ? 'none' : elevation.sm,
+          background: isMobile ? color.card : '#FFFEFB',
+          border: isMobile ? 'none' : '1px solid rgba(120,108,78,0.08)',
+          borderRadius: isMobile ? 0 : radius.lg,
+          boxShadow: isMobile ? 'none' : '0 10px 26px rgba(58,48,28,0.07)',
         }}>
           {/* Coastal cover banner (same illustration as Home), fading into the card */}
           <div style={{ position: 'relative' }}>
@@ -259,7 +262,7 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
 
       {/* ════ Posts ════ */}
       <div style={{ position: 'relative', marginTop: isMobile ? 20 : 24, padding: `0 ${px}px` }}>
-        <div style={{ maxWidth: 600, margin: '0 auto' }}>
+        <div style={{ maxWidth: page.contentW, margin: '0 auto' }}>
           <ProfilePosts
             targetUserId={viewUserId}
             meId={meId}

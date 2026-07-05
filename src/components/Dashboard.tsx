@@ -9,7 +9,7 @@ import Feed from './Feed'
 import Portal from './Portal'
 import RankUpMoment from './RankUpMoment'
 import CourseHero from './CourseHero'
-import { color, font, elevation, radius, type } from '../lib/tokens'
+import { color, font, elevation, radius, type, page } from '../lib/tokens'
 import { card, raised } from '../lib/surfaces'
 import { useStaggerMount } from '../hooks/useStaggerMount'
 
@@ -167,7 +167,7 @@ interface Props {
 export default function Dashboard({ profile, userId, rounds, onNavigate, onViewProfile, isMobile = false }: Props) {
   const containerRef = useRef<HTMLElement>(null)
   const date = useLiveDate()
-  const px   = isMobile ? 24 : 40
+  const px   = isMobile ? page.pxMobile : page.pxDesktop
   const [showRanks, setShowRanks] = useState(false)
   const [rankUp, setRankUp]       = useState<RankTier | null>(null)
   const pointsRef = useRef<HTMLSpanElement>(null)
@@ -261,7 +261,7 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
   return (
     <main
       ref={containerRef}
-      style={{ maxWidth: isMobile ? '100%' : 560, margin: '0 auto', paddingBottom: isMobile ? 116 : 72 }}
+      style={{ maxWidth: isMobile ? '100%' : 560, margin: '0 auto', paddingBottom: isMobile ? page.bottomMobile : page.bottomDesktop }}
     >
 
       {isMobile ? (

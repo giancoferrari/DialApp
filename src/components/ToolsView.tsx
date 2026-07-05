@@ -1,7 +1,10 @@
+import { useRef } from 'react'
 import type { View } from '../types'
 import { BagIcon, TargetIcon, ScorecardIcon, DumbbellIcon, ChartIcon, ChevronRightIcon } from './Icons'
-import { color, font, radius } from '../lib/tokens'
-import { card } from '../lib/surfaces'
+import PageHeader from './PageHeader'
+import { useStaggerMount } from '../hooks/useStaggerMount'
+import { color, font, radius, page } from '../lib/tokens'
+import { card, raised } from '../lib/surfaces'
 
 interface Props {
   onNavigate: (v: View) => void
@@ -17,23 +20,24 @@ const TOOLS = [
 ]
 
 export default function ToolsView({ onNavigate, isMobile = false }: Props) {
-  const px = isMobile ? 20 : 40
+  const px = isMobile ? page.pxMobile : page.pxDesktop
+  const gridRef = useRef<HTMLDivElement>(null)
+  useStaggerMount(gridRef)
 
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 28 : 44}px ${px}px ${isMobile ? 120 : 80}px` }}>
+    <div style={{ maxWidth: page.maxW, margin: '0 auto', padding: `${isMobile ? page.topMobile : page.topDesktop}px ${px}px ${isMobile ? page.bottomMobile : page.bottomDesktop}px` }}>
 
-      <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 30 : 36, fontWeight: 600, color: color.ink, letterSpacing: '-0.02em', margin: '0 0 4px', lineHeight: 1 }}>
-        Tools
-      </h1>
-      <p style={{ fontSize: 14, color: color.muted, margin: '0 0 26px' }}>Everything to sharpen your game.</p>
+      <div style={{ marginBottom: 26 }}>
+        <PageHeader title="Tools" subtitle="Everything to sharpen your game." isMobile={isMobile} />
+      </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+      <div ref={gridRef} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         {TOOLS.map(item => (
           <button
             key={item.view}
             onClick={() => onNavigate(item.view)}
             style={{
-              ...card,
+              ...(item.feature ? raised : card),
               gridColumn: item.feature ? '1 / -1' : undefined,
               padding: item.feature ? '20px 20px' : '20px 18px',
               display: 'flex',
@@ -44,7 +48,7 @@ export default function ToolsView({ onNavigate, isMobile = false }: Props) {
               transition: 'background 0.18s, transform 0.16s cubic-bezier(0.22,1,0.36,1)',
             }}
             onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
-            onMouseLeave={e => { e.currentTarget.style.background = color.white }}
+            onMouseLeave={e => { e.currentTarget.style.background = item.feature ? '#FFFEFB' : color.white }}
             onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
             onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
             onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.98)' }}

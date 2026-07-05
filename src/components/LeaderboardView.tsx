@@ -3,12 +3,13 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchLeaderboard } from '../lib/leaderboard'
 import { getRank } from '../lib/points'
 import { flagEmoji } from '../lib/countries'
-import { ShieldIcon, ChevronLeftIcon, MedalIcon } from './Icons'
+import { ShieldIcon, MedalIcon } from './Icons'
 import Skeleton from './Skeleton'
+import PageHeader from './PageHeader'
 import { useEdgeSwipeBack } from '../hooks/useGestures'
 import { useStaggerMount } from '../hooks/useStaggerMount'
-import { color, font, radius, onHero, elevation } from '../lib/tokens'
-import { card } from '../lib/surfaces'
+import { color, font, radius, onHero, page } from '../lib/tokens'
+import { card, raised } from '../lib/surfaces'
 import type { PublicProfile } from '../types'
 
 interface Props {
@@ -26,7 +27,7 @@ function name(p: PublicProfile): string {
 
 export default function LeaderboardView({ meId, isMobile = false, onBack, onViewProfile }: Props) {
   const listRef = useRef<HTMLDivElement>(null)
-  const px = isMobile ? 20 : 40
+  const px = isMobile ? page.pxMobile : page.pxDesktop
   useEdgeSwipeBack(() => onBack?.(), !!onBack)
 
   const { data: rows = [], isLoading: loading } = useQuery({
@@ -41,23 +42,15 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
   const myPoints = myIndex >= 0 ? (rows[myIndex].rankedPoints ?? 0) : 0
 
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 0 : 0}px 0 ${isMobile ? 120 : 80}px` }}>
+    <div style={{ maxWidth: page.maxW, margin: '0 auto', padding: `0 0 ${isMobile ? page.bottomMobile : page.bottomDesktop}px` }}>
 
       {/* ════ Warm header ════ */}
-      <section style={{ padding: `${isMobile ? 22 : 28}px ${px}px 0` }}>
-        <div style={{ maxWidth: 600, margin: '0 auto' }}>
-          {onBack && (
-            <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: font.body, fontSize: 14, fontWeight: 500, color: color.inkSoft, padding: 0, display: 'flex', alignItems: 'center', gap: 4, marginBottom: 14 }}>
-              <ChevronLeftIcon size={18} color={color.inkSoft} /> Back
-            </button>
-          )}
-          <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 32 : 38, fontWeight: 700, color: color.ink, letterSpacing: '-0.035em', margin: 0, lineHeight: 1 }}>
-            Leaderboard
-          </h1>
-          <p style={{ fontSize: 14, color: color.muted, margin: '8px 0 0' }}>You and your friends, by ranked points.</p>
+      <section style={{ padding: `${isMobile ? page.topMobile : page.topDesktop}px ${px}px 0` }}>
+        <div style={{ maxWidth: page.contentW, margin: '0 auto' }}>
+          <PageHeader title="Leaderboard" subtitle="You and your friends, by ranked points." onBack={onBack} isMobile={isMobile} />
 
           {myIndex >= 0 && friendsOnly.length > 0 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 18, padding: '16px 18px', background: color.green, borderRadius: radius.lg, boxShadow: elevation.sm }}>
+            <div style={{ ...raised, display: 'flex', alignItems: 'center', gap: 14, marginTop: 18, padding: '16px 18px', background: color.green }}>
               <div style={{ fontFamily: font.display, fontSize: 32, fontWeight: 700, color: color.onGreen, lineHeight: 1, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums' }}>
                 #{myIndex + 1}
               </div>
@@ -75,7 +68,7 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
       </section>
 
       {/* ════ List ════ */}
-      <div style={{ padding: `22px ${px}px 0`, maxWidth: 600 + px * 2, margin: '0 auto' }}>
+      <div style={{ padding: `22px ${px}px 0`, maxWidth: page.contentW + px * 2, margin: '0 auto' }}>
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {[0, 1, 2, 3, 4].map(i => (
@@ -113,7 +106,7 @@ export default function LeaderboardView({ meId, isMobile = false, onBack, onView
                     display: 'flex', alignItems: 'center', gap: 13, textAlign: 'left',
                     background: me ? color.green : color.white,
                     border: `1px solid ${me ? color.green : color.border}`,
-                    borderRadius: radius.card, padding: '12px 16px',
+                    borderRadius: radius.lg, padding: '12px 16px',
                     cursor: clickable ? 'pointer' : 'default',
                   }}
                 >

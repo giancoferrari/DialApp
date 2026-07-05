@@ -1,11 +1,11 @@
 import { useRef } from 'react'
 import type { Round, Shot, View } from '../types'
 import { aggregateStats, scoreTrend, estimateHandicap, bagGaps } from '../lib/stats'
-import { ChevronLeftIcon } from './Icons'
+import PageHeader from './PageHeader'
 import { useEdgeSwipeBack } from '../hooks/useGestures'
 import { useStaggerMount } from '../hooks/useStaggerMount'
-import { color, font, radius, elevation } from '../lib/tokens'
-import { card } from '../lib/surfaces'
+import { color, font, radius, page } from '../lib/tokens'
+import { card, raised } from '../lib/surfaces'
 
 interface Props {
   rounds: Round[]
@@ -28,7 +28,7 @@ function shortDate(iso: string): string {
 
 export default function StatsView({ rounds, shots, isMobile = false, onNavigate }: Props) {
   const ref = useRef<HTMLDivElement>(null)
-  const px  = isMobile ? 20 : 40
+  const px  = isMobile ? page.pxMobile : page.pxDesktop
   useEdgeSwipeBack(() => onNavigate('tools'))
 
   useStaggerMount(ref)
@@ -53,16 +53,16 @@ export default function StatsView({ rounds, shots, isMobile = false, onNavigate 
   const range = Math.max(1, (scores.length ? Math.max(...scores) : 1) - minS)
 
   return (
-    <div ref={ref} style={{ maxWidth: 680, margin: '0 auto', padding: `0 0 ${isMobile ? 120 : 80}px` }}>
+    <div ref={ref} style={{ maxWidth: page.maxW, margin: '0 auto', padding: `0 0 ${isMobile ? page.bottomMobile : page.bottomDesktop}px` }}>
 
       {/* ════ Warm header — estimated handicap ════ */}
-      <section style={{ padding: `${isMobile ? 22 : 28}px ${px}px 0` }}>
-        <div style={{ maxWidth: 600, margin: '0 auto' }}>
-          <button onClick={() => onNavigate('tools')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: font.body, fontSize: 14, fontWeight: 500, color: color.inkSoft, padding: 0, display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
-            <ChevronLeftIcon size={18} color={color.inkSoft} /> Tools
-          </button>
+      <section style={{ padding: `${isMobile ? page.topMobile : page.topDesktop}px ${px}px 0` }}>
+        <div style={{ maxWidth: page.contentW, margin: '0 auto' }}>
+          <div style={{ marginBottom: 16 }}>
+            <PageHeader title="Stats" onBack={() => onNavigate('tools')} isMobile={isMobile} />
+          </div>
 
-          <div style={{ background: color.card, border: `1px solid ${color.border}`, borderRadius: radius.lg, boxShadow: elevation.sm, padding: isMobile ? '22px 22px' : '26px 26px' }}>
+          <div style={{ ...raised, padding: isMobile ? '22px 22px' : '26px 26px' }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: color.faint, letterSpacing: '0.03em', textTransform: 'uppercase', marginBottom: 8 }}>Estimated handicap</div>
             {hcp.value !== null ? (
               <>
@@ -91,7 +91,7 @@ export default function StatsView({ rounds, shots, isMobile = false, onNavigate 
         </div>
       </section>
 
-      <div style={{ padding: `22px ${px}px 0`, maxWidth: 600 + px * 2, margin: '0 auto' }}>
+      <div style={{ padding: `22px ${px}px 0`, maxWidth: page.contentW + px * 2, margin: '0 auto' }}>
 
         {/* ── Score trend ── */}
         {trend.length >= 2 && (

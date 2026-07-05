@@ -3,11 +3,13 @@ import { supabase } from '../lib/supabase'
 import { upsertProfile, uploadAvatar, deleteAccount } from '../lib/profile'
 import type { UserProfile, View } from '../types'
 import { getRank } from '../lib/points'
-import { CameraIcon, CheckIcon, CloseIcon, ShieldIcon, ChevronRightIcon, ChevronLeftIcon } from './Icons'
+import { CameraIcon, CheckIcon, CloseIcon, ShieldIcon, ChevronRightIcon } from './Icons'
 import CountryPicker from './CountryPicker'
 import Portal from './Portal'
+import PageHeader from './PageHeader'
 import { useEdgeSwipeBack } from '../hooks/useGestures'
-import { color, font, radius, onHero } from '../lib/tokens'
+import { useStaggerMount } from '../hooks/useStaggerMount'
+import { color, font, radius, onHero, page } from '../lib/tokens'
 import { card as cardSurface } from '../lib/surfaces'
 
 // ── Local preferences (no DB needed) ──────────────────────
@@ -193,6 +195,8 @@ interface Props {
 
 export default function SettingsView({ profile, userEmail, userId, onProfileSaved, onSignOut, onShowLegal, onNavigate, onBack, isMobile = false }: Props) {
   useEdgeSwipeBack(() => (onBack ? onBack() : onNavigate('profile')))
+  const containerRef = useRef<HTMLDivElement>(null)
+  useStaggerMount(containerRef)
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [savedFlash, setSavedFlash] = useState<string | null>(null)
@@ -277,25 +281,18 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
   const rank = getRank(profile?.rankedPoints ?? 0)
   const displayName = profile?.firstName ? profile.firstName : profile?.username ? `@${profile.username}` : userEmail.split('@')[0]
   const initial = displayName[0]?.toUpperCase() ?? '?'
-  const px = isMobile ? 20 : 40
+  const px = isMobile ? page.pxMobile : page.pxDesktop
 
   const pwInput = (extraBorder?: string): React.CSSProperties => ({
     background: color.sand, border: `1px solid ${extraBorder ?? color.border}`, borderRadius: radius.sm, padding: '10px 14px', fontSize: 16, color: color.ink, outline: 'none', fontFamily: font.body,
   })
 
   return (
-    <div style={{ maxWidth: 640, margin: '0 auto', padding: `${isMobile ? 24 : 44}px ${px}px ${isMobile ? 120 : 80}px` }}>
+    <div ref={containerRef} style={{ maxWidth: page.maxW, margin: '0 auto', padding: `${isMobile ? page.topMobile : page.topDesktop}px ${px}px ${isMobile ? page.bottomMobile : page.bottomDesktop}px` }}>
 
-      {/* ── Page title ── */}
-      <button
-        onClick={() => (onBack ? onBack() : onNavigate('profile'))}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: font.body, fontSize: 14, fontWeight: 500, color: color.inkSoft, padding: 0, display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}
-      >
-        <ChevronLeftIcon size={18} color={color.inkSoft} /> Back
-      </button>
-      <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 30 : 36, fontWeight: 600, color: color.ink, letterSpacing: '-0.02em', margin: '0 0 22px', lineHeight: 1 }}>
-        Settings
-      </h1>
+      <div style={{ marginBottom: 22 }}>
+        <PageHeader title="Settings" onBack={() => (onBack ? onBack() : onNavigate('profile'))} isMobile={isMobile} />
+      </div>
 
       {/* ── Flash messages ── */}
       {savedFlash && (
@@ -309,8 +306,8 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
         </div>
       )}
 
-      {/* ── Profile header card (dark) ── */}
-      <div style={{ background: color.green, borderRadius: radius.lg, padding: '24px 22px', display: 'flex', alignItems: 'center', gap: 18 }}>
+      {/* ── Profile header card (dark) — the screen's hero moment: pine bg kept, radius/shadow from surfaces.raised ── */}
+      <div style={{ background: color.green, borderRadius: radius.lg, boxShadow: '0 10px 26px rgba(58,48,28,0.07)', padding: '24px 22px', display: 'flex', alignItems: 'center', gap: 18 }}>
         {/* Avatar */}
         <div style={{ position: 'relative', flexShrink: 0 }}>
           <div

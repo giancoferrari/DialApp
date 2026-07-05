@@ -13,10 +13,12 @@ import Skeleton from './Skeleton'
 import Avatar from './Avatar'
 import EmptyState from './EmptyState'
 import Button from './Button'
+import PageHeader from './PageHeader'
 import { tapHaptic } from '../lib/native'
 import { timeAgo, displayName } from '../lib/format'
 import { useEdgeSwipeBack, useSwipeDownDismiss } from '../hooks/useGestures'
-import { color, font, radius, elevation, onHero } from '../lib/tokens'
+import { useStaggerMount } from '../hooks/useStaggerMount'
+import { color, font, radius, elevation, onHero, page } from '../lib/tokens'
 import { card as cardSurface } from '../lib/surfaces'
 
 // Drag-to-dismiss grabber for mobile bottom sheets.
@@ -331,6 +333,8 @@ function NewMessageSheet({ userId, isMobile, onPick, onClose }: {
 // ── Main view ────────────────────────────────────────────────────────────
 export default function MessagesView({ userId, isMobile = false, startUserId = null, onUnreadChange, onViewProfile }: Props) {
   const qc = useQueryClient()
+  const containerRef = useRef<HTMLDivElement>(null)
+  useStaggerMount(containerRef)
   const [active, setActive]   = useState<Conversation | null>(null)
   const [showNew, setShowNew] = useState(false)
 
@@ -372,19 +376,19 @@ export default function MessagesView({ userId, isMobile = false, startUserId = n
 
   const closeThread = () => { setActive(null); refresh(); onUnreadChange?.() }
 
-  const px = isMobile ? 20 : 40
+  const px = isMobile ? page.pxMobile : page.pxDesktop
   const rowDivider = `1px solid ${color.border}`
 
+  const newButton = (
+    <button onClick={() => setShowNew(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: color.green, color: color.onGreen, border: 'none', borderRadius: radius.md, padding: '10px 16px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: font.body, whiteSpace: 'nowrap', flexShrink: 0 }}>
+      <PlusIcon size={14} color={color.onGreen} /> New
+    </button>
+  )
+
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 28 : 44}px ${px}px ${isMobile ? 120 : 80}px` }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 22, gap: 12 }}>
-        <div>
-          <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 30 : 36, fontWeight: 600, color: color.ink, letterSpacing: '-0.02em', margin: '0 0 4px', lineHeight: 1 }}>Messages</h1>
-          <p style={{ fontSize: 14, color: color.muted, margin: 0 }}>Talk to your playing partners.</p>
-        </div>
-        <button onClick={() => setShowNew(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: color.green, color: color.onGreen, border: 'none', borderRadius: radius.md, padding: '10px 16px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: font.body, whiteSpace: 'nowrap', flexShrink: 0 }}>
-          <PlusIcon size={14} color={color.onGreen} /> New
-        </button>
+    <div ref={containerRef} style={{ maxWidth: page.maxW, margin: '0 auto', padding: `${isMobile ? page.topMobile : page.topDesktop}px ${px}px ${isMobile ? page.bottomMobile : page.bottomDesktop}px` }}>
+      <div style={{ marginBottom: 22 }}>
+        <PageHeader title="Messages" subtitle="Talk to your playing partners." action={newButton} isMobile={isMobile} />
       </div>
 
       {loading ? (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import { fetchFriendships, fetchProfilesForIds, updateFriendship } from '../lib/friends'
@@ -8,7 +8,9 @@ import type { PublicProfile, Friendship, Match, AppNotification } from '../types
 import { CheckIcon, CloseIcon, TrophyIcon, UsersIcon, BellIcon, HeartIcon, ChatIcon, RepostIcon } from './Icons'
 import Avatar from './Avatar'
 import Skeleton from './Skeleton'
-import { color, font, radius } from '../lib/tokens'
+import PageHeader from './PageHeader'
+import { useStaggerMount } from '../hooks/useStaggerMount'
+import { color, font, radius, page } from '../lib/tokens'
 import { card } from '../lib/surfaces'
 
 type NotifData = {
@@ -48,6 +50,8 @@ function notifIcon(type: AppNotification['type']) {
 
 export default function NotificationsView({ userId, isMobile = false, onCountChange }: Props) {
   const qc = useQueryClient()
+  const containerRef = useRef<HTMLDivElement>(null)
+  useStaggerMount(containerRef)
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const notifKey = ['notifications', userId]
@@ -134,16 +138,15 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
     finally { setBusy(null) }
   }
 
-  const px = isMobile ? 20 : 40
+  const px = isMobile ? page.pxMobile : page.pxDesktop
   const total = friendReqs.length + matchInvites.length + notifs.length
 
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 28 : 44}px ${px}px ${isMobile ? 120 : 80}px` }}>
+    <div ref={containerRef} style={{ maxWidth: page.maxW, margin: '0 auto', padding: `${isMobile ? page.topMobile : page.topDesktop}px ${px}px ${isMobile ? page.bottomMobile : page.bottomDesktop}px` }}>
 
-      <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 30 : 36, fontWeight: 600, color: color.ink, letterSpacing: '-0.02em', margin: '0 0 4px', lineHeight: 1 }}>
-        Notifications
-      </h1>
-      <p style={{ fontSize: 14, color: color.muted, margin: '0 0 24px' }}>Requests, invites and clubhouse activity.</p>
+      <div style={{ marginBottom: 24 }}>
+        <PageHeader title="Notifications" subtitle="Requests, invites and clubhouse activity." isMobile={isMobile} />
+      </div>
 
       {error && (
         <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: 12, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, marginBottom: 20 }}>
@@ -218,7 +221,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
           {matchInvites.map(m => {
             const inviter = m.players.find(p => p.userId === m.createdBy)
             return (
-              <div key={m.id} style={{ background: color.green, borderRadius: radius.card, overflow: 'hidden' }}>
+              <div key={m.id} style={{ background: color.green, borderRadius: radius.lg, overflow: 'hidden' }}>
                 <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid rgba(255,255,255,0.10)' }}>
                   <TrophyIcon size={14} color="#E0935E" />
                   <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(242,245,241,0.75)' }}>Match invite</span>
@@ -277,7 +280,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
                   <div style={{ fontSize: 12, color: color.faint, marginTop: 2 }}>{notifAgo(n.createdAt)}</div>
                 </div>
                 {n.postImageUrl && (
-                  <img src={n.postImageUrl} alt="" loading="lazy" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
+                  <img src={n.postImageUrl} alt="" loading="lazy" style={{ width: 44, height: 44, borderRadius: radius.sm, objectFit: 'cover', flexShrink: 0 }} />
                 )}
               </div>
             )

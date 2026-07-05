@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { Shot, WindDirection, WindStrength } from '../types'
 import { CLUBS_DATA, getClubAvg } from '../data'
 import { TargetIcon } from './Icons'
 import EmptyState from './EmptyState'
-import { color, font, radius } from '../lib/tokens'
+import PageHeader from './PageHeader'
+import { useStaggerMount } from '../hooks/useStaggerMount'
+import { color, font, radius, page } from '../lib/tokens'
 import { card as cardSurface } from '../lib/surfaces'
 
 interface Props { shots: Shot[]; isMobile?: boolean }
@@ -52,7 +54,9 @@ export default function DialInView({ shots, isMobile }: Props) {
   const [adjusted, setAdjusted] = useState<number | null>(null)
 
   const hasEnoughData = CLUBS_DATA.some(c => getClubAvg(shots, c.id) !== null)
-  const px = isMobile ? 20 : 40
+  const px = isMobile ? page.pxMobile : page.pxDesktop
+  const containerRef = useRef<HTMLDivElement>(null)
+  useStaggerMount(containerRef)
 
   const handleFind = () => {
     const t = parseInt(target)
@@ -74,15 +78,11 @@ export default function DialInView({ shots, isMobile }: Props) {
   })
 
   return (
-    <div style={{ maxWidth: 760, margin: '0 auto', padding: `${isMobile ? 28 : 44}px ${px}px ${isMobile ? 110 : 80}px` }}>
+    <div ref={containerRef} style={{ maxWidth: page.maxW, margin: '0 auto', padding: `${isMobile ? page.topMobile : page.topDesktop}px ${px}px ${isMobile ? page.bottomMobile : page.bottomDesktop}px` }}>
 
-      {/* Header */}
-      <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 30 : 36, fontWeight: 600, color: color.ink, letterSpacing: '-0.02em', margin: '0 0 4px', lineHeight: 1 }}>
-        Dial in
-      </h1>
-      <p style={{ fontSize: 14, color: color.muted, margin: '0 0 24px' }}>
-        Enter your target and the wind. We'll find your club from your real averages.
-      </p>
+      <div style={{ marginBottom: 24 }}>
+        <PageHeader title="Dial in" subtitle="Enter your target and the wind. We'll find your club from your real averages." isMobile={isMobile} />
+      </div>
 
       {!hasEnoughData ? (
         <EmptyState
@@ -173,7 +173,7 @@ export default function DialInView({ shots, isMobile }: Props) {
                     {result.map((s, i) => {
                       const best = i === 0
                       return (
-                        <div key={s.clubId} style={{ display: 'flex', alignItems: 'center', gap: 14, background: best ? color.green : color.sand, borderRadius: radius.card, padding: '16px 18px' }}>
+                        <div key={s.clubId} style={{ display: 'flex', alignItems: 'center', gap: 14, background: best ? color.green : color.sand, borderRadius: radius.lg, padding: '16px 18px' }}>
                           <div style={{ width: 44, height: 44, borderRadius: radius.sm, background: best ? 'rgba(255,255,255,0.12)' : color.greenTint, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: font.display, fontSize: 14, fontWeight: 600, color: best ? color.onGreen : color.green, flexShrink: 0 }}>
                             {s.abbr}
                           </div>

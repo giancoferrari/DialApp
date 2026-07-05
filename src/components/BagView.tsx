@@ -3,8 +3,9 @@ import type { Shot, Club, ClubCat } from '../types'
 import { CLUBS_DATA, CAT_LABELS, BAR_MAX, getClubLast } from '../data'
 import ClubBadge from './ClubBadge'
 import { PlusIcon, CloseIcon } from './Icons'
+import PageHeader from './PageHeader'
 import { useStaggerMount } from '../hooks/useStaggerMount'
-import { color, font, radius, elevation } from '../lib/tokens'
+import { color, font, radius, elevation, page } from '../lib/tokens'
 import { card as cardSurface } from '../lib/surfaces'
 
 const CUSTOM_CLUBS_KEY = 'dial_custom_clubs'
@@ -270,7 +271,7 @@ export default function BagView({ shots, onSetDistance, isMobile = false }: Prop
 
   useStaggerMount(gridRef, { dependencies: [filter] })
 
-  const px = isMobile ? 20 : 40
+  const px = isMobile ? page.pxMobile : page.pxDesktop
   const catCount = (cat: ClubCat | 'all') =>
     cat === 'all' ? allClubs.length : allClubs.filter(c => c.cat === cat).length
 
@@ -285,16 +286,14 @@ export default function BagView({ shots, onSetDistance, isMobile = false }: Prop
   })
 
   return (
-    <main ref={containerRef} style={{ maxWidth: 760, margin: '0 auto', padding: `${isMobile ? 28 : 44}px ${px}px ${isMobile ? 110 : 80}px` }}>
+    <main ref={containerRef} style={{ maxWidth: page.maxW, margin: '0 auto', padding: `${isMobile ? page.topMobile : page.topDesktop}px ${px}px ${isMobile ? page.bottomMobile : page.bottomDesktop}px` }}>
       {showAddModal && (
         <AddClubModal onAdd={handleAddClub} onClose={() => setShowAddModal(false)} isMobile={isMobile} />
       )}
 
-      {/* Header */}
-      <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 30 : 36, fontWeight: 600, color: color.ink, letterSpacing: '-0.02em', margin: '0 0 4px', lineHeight: 1 }}>
-        My bag
-      </h1>
-      <p style={{ fontSize: 14, color: color.muted, margin: '0 0 22px' }}>One distance per club. Tap any card to update yours.</p>
+      <div style={{ marginBottom: 22 }}>
+        <PageHeader title="My bag" subtitle="One distance per club. Tap any card to update yours." isMobile={isMobile} />
+      </div>
 
       {/* Filter chips + Add club */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18, overflowX: 'auto', paddingBottom: 4, WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { Friendship, PublicProfile, View } from '../types'
 import {
@@ -9,8 +9,10 @@ import { CloseIcon, PersonIcon, MedalIcon, ChevronRightIcon } from './Icons'
 import Skeleton from './Skeleton'
 import Avatar from './Avatar'
 import EmptyState from './EmptyState'
+import PageHeader from './PageHeader'
 import { useToast } from './Toast'
-import { color, font, radius } from '../lib/tokens'
+import { useStaggerMount } from '../hooks/useStaggerMount'
+import { color, font, radius, page } from '../lib/tokens'
 import { card as cardSurface } from '../lib/surfaces'
 
 function profileLabel(profile?: PublicProfile | null): { primary: string; secondary: string | null } {
@@ -33,6 +35,8 @@ interface Props {
 export default function FriendsView({ userId, isMobile = false, onViewProfile, onNavigate }: Props) {
   const qc = useQueryClient()
   const toast = useToast()
+  const containerRef = useRef<HTMLDivElement>(null)
+  useStaggerMount(containerRef)
   const [searchQuery,    setSearchQuery]   = useState('')
   const [searchResults,  setSearchResults] = useState<PublicProfile[]>([])
   const [searching,      setSearching]     = useState(false)
@@ -120,7 +124,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
     finally { setActionLoading(null) }
   }
 
-  const px = isMobile ? 20 : 40
+  const px = isMobile ? page.pxMobile : page.pxDesktop
   const card: React.CSSProperties = { ...cardSurface, overflow: 'hidden' }
   const rowDivider = `1px solid ${color.border}`
   const sectionLabel: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: color.inkSoft, marginBottom: 10 }
@@ -141,19 +145,17 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
   )
 
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto', padding: `${isMobile ? 28 : 44}px ${px}px ${isMobile ? 120 : 80}px` }}>
+    <div ref={containerRef} style={{ maxWidth: page.maxW, margin: '0 auto', padding: `${isMobile ? page.topMobile : page.topDesktop}px ${px}px ${isMobile ? page.bottomMobile : page.bottomDesktop}px` }}>
 
-      {/* Header */}
-      <h1 style={{ fontFamily: font.display, fontSize: isMobile ? 30 : 36, fontWeight: 600, color: color.ink, letterSpacing: '-0.02em', margin: '0 0 4px', lineHeight: 1 }}>
-        Friends
-      </h1>
-      <p style={{ fontSize: 14, color: color.muted, margin: '0 0 22px' }}>Your playing partners and rivals.</p>
+      <div style={{ marginBottom: 22 }}>
+        <PageHeader title="Friends" subtitle="Your playing partners and rivals." isMobile={isMobile} />
+      </div>
 
       {/* Leaderboard entry — dark accent row */}
       {onNavigate && (
         <button
           onClick={() => onNavigate('leaderboard')}
-          style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 13, background: color.green, border: 'none', borderRadius: radius.card, padding: '15px 18px', cursor: 'pointer', textAlign: 'left', marginBottom: 22, transition: 'background 0.15s, transform 0.16s ease' }}
+          style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 13, background: color.green, border: 'none', borderRadius: radius.md, padding: '15px 18px', cursor: 'pointer', textAlign: 'left', marginBottom: 22, transition: 'background 0.15s, transform 0.16s ease' }}
           onMouseEnter={e => { e.currentTarget.style.background = color.greenDeep }}
           onMouseLeave={e => { e.currentTarget.style.background = color.green }}
           onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.99)' }}
@@ -201,7 +203,7 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
         </div>
 
         {(searchResults.length > 0 || searching) && (
-          <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, background: color.white, border: `1px solid ${color.border}`, borderRadius: radius.card, overflow: 'hidden', zIndex: 20, boxShadow: '0 16px 40px rgba(23,26,23,0.14)' }}>
+          <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, background: color.white, border: `1px solid ${color.border}`, borderRadius: radius.md, overflow: 'hidden', zIndex: 20, boxShadow: '0 16px 40px rgba(23,26,23,0.14)' }}>
             {searching && (
               <div style={{ padding: '14px 16px', fontSize: 13, color: color.muted }}>Searching…</div>
             )}
