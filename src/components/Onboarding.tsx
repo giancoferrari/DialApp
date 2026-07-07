@@ -18,12 +18,6 @@ import { flagEmoji, countryName } from '../lib/countries'
 
 type StepKey = 'welcome' | 'name' | 'country' | 'handicap' | 'course' | 'photo' | 'finish'
 
-const SKILLS = [
-  { id: 'new',    label: 'New to golf' },
-  { id: 'casual', label: 'Casual' },
-  { id: 'comp',   label: 'Competitive' },
-] as const
-
 export default function Onboarding({ userId, existingProfile, onComplete, isMobile = false }: {
   userId: string
   existingProfile: UserProfile | null
@@ -56,7 +50,6 @@ export default function Onboarding({ userId, existingProfile, onComplete, isMobi
   const [username, setUsername]   = useState(initUsername)
   const [country, setCountry]     = useState<string | null>(initCountry)
   const [handicap, setHandicap]   = useState(existingProfile?.handicapIndex != null ? String(existingProfile.handicapIndex) : '')
-  const [skill, setSkill]         = useState<string | null>(null)
   const [homeCourse, setHomeCourse] = useState(existingProfile?.homeCourse ?? '')
   const [avatarUrl, setAvatarUrl] = useState<string | null>(existingProfile?.avatarUrl ?? null)
   const [avatarBusy, setAvatarBusy] = useState(false)
@@ -265,39 +258,19 @@ export default function Onboarding({ userId, existingProfile, onComplete, isMobi
           </>
         )}
 
-        {/* ── HANDICAP / SKILL ── */}
+        {/* ── HANDICAP ── */}
         {step === 'handicap' && (
           <>
-            {headline("What's your handicap?", "Helps us track your progress. No number yet? Pick where you're at.")}
+            {headline("What's your handicap?", "Helps us track your progress. You can skip this.")}
             <input
               value={handicap}
-              onChange={e => { setHandicap(e.target.value.replace(/[^0-9.]/g, '')); setSkill(null) }}
+              onChange={e => setHandicap(e.target.value.replace(/[^0-9.]/g, ''))}
               placeholder="e.g. 12.4" inputMode="decimal"
               style={{ ...inputStyle, fontVariantNumeric: 'tabular-nums', fontSize: 24, fontWeight: 700, textAlign: 'center', letterSpacing: '-0.01em' }}
               onFocus={focus} onBlur={blur}
             />
-            <div style={{ display: 'flex', alignItems: 'center', gap: space[3], margin: `${space[4]}px 0` }}>
-              <div style={{ flex: 1, height: 1, background: color.border }} />
-              <span style={{ fontFamily: font.body, fontSize: 12, color: color.faint }}>or</span>
-              <div style={{ flex: 1, height: 1, background: color.border }} />
-            </div>
-            <div style={{ display: 'flex', gap: space[2] }}>
-              {SKILLS.map(s => {
-                const active = skill === s.id
-                return (
-                  <button key={s.id} onClick={() => { setSkill(s.id); setHandicap('') }} style={{
-                    flex: 1, padding: '13px 8px', borderRadius: radius.md, cursor: 'pointer',
-                    background: active ? color.green : color.white,
-                    border: `1.5px solid ${active ? color.green : color.border}`,
-                    color: active ? color.cream : color.inkSoft,
-                    fontFamily: font.body, fontSize: 13.5, fontWeight: 600,
-                    transition: 'all 0.15s cubic-bezier(0.22,1,0.36,1)',
-                  }}>{s.label}</button>
-                )
-              })}
-            </div>
             {actions(
-              <PrimaryBtn label="Continue" onClick={nextStep} disabled={!handicap.trim() && !skill} />,
+              <PrimaryBtn label="Continue" onClick={nextStep} disabled={!handicap.trim()} />,
               { skip: nextStep },
             )}
           </>
