@@ -497,7 +497,7 @@ function AppShell() {
             <ToolsView onNavigate={handleSetView} isMobile={isMobile} />
           )}
           {view === 'stats' && (
-            <StatsView rounds={rounds} shots={shots} onNavigate={handleSetView} isMobile={isMobile} />
+            <StatsView rounds={rounds} shots={shots} profile={profile} userId={user!.id} onProfileSaved={setProfile} onNavigate={handleSetView} isMobile={isMobile} />
           )}
           {view === 'leaderboard' && (
             <LeaderboardView meId={user!.id} isMobile={isMobile} onBack={goBack} onViewProfile={handleViewProfile} />

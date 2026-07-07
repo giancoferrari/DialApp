@@ -1,6 +1,8 @@
-import { useRef } from 'react'
-import type { Round, Shot, View } from '../types'
+import { useRef, useState } from 'react'
+import type { Round, Shot, UserProfile, View } from '../types'
 import { aggregateStats, scoreTrend, estimateHandicap, bagGaps } from '../lib/stats'
+import { upsertProfile } from '../lib/profile'
+import { CheckIcon } from './Icons'
 import PageHeader from './PageHeader'
 import { useEdgeSwipeBack } from '../hooks/useGestures'
 import { useStaggerMount } from '../hooks/useStaggerMount'
@@ -10,6 +12,9 @@ import { card, raised } from '../lib/surfaces'
 interface Props {
   rounds: Round[]
   shots: Shot[]
+  profile: UserProfile | null
+  userId: string
+  onProfileSaved: (p: UserProfile) => void
   isMobile?: boolean
   onNavigate: (v: View) => void
 }
@@ -26,17 +31,31 @@ function shortDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-export default function StatsView({ rounds, shots, isMobile = false, onNavigate }: Props) {
+export default function StatsView({ rounds, shots, profile, userId, onProfileSaved, isMobile = false, onNavigate }: Props) {
   const ref = useRef<HTMLDivElement>(null)
   const px  = isMobile ? page.pxMobile : page.pxDesktop
   useEdgeSwipeBack(() => onNavigate('tools'))
 
   useStaggerMount(ref)
 
+  const [syncing, setSyncing] = useState(false)
+
   const agg   = aggregateStats(rounds)
   const trend = scoreTrend(rounds, 8)
   const hcp   = estimateHandicap(rounds)
   const { gaps, clubsWithData } = bagGaps(shots)
+
+  const synced = hcp.value !== null && profile?.handicapIndex === hcp.value
+
+  const handleSyncHandicap = async () => {
+    if (hcp.value === null || synced) return
+    setSyncing(true)
+    try {
+      const saved = await upsertProfile(userId, { handicapIndex: hcp.value })
+      onProfileSaved(saved)
+    } catch { /* silent — user can retry */ }
+    finally { setSyncing(false) }
+  }
 
   const sectionLabel: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: color.inkSoft, marginBottom: 12 }
 
@@ -78,6 +97,20 @@ export default function StatsView({ rounds, shots, isMobile = false, onNavigate 
                   )}
                 </div>
                 <div style={{ fontSize: 12.5, color: color.muted, marginTop: 14 }}>From your best {Math.min(8, hcp.basedOn)} of {hcp.basedOn} recent 18-hole rounds.</div>
+                <button
+                  onClick={handleSyncHandicap}
+                  disabled={syncing || synced}
+                  style={{
+                    marginTop: 14, display: 'inline-flex', alignItems: 'center', gap: 6,
+                    background: synced ? color.greenTint : color.sand,
+                    color: synced ? color.greenDeep : color.inkSoft,
+                    border: 'none', borderRadius: radius.sm, padding: '9px 14px',
+                    fontSize: 13, fontWeight: 600, fontFamily: font.body,
+                    cursor: synced || syncing ? 'default' : 'pointer', transition: 'background 0.15s',
+                  }}
+                >
+                  {synced ? <><CheckIcon size={13} color={color.positive} /> Synced to profile</> : syncing ? 'Saving…' : 'Set as my handicap'}
+                </button>
               </>
             ) : (
               <div style={{ paddingTop: 2 }}>
