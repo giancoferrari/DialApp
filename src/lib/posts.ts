@@ -2,7 +2,7 @@ import { supabase } from './supabase'
 import { fetchProfilesForIds } from './friends'
 import { compressImage } from './imageCompress'
 import { createNotification } from './notifications'
-import type { Post, PostComment, PostKind, RoundRecapMeta } from '../types'
+import type { MatchRecapMeta, Post, PostComment, PostKind, RoundRecapMeta } from '../types'
 
 function toPost(r: Record<string, unknown>): Omit<Post, 'likeCount' | 'commentCount' | 'likedByMe'> {
   return {
@@ -10,7 +10,7 @@ function toPost(r: Record<string, unknown>): Omit<Post, 'likeCount' | 'commentCo
     userId:    r.user_id as string,
     kind:      ((r.kind as string) ?? 'photo') as PostKind,
     imageUrl:  (r.image_url as string) ?? null,
-    meta:      (r.meta as RoundRecapMeta) ?? null,
+    meta:      (r.meta as RoundRecapMeta | MatchRecapMeta) ?? null,
     caption:   (r.caption as string) ?? null,
     createdAt: r.created_at as string,
   }
@@ -47,6 +47,13 @@ export async function createRoundPost(userId: string, meta: RoundRecapMeta, capt
   const { error } = await supabase
     .from('posts')
     .insert({ user_id: userId, kind: 'round', image_url: null, meta, caption: caption.trim() || null })
+  if (error) throw error
+}
+
+export async function createMatchPost(userId: string, meta: MatchRecapMeta, caption = ''): Promise<void> {
+  const { error } = await supabase
+    .from('posts')
+    .insert({ user_id: userId, kind: 'match', image_url: null, meta, caption: caption.trim() || null })
   if (error) throw error
 }
 

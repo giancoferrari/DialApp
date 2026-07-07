@@ -163,7 +163,7 @@ export interface DirectMessage {
 }
 
 // ── Profile Posts (social feed) ───────────────────────────
-export type PostKind = 'photo' | 'round'
+export type PostKind = 'photo' | 'round' | 'match'
 
 export interface RoundRecapMeta {
   courseName: string
@@ -180,12 +180,24 @@ export interface RoundRecapMeta {
   hasStats: boolean
 }
 
+export interface MatchRecapMeta {
+  courseName: string
+  gameMode: GameMode
+  holes: number
+  myScore: number
+  topOpponentName: string
+  topOpponentScore: number
+  result: 'won' | 'lost' | 'tied'
+  wager: number
+  playedAt: string
+}
+
 export interface Post {
   id: string
   userId: string
   kind: PostKind
-  imageUrl: string | null              // null for round-recap posts
-  meta: RoundRecapMeta | null          // recap data for kind === 'round'
+  imageUrl: string | null                          // null for round/match-recap posts
+  meta: RoundRecapMeta | MatchRecapMeta | null      // recap data for kind === 'round' | 'match'
   caption: string | null
   createdAt: string
   likeCount: number

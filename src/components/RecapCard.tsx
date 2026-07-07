@@ -1,5 +1,6 @@
-import type { RoundRecapMeta } from '../types'
+import type { MatchRecapMeta, RoundRecapMeta } from '../types'
 import { color, font } from '../lib/tokens'
+import { TrophyIcon } from './Icons'
 
 function shortDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
@@ -21,7 +22,62 @@ function GreenMotif({ size = 210 }: { size?: number }) {
   )
 }
 
-export default function RecapCard({ meta, variant }: { meta: RoundRecapMeta; variant: 'feed' | 'detail' | 'tile' }) {
+type Props =
+  | { kind: 'round'; meta: RoundRecapMeta; variant: 'feed' | 'detail' | 'tile' }
+  | { kind: 'match'; meta: MatchRecapMeta; variant: 'feed' | 'detail' | 'tile' }
+
+export default function RecapCard(props: Props) {
+  const { variant } = props
+
+  if (props.kind === 'match') {
+    const { meta } = props
+    const resultColor = meta.result === 'won' ? '#9FD4B4' : meta.result === 'lost' ? '#E8C9A8' : 'rgba(242,245,241,0.85)'
+    const resultText  = meta.result === 'won' ? 'Won' : meta.result === 'lost' ? 'Lost' : 'Tied'
+
+    if (variant === 'tile') {
+      return (
+        <div style={{ position: 'relative', overflow: 'hidden', width: '100%', height: '100%', background: GREEN, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+          <div style={{ position: 'absolute', right: -34, bottom: -42, opacity: 0.08, pointerEvents: 'none' }}><GreenMotif size={130} /></div>
+          <TrophyIcon size={16} color="rgba(242,245,241,0.6)" />
+          <span style={{ position: 'relative', fontFamily: font.display, fontSize: 22, fontWeight: 600, color: ON, lineHeight: 1.2, fontVariantNumeric: 'tabular-nums' }}>{meta.myScore}</span>
+          <span style={{ position: 'relative', fontFamily: font.display, fontSize: 14, fontWeight: 600, color: resultColor }}>{resultText}</span>
+        </div>
+      )
+    }
+
+    const big = variant === 'detail'
+    return (
+      <div style={{ position: 'relative', overflow: 'hidden', background: GREEN, color: ON, padding: big ? '28px 26px 30px' : '24px 22px 24px', textAlign: 'left' }}>
+        <div style={{ position: 'absolute', right: -30, bottom: -52, opacity: 0.08, pointerEvents: 'none' }}><GreenMotif size={big ? 250 : 210} /></div>
+        <div style={{ position: 'relative' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: big ? 18 : 14, fontFamily: font.body, fontSize: 13, fontWeight: 500, color: 'rgba(242,245,241,0.7)' }}>
+            <TrophyIcon size={13} color="rgba(242,245,241,0.7)" />
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{meta.courseName} · {shortDate(meta.playedAt)}</span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16 }}>
+            <div style={{ fontFamily: font.display, fontSize: big ? 76 : 64, fontWeight: 600, lineHeight: 0.95, fontVariantNumeric: 'tabular-nums' }}>
+              {meta.myScore}
+            </div>
+            <div style={{ paddingBottom: big ? 8 : 6 }}>
+              <div style={{ fontFamily: font.display, fontSize: big ? 30 : 26, fontWeight: 600, color: resultColor, lineHeight: 1 }}>
+                {resultText}
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: resultColor, opacity: 0.9, marginTop: 5, fontFamily: font.body }}>
+                vs {meta.topOpponentName} ({meta.topOpponentScore})
+              </div>
+            </div>
+          </div>
+
+          <div style={{ fontSize: 12, color: 'rgba(242,245,241,0.55)', marginTop: 12, fontFamily: font.body }}>
+            {meta.holes} holes{meta.wager > 0 ? ` · $${meta.wager} wager` : ''}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const { meta } = props
   const even      = meta.toPar === 0
   const under     = meta.toPar < 0
   const diffColor = even ? 'rgba(242,245,241,0.85)' : under ? '#9FD4B4' : '#E8C9A8'

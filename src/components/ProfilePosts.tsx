@@ -5,7 +5,7 @@ import {
   toggleLike, fetchComments, addComment, deleteComment, toggleCommentLike, reportPost,
 } from '../lib/posts'
 import { fetchFriendships, fetchProfilesForIds } from '../lib/friends'
-import type { Post, PostComment, PublicProfile } from '../types'
+import type { Post, PostComment, PublicProfile, RoundRecapMeta, MatchRecapMeta } from '../types'
 import { CloseIcon, HeartIcon, ChatIcon, PlusIcon, CameraIcon, MoreIcon } from './Icons'
 import Portal from './Portal'
 import RecapCard from './RecapCard'
@@ -317,7 +317,9 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
 
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {post.kind === 'round' && post.meta
-            ? <RecapCard meta={post.meta} variant="detail" />
+            ? <RecapCard kind="round" meta={post.meta as RoundRecapMeta} variant="detail" />
+            : post.kind === 'match' && post.meta
+            ? <RecapCard kind="match" meta={post.meta as MatchRecapMeta} variant="detail" />
             : <img src={post.imageUrl ?? ''} alt="" decoding="async" style={{ width: '100%', display: 'block', background: '#000' }} />}
 
           <div style={{ padding: '12px 16px' }}>
@@ -452,7 +454,9 @@ export default function ProfilePosts({ targetUserId, meId, isMobile = false, can
           {posts.map(p => (
             <button key={p.id} onClick={() => setActive(p)} style={{ aspectRatio: '1', padding: 0, border: 'none', borderRadius: 6, overflow: 'hidden', cursor: 'pointer', background: '#000', position: 'relative' }}>
               {p.kind === 'round' && p.meta
-                ? <RecapCard meta={p.meta} variant="tile" />
+                ? <RecapCard kind="round" meta={p.meta as RoundRecapMeta} variant="tile" />
+                : p.kind === 'match' && p.meta
+                ? <RecapCard kind="match" meta={p.meta as MatchRecapMeta} variant="tile" />
                 : <img src={p.imageUrl ?? ''} alt="" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
               {(p.likeCount > 0 || p.commentCount > 0) && (
                 <div style={{ position: 'absolute', bottom: 5, left: 6, display: 'flex', gap: 8, fontSize: 11, fontWeight: 600, color: '#FFF', textShadow: '0 1px 3px rgba(0,0,0,0.6)', fontVariantNumeric: 'tabular-nums' }}>

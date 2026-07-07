@@ -1,8 +1,9 @@
 import { useRef, useState, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import type { Match, Wallet, PublicProfile, GameMode } from '../types'
+import type { Match, Wallet, PublicProfile, GameMode, MatchRecapMeta } from '../types'
 import { fetchMatches, createMatch, acceptMatchInvite, declineMatchInvite, activateMatch, upsertScore, completeMatch, cancelMatch, fetchMatchRealtime } from '../lib/matches'
 import { fetchOrCreateWallet, topUpWallet } from '../lib/wallet'
+import { createMatchPost } from '../lib/posts'
 import { fetchFriendships, fetchProfilesForIds } from '../lib/friends'
 import { supabase } from '../lib/supabase'
 import { CloseIcon, TrophyIcon, PlusIcon } from './Icons'
@@ -395,6 +396,8 @@ function ScoringModal({
   const [saving,      setSaving]      = useState(false)
   const [completing,  setCompleting]  = useState(false)
   const [error,       setError]       = useState<string | null>(null)
+  const [sharedMatchId, setSharedMatchId] = useState<string | null>(null)
+  const [sharing,       setSharing]       = useState(false)
 
   const accepted  = liveMatch.players.filter(p => p.status === 'accepted')
   const me        = accepted.find(p => p.userId === userId)
@@ -409,6 +412,33 @@ function ScoringModal({
   const tee       = getCourseTee(liveMatch.courseName)
   const isWinner  = liveMatch.status === 'completed' && liveMatch.winnerId === userId
   const matchDate = new Date(liveMatch.createdAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase()
+
+  // Best-scoring opponent (lowest total), for the recap's "vs" line.
+  const opponents = accepted.filter(p => p.userId !== userId)
+  const topOpponent = [...opponents].sort((a, b) =>
+    a.scores.reduce((s, sc) => s + (sc.score ?? 0), 0) - b.scores.reduce((s, sc) => s + (sc.score ?? 0), 0)
+  )[0]
+  const isShared = sharedMatchId === liveMatch.id
+  const shareMatch = async () => {
+    if (sharing || isShared || !me || !topOpponent) return
+    setSharing(true)
+    try {
+      const recapMeta: MatchRecapMeta = {
+        courseName: liveMatch.courseName,
+        gameMode: liveMatch.gameMode,
+        holes: liveMatch.holes,
+        myScore: myTotal,
+        topOpponentName: topOpponent.profile?.username ? `@${topOpponent.profile.username}` : 'Opponent',
+        topOpponentScore: topOpponent.scores.reduce((s, sc) => s + (sc.score ?? 0), 0),
+        result: isWinner ? 'won' : liveMatch.winnerId ? 'lost' : 'tied',
+        wager: liveMatch.wagerPerPlayer,
+        playedAt: liveMatch.updatedAt,
+      }
+      await createMatchPost(userId, recapMeta)
+      setSharedMatchId(liveMatch.id)
+    } catch { /* ignore — feed degrades gracefully */ }
+    finally { setSharing(false) }
+  }
 
   useEffect(() => {
     const refresh = async () => {
@@ -502,6 +532,26 @@ function ScoringModal({
                 </div>
               )}
             </div>
+          )}
+
+          {liveMatch.status === 'completed' && me && topOpponent && (
+            <button
+              onClick={shareMatch}
+              disabled={sharing || isShared}
+              style={{
+                width: '100%', marginBottom: 16, borderRadius: radius.md, padding: '14px',
+                fontFamily: font.body, fontSize: 15, fontWeight: 600,
+                cursor: isShared ? 'default' : 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                background: isShared ? color.greenTint : color.green,
+                color: isShared ? color.positive : color.onGreen,
+                border: 'none', transition: 'all 0.15s ease',
+              }}
+            >
+              {isShared
+                ? <>✓ Shared to your feed</>
+                : sharing ? 'Sharing…' : <>Share this match to your feed</>}
+            </button>
           )}
 
           {error && (

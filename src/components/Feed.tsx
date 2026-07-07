@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchFriendships } from '../lib/friends'
 import { fetchFeedPosts, toggleLike, deletePost, toggleRepost } from '../lib/posts'
-import type { Post } from '../types'
+import type { Post, RoundRecapMeta, MatchRecapMeta } from '../types'
 import { HeartIcon, ChatIcon, RepostIcon } from './Icons'
 import Portal from './Portal'
 import { PostDetail } from './ProfilePosts'
@@ -201,10 +201,12 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
           {/* Header */}
           <div style={{ padding: '12px 14px' }}>{Header(post)}</div>
 
-          {/* Media — photo or round recap (single tap opens, double tap likes) */}
-          <button onClick={e => onMediaTap(post, e.timeStamp)} style={{ position: 'relative', display: 'block', width: '100%', padding: 0, border: 'none', background: post.kind === 'round' ? 'none' : '#000', cursor: 'pointer' }}>
+          {/* Media — photo, round recap, or match recap (single tap opens, double tap likes) */}
+          <button onClick={e => onMediaTap(post, e.timeStamp)} style={{ position: 'relative', display: 'block', width: '100%', padding: 0, border: 'none', background: post.kind === 'round' || post.kind === 'match' ? 'none' : '#000', cursor: 'pointer' }}>
             {post.kind === 'round' && post.meta
-              ? <RecapCard meta={post.meta} variant="feed" />
+              ? <RecapCard kind="round" meta={post.meta as RoundRecapMeta} variant="feed" />
+              : post.kind === 'match' && post.meta
+              ? <RecapCard kind="match" meta={post.meta as MatchRecapMeta} variant="feed" />
               : <img src={post.imageUrl ?? ''} alt="" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', aspectRatio: '4 / 5', objectFit: 'cover' }} />}
             {burstId === post.id && (
               <div style={{ position: 'absolute', top: '50%', left: '50%', pointerEvents: 'none', animation: 'heartBurst 0.7s ease-out forwards', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.35))' }}>
