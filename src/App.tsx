@@ -408,7 +408,7 @@ function AppShell() {
         scrolled={navScrolled}
       />
 
-      <div ref={contentRef} style={contentStyle} onScroll={isMobile ? handleContentScroll : undefined}>
+      <div ref={contentRef} id="app-scroll-container" style={contentStyle} onScroll={isMobile ? handleContentScroll : undefined}>
         <div ref={pageRef}>
           {view === 'dashboard' && (
             <Dashboard

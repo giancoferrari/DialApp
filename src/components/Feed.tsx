@@ -1,5 +1,6 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '../lib/supabase'
 import { fetchFriendships } from '../lib/friends'
 import { fetchFeedPosts, toggleLike, deletePost, toggleRepost } from '../lib/posts'
 import type { Post, RoundRecapMeta, MatchRecapMeta } from '../types'
@@ -13,7 +14,7 @@ import EmptyState from './EmptyState'
 import { tapHaptic } from '../lib/native'
 import { timeAgo, displayName as authorName } from '../lib/format'
 import { card } from '../lib/surfaces'
-import { color, font, type, radius } from '../lib/tokens'
+import { color, font, type, radius, elevation, z } from '../lib/tokens'
 
 interface Props {
   userId: string
@@ -59,6 +60,28 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
     },
   })
 
+  // "New posts" pill — don't auto-refetch on a live insert (a mid-scroll jump
+  // is hostile); just flag it and let the reader tap in when ready. RLS may
+  // restrict which INSERTs are delivered — that's fine, the pill simply won't
+  // fire for posts this user can't see.
+  const [hasNew, setHasNew] = useState(false)
+  useEffect(() => {
+    const channel = supabase
+      .channel(`feed-new-posts-${userId}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, payload => {
+        if ((payload.new as { user_id: string }).user_id !== userId) setHasNew(true)
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [userId])
+
+  const handleNewPostsTap = () => {
+    qc.invalidateQueries({ queryKey: feedKey })
+    if (isMobile) document.getElementById('app-scroll-container')?.scrollTo({ top: 0, behavior: 'smooth' })
+    else window.scrollTo({ top: 0, behavior: 'smooth' })
+    setHasNew(false)
+  }
+
   // Optimistic patches operate directly on the cached feed.
   const patch = (id: string, fn: (p: Post) => Post) =>
     qc.setQueryData<Post[]>(feedKey, (old = []) => old.map(p => (p.id === id ? fn(p) : p)))
@@ -95,17 +118,39 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
     catch { patch(post.id, p => ({ ...p, repostedByMe: was })) }
   }
 
+  const newPostsPill = hasNew && (
+    <Portal>
+      <button
+        onClick={handleNewPostsTap}
+        style={{
+          position: 'fixed',
+          top: isMobile ? 'calc(env(safe-area-inset-top) + 66px)' : 84,
+          left: '50%', transform: 'translateX(-50%)', zIndex: z.nav + 1,
+          background: color.green, color: color.onGreen, border: 'none',
+          borderRadius: radius.pill, padding: '9px 18px', fontSize: 13, fontWeight: 600,
+          fontFamily: font.body, boxShadow: elevation.md, cursor: 'pointer',
+          animation: 'slideDown 0.28s cubic-bezier(0.22, 1, 0.36, 1)',
+        }}
+      >
+        New posts
+      </button>
+    </Portal>
+  )
+
   if (isLoading) {
-    return <FeedSkeleton isMobile={isMobile} />
+    return <>{newPostsPill}<FeedSkeleton isMobile={isMobile} /></>
   }
 
   if (posts.length === 0) {
     return (
-      <EmptyState
-        icon={<ChatIcon size={24} color={color.faint} />}
-        title="The clubhouse is quiet"
-        subtitle="Posts from you and your friends show up here. Add friends and share your first round."
-      />
+      <>
+        {newPostsPill}
+        <EmptyState
+          icon={<ChatIcon size={24} color={color.faint} />}
+          title="The clubhouse is quiet"
+          subtitle="Posts from you and your friends show up here. Add friends and share your first round."
+        />
+      </>
     )
   }
 
@@ -150,6 +195,7 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {newPostsPill}
       {posts.map(post => {
         const key = `${post.id}-${post.repostedBy?.userId ?? 'orig'}`
 
