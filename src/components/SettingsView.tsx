@@ -11,29 +11,7 @@ import { useEdgeSwipeBack } from '../hooks/useGestures'
 import { useStaggerMount } from '../hooks/useStaggerMount'
 import { color, font, radius, onHero, page } from '../lib/tokens'
 import { card as cardSurface } from '../lib/surfaces'
-
-// ── Local preferences (no DB needed) ──────────────────────
-type Prefs = {
-  defaultHoles: 9 | 18
-  units: 'yards' | 'meters'
-  teePreference: string
-}
-
-const DEFAULT_PREFS: Prefs = {
-  defaultHoles: 18,
-  units: 'yards',
-  teePreference: 'white',
-}
-
-function loadPrefs(): Prefs {
-  try {
-    return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem('dial_prefs') ?? '{}') }
-  } catch { return DEFAULT_PREFS }
-}
-
-function savePrefs(p: Prefs) {
-  try { localStorage.setItem('dial_prefs', JSON.stringify(p)) } catch { /* */ }
-}
+import { type Prefs, loadPrefs, savePrefs } from '../lib/prefs'
 
 const TEE_OPTIONS = [
   { id: 'black', hex: '#1A1C1A' },
@@ -481,11 +459,8 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       {/* ── GAME DEFAULTS ── */}
       <SectionLabel label="Game defaults" />
       <Card>
-        <Row label="Default holes" description="Used when starting a new round">
+        <Row label="Default holes" description="Used when starting a new round" last>
           <Segment options={['9', '18']} value={String(prefs.defaultHoles)} onChange={v => updatePref({ defaultHoles: parseInt(v) as 9 | 18 })} />
-        </Row>
-        <Row label="Distance units" description="Yards or metres on scorecards" last>
-          <Segment options={['Yards', 'Meters']} value={prefs.units === 'yards' ? 'Yards' : 'Meters'} onChange={v => updatePref({ units: v === 'Yards' ? 'yards' : 'meters' })} />
         </Row>
       </Card>
 

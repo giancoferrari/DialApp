@@ -14,6 +14,7 @@ import { fetchCorrection, saveCorrection } from '../lib/courseCorrections'
 import { useStaggerMount } from '../hooks/useStaggerMount'
 import { font, color, radius, page, type } from '../lib/tokens'
 import { card as cardSurface, well, sectionLabel as sharedSectionLabel } from '../lib/surfaces'
+import { loadPrefs } from '../lib/prefs'
 
 const SANTA_MARIA_NAME = 'Santa Maria Golf & Country Club'
 const SANTA_MARIA_HOLES: { par: 3 | 4 | 5 }[] = [
@@ -439,8 +440,8 @@ export default function ScorecardView({
   const [courseName,       setCourseName]       = useState('')
   const [selectedCourse,   setSelectedCourse]   = useState<GolfCourse | null>(null)
   const [selectedApiTee,   setSelectedApiTee]   = useState<GolfTee | null>(null)
-  const [tee,              setTee]              = useState('white')
-  const [holeCount,        setHoleCount]        = useState<9 | 18>(18)
+  const [tee,              setTee]              = useState(() => loadPrefs().teePreference)
+  const [holeCount,        setHoleCount]        = useState<9 | 18>(() => loadPrefs().defaultHoles)
   const [nineSection,      setNineSection]      = useState<'front' | 'back'>('front')
   const [apiOriginalHoles, setApiOriginalHoles] = useState<{ par: 3|4|5; yardage: string }[]>([])
   const [savingCorrection, setSavingCorrection] = useState(false)
@@ -707,7 +708,7 @@ export default function ScorecardView({
         )}
 
         <button
-          onClick={() => { setCourseName(homeCourse ?? ''); setTee('white'); setHoleCount(18); setSaveError(null); setPhase({ type: 'course_setup' }) }}
+          onClick={() => { const p = loadPrefs(); setCourseName(homeCourse ?? ''); setTee(p.teePreference); setHoleCount(p.defaultHoles); setSaveError(null); setPhase({ type: 'course_setup' }) }}
           style={{ width: '100%', background: 'transparent', border: `1.5px dashed ${color.borderStrong}`, borderRadius: radius.lg, padding: '16px 20px', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, transition: 'border-color 0.15s' }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = color.green }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = color.borderStrong }}

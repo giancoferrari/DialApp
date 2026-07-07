@@ -17,6 +17,7 @@ import { useStaggerMount } from '../hooks/useStaggerMount'
 import { courseDisplayName, type GolfCourse } from '../lib/golfCourseApi'
 import { font, color, radius, page, type } from '../lib/tokens'
 import { card as cardSurface, well } from '../lib/surfaces'
+import { loadPrefs } from '../lib/prefs'
 
 interface Props {
   userId: string
@@ -137,7 +138,7 @@ function NewMatchModal({
   onCreate: (match: Match) => void
   isMobile: boolean
 }) {
-  const [holes,          setHoles]          = useState<9 | 18>(18)
+  const [holes,          setHoles]          = useState<9 | 18>(() => loadPrefs().defaultHoles)
   const [wager,          setWager]          = useState(0)
   const [customWager,    setCustomWager]    = useState('')
   const [selectedIds,    setSelectedIds]    = useState<string[]>([])
