@@ -84,7 +84,7 @@ function MatchScoreDecoration({ score, par, isMe, onClick }: {
     return (
       <div onClick={isMe ? onClick : undefined}
         style={{ ...base, borderRadius: '50%', border: `1.5px solid ${color.gold}` }}>
-        <div style={{ width: 19, height: 19, borderRadius: '50%', border: `1.5px solid ${color.gold}`, background: '#F7F0DC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 19, height: 19, borderRadius: '50%', border: `1.5px solid ${color.gold}`, background: color.eagleTint, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <span style={num(9, color.gold)}>{score}</span>
         </div>
       </div>
@@ -94,7 +94,7 @@ function MatchScoreDecoration({ score, par, isMe, onClick }: {
   if (d === -1) {
     return (
       <div onClick={isMe ? onClick : undefined}
-        style={{ ...base, borderRadius: '50%', border: `2px solid ${color.birdie}`, background: '#EAF3EC' }}>
+        style={{ ...base, borderRadius: '50%', border: `2px solid ${color.birdie}`, background: color.birdieTint }}>
         <span style={num(12, color.birdie)}>{score}</span>
       </div>
     )
@@ -112,7 +112,7 @@ function MatchScoreDecoration({ score, par, isMe, onClick }: {
   if (d === 1) {
     return (
       <div onClick={isMe ? onClick : undefined}
-        style={{ ...base, border: `2px solid ${color.orange}`, background: '#F9EEDF' }}>
+        style={{ ...base, border: `2px solid ${color.orange}`, background: color.bogeyTint }}>
         <span style={num(12, color.orange)}>{score}</span>
       </div>
     )
@@ -121,7 +121,7 @@ function MatchScoreDecoration({ score, par, isMe, onClick }: {
   return (
     <div onClick={isMe ? onClick : undefined}
       style={{ ...base, border: `1.5px solid ${color.danger}` }}>
-      <div style={{ width: 18, height: 18, border: `1.5px solid ${color.danger}`, background: '#F9E9E6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 18, height: 18, border: `1.5px solid ${color.danger}`, background: color.doubleTint, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <span style={num(9, color.danger)}>{score}</span>
       </div>
     </div>
@@ -821,7 +821,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
               {MODE_LABELS[match.gameMode]} · {match.holes} holes{match.wagerPerPlayer > 0 && ` · $${match.wagerPerPlayer} each`}
             </div>
           </div>
-          {isDone && iWon && <div style={{ fontSize: 11, fontWeight: 700, color: color.gold, background: 'rgba(176,136,40,0.22)', border: '1px solid rgba(176,136,40,0.32)', borderRadius: radius.pill, padding: '4px 11px', letterSpacing: '0.02em' }}>Won</div>}
+          {isDone && iWon && <div style={{ fontSize: 11, fontWeight: 700, color: color.gold, background: `color-mix(in srgb, ${color.gold} 22%, transparent)`, border: `1px solid color-mix(in srgb, ${color.gold} 32%, transparent)`, borderRadius: radius.pill, padding: '4px 11px', letterSpacing: '0.02em' }}>Won</div>}
           {isDone && !iWon && match.winnerId && <div style={{ fontSize: 11, fontWeight: 600, color: color.muted, background: color.sand, border: `1px solid ${color.border}`, borderRadius: radius.pill, padding: '4px 11px' }}>Lost</div>}
           {isDone && !match.winnerId && <div style={{ fontSize: 11, fontWeight: 600, color: color.muted, background: color.sand, border: `1px solid ${color.border}`, borderRadius: radius.pill, padding: '4px 11px' }}>Tie</div>}
         </div>

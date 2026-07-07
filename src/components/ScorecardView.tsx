@@ -117,7 +117,7 @@ function ScoreDecoration({ score, par, onClick, isSelected, interactive }: {
     return (
       <div onClick={interactive ? onClick : undefined}
         style={{ ...base, borderRadius: '50%', border: `1.5px solid ${color.gold}` }}>
-        <div style={{ width: 19, height: 19, borderRadius: '50%', border: `1.5px solid ${color.gold}`, background: '#F7F0DC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 19, height: 19, borderRadius: '50%', border: `1.5px solid ${color.gold}`, background: color.eagleTint, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <span style={num(9, color.gold)}>{score}</span>
         </div>
       </div>
@@ -127,7 +127,7 @@ function ScoreDecoration({ score, par, onClick, isSelected, interactive }: {
   if (d === -1) {
     return (
       <div onClick={interactive ? onClick : undefined}
-        style={{ ...base, borderRadius: '50%', border: `2px solid ${color.birdie}`, background: '#EAF3EC' }}>
+        style={{ ...base, borderRadius: '50%', border: `2px solid ${color.birdie}`, background: color.birdieTint }}>
         <span style={num(12, color.birdie)}>{score}</span>
       </div>
     )
@@ -145,7 +145,7 @@ function ScoreDecoration({ score, par, onClick, isSelected, interactive }: {
   if (d === 1) {
     return (
       <div onClick={interactive ? onClick : undefined}
-        style={{ ...base, border: `2px solid ${color.orange}`, background: '#F9EEDF' }}>
+        style={{ ...base, border: `2px solid ${color.orange}`, background: color.bogeyTint }}>
         <span style={num(12, color.orange)}>{score}</span>
       </div>
     )
@@ -154,7 +154,7 @@ function ScoreDecoration({ score, par, onClick, isSelected, interactive }: {
   return (
     <div onClick={interactive ? onClick : undefined}
       style={{ ...base, border: `1.5px solid ${color.danger}` }}>
-      <div style={{ width: 18, height: 18, border: `1.5px solid ${color.danger}`, background: '#F9E9E6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 18, height: 18, border: `1.5px solid ${color.danger}`, background: color.doubleTint, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <span style={num(9, color.danger)}>{score}</span>
       </div>
     </div>

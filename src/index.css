@@ -48,6 +48,13 @@
 
   --c-label-text: #30332F; /* type.label's eyebrow color — close to but distinct from --c-ink */
 
+  /* Golf-notation cell tints (ScorecardView's ScoreDecoration + MatchesView's
+     MatchScoreDecoration both use these four — identical in both files). */
+  --c-eagle-tint: #F7F0DC;
+  --c-birdie-tint: #EAF3EC;
+  --c-bogey-tint: #F9EEDF;
+  --c-double-tint: #F9E9E6;
+
   --scrim: rgba(23,26,23,0.45);
 
   --shadow-sm: 0 8px 14px rgba(41,35,21,0.09);
@@ -57,6 +64,75 @@
   --glass-bg: linear-gradient(145deg, rgba(255,255,255,0.7), rgba(247,241,226,0.62)), rgba(255,250,239,0.76);
   --glass-border: 1px solid rgba(255,255,255,0.76);
   --glass-shadow: 0 8px 14px rgba(42,36,24,0.13);
+
+  /* TopNav's floating bottom pill + frosted scroll header — not part of the
+     `glass` export above (that one has no consumers yet), these are the
+     actual frost colors TopNav.tsx reads. */
+  --nav-glass: rgba(255,250,239,0.86);
+  --nav-glass-border: 1px solid rgba(42,36,24,0.10);
+  --nav-glass-shadow: 0 14px 32px rgba(40,34,20,0.18), 0 2px 8px rgba(40,34,20,0.06);
+  --header-glass: rgba(255,250,239,0.82);
+}
+
+/* ── Dark theme ("dark clubhouse", not pure black) ─────────────────────────
+   Applied via [data-theme="dark"] on <html> (see lib/theme.ts's applyTheme).
+   Only keys that actually need to change are listed — anything omitted here
+   (e.g. --c-green-mid, --c-sage, --c-on-green) keeps its :root value in both
+   themes because it already reads fine on a dark surface. */
+:root[data-theme="dark"] {
+  --c-green: #3C7A4B;
+  --c-green-deep: #2E6039;
+  --c-sage-light: #2C3626;
+  --c-green-tint: #22301F;
+
+  --c-cream: #141712;
+  --c-cream-deep: #2A2F28;
+  --c-sand: #262B24;
+  --c-sheet: #1B1F19;
+  --c-card: #20241E;
+  --c-white: #20241E;
+
+  --c-ink: #F2EFE6;
+  --c-ink-soft: #C9C6BB;
+  --c-muted: #9A978C;
+  --c-faint: #6E6C63;
+
+  --c-border: #33382F;
+  --c-border-strong: #434840;
+
+  --c-orange: #E08A3C;
+  --c-orange-deep: #B8701F;
+  --c-sky: #5E8B94;
+  --c-gold: #C9A23E;
+
+  --c-birdie: #5FA06E;
+  --c-positive: #4F9860;
+  --c-danger: #D95F4F;
+  --c-danger-deep: #B84636;
+  --c-danger-bg: #3A211E;
+  --c-danger-border: #5C332C;
+
+  --c-label-text: #D6D3C8;
+
+  --c-eagle-tint: #3A331E;
+  --c-birdie-tint: #1E2E22;
+  --c-bogey-tint: #3A2E1E;
+  --c-double-tint: #3A211E;
+
+  --scrim: rgba(0,0,0,0.6);
+
+  --shadow-sm: 0 8px 14px rgba(0,0,0,0.28);
+  --shadow-md: 0 10px 22px rgba(0,0,0,0.34);
+  --shadow-lg: 0 24px 52px rgba(0,0,0,0.45);
+
+  --glass-bg: linear-gradient(145deg, rgba(32,36,30,0.7), rgba(20,23,18,0.62)), rgba(27,31,25,0.76);
+  --glass-border: 1px solid rgba(255,255,255,0.08);
+  --glass-shadow: 0 8px 14px rgba(0,0,0,0.34);
+
+  --nav-glass: rgba(32,36,30,0.86);
+  --nav-glass-border: 1px solid rgba(255,255,255,0.08);
+  --nav-glass-shadow: 0 14px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2);
+  --header-glass: rgba(27,31,25,0.82);
 }
 
 /* ── Base reset ────────────────────────────────────────────── */

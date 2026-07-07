@@ -162,6 +162,12 @@ export const color = {
   // paired: dangerBg background + dangerBorder 1px border + dangerDeep text.
   dangerBg: 'var(--c-danger-bg)',
   dangerBorder: 'var(--c-danger-border)',
+  // Golf-notation cell tints — ScorecardView's ScoreDecoration and
+  // MatchesView's MatchScoreDecoration both use these four identically.
+  eagleTint: 'var(--c-eagle-tint)',
+  birdieTint: 'var(--c-birdie-tint)',
+  bogeyTint: 'var(--c-bogey-tint)',
+  doubleTint: 'var(--c-double-tint)',
 } as const
 
 // ── Glass — the prototype's restrained frosted panel ───────────────────────

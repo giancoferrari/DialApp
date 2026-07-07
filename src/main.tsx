@@ -8,10 +8,15 @@ import { queryClient } from './lib/queryClient'
 import { ToastProvider } from './components/Toast'
 import { AuthProvider } from './contexts/AuthContext'
 import { initNative } from './lib/native'
+import { initTheme } from './lib/theme'
 import './index.css'
 import App from './App.tsx'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
+
+// Resolve + apply the theme before the first paint, so there's no flash of
+// the wrong theme.
+initTheme()
 
 // Native (Capacitor iOS) setup — no-op on the web.
 initNative()

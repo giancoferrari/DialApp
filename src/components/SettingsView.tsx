@@ -12,6 +12,7 @@ import { useStaggerMount } from '../hooks/useStaggerMount'
 import { color, font, radius, onHero, page } from '../lib/tokens'
 import { card as cardSurface } from '../lib/surfaces'
 import { type Prefs, loadPrefs, savePrefs } from '../lib/prefs'
+import { type ThemePref, getTheme, saveTheme, applyTheme } from '../lib/theme'
 
 const TEE_OPTIONS = [
   { id: 'black', hex: '#1A1C1A' },
@@ -158,6 +159,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
   const containerRef = useRef<HTMLDivElement>(null)
   useStaggerMount(containerRef)
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs)
+  const [theme, setThemeState] = useState<ThemePref>(getTheme)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [savedFlash, setSavedFlash] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -181,6 +183,12 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
     const next = { ...prefs, ...patch }
     setPrefs(next)
     savePrefs(next)
+  }
+
+  const updateTheme = (next: ThemePref) => {
+    setThemeState(next)
+    saveTheme(next)
+    applyTheme(next)
   }
 
   const flash = (msg: string) => {
@@ -484,6 +492,18 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
           onSave={v => save({ goalHandicap: v ? parseFloat(v) : null })}
           last
         />
+      </Card>
+
+      {/* ── APPEARANCE ── */}
+      <SectionLabel label="Appearance" />
+      <Card>
+        <Row label="Theme" description="Light, dark, or match your device" last>
+          <Segment
+            options={['Light', 'Dark', 'System']}
+            value={theme === 'light' ? 'Light' : theme === 'dark' ? 'Dark' : 'System'}
+            onChange={v => updateTheme(v === 'Light' ? 'light' : v === 'Dark' ? 'dark' : 'system')}
+          />
+        </Row>
       </Card>
 
       {/* ── ABOUT ── */}
