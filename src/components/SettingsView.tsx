@@ -606,7 +606,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
           >
             <div
               onClick={e => e.stopPropagation()}
-              style={{ width: '100%', maxWidth: 420, background: color.sheet, borderRadius: isMobile ? '24px 24px 0 0' : radius.sheet, padding: '26px 24px calc(env(safe-area-inset-bottom) + 24px)', boxShadow: '0 24px 52px rgba(42,36,24,0.30)', animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}
+              style={{ width: '100%', maxWidth: 420, background: color.sheet, borderRadius: isMobile ? '28px 28px 0 0' : radius.sheet, padding: '26px 24px calc(env(safe-area-inset-bottom) + 24px)', boxShadow: '0 24px 52px rgba(42,36,24,0.30)', animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}
             >
               <div style={{ width: 48, height: 48, borderRadius: 24, background: '#FBEDEB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
                 <span style={{ fontSize: 24, lineHeight: 1 }}>⚠️</span>

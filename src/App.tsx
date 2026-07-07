@@ -35,6 +35,7 @@ import AuthScreen from './components/AuthScreen'
 import LegalModal from './components/LegalModal'
 import DialWordmark from './components/DialWordmark'
 import Onboarding from './components/Onboarding'
+import { color, font, radius } from './lib/tokens'
 
 gsap.registerPlugin(useGSAP)
 
@@ -75,68 +76,70 @@ function SetNewPasswordModal() {
   }
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', background: '#FFFFFF', border: '1px solid #CDD2CC',
-    borderRadius: 10, padding: '13px 16px', fontSize: 16, color: '#171A17',
-    fontFamily: 'inherit', outline: 'none',
+    width: '100%', background: color.sand, border: `1px solid ${color.borderStrong}`,
+    borderRadius: radius.sm, padding: '13px 16px', fontSize: 16, color: color.ink,
+    fontFamily: font.body, outline: 'none',
     transition: 'border-color 0.15s', boxSizing: 'border-box',
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div style={{ background: '#FFFFFF', borderRadius: 20, padding: '32px 32px 28px', width: '100%', maxWidth: 420, boxShadow: '0 20px 50px rgba(23,26,23,0.18)' }}>
-        <DialWordmark size={26} />
-        {done ? (
-          <div style={{ marginTop: 28, textAlign: 'center' }}>
-            <div style={{ fontSize: 22, fontWeight: 650, letterSpacing: '-0.02em', color: '#171A17', marginBottom: 8 }}>
-              Password updated
-            </div>
-            <p style={{ fontSize: 14, color: '#494F49', marginBottom: 24 }}>You're all set. Continue using the app.</p>
-            <button
-              onClick={clearPasswordRecovery}
-              style={{ background: '#12371F', color: '#F2F5F1', border: 'none', borderRadius: 12, padding: '12px 28px', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
-            >
-              Continue
-            </button>
-          </div>
-        ) : (
-          <>
-            <div style={{ fontSize: 22, fontWeight: 650, color: '#171A17', letterSpacing: '-0.02em', marginTop: 24, marginBottom: 6 }}>
-              Set new password
-            </div>
-            <p style={{ fontSize: 14, color: '#494F49', marginBottom: 24, lineHeight: 1.5 }}>
-              Choose a strong password for your account.
-            </p>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <input
-                type="password" required value={password} placeholder="New password"
-                onChange={e => setPassword(e.target.value)}
-                style={inputStyle}
-                onFocus={e => { e.currentTarget.style.borderColor = '#12371F' }}
-                onBlur={e => { e.currentTarget.style.borderColor = '#CDD2CC' }}
-              />
-              <input
-                type="password" required value={confirm} placeholder="Confirm new password"
-                onChange={e => setConfirm(e.target.value)}
-                style={{ ...inputStyle, borderColor: confirm && confirm !== password ? '#BD3A2D' : '#CDD2CC' }}
-                onFocus={e => { e.currentTarget.style.borderColor = '#12371F' }}
-                onBlur={e => { e.currentTarget.style.borderColor = confirm && confirm !== password ? '#BD3A2D' : '#CDD2CC' }}
-              />
-              {error && (
-                <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#8C2A21' }}>
-                  {error}
-                </div>
-              )}
+    <Portal>
+      <div style={{ position: 'fixed', inset: 0, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, animation: 'fadeIn 0.2s ease' }}>
+        <div style={{ background: color.white, borderRadius: radius.sheet, padding: '32px 32px 28px', width: '100%', maxWidth: 420, boxShadow: '0 24px 52px rgba(42,36,24,0.22)', animation: 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}>
+          <DialWordmark size={26} />
+          {done ? (
+            <div style={{ marginTop: 28, textAlign: 'center' }}>
+              <div style={{ fontFamily: font.display, fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', color: color.ink, marginBottom: 8 }}>
+                Password updated
+              </div>
+              <p style={{ fontSize: 14, color: color.inkSoft, marginBottom: 24 }}>You're all set. Continue using the app.</p>
               <button
-                type="submit" disabled={loading}
-                style={{ background: loading ? '#9AA09A' : '#12371F', color: '#F2F5F1', border: 'none', borderRadius: 12, padding: '14px', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}
+                onClick={clearPasswordRecovery}
+                style={{ background: color.green, color: color.onGreen, border: 'none', borderRadius: radius.md, padding: '12px 28px', fontFamily: font.body, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
               >
-                {loading ? 'Saving…' : 'Update password'}
+                Continue
               </button>
-            </form>
-          </>
-        )}
+            </div>
+          ) : (
+            <>
+              <div style={{ fontFamily: font.display, fontSize: 22, fontWeight: 700, color: color.ink, letterSpacing: '-0.02em', marginTop: 24, marginBottom: 6 }}>
+                Set new password
+              </div>
+              <p style={{ fontSize: 14, color: color.inkSoft, marginBottom: 24, lineHeight: 1.5 }}>
+                Choose a strong password for your account.
+              </p>
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <input
+                  type="password" required value={password} placeholder="New password"
+                  onChange={e => setPassword(e.target.value)}
+                  style={inputStyle}
+                  onFocus={e => { e.currentTarget.style.borderColor = color.green }}
+                  onBlur={e => { e.currentTarget.style.borderColor = color.borderStrong }}
+                />
+                <input
+                  type="password" required value={confirm} placeholder="Confirm new password"
+                  onChange={e => setConfirm(e.target.value)}
+                  style={{ ...inputStyle, borderColor: confirm && confirm !== password ? color.danger : color.borderStrong }}
+                  onFocus={e => { e.currentTarget.style.borderColor = color.green }}
+                  onBlur={e => { e.currentTarget.style.borderColor = confirm && confirm !== password ? color.danger : color.borderStrong }}
+                />
+                {error && (
+                  <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: radius.sm, padding: '10px 14px', fontSize: 13, color: color.dangerDeep }}>
+                    {error}
+                  </div>
+                )}
+                <button
+                  type="submit" disabled={loading}
+                  style={{ background: loading ? color.borderStrong : color.green, color: loading ? color.muted : color.onGreen, border: 'none', borderRadius: radius.md, padding: '14px', fontFamily: font.body, fontSize: 14, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'background 0.15s' }}
+                >
+                  {loading ? 'Saving…' : 'Update password'}
+                </button>
+              </form>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </Portal>
   )
 }
 

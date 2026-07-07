@@ -220,8 +220,10 @@ export const type = {
   stat: { fontFamily: SANS, fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' as const },
 } as const
 
-// ── Hero — the immersive deep-pine surface (Profile, Leaderboard, Stats…) ──
-export const HERO_BG = 'radial-gradient(130% 100% at 12% -10%, #1B4A2B 0%, #123620 48%, #0C2715 100%)'
+// ── On-hero text/fill tokens for the pine surfaces that remain (the
+// Messages thread header, and a few pine hero cards). `HERO_BG` (the old
+// deep-pine radial) was removed 2026-07-06 — nothing consumed it after the
+// v4 conversion. `onHero` is still used by Leaderboard/Messages/Settings.
 export const onHero = {
   text: '#FFFAF1',
   soft: 'rgba(255,250,241,0.72)',

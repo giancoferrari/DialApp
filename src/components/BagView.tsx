@@ -56,7 +56,7 @@ function AddClubModal({ onAdd, onClose, isMobile = false }: AddClubModalProps) {
       style={{ position: 'fixed', inset: 0, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', zIndex: 200, display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 20, animation: 'fadeIn 0.2s ease' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div style={{ background: color.white, borderRadius: isMobile ? '24px 24px 0 0' : radius.sheet, padding: '28px 28px 24px', width: '100%', maxWidth: 420, boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}>
+      <div style={{ background: color.white, borderRadius: isMobile ? '28px 28px 0 0' : radius.sheet, padding: '28px 28px 24px', width: '100%', maxWidth: 420, boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}>
         <div style={{ fontFamily: font.display, fontSize: 22, fontWeight: 600, color: color.ink, letterSpacing: '-0.02em', marginBottom: 6 }}>
           Add a club
         </div>

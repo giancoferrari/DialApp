@@ -1,5 +1,5 @@
 import { CloseIcon } from './Icons'
-import { font } from '../lib/tokens'
+import { font, color, radius } from '../lib/tokens'
 
 const SITE_NAME = 'Dial Golf'
 const COMPANY_NAME = 'Dial Golf'
@@ -11,26 +11,26 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <div style={{ marginBottom: 28 }}>
       <h2 style={{
         fontFamily: font.display,
-        fontSize: 18, fontWeight: 700, color: '#171A17',
+        fontSize: 18, fontWeight: 700, color: color.ink,
         letterSpacing: '-0.02em', marginBottom: 10, marginTop: 0,
       }}>
         {title}
       </h2>
-      <div style={{ fontSize: 14, color: '#494F49', lineHeight: 1.75 }}>{children}</div>
+      <div style={{ fontSize: 14, color: color.inkSoft, lineHeight: 1.75 }}>{children}</div>
     </div>
   )
 }
 
-const strong = { color: '#171A17' } as React.CSSProperties
+const strong = { color: color.ink } as React.CSSProperties
 const li = { marginBottom: 6 } as React.CSSProperties
 const ul = { marginTop: 8, paddingLeft: 20 } as React.CSSProperties
 
 function PrivacyPolicy() {
   return (
     <>
-      <p style={{ fontSize: 13, color: '#6B716B', marginBottom: 24 }}>Effective date: {EFFECTIVE_DATE}</p>
+      <p style={{ fontSize: 13, color: color.muted, marginBottom: 24 }}>Effective date: {EFFECTIVE_DATE}</p>
 
-      <p style={{ fontSize: 14, color: '#494F49', lineHeight: 1.75, marginBottom: 24 }}>
+      <p style={{ fontSize: 14, color: color.inkSoft, lineHeight: 1.75, marginBottom: 24 }}>
         This Privacy Policy describes how {COMPANY_NAME} ("we," "us," or "our") collects, uses, discloses, and safeguards your information when you use the {SITE_NAME} application and related services (collectively, the "Service"). {SITE_NAME} is a golf performance tracker and social network that lets you log shots and rounds, compete in matches, share posts, message other players, and connect with friends. By creating an account or otherwise using the Service, you acknowledge that you have read and understood this Privacy Policy. If you do not agree with it, please do not use the Service.
       </p>
 
@@ -125,9 +125,9 @@ function PrivacyPolicy() {
 function TermsOfService() {
   return (
     <>
-      <p style={{ fontSize: 13, color: '#6B716B', marginBottom: 24 }}>Effective date: {EFFECTIVE_DATE}</p>
+      <p style={{ fontSize: 13, color: color.muted, marginBottom: 24 }}>Effective date: {EFFECTIVE_DATE}</p>
 
-      <p style={{ fontSize: 14, color: '#494F49', lineHeight: 1.75, marginBottom: 24 }}>
+      <p style={{ fontSize: 14, color: color.inkSoft, lineHeight: 1.75, marginBottom: 24 }}>
         These Terms of Service ("Terms") form a binding agreement between you and {COMPANY_NAME} ("we," "us," or "our") and govern your access to and use of the {SITE_NAME} application and related services (the "Service"). Please read them carefully. By creating an account or using the Service, you agree to be bound by these Terms and by our Privacy Policy. If you do not agree, do not use the Service.
       </p>
 
@@ -241,9 +241,9 @@ export default function LegalModal({ doc, onClose }: Props) {
     <div
       onClick={onClose}
       style={{
-        position: 'fixed', inset: 0, zIndex: 200,
-        background: 'rgba(31,29,23,0.55)',
-        backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)',
+        position: 'fixed', inset: 0, zIndex: 220,
+        background: 'rgba(23,26,23,0.45)',
+        backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: 16, animation: 'fadeIn 0.2s ease',
       }}
@@ -252,9 +252,9 @@ export default function LegalModal({ doc, onClose }: Props) {
         onClick={e => e.stopPropagation()}
         style={{
           width: '100%', maxWidth: 640,
-          background: '#FFFFFF', borderRadius: 24,
-          border: '1px solid #E4E6E1',
-          boxShadow: '0 20px 50px rgba(23,26,23,0.18)',
+          background: color.white, borderRadius: radius.sheet,
+          border: `1px solid ${color.border}`,
+          boxShadow: '0 24px 52px rgba(42,36,24,0.22)',
           maxHeight: 'calc(100vh - 32px)',
           display: 'flex', flexDirection: 'column',
           animation: 'scaleIn 0.25s cubic-bezier(0.16,1,0.3,1)',
@@ -263,11 +263,11 @@ export default function LegalModal({ doc, onClose }: Props) {
         {/* Header */}
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '22px 24px 18px', borderBottom: '1px solid #E4E6E1', flexShrink: 0,
+          padding: '22px 24px 18px', borderBottom: `1px solid ${color.border}`, flexShrink: 0,
         }}>
           <h1 style={{
             fontFamily: font.display,
-            fontSize: 22, fontWeight: 600, color: '#171A17',
+            fontSize: 22, fontWeight: 700, color: color.ink,
             letterSpacing: '-0.02em', margin: 0,
           }}>
             {title}
@@ -276,15 +276,15 @@ export default function LegalModal({ doc, onClose }: Props) {
             onClick={onClose}
             aria-label="Close"
             style={{
-              width: 32, height: 32, borderRadius: 16,
-              background: '#EFF1ED', border: 'none',
+              width: 30, height: 30, borderRadius: 15,
+              background: color.sand, border: 'none',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', transition: 'background 0.15s', flexShrink: 0,
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#E4E6E1' }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#EFF1ED' }}
+            onMouseEnter={e => { e.currentTarget.style.background = color.border }}
+            onMouseLeave={e => { e.currentTarget.style.background = color.sand }}
           >
-            <CloseIcon size={15} color="#494F49" />
+            <CloseIcon size={14} color={color.inkSoft} />
           </button>
         </div>
 

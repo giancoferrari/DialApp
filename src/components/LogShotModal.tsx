@@ -126,7 +126,7 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
         <div
           ref={sheetRef}
           onClick={e => e.stopPropagation()}
-          style={{ width: '100%', background: color.white, borderRadius: '24px 24px 0 0', boxShadow: elevation.lg, maxHeight: '92vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+          style={{ width: '100%', background: color.white, borderRadius: '28px 28px 0 0', boxShadow: elevation.lg, maxHeight: '92vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
         >
           <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 10, paddingBottom: 2, flexShrink: 0 }}>
             <div style={{ width: 36, height: 4, borderRadius: 2, background: color.borderStrong }} />

@@ -141,11 +141,6 @@ button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent
   to   { opacity: 1; transform: translateX(0);    }
 }
 
-@keyframes slideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-}
-
 /* Home hero — a slow cinematic settle on mount (eases down to rest), so the
    illustration "arrives" rather than snapping in. Clipped by the wrapper so
    the zoom never pushes layout. */

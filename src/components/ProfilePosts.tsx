@@ -69,7 +69,7 @@ function ReportSheet({ postId, meId, isMobile, onClose }: {
   return (
     <Portal>
       <div onClick={onClose} style={{ ...scrim, zIndex: 240, alignItems: isMobile ? 'flex-end' : 'center', padding: isMobile ? 0 : 24 }}>
-        <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 420, maxHeight: isMobile ? '80vh' : '70vh', background: color.white, borderRadius: isMobile ? '24px 24px 0 0' : radius.sheet, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}>
+        <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 420, maxHeight: isMobile ? '80vh' : '70vh', background: color.white, borderRadius: isMobile ? '28px 28px 0 0' : radius.sheet, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 18px 12px', borderBottom: `1px solid ${color.border}` }}>
             <div style={{ fontFamily: font.body, fontSize: 16, fontWeight: 650, color: color.ink }}>{done ? 'Report received' : 'Report post'}</div>
             <button onClick={onClose} aria-label="Close" style={closeBtn}>
@@ -162,7 +162,7 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
 
   return (
     <div onClick={onClose} style={{ ...scrim, alignItems: isMobile ? 'flex-end' : 'center', padding: isMobile ? 0 : 24 }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, background: color.white, borderRadius: isMobile ? '24px 24px 0 0' : radius.sheet, overflow: 'hidden', boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)', ...(isMobile ? dragStyle : {}) }}>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, background: color.white, borderRadius: isMobile ? '28px 28px 0 0' : radius.sheet, overflow: 'hidden', boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)', ...(isMobile ? dragStyle : {}) }}>
         {isMobile && <div {...dragHandlers}><Grabber /></div>}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 20px 14px', borderBottom: `1px solid ${color.border}` }}>
           <div style={{ fontFamily: font.body, fontSize: 16, fontWeight: 650, color: color.ink }}>New post</div>
@@ -280,7 +280,7 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
 
   return (
     <div onClick={onClose} style={{ ...scrim, alignItems: isMobile ? 'flex-end' : 'center', padding: isMobile ? 0 : 24 }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, maxHeight: isMobile ? '94vh' : '90vh', background: color.white, borderRadius: isMobile ? '24px 24px 0 0' : radius.sheet, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)', ...(isMobile ? dragStyle : {}) }}>
+      <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 440, maxHeight: isMobile ? '94vh' : '90vh', background: color.white, borderRadius: isMobile ? '28px 28px 0 0' : radius.sheet, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)', ...(isMobile ? dragStyle : {}) }}>
         {isMobile && <div {...dragHandlers}><Grabber /></div>}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: `1px solid ${color.border}`, flexShrink: 0 }}>
           <div style={{ fontFamily: font.body, fontSize: 15, fontWeight: 600, color: color.ink }}>{authorName}</div>

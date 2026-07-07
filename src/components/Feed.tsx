@@ -13,7 +13,7 @@ import EmptyState from './EmptyState'
 import { tapHaptic } from '../lib/native'
 import { timeAgo, displayName as authorName } from '../lib/format'
 import { card } from '../lib/surfaces'
-import { color, font } from '../lib/tokens'
+import { color, font, type, radius } from '../lib/tokens'
 
 interface Props {
   userId: string
@@ -73,8 +73,9 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
   }
 
   // Distinguish single tap (open) from double tap (like + heart burst).
-  const onMediaTap = (post: Post) => {
-    const now = Date.now()
+  // `now` comes from the click event's DOMHighResTimeStamp (pure, monotonic)
+  // rather than Date.now() so the handler stays render-pure.
+  const onMediaTap = (post: Post, now: number) => {
     if (tapRef.current && tapRef.current.id === post.id && now - tapRef.current.time < 280) {
       clearTimeout(tapRef.current.timer)
       tapRef.current = null
@@ -108,13 +109,49 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
     )
   }
 
-  const countText: React.CSSProperties = { fontFamily: font.body, fontSize: 14, fontWeight: 600, color: color.ink, fontVariantNumeric: 'tabular-nums' }
+  // Shared card DNA — the header row and the action row are identical in both
+  // the compact (caption + thumbnail) and full-width layouts.
+  const actionBtn: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }
+  const countNum = (c: string): React.CSSProperties => ({ ...type.stat, fontSize: 14, color: c })
+
+  const Header = (post: Post) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <Avatar profile={post.author} size={38} onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined} />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined}
+          style={{ fontFamily: font.body, fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.1, color: color.ink, cursor: onViewProfile ? 'pointer' : 'default', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+        >
+          {post.author?.firstName || authorName(post.author)}
+        </div>
+        <div style={{ fontSize: 12, color: color.muted, marginTop: 2 }}>{timeAgo(post.createdAt)}</div>
+      </div>
+    </div>
+  )
+
+  const Actions = (post: Post) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+      <button onClick={() => handleLike(post)} aria-label={post.likedByMe ? 'Unlike' : 'Like'} style={actionBtn}>
+        <span style={{ display: 'inline-flex', animation: poppingId === post.id ? 'likePop 0.42s ease' : undefined }}>
+          <HeartIcon size={20} color={post.likedByMe ? color.orange : color.ink} filled={post.likedByMe} />
+        </span>
+        <span style={countNum(post.likedByMe ? color.orange : color.ink)}>{post.likeCount}</span>
+      </button>
+      <button onClick={() => setActive(post)} aria-label="Comments" style={actionBtn}>
+        <ChatIcon size={20} color={color.ink} />
+        <span style={countNum(color.ink)}>{post.commentCount}</span>
+      </button>
+      <button onClick={() => handleRepost(post)} aria-label={post.repostedByMe ? 'Undo repost' : 'Repost'} style={{ ...actionBtn, marginLeft: 'auto' }}>
+        <RepostIcon size={18} color={post.repostedByMe ? color.positive : color.inkSoft} />
+        <span style={{ fontFamily: font.body, fontSize: 13, fontWeight: 500, color: post.repostedByMe ? color.positive : color.muted }}>{post.repostedByMe ? 'Reposted' : 'Repost'}</span>
+      </button>
+    </div>
+  )
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {posts.map(post => {
         const key = `${post.id}-${post.repostedBy?.userId ?? 'orig'}`
-        const displayedName = post.author?.firstName || authorName(post.author)
 
         // ── Compact clubhouse card (the reference layout): caption on the
         //    left, photo thumbnail on the right. Used for captioned photos.
@@ -128,19 +165,7 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
               )}
               <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 116px', gap: 12 }}>
                 <div style={{ minWidth: 0 }}>
-                  {/* Header */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <Avatar profile={post.author} size={38} onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined} />
-                    <div style={{ minWidth: 0 }}>
-                      <div
-                        onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined}
-                        style={{ fontFamily: font.body, fontSize: 16, fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 1.05, color: color.ink, cursor: onViewProfile ? 'pointer' : 'default', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-                      >
-                        {displayedName}
-                      </div>
-                      <div style={{ fontSize: 12, color: color.muted, fontWeight: 500, marginTop: 4 }}>{timeAgo(post.createdAt)}</div>
-                    </div>
-                  </div>
+                  {Header(post)}
                   {/* Caption */}
                   <div
                     onClick={() => setActive(post)}
@@ -149,24 +174,10 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
                     {post.caption}
                   </div>
                   {/* Reactions */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 22, marginTop: 12 }}>
-                    <button onClick={() => handleLike(post)} aria-label={post.likedByMe ? 'Unlike' : 'Like'} style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                      <span style={{ display: 'inline-flex', animation: poppingId === post.id ? 'likePop 0.42s ease' : undefined }}>
-                        <HeartIcon size={19} color={post.likedByMe ? color.orange : '#41443F'} filled={post.likedByMe} />
-                      </span>
-                      <span style={{ fontFamily: font.body, fontSize: 15, fontWeight: 500, color: post.likedByMe ? color.orange : '#41443F', fontVariantNumeric: 'tabular-nums' }}>{post.likeCount}</span>
-                    </button>
-                    <button onClick={() => setActive(post)} aria-label="Comments" style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                      <ChatIcon size={18} color="#41443F" />
-                      <span style={{ fontFamily: font.body, fontSize: 15, fontWeight: 500, color: '#41443F', fontVariantNumeric: 'tabular-nums' }}>{post.commentCount}</span>
-                    </button>
-                    <button onClick={() => handleRepost(post)} aria-label={post.repostedByMe ? 'Undo repost' : 'Repost'} style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                      <RepostIcon size={17} color={post.repostedByMe ? color.positive : '#9AA095'} />
-                    </button>
-                  </div>
+                  <div style={{ marginTop: 12 }}>{Actions(post)}</div>
                 </div>
                 {/* Thumbnail */}
-                <button onClick={() => onMediaTap(post)} style={{ position: 'relative', alignSelf: 'start', marginTop: 5, width: 116, height: 86, borderRadius: 14, overflow: 'hidden', border: 'none', padding: 0, cursor: 'pointer', background: '#B8D8D9' }}>
+                <button onClick={e => onMediaTap(post, e.timeStamp)} style={{ position: 'relative', alignSelf: 'start', marginTop: 5, width: 116, height: 86, borderRadius: radius.sm, overflow: 'hidden', border: 'none', padding: 0, cursor: 'pointer', background: color.sky }}>
                   <img src={post.imageUrl} alt="" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                   {burstId === post.id && (
                     <div style={{ position: 'absolute', top: '50%', left: '50%', pointerEvents: 'none', animation: 'heartBurst 0.7s ease-out forwards', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.35))' }}>
@@ -188,21 +199,10 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
             </div>
           )}
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px' }}>
-            <Avatar profile={post.author} size={36} onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div
-                onClick={onViewProfile ? () => onViewProfile(post.userId) : undefined}
-                style={{ fontFamily: font.body, fontSize: 16, fontWeight: 700, letterSpacing: '-0.04em', color: color.ink, cursor: onViewProfile ? 'pointer' : 'default' }}
-              >
-                {displayedName}
-              </div>
-              <div style={{ fontSize: 12, color: color.muted, marginTop: 1 }}>{timeAgo(post.createdAt)}</div>
-            </div>
-          </div>
+          <div style={{ padding: '12px 14px' }}>{Header(post)}</div>
 
           {/* Media — photo or round recap (single tap opens, double tap likes) */}
-          <button onClick={() => onMediaTap(post)} style={{ position: 'relative', display: 'block', width: '100%', padding: 0, border: 'none', background: post.kind === 'round' ? 'none' : '#000', cursor: 'pointer' }}>
+          <button onClick={e => onMediaTap(post, e.timeStamp)} style={{ position: 'relative', display: 'block', width: '100%', padding: 0, border: 'none', background: post.kind === 'round' ? 'none' : '#000', cursor: 'pointer' }}>
             {post.kind === 'round' && post.meta
               ? <RecapCard meta={post.meta} variant="feed" />
               : <img src={post.imageUrl ?? ''} alt="" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', aspectRatio: '4 / 5', objectFit: 'cover' }} />}
@@ -214,22 +214,7 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
           </button>
 
           {/* Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18, padding: '12px 14px 4px' }}>
-            <button onClick={() => handleLike(post)} aria-label={post.likedByMe ? 'Unlike' : 'Like'} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              <span style={{ display: 'inline-flex', animation: poppingId === post.id ? 'likePop 0.42s ease' : undefined }}>
-                <HeartIcon size={22} color={post.likedByMe ? color.orange : color.ink} filled={post.likedByMe} />
-              </span>
-              <span style={{ ...countText, color: post.likedByMe ? color.orange : color.ink }}>{post.likeCount}</span>
-            </button>
-            <button onClick={() => setActive(post)} aria-label="Comments" style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              <ChatIcon size={20} color={color.ink} />
-              <span style={countText}>{post.commentCount}</span>
-            </button>
-            <button onClick={() => handleRepost(post)} style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              <RepostIcon size={18} color={post.repostedByMe ? color.positive : color.inkSoft} />
-              <span style={{ fontFamily: font.body, fontSize: 13, fontWeight: 500, color: post.repostedByMe ? color.positive : color.muted }}>{post.repostedByMe ? 'Reposted' : 'Repost'}</span>
-            </button>
-          </div>
+          <div style={{ padding: '12px 14px 4px' }}>{Actions(post)}</div>
 
           {/* Caption */}
           {post.caption && (

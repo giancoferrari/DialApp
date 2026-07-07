@@ -181,7 +181,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{ width: '100%', maxWidth: isMobile ? '100%' : 480, background: color.white, borderRadius: isMobile ? '24px 24px 0 0' : radius.sheet, boxShadow: elevation.lg, maxHeight: isMobile ? '94vh' : 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column', overflow: 'hidden', animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}
+            style={{ width: '100%', maxWidth: isMobile ? '100%' : 480, background: color.white, borderRadius: isMobile ? '28px 28px 0 0' : radius.sheet, boxShadow: elevation.lg, maxHeight: isMobile ? '94vh' : 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column', overflow: 'hidden', animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}
           >
             {isMobile && (
               <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 10, paddingBottom: 2, flexShrink: 0 }}>
