@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import { fetchFriendships, fetchProfilesForIds, updateFriendship } from '../lib/friends'
 import { fetchMatches, acceptMatchInvite, declineMatchInvite } from '../lib/matches'
-import { fetchNotifications, markNotificationsRead } from '../lib/notifications'
+import { fetchNotifications, markNotificationsRead, createNotification } from '../lib/notifications'
 import type { PublicProfile, Friendship, Match, AppNotification } from '../types'
 import { CheckIcon, CloseIcon, TrophyIcon, UsersIcon, BellIcon, HeartIcon, ChatIcon, RepostIcon } from './Icons'
 import Avatar from './Avatar'
@@ -41,10 +41,11 @@ const MODE_LABELS: Record<string, string> = {
 // Icon + tint per activity-notification type.
 function notifIcon(type: AppNotification['type']) {
   switch (type) {
-    case 'like':     return { Icon: HeartIcon,  tint: color.danger }
-    case 'comment':  return { Icon: ChatIcon,   tint: color.green }
-    case 'repost':   return { Icon: RepostIcon, tint: color.positive }
-    default:         return { Icon: UsersIcon,  tint: color.green } // post_tag
+    case 'like':          return { Icon: HeartIcon,  tint: color.danger }
+    case 'comment':       return { Icon: ChatIcon,   tint: color.green }
+    case 'repost':        return { Icon: RepostIcon, tint: color.positive }
+    case 'friend_accept': return { Icon: UsersIcon,  tint: color.positive }
+    default:               return { Icon: UsersIcon,  tint: color.green } // post_tag
   }
 }
 
@@ -105,6 +106,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
     setBusy(f.id); setError(null)
     try {
       await updateFriendship(f.id, 'accepted')
+      await createNotification(f.requesterId, userId, 'friend_accept', null)
       patch(d => ({ ...d, friendReqs: d.friendReqs.filter(x => x.id !== f.id) }))
     } catch { setError('Failed to accept.') }
     finally { setBusy(null) }
@@ -260,9 +262,10 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
 
           {notifs.map(n => {
             const nm = n.actor?.username ? `@${n.actor.username}` : (n.actor?.firstName ?? 'A player')
-            const text = n.type === 'post_tag' ? 'tagged you in a post'
-              : n.type === 'repost'  ? 'reposted your post'
-              : n.type === 'like'    ? 'liked your post'
+            const text = n.type === 'post_tag'      ? 'tagged you in a post'
+              : n.type === 'repost'                 ? 'reposted your post'
+              : n.type === 'like'                   ? 'liked your post'
+              : n.type === 'friend_accept'          ? 'accepted your friend request'
               : 'commented on your post'
             const { Icon, tint } = notifIcon(n.type)
             return (

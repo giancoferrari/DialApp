@@ -5,7 +5,7 @@ import type { AppNotification } from '../types'
 export async function createNotification(
   recipientId: string,
   actorId: string,
-  type: 'post_tag' | 'repost' | 'like' | 'comment',
+  type: 'post_tag' | 'repost' | 'like' | 'comment' | 'friend_accept',
   postId: string | null,
 ): Promise<void> {
   if (recipientId === actorId) return // don't notify yourself

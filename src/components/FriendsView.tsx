@@ -5,6 +5,7 @@ import {
   searchUsers, fetchFriendships, fetchProfilesForIds,
   sendFriendRequest, updateFriendship, removeFriend,
 } from '../lib/friends'
+import { createNotification } from '../lib/notifications'
 import { CloseIcon, PersonIcon, MedalIcon, ChevronRightIcon } from './Icons'
 import Skeleton from './Skeleton'
 import Avatar from './Avatar'
@@ -100,6 +101,8 @@ export default function FriendsView({ userId, isMobile = false, onViewProfile, o
     setActionLoading(friendshipId)
     try {
       await updateFriendship(friendshipId, 'accepted')
+      const f = friendships.find(x => x.id === friendshipId)
+      if (f) await createNotification(f.requesterId, userId, 'friend_accept', null)
       refresh()
       toast('Friend added')
     } catch { setError('Failed to accept.') }
