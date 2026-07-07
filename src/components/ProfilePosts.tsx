@@ -28,7 +28,7 @@ function Grabber() {
 // Shared sheet chrome
 const scrim: React.CSSProperties = {
   position: 'fixed', inset: 0, zIndex: 210,
-  background: 'rgba(23,26,23,0.45)',
+  background: 'var(--scrim)',
   backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
   display: 'flex', justifyContent: 'center',
   animation: 'fadeIn 0.2s ease',
@@ -215,7 +215,7 @@ export function Composer({ meId, isMobile, onClose, onCreated }: {
             </div>
           )}
 
-          {error && <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, marginBottom: 14 }}>{error}</div>}
+          {error && <div style={{ background: color.dangerBg, border: `1px solid ${color.dangerBorder}`, borderRadius: 10, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, marginBottom: 14 }}>{error}</div>}
           <button
             onClick={share} disabled={busy}
             style={{ width: '100%', background: busy ? color.borderStrong : color.green, color: busy ? color.inkSoft : color.onGreen, border: 'none', borderRadius: radius.md, padding: '14px', fontSize: 15, fontWeight: 600, cursor: busy ? 'not-allowed' : 'pointer', fontFamily: font.body, transition: 'background 0.15s' }}
@@ -295,7 +295,7 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
                   <div style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, background: color.white, border: `1px solid ${color.border}`, borderRadius: radius.card, padding: 6, boxShadow: elevation.md, minWidth: 170, zIndex: 10 }}>
                     {canDelete && onDelete && (
                       <button onClick={() => { setMenuOpen(false); onDelete() }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', borderRadius: radius.sm, padding: '10px 12px', cursor: 'pointer', fontFamily: font.body, fontSize: 14, fontWeight: 500, color: color.danger }}
-                        onMouseEnter={e => { e.currentTarget.style.background = '#FBEDEB' }} onMouseLeave={e => { e.currentTarget.style.background = 'none' }}>
+                        onMouseEnter={e => { e.currentTarget.style.background = color.dangerBg }} onMouseLeave={e => { e.currentTarget.style.background = 'none' }}>
                         Delete post
                       </button>
                     )}

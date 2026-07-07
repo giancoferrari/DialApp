@@ -114,62 +114,70 @@ export const radius = {
 //     dot, over-par deltas, "big gap" flags. Never a button background.
 //   • sage   — ONLY progress fills and quiet secondary chips.
 //   • birdie/gold/danger (golf semantics) — data only, never chrome.
+// Every value below is a CSS custom-property reference into src/index.css's
+// :root block (light values) / [data-theme="dark"] block (dark overrides,
+// added in the dark-mode pass) — the export shape and every call site stay
+// identical whichever theme is active. See index.css for the literal hex.
 export const color = {
   // Brand pine — primary CTAs, active icons, identity.
-  green: '#12371F',
-  greenDeep: '#0C2A17',   // hover / pressed
-  greenDark: '#0A2413',   // immersive dark hero surfaces
-  greenMid: '#356D3D',    // stat icon chips
-  sage: '#7D9667',        // progress, secondary accents — ONLY those two roles
-  sageLight: '#DDE8D3',
-  greenTint: '#E3ECD8',   // selected backgrounds, badges, soft chips
+  green: 'var(--c-green)',
+  greenDeep: 'var(--c-green-deep)',   // hover / pressed
+  greenDark: 'var(--c-green-dark)',   // immersive dark hero surfaces
+  greenMid: 'var(--c-green-mid)',     // stat icon chips
+  sage: 'var(--c-sage)',              // progress, secondary accents — ONLY those two roles
+  sageLight: 'var(--c-sage-light)',
+  greenTint: 'var(--c-green-tint)',   // selected backgrounds, badges, soft chips
 
   // Surfaces (warm cream ladder: bg → well → sheet → card)
-  cream: '#F8F3E7',       // app background
-  creamDeep: '#EFE7D4',
-  sand: '#F1EBDB',        // sunken wells / segmented-control tracks
-  sheet: '#FFFAF0',       // modal & sheet bodies, frosted panels
-  card: '#FFFFFF',        // cards
-  white: '#FFFFFF',
+  cream: 'var(--c-cream)',       // app background
+  creamDeep: 'var(--c-cream-deep)',
+  sand: 'var(--c-sand)',         // sunken wells / segmented-control tracks
+  sheet: 'var(--c-sheet)',       // modal & sheet bodies, frosted panels
+  card: 'var(--c-card)',         // cards
+  white: 'var(--c-white)',
 
   // Text (ink → soft → muted → faint)
-  ink: '#0B0D0A',
-  inkSoft: '#3D423C',
-  muted: '#5C625A',
-  faint: '#8A9085',
-  onGreen: '#FFFAF1',     // text on the brand pine
+  ink: 'var(--c-ink)',
+  inkSoft: 'var(--c-ink-soft)',
+  muted: 'var(--c-muted)',
+  faint: 'var(--c-faint)',
+  onGreen: 'var(--c-on-green)',  // text on the brand pine
 
   // Lines
-  border: '#E6DFCC',
-  borderStrong: '#D3CBB5',
+  border: 'var(--c-border)',
+  borderStrong: 'var(--c-border-strong)',
 
   // Accent + illustration tones
-  orange: '#C86718',      // attention ONLY: badges, unread, active nav dot, over-par deltas, gap flags — never decorative, never a button bg
-  orangeDeep: '#9E4F0E',
-  sky: '#9FCFD7',         // ocean / sky illustration tone
-  gold: '#B08828',        // eagle
+  orange: 'var(--c-orange)',      // attention ONLY: badges, unread, active nav dot, over-par deltas, gap flags — never decorative, never a button bg
+  orangeDeep: 'var(--c-orange-deep)',
+  sky: 'var(--c-sky)',            // ocean / sky illustration tone
+  gold: 'var(--c-gold)',          // eagle
 
   // Functional / golf semantics — data colors, never decoration
-  birdie: '#3E7A4E',      // under par
-  positive: '#356D3D',
-  danger: '#BD3A2D',
-  dangerDeep: '#8C2A21',
+  birdie: 'var(--c-birdie)',      // under par
+  positive: 'var(--c-positive)',
+  danger: 'var(--c-danger)',
+  dangerDeep: 'var(--c-danger-deep)',
+  // Shared "error block" recipe (inline banners across the app) — always
+  // paired: dangerBg background + dangerBorder 1px border + dangerDeep text.
+  dangerBg: 'var(--c-danger-bg)',
+  dangerBorder: 'var(--c-danger-border)',
 } as const
 
 // ── Glass — the prototype's restrained frosted panel ───────────────────────
 export const glass = {
-  bg: 'linear-gradient(145deg, rgba(255,255,255,0.7), rgba(247,241,226,0.62)), rgba(255,250,239,0.76)',
-  border: '1px solid rgba(255,255,255,0.76)',
+  bg: 'var(--glass-bg)',
+  border: 'var(--glass-border)',
   blur: 'blur(18px) saturate(1.18)',
-  shadow: '0 8px 14px rgba(42,36,24,0.13)',
+  shadow: 'var(--glass-shadow)',
 } as const
 
 // ── Elevation — soft warm shadows (prototype: low-opacity pine/brown) ──────
 export const elevation = {
-  flat: 'none',                                            // pair with a 1px border
-  sm: '0 8px 14px rgba(41,35,21,0.09)',                    // cards that float a little
-  md: '0 10px 22px rgba(42,36,24,0.13)',                   // menus, popovers
-  lg: '0 24px 52px rgba(42,36,24,0.22)',                   // sheets / modals
+  flat: 'none',              // pair with a 1px border
+  sm: 'var(--shadow-sm)',    // cards that float a little
+  md: 'var(--shadow-md)',    // menus, popovers
+  lg: 'var(--shadow-lg)',    // sheets / modals
 } as const
 
 // ── Z-index ladder ─────────────────────────────────────────────────────────
@@ -214,7 +222,7 @@ export const type = {
   caption: { fontFamily: SANS, fontSize: 12, lineHeight: 1.4, fontWeight: 500 },
   // Card label — small, heavy, uppercase (the prototype's label voice).
   // Reserved for stat/hero cards only; elsewhere use surfaces.sectionLabel.
-  label:   { fontFamily: SANS, fontSize: 12, lineHeight: 1.3, fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase' as const, color: '#30332F' },
+  label:   { fontFamily: SANS, fontSize: 12, lineHeight: 1.3, fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase' as const, color: 'var(--c-label-text)' },
   // Big numerals — points, scores, balances, handicaps, distances. Callers
   // spread this + a local fontSize (no fixed size here, sizes vary a lot).
   stat: { fontFamily: SANS, fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' as const },

@@ -177,7 +177,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
       {modalOpen && (
         <div
           onClick={() => setModalOpen(false)}
-          style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 40, animation: 'fadeIn 0.2s ease' }}
+          style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'var(--scrim)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 40, animation: 'fadeIn 0.2s ease' }}
         >
           <div
             onClick={e => e.stopPropagation()}
@@ -258,7 +258,7 @@ export default function PracticeView({ sessions, onSave, onDelete, isMobile = fa
               </div>
 
               {error && (
-                <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: 12, padding: '11px 14px', fontSize: 13, color: color.dangerDeep, lineHeight: 1.45 }}>
+                <div style={{ background: color.dangerBg, border: `1px solid ${color.dangerBorder}`, borderRadius: 12, padding: '11px 14px', fontSize: 13, color: color.dangerDeep, lineHeight: 1.45 }}>
                   {error}
                 </div>
               )}

@@ -168,7 +168,7 @@ export default function Onboarding({ userId, existingProfile, onComplete, isMobi
     <div style={{
       position: 'fixed', inset: 0, zIndex: 500,
       background: onGreen
-        ? `radial-gradient(ellipse 120% 80% at 50% 0%, ${color.greenMid}22 0%, transparent 55%), ${color.green}`
+        ? `radial-gradient(ellipse 120% 80% at 50% 0%, color-mix(in srgb, ${color.greenMid} 13%, transparent) 0%, transparent 55%), ${color.green}`
         : `radial-gradient(ellipse 130% 70% at 5% 100%, rgba(52,82,37,0.10) 0%, transparent 55%), ${color.cream}`,
       display: 'flex', flexDirection: 'column', overflow: 'hidden',
       transition: 'background 0.4s ease',

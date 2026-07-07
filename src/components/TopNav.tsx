@@ -366,7 +366,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
                 <button
                   onClick={() => { setMenuOpen(false); onSignOut() }}
                   style={{ ...menuItem, color: color.danger }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#FBEDEB' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = color.dangerBg }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
                 >
                   Sign out

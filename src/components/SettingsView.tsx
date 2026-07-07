@@ -261,7 +261,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
         </div>
       )}
       {saveError && (
-        <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: radius.md, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, marginBottom: 16 }}>
+        <div style={{ background: color.dangerBg, border: `1px solid ${color.dangerBorder}`, borderRadius: radius.md, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, marginBottom: 16 }}>
           {saveError}
         </div>
       )}
@@ -529,7 +529,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
         <div
           onClick={() => { setShowDelete(true); setDeleteConfirm(''); setDeleteError(null) }}
           style={{ padding: '15px 16px', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', minHeight: 52 }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#FBEDEB' }}
+          onMouseEnter={e => { e.currentTarget.style.background = color.dangerBg }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
         >
           <div style={{ flex: 1 }}>
@@ -545,13 +545,13 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
         <Portal>
           <div
             onClick={() => { if (!deleting) setShowDelete(false) }}
-            style={{ position: 'fixed', inset: 0, zIndex: 220, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'fadeIn 0.2s ease' }}
+            style={{ position: 'fixed', inset: 0, zIndex: 220, background: 'var(--scrim)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'fadeIn 0.2s ease' }}
           >
             <div
               onClick={e => e.stopPropagation()}
               style={{ width: '100%', maxWidth: 420, background: color.sheet, borderRadius: isMobile ? '28px 28px 0 0' : radius.sheet, padding: '26px 24px calc(env(safe-area-inset-bottom) + 24px)', boxShadow: '0 24px 52px rgba(42,36,24,0.30)', animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}
             >
-              <div style={{ width: 48, height: 48, borderRadius: 24, background: '#FBEDEB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+              <div style={{ width: 48, height: 48, borderRadius: 24, background: color.dangerBg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
                 <span style={{ fontSize: 24, lineHeight: 1 }}>⚠️</span>
               </div>
               <h2 style={{ margin: 0, fontFamily: font.display, fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', color: color.ink }}>
@@ -572,7 +572,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
                 onKeyDown={e => { if (e.key === 'Enter') handleDeleteAccount() }}
               />
               {deleteError && (
-                <div style={{ marginTop: 12, background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: radius.sm, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, lineHeight: 1.45 }}>
+                <div style={{ marginTop: 12, background: color.dangerBg, border: `1px solid ${color.dangerBorder}`, borderRadius: radius.sm, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, lineHeight: 1.45 }}>
                   {deleteError}
                 </div>
               )}

@@ -187,7 +187,7 @@ function NewMatchModal({
   }
 
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 100, display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'fadeIn 0.2s ease' }}>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'var(--scrim)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 100, display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'fadeIn 0.2s ease' }}>
       <div onClick={e => e.stopPropagation()} style={{ background: color.sheet, borderRadius: isMobile ? '28px 28px 0 0' : radius.sheet, width: '100%', maxWidth: 520, maxHeight: isMobile ? '92vh' : '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 24px 52px rgba(42,36,24,0.22)', animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px 16px', borderBottom: `1px solid ${color.border}`, flexShrink: 0 }}>
@@ -200,7 +200,7 @@ function NewMatchModal({
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
           {error && (
-            <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: radius.sm, padding: '10px 14px', fontSize: 13, color: color.dangerDeep }}>
+            <div style={{ background: color.dangerBg, border: `1px solid ${color.dangerBorder}`, borderRadius: radius.sm, padding: '10px 14px', fontSize: 13, color: color.dangerDeep }}>
               {error}
             </div>
           )}
@@ -555,7 +555,7 @@ function ScoringModal({
           )}
 
           {error && (
-            <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: radius.sm, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, marginBottom: 14 }}>{error}</div>
+            <div style={{ background: color.dangerBg, border: `1px solid ${color.dangerBorder}`, borderRadius: radius.sm, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, marginBottom: 14 }}>{error}</div>
           )}
 
           {/* Score card — pine hero */}
@@ -913,7 +913,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
       </div>
 
       {error && (
-        <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: radius.sm, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, marginBottom: 20 }}>{error}</div>
+        <div style={{ background: color.dangerBg, border: `1px solid ${color.dangerBorder}`, borderRadius: radius.sm, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, marginBottom: 20 }}>{error}</div>
       )}
 
       <button

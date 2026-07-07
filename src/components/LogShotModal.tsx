@@ -215,7 +215,7 @@ export default function LogShotModal({ open, preclub, shots, onClose, onSave, is
     <div
       ref={overlayRef}
       onClick={onClose}
-      style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}
+      style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'var(--scrim)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}
     >
       <div
         ref={sheetRef}

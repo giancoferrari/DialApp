@@ -194,7 +194,7 @@ export default function AuthScreen({ onShowLegal }: Props) {
 
   const errorBox = error && (
     <div style={{
-      background: '#FBEDEB', border: '1px solid #EFCBC5',
+      background: color.dangerBg, border: `1px solid ${color.dangerBorder}`,
       borderRadius: 10, padding: '11px 14px',
       fontSize: 13, lineHeight: 1.45, color: color.dangerDeep, marginBottom: 16,
     }}>

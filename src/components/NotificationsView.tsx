@@ -151,7 +151,7 @@ export default function NotificationsView({ userId, isMobile = false, onCountCha
       </div>
 
       {error && (
-        <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: 12, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, marginBottom: 20 }}>
+        <div style={{ background: color.dangerBg, border: `1px solid ${color.dangerBorder}`, borderRadius: 12, padding: '10px 14px', fontSize: 13, color: color.dangerDeep, marginBottom: 20 }}>
           {error}
         </div>
       )}

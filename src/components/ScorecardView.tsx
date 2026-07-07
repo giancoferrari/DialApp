@@ -569,7 +569,7 @@ export default function ScorecardView({
     transition: 'background 0.15s',
   })
   const errorBox: React.CSSProperties = {
-    background: '#FBEDEB', border: '1px solid #EFCBC5',
+    background: color.dangerBg, border: `1px solid ${color.dangerBorder}`,
     borderRadius: radius.sm, padding: '12px 16px', fontSize: 13, color: color.dangerDeep, marginTop: 16,
   }
 
@@ -1358,7 +1358,7 @@ export default function ScorecardView({
               { label: 'Bogeys', count: scoreCounts.bogey, color: color.orange },
               { label: 'Double+', count: scoreCounts.double, color: color.danger },
             ].filter(x => x.count > 0).map(x => (
-              <div key={x.label} style={{ background: x.color + '18', border: `1px solid ${x.color}40`, borderRadius: radius.pill, padding: '6px 14px', display: 'flex', gap: 6, alignItems: 'center' }}>
+              <div key={x.label} style={{ background: `color-mix(in srgb, ${x.color} 9%, transparent)`, border: `1px solid color-mix(in srgb, ${x.color} 25%, transparent)`, borderRadius: radius.pill, padding: '6px 14px', display: 'flex', gap: 6, alignItems: 'center' }}>
                 <span style={{ fontFamily: font.display, fontSize: 16, fontWeight: 700, color: x.color }}>{x.count}</span>
                 <span style={{ fontSize: 12.5, color: color.inkSoft }}>{x.label}</span>
               </div>

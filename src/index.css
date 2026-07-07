@@ -2,6 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Design tokens as CSS custom properties ──────────────────
+   Single source of truth for color is still src/lib/tokens.ts — every
+   color value there is a `var(--c-x)` reference into this block, so
+   components never change when a theme is added. :root holds the light
+   (default) values; [data-theme="dark"] overrides them (see the dark-mode
+   section near the bottom of this file). Naming: --c-<tokenKeyInKebabCase>,
+   e.g. color.greenDeep -> --c-green-deep. */
+:root {
+  --c-green: #12371F;
+  --c-green-deep: #0C2A17;
+  --c-green-dark: #0A2413;
+  --c-green-mid: #356D3D;
+  --c-sage: #7D9667;
+  --c-sage-light: #DDE8D3;
+  --c-green-tint: #E3ECD8;
+
+  --c-cream: #F8F3E7;
+  --c-cream-deep: #EFE7D4;
+  --c-sand: #F1EBDB;
+  --c-sheet: #FFFAF0;
+  --c-card: #FFFFFF;
+  --c-white: #FFFFFF;
+
+  --c-ink: #0B0D0A;
+  --c-ink-soft: #3D423C;
+  --c-muted: #5C625A;
+  --c-faint: #8A9085;
+  --c-on-green: #FFFAF1;
+
+  --c-border: #E6DFCC;
+  --c-border-strong: #D3CBB5;
+
+  --c-orange: #C86718;
+  --c-orange-deep: #9E4F0E;
+  --c-sky: #9FCFD7;
+  --c-gold: #B08828;
+
+  --c-birdie: #3E7A4E;
+  --c-positive: #356D3D;
+  --c-danger: #BD3A2D;
+  --c-danger-deep: #8C2A21;
+  --c-danger-bg: #FBEDEB;
+  --c-danger-border: #EFCBC5;
+
+  --c-label-text: #30332F; /* type.label's eyebrow color — close to but distinct from --c-ink */
+
+  --scrim: rgba(23,26,23,0.45);
+
+  --shadow-sm: 0 8px 14px rgba(41,35,21,0.09);
+  --shadow-md: 0 10px 22px rgba(42,36,24,0.13);
+  --shadow-lg: 0 24px 52px rgba(42,36,24,0.22);
+
+  --glass-bg: linear-gradient(145deg, rgba(255,255,255,0.7), rgba(247,241,226,0.62)), rgba(255,250,239,0.76);
+  --glass-border: 1px solid rgba(255,255,255,0.76);
+  --glass-shadow: 0 8px 14px rgba(42,36,24,0.13);
+}
+
 /* ── Base reset ────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -9,7 +66,7 @@ html { scroll-behavior: smooth; }
 
 html {
   height: 100%;
-  background: #F8F3E7; /* pre-React fallback, matches the app background */
+  background: var(--c-cream);
 }
 
 body {
@@ -19,7 +76,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: transparent;
-  color: #0B0D0A;
+  color: var(--c-ink);
   min-height: 100vh;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
@@ -38,8 +95,8 @@ body {
 /* ── Scrollbar ──────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #D3CBB5; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #8A9085; }
+::-webkit-scrollbar-thumb { background: var(--c-border-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--c-faint); }
 
 /* ── Input resets ───────────────────────────────────────────── */
 input, button, textarea, select { font-family: inherit; }
@@ -49,12 +106,12 @@ input:focus, textarea:focus, select:focus { outline: none; }
 /* Real, consistent focus ring on inputs — soft green halo (layers over any
    inline border-color the component sets on focus). */
 input:focus-visible, textarea:focus-visible, select:focus-visible {
-  box-shadow: 0 0 0 3px rgba(18, 55, 31, 0.16);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-green) 16%, transparent);
 }
 
 /* Accessible focus ring for keyboard navigation (not mouse) */
 button:focus-visible {
-  outline: 2px solid #12371F;
+  outline: 2px solid var(--c-green);
   outline-offset: 2px;
 }
 

@@ -84,7 +84,7 @@ function SetNewPasswordModal() {
 
   return (
     <Portal>
-      <div style={{ position: 'fixed', inset: 0, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, animation: 'fadeIn 0.2s ease' }}>
+      <div style={{ position: 'fixed', inset: 0, background: 'var(--scrim)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, animation: 'fadeIn 0.2s ease' }}>
         <div style={{ background: color.white, borderRadius: radius.sheet, padding: '32px 32px 28px', width: '100%', maxWidth: 420, boxShadow: '0 24px 52px rgba(42,36,24,0.22)', animation: 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}>
           <DialWordmark size={26} />
           {done ? (
@@ -124,7 +124,7 @@ function SetNewPasswordModal() {
                   onBlur={e => { e.currentTarget.style.borderColor = confirm && confirm !== password ? color.danger : color.borderStrong }}
                 />
                 {error && (
-                  <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: radius.sm, padding: '10px 14px', fontSize: 13, color: color.dangerDeep }}>
+                  <div style={{ background: color.dangerBg, border: `1px solid ${color.dangerBorder}`, borderRadius: radius.sm, padding: '10px 14px', fontSize: 13, color: color.dangerDeep }}>
                     {error}
                   </div>
                 )}

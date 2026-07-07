@@ -53,7 +53,7 @@ function AddClubModal({ onAdd, onClose, isMobile = false }: AddClubModalProps) {
 
   return (
     <div
-      style={{ position: 'fixed', inset: 0, background: 'rgba(23,26,23,0.45)', backdropFilter: 'blur(8px)', zIndex: 200, display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 20, animation: 'fadeIn 0.2s ease' }}
+      style={{ position: 'fixed', inset: 0, background: 'var(--scrim)', backdropFilter: 'blur(8px)', zIndex: 200, display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 20, animation: 'fadeIn 0.2s ease' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
       <div style={{ background: color.white, borderRadius: isMobile ? '28px 28px 0 0' : radius.sheet, padding: '28px 28px 24px', width: '100%', maxWidth: 420, boxShadow: elevation.lg, animation: isMobile ? 'slideUp 0.34s cubic-bezier(0.22, 1, 0.36, 1)' : 'scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)' }}>
@@ -88,7 +88,7 @@ function AddClubModal({ onAdd, onClose, isMobile = false }: AddClubModalProps) {
             ))}
           </select>
           {error && (
-            <div style={{ background: '#FBEDEB', border: '1px solid #EFCBC5', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: color.dangerDeep }}>
+            <div style={{ background: color.dangerBg, border: `1px solid ${color.dangerBorder}`, borderRadius: 10, padding: '10px 14px', fontSize: 13, color: color.dangerDeep }}>
               {error}
             </div>
           )}
