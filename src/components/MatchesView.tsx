@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { Match, Wallet, PublicProfile, GameMode } from '../types'
 import { fetchMatches, createMatch, acceptMatchInvite, declineMatchInvite, activateMatch, upsertScore, completeMatch, cancelMatch, fetchMatchRealtime } from '../lib/matches'
-import { fetchOrCreateWallet, topUpWallet, withdrawFromWallet } from '../lib/wallet'
+import { fetchOrCreateWallet, topUpWallet } from '../lib/wallet'
 import { fetchFriendships, fetchProfilesForIds } from '../lib/friends'
 import { supabase } from '../lib/supabase'
 import { CloseIcon, TrophyIcon, PlusIcon } from './Icons'
@@ -643,7 +643,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
   const [showNew,       setShowNew]       = useState(false)
   const [scoring,       setScoring]       = useState<Match | null>(null)
   const [walletInput,   setWalletInput]   = useState('')
-  const [walletAction,  setWalletAction]  = useState<'add' | 'withdraw' | null>(null)
+  const [addingFunds,   setAddingFunds]   = useState(false)
   const [walletLoading, setWalletLoading] = useState(false)
   const [error,         setError]         = useState<string | null>(null)
   const matchesKey = ['matchesData', userId]
@@ -683,11 +683,9 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
     if (!amount) return
     setWalletLoading(true)
     try {
-      const w = walletAction === 'add'
-        ? await topUpWallet(userId, amount)
-        : await withdrawFromWallet(userId, amount)
-      patch(d => ({ ...d, wallet: w })); setWalletInput(''); setWalletAction(null)
-      toast(walletAction === 'add' ? `Added $${amount}` : `Withdrew $${amount}`)
+      const w = await topUpWallet(userId, amount)
+      patch(d => ({ ...d, wallet: w })); setWalletInput(''); setAddingFunds(false)
+      toast(`Added $${amount}`)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Transaction failed.')
     } finally { setWalletLoading(false) }
@@ -839,24 +837,24 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
 
         {wallet && (
           <div style={{ background: color.green, borderRadius: radius.lg, boxShadow: '0 10px 26px rgba(58,48,28,0.07)', padding: '18px 20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: walletAction ? 14 : 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: addingFunds ? 14 : 0 }}>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 500, color: ON_PINE_SOFT, marginBottom: 4 }}>Wallet balance</div>
                 <div style={{ ...type.stat, fontSize: 30, color: color.onGreen }}>
                   ${wallet.balance.toLocaleString()}<span style={{ fontSize: 13, color: ON_PINE_FAINT, fontWeight: 400, marginLeft: 4 }}>USD</span>
                 </div>
+                <div style={{ fontSize: 12, color: ON_PINE_FAINT, marginTop: 5 }}>Virtual balance · for friendly wagers</div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={() => setWalletAction(walletAction === 'add' ? null : 'add')} style={{ background: color.white, color: color.green, border: 'none', borderRadius: radius.sm, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: font.body }}>Add</button>
-                <button onClick={() => setWalletAction(walletAction === 'withdraw' ? null : 'withdraw')} style={{ background: 'rgba(255,255,255,0.12)', color: color.onGreen, border: '1px solid rgba(255,255,255,0.16)', borderRadius: radius.sm, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: font.body }}>Withdraw</button>
+                <button onClick={() => setAddingFunds(v => !v)} style={{ background: color.white, color: color.green, border: 'none', borderRadius: radius.sm, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: font.body }}>Add</button>
               </div>
             </div>
-            {walletAction && (
+            {addingFunds && (
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <span style={{ fontSize: 16, color: color.onGreen, fontWeight: 500 }}>$</span>
-                <input type="number" min="1" max="10000" value={walletInput} onChange={e => setWalletInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleWalletSubmit() }} placeholder={walletAction === 'add' ? 'Amount to add (max $10,000)' : 'Amount to withdraw'} autoFocus style={{ flex: 1, background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.16)', borderRadius: radius.sm, padding: '10px 12px', fontSize: 16, color: color.onGreen, outline: 'none', fontFamily: font.body }} />
+                <input type="number" min="1" max="10000" value={walletInput} onChange={e => setWalletInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleWalletSubmit() }} placeholder="Amount to add (max $10,000)" autoFocus style={{ flex: 1, background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.16)', borderRadius: radius.sm, padding: '10px 12px', fontSize: 16, color: color.onGreen, outline: 'none', fontFamily: font.body }} />
                 <button onClick={handleWalletSubmit} disabled={walletLoading} style={{ background: color.white, color: color.green, border: 'none', borderRadius: radius.sm, padding: '10px 16px', fontSize: 13, fontWeight: 600, cursor: walletLoading ? 'not-allowed' : 'pointer', fontFamily: font.body, whiteSpace: 'nowrap' }}>
-                  {walletLoading ? '…' : walletAction === 'add' ? 'Add funds' : 'Withdraw'}
+                  {walletLoading ? '…' : 'Add funds'}
                 </button>
               </div>
             )}
