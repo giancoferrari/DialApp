@@ -1,6 +1,8 @@
 // Theme plumbing — light/dark/system, backed by CSS custom properties (see
 // index.css :root / [data-theme="dark"]) so components never read this
 // directly; they just keep using lib/tokens.ts's color.* exports.
+import { setNativeTheme } from './native'
+
 export type ThemePref = 'light' | 'dark' | 'system'
 export type ResolvedTheme = 'light' | 'dark'
 
@@ -36,6 +38,7 @@ export function applyTheme(pref: ThemePref) {
   const resolved = resolve(pref)
   document.documentElement.dataset.theme = resolved
   setMetaThemeColor(resolved)
+  void setNativeTheme(resolved)
 }
 
 let systemListenerAttached = false

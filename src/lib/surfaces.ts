@@ -12,18 +12,20 @@ import { color, radius } from './tokens'
 // ─────────────────────────────────────────────────────────────────────────
 
 export const card: CSSProperties = {
-  background: '#FFFFFF',
+  background: color.card,
   border: `1px solid ${color.border}`,
   borderRadius: radius.lg,
 }
 
 // ONE per screen max — the hero/stat moment (rank card, estimated-handicap
-// card, wallet card, identity card).
+// card, wallet card, identity card). `--c-raised`/`--raised-border`/
+// `--raised-shadow` live in index.css (not tokens.color — this is a surface
+// recipe, not a semantic color) with a dark counterpart.
 export const raised: CSSProperties = {
-  background: '#FFFEFB',
-  border: '1px solid rgba(120,108,78,0.08)',
+  background: 'var(--c-raised)',
+  border: '1px solid var(--raised-border)',
   borderRadius: radius.lg,
-  boxShadow: '0 10px 26px rgba(58,48,28,0.07)',
+  boxShadow: 'var(--raised-shadow)',
 }
 
 export const well: CSSProperties = {

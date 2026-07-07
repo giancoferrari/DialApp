@@ -10,6 +10,7 @@ export default function CourseHeroArt() {
       viewBox="0 0 390 275"
       role="img"
       aria-label="Illustrated coastal golf hole with ocean, headlands, trees and a red flag"
+      className="course-hero-media"
       style={{ display: 'block', width: '100%', height: 'auto', aspectRatio: '390 / 275' }}
     >
       <defs>

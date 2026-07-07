@@ -382,7 +382,7 @@ function AppShell() {
       {/* ── Background: warm cream with a soft top light (prototype screen) ── */}
       <div aria-hidden="true" style={{
         position: 'fixed', inset: 0,
-        background: 'radial-gradient(circle at 63% 0%, rgba(255,255,255,0.72), transparent 22rem), linear-gradient(180deg, #FFFAF0 0%, #F8F3E7 45%, #F6EFDF 100%)',
+        background: 'var(--app-bg)',
         zIndex: 0,
         pointerEvents: 'none',
       }} />

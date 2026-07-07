@@ -41,6 +41,7 @@ export default function CourseHero({ aspect = '390 / 318', fadeStart = 55 }: Pro
         <img
           src={HERO_SRC}
           alt=""
+          className="course-hero-media"
           onError={() => setFailed(true)}
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 62%', display: 'block' }}
         />

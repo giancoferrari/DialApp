@@ -25,6 +25,17 @@ export async function initNative(): Promise<void> {
   } catch { /* plugin unavailable */ }
 }
 
+// Called from lib/theme.ts's applyTheme() so the native status bar tracks
+// the app's resolved theme — mirrors initNative()'s Style.Light-for-light
+// convention above.
+export async function setNativeTheme(theme: 'light' | 'dark'): Promise<void> {
+  if (!Capacitor.isNativePlatform()) return
+  try {
+    const { StatusBar, Style } = await import('@capacitor/status-bar')
+    await StatusBar.setStyle({ style: theme === 'dark' ? Style.Dark : Style.Light })
+  } catch { /* plugin unavailable */ }
+}
+
 // Light haptic tap — safe to call anywhere; no-ops on web.
 export async function tapHaptic(): Promise<void> {
   if (!Capacitor.isNativePlatform()) return

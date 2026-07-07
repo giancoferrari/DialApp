@@ -666,7 +666,7 @@ export default function ScorecardView({
             <span style={{ ...sectionLabel, color: color.orange }}>Featured</span>
             <button
               onClick={handleSelectSantaMaria} disabled={saving}
-              style={{ width: '100%', background: color.green, border: 'none', borderRadius: radius.lg, padding: '22px 24px', cursor: saving ? 'not-allowed' : 'pointer', textAlign: 'left', transition: 'background 0.15s', boxShadow: '0 10px 26px rgba(58,48,28,0.07)' }}
+              style={{ width: '100%', background: color.green, border: 'none', borderRadius: radius.lg, padding: '22px 24px', cursor: saving ? 'not-allowed' : 'pointer', textAlign: 'left', transition: 'background 0.15s', boxShadow: 'var(--raised-shadow)' }}
               onMouseEnter={e => { if (!saving) e.currentTarget.style.background = color.greenDeep }}
               onMouseLeave={e => { e.currentTarget.style.background = color.green }}
             >
@@ -1024,7 +1024,7 @@ export default function ScorecardView({
 
           <button
             onClick={() => handleStartRound(course, 'score-stats')} disabled={saving}
-            style={{ background: color.green, border: `1px solid ${color.green}`, borderRadius: radius.lg, padding: '22px 24px', cursor: saving ? 'not-allowed' : 'pointer', textAlign: 'left', transition: 'background 0.15s', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 26px rgba(58,48,28,0.07)' }}
+            style={{ background: color.green, border: `1px solid ${color.green}`, borderRadius: radius.lg, padding: '22px 24px', cursor: saving ? 'not-allowed' : 'pointer', textAlign: 'left', transition: 'background 0.15s', position: 'relative', overflow: 'hidden', boxShadow: 'var(--raised-shadow)' }}
             onMouseEnter={e => { if (!saving) e.currentTarget.style.background = color.greenDeep }}
             onMouseLeave={e => { e.currentTarget.style.background = color.green }}
           >

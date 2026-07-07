@@ -72,6 +72,31 @@
   --nav-glass-border: 1px solid rgba(42,36,24,0.10);
   --nav-glass-shadow: 0 14px 32px rgba(40,34,20,0.18), 0 2px 8px rgba(40,34,20,0.06);
   --header-glass: rgba(255,250,239,0.82);
+
+  /* DialRing's tick-mark track (only override call site is ProfileView,
+     which passes its own color — this is just the unused-in-practice
+     default, kept correct for future call sites). */
+  --ring-track: rgba(0,0,0,0.12);
+
+  /* Skeleton shimmer gradient. */
+  --skeleton-shimmer: linear-gradient(100deg, rgba(23,26,23,0.05) 28%, rgba(23,26,23,0.10) 50%, rgba(23,26,23,0.05) 72%);
+
+  /* Toast — a floating dark chip in light mode; inverts to a light chip in
+     dark mode so it doesn't disappear against the dark cream page. */
+  --toast-bg: rgba(23,26,23,0.92);
+  --toast-bg-error: rgba(140,42,33,0.94);
+  --toast-fg: #F2F5F1;
+  --toast-accent: #7FB89A;
+  --toast-shadow: 0 10px 34px rgba(23,26,23,0.25);
+
+  /* surfaces.raised — the ONE hero card per screen (rank/handicap/wallet/
+     identity). Its own recipe, slightly warmer/lighter than a plain card. */
+  --c-raised: #FFFEFB;
+  --raised-border: rgba(120,108,78,0.08);
+  --raised-shadow: 0 10px 26px rgba(58,48,28,0.07);
+
+  /* App.tsx's fixed full-screen background wash (behind all content). */
+  --app-bg: radial-gradient(circle at 63% 0%, rgba(255,255,255,0.72), transparent 22rem), linear-gradient(180deg, #FFFAF0 0%, #F8F3E7 45%, #F6EFDF 100%);
 }
 
 /* ── Dark theme ("dark clubhouse", not pure black) ─────────────────────────
@@ -133,6 +158,22 @@
   --nav-glass-border: 1px solid rgba(255,255,255,0.08);
   --nav-glass-shadow: 0 14px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2);
   --header-glass: rgba(27,31,25,0.82);
+
+  --ring-track: rgba(255,255,255,0.14);
+
+  --skeleton-shimmer: linear-gradient(100deg, rgba(255,255,255,0.04) 28%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 72%);
+
+  --toast-bg: rgba(242,239,230,0.94);
+  --toast-bg-error: rgba(217,95,79,0.94);
+  --toast-fg: #171A17;
+  --toast-accent: #2E6039;
+  --toast-shadow: 0 10px 34px rgba(0,0,0,0.45);
+
+  --c-raised: #242820;
+  --raised-border: rgba(255,255,255,0.06);
+  --raised-shadow: 0 10px 26px rgba(0,0,0,0.3);
+
+  --app-bg: radial-gradient(circle at 63% 0%, rgba(255,255,255,0.05), transparent 22rem), linear-gradient(180deg, #171B15 0%, #141712 45%, #10130E 100%);
 }
 
 /* ── Base reset ────────────────────────────────────────────── */
@@ -156,6 +197,13 @@ body {
   min-height: 100vh;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+}
+
+/* CourseHero's photo/SVG (Home + Profile banner) is painted with fixed warm
+   colors, not tokens — in dark mode it needs to sit quietly behind the dark
+   cream fade instead of blowing out at full brightness. */
+:root[data-theme="dark"] .course-hero-media {
+  filter: brightness(0.82) saturate(0.9);
 }
 
 /* Numbers that sit in columns (scores, handicaps, yardages) align cleanly. */

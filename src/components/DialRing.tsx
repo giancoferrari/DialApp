@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 // animates from 0 on mount unless reduced-motion is requested.
 // ─────────────────────────────────────────────────────────────────────────
 export default function DialRing({
-  progress, size = 66, stroke = 3.5, color, trackColor = 'rgba(0,0,0,0.12)',
+  progress, size = 66, stroke = 3.5, color, trackColor = 'var(--ring-track)',
   ticks = 48, children,
 }: {
   progress: number // 0..1

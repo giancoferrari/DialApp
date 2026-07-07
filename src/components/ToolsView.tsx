@@ -48,7 +48,7 @@ export default function ToolsView({ onNavigate, isMobile = false }: Props) {
               transition: 'background 0.18s, transform 0.16s cubic-bezier(0.22,1,0.36,1)',
             }}
             onMouseEnter={e => { e.currentTarget.style.background = color.sand }}
-            onMouseLeave={e => { e.currentTarget.style.background = item.feature ? '#FFFEFB' : color.white }}
+            onMouseLeave={e => { e.currentTarget.style.background = item.feature ? 'var(--c-raised)' : color.white }}
             onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.98)' }}
             onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
             onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.98)' }}

@@ -13,9 +13,9 @@ export function useToast() {
 }
 
 const STYLES: Record<ToastType, { bg: string; fg: string }> = {
-  success: { bg: 'rgba(23,26,23,0.92)',  fg: '#F2F5F1' },
-  error:   { bg: 'rgba(140,42,33,0.94)', fg: '#F2F5F1' },
-  info:    { bg: 'rgba(23,26,23,0.92)',  fg: '#F2F5F1' },
+  success: { bg: 'var(--toast-bg)',       fg: 'var(--toast-fg)' },
+  error:   { bg: 'var(--toast-bg-error)', fg: 'var(--toast-fg)' },
+  info:    { bg: 'var(--toast-bg)',       fg: 'var(--toast-fg)' },
 }
 
 function ToastCard({ message, type }: ToastItem) {
@@ -28,13 +28,13 @@ function ToastCard({ message, type }: ToastItem) {
       backdropFilter: 'blur(20px) saturate(160%)', WebkitBackdropFilter: 'blur(20px) saturate(160%)',
       borderRadius: 12, padding: '11px 16px',
       fontFamily: font.body, fontSize: 13, fontWeight: 500,
-      maxWidth: 420, boxShadow: '0 10px 34px rgba(23,26,23,0.25)',
+      maxWidth: 420, boxShadow: 'var(--toast-shadow)',
       animation: 'toastIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1)',
     }}>
       <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         {type === 'error'
-          ? <CloseIcon size={13} color="#F2F5F1" />
-          : <CheckIcon size={13} color="#7FB89A" />}
+          ? <CloseIcon size={13} color="var(--toast-fg)" />
+          : <CheckIcon size={13} color="var(--toast-accent)" />}
       </span>
       <span style={{ lineHeight: 1.35 }}>{message}</span>
     </div>

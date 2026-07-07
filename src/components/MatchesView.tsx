@@ -559,7 +559,7 @@ function ScoringModal({
           )}
 
           {/* Score card — pine hero */}
-          <div style={{ background: color.green, borderRadius: radius.lg, boxShadow: '0 10px 26px rgba(58,48,28,0.07)', padding: '18px 20px', marginBottom: 16 }}>
+          <div style={{ background: color.green, borderRadius: radius.lg, boxShadow: 'var(--raised-shadow)', padding: '18px 20px', marginBottom: 16 }}>
             {/* Tee + date */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <div style={{ width: 8, height: 8, borderRadius: 4, background: liveMatch.courseName === SANTA_MARIA.name ? SANTA_MARIA.teeColor : ON_PINE_SOFT, flexShrink: 0 }} />
@@ -886,7 +886,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
         </div>
 
         {wallet && (
-          <div style={{ background: color.green, borderRadius: radius.lg, boxShadow: '0 10px 26px rgba(58,48,28,0.07)', padding: '18px 20px' }}>
+          <div style={{ background: color.green, borderRadius: radius.lg, boxShadow: 'var(--raised-shadow)', padding: '18px 20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: addingFunds ? 14 : 0 }}>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 500, color: ON_PINE_SOFT, marginBottom: 4 }}>Wallet balance</div>

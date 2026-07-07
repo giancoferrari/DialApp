@@ -151,10 +151,10 @@ export default function ProfileView({ profile, meId, viewUserId, userEmail, isMo
       <section style={{ padding: isMobile ? 0 : `12px ${px}px 0` }}>
         <div style={{
           position: 'relative', overflow: 'hidden',
-          background: isMobile ? color.card : '#FFFEFB',
-          border: isMobile ? 'none' : '1px solid rgba(120,108,78,0.08)',
+          background: isMobile ? color.card : 'var(--c-raised)',
+          border: isMobile ? 'none' : '1px solid var(--raised-border)',
           borderRadius: isMobile ? 0 : radius.lg,
-          boxShadow: isMobile ? 'none' : '0 10px 26px rgba(58,48,28,0.07)',
+          boxShadow: isMobile ? 'none' : 'var(--raised-shadow)',
         }}>
           {/* Coastal cover banner (same illustration as Home), fading into the card */}
           <div style={{ position: 'relative' }}>

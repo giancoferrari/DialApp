@@ -275,7 +275,7 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
       )}
 
       {/* ── Profile header card (dark) — the screen's hero moment: pine bg kept, radius/shadow from surfaces.raised ── */}
-      <div style={{ background: color.green, borderRadius: radius.lg, boxShadow: '0 10px 26px rgba(58,48,28,0.07)', padding: '24px 22px', display: 'flex', alignItems: 'center', gap: 18 }}>
+      <div style={{ background: color.green, borderRadius: radius.lg, boxShadow: 'var(--raised-shadow)', padding: '24px 22px', display: 'flex', alignItems: 'center', gap: 18 }}>
         {/* Avatar */}
         <div style={{ position: 'relative', flexShrink: 0 }}>
           <div
