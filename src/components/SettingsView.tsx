@@ -16,18 +16,12 @@ import { card as cardSurface } from '../lib/surfaces'
 type Prefs = {
   defaultHoles: 9 | 18
   units: 'yards' | 'meters'
-  showHandicap: boolean
-  showRank: boolean
-  visibility: 'Public' | 'Friends only' | 'Private'
   teePreference: string
 }
 
 const DEFAULT_PREFS: Prefs = {
   defaultHoles: 18,
   units: 'yards',
-  showHandicap: true,
-  showRank: true,
-  visibility: 'Public',
   teePreference: 'white',
 }
 
@@ -85,18 +79,6 @@ function Row({ label, description, last, children }: { label: string; descriptio
       </div>
       {children}
     </div>
-  )
-}
-
-function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <button
-      onClick={() => onChange(!value)}
-      aria-pressed={value}
-      style={{ width: 44, height: 26, borderRadius: 13, background: value ? color.green : color.borderStrong, border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.22s ease', padding: 0, flexShrink: 0 }}
-    >
-      <div style={{ width: 20, height: 20, borderRadius: 10, background: color.white, position: 'absolute', top: 3, left: value ? 21 : 3, transition: 'left 0.22s ease', boxShadow: '0 1px 3px rgba(0,0,0,0.18)' }} />
-    </button>
   )
 }
 
@@ -527,20 +509,6 @@ export default function SettingsView({ profile, userEmail, userId, onProfileSave
           onSave={v => save({ goalHandicap: v ? parseFloat(v) : null })}
           last
         />
-      </Card>
-
-      {/* ── PRIVACY ── */}
-      <SectionLabel label="Privacy" />
-      <Card>
-        <Row label="Show handicap on profile" description="Other players can see your handicap index">
-          <Toggle value={prefs.showHandicap} onChange={v => updatePref({ showHandicap: v })} />
-        </Row>
-        <Row label="Show rank publicly" description="Display your tier and points to others">
-          <Toggle value={prefs.showRank} onChange={v => updatePref({ showRank: v })} />
-        </Row>
-        <Row label="Profile visibility" description="Who can find and view your profile" last>
-          <Segment options={['Public', 'Friends only', 'Private']} value={prefs.visibility} onChange={v => updatePref({ visibility: v as Prefs['visibility'] })} />
-        </Row>
       </Card>
 
       {/* ── ABOUT ── */}
