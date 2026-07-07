@@ -43,10 +43,10 @@ export async function createPost(userId: string, imageUrl: string, caption: stri
   }
 }
 
-export async function createRoundPost(userId: string, meta: RoundRecapMeta, caption = ''): Promise<void> {
+export async function createRoundPost(userId: string, meta: RoundRecapMeta, caption = '', imageUrl: string | null = null): Promise<void> {
   const { error } = await supabase
     .from('posts')
-    .insert({ user_id: userId, kind: 'round', image_url: null, meta, caption: caption.trim() || null })
+    .insert({ user_id: userId, kind: 'round', image_url: imageUrl, meta, caption: caption.trim() || null })
   if (error) throw error
 }
 

@@ -23,7 +23,7 @@ function GreenMotif({ size = 210 }: { size?: number }) {
 }
 
 type Props =
-  | { kind: 'round'; meta: RoundRecapMeta; variant: 'feed' | 'detail' | 'tile' }
+  | { kind: 'round'; meta: RoundRecapMeta; variant: 'feed' | 'detail' | 'tile'; imageUrl?: string | null }
   | { kind: 'match'; meta: MatchRecapMeta; variant: 'feed' | 'detail' | 'tile' }
 
 export default function RecapCard(props: Props) {
@@ -77,7 +77,7 @@ export default function RecapCard(props: Props) {
     )
   }
 
-  const { meta } = props
+  const { meta, imageUrl } = props
   const even      = meta.toPar === 0
   const under     = meta.toPar < 0
   const diffColor = even ? 'rgba(242,245,241,0.85)' : under ? '#9FD4B4' : '#E8C9A8'
@@ -86,6 +86,19 @@ export default function RecapCard(props: Props) {
 
   // ── Square tile for the profile grid ──
   if (variant === 'tile') {
+    // With a photo, the photo IS the tile — a small pine score chip overlays
+    // it (bottom-left) instead of the all-pine placeholder tile.
+    if (imageUrl) {
+      return (
+        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+          <img src={imageUrl} alt="" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+          <div style={{ position: 'absolute', left: 5, bottom: 5, display: 'flex', alignItems: 'baseline', gap: 4, background: GREEN, borderRadius: 12, padding: '4px 8px' }}>
+            <span style={{ fontFamily: font.display, fontSize: 13, fontWeight: 600, color: ON, fontVariantNumeric: 'tabular-nums' }}>{meta.score}</span>
+            <span style={{ fontFamily: font.display, fontSize: 10, fontWeight: 600, color: diffColor, fontVariantNumeric: 'tabular-nums' }}>{diffText}</span>
+          </div>
+        </div>
+      )
+    }
     return (
       <div style={{ position: 'relative', overflow: 'hidden', width: '100%', height: '100%', background: GREEN, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
         <div style={{ position: 'absolute', right: -34, bottom: -42, opacity: 0.08, pointerEvents: 'none' }}><GreenMotif size={130} /></div>

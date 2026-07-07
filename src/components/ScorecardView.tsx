@@ -2,9 +2,9 @@ import { useRef, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { saveCourse, deleteCourse } from '../lib/courses'
 import { createRound, upsertRoundHoles, deleteRound } from '../lib/rounds'
-import { createRoundPost } from '../lib/posts'
+import { createRoundPost, uploadPostImage } from '../lib/posts'
 import type { Course, Round, RoundHole, RoundRecapMeta } from '../types'
-import { CloseIcon, PlusIcon, ScorecardIcon, ChevronLeftIcon } from './Icons'
+import { CloseIcon, PlusIcon, ScorecardIcon, ChevronLeftIcon, CameraIcon } from './Icons'
 import EmptyState from './EmptyState'
 import CourseSearch from './CourseSearch'
 import PageHeader from './PageHeader'
@@ -431,8 +431,16 @@ export default function ScorecardView({
   const [phase, setPhase]         = useState<Phase>(() => autoStart ? { type: 'round_start' } : { type: 'history' })
   const [sharedRoundId, setSharedRoundId] = useState<string | null>(null)
   const [sharing, setSharing]     = useState(false)
+  const [shareFile,    setShareFile]    = useState<File | null>(null)
+  const [sharePreview, setSharePreview] = useState<string | null>(null)
+  const [shareCaption, setShareCaption] = useState('')
   const [saving, setSaving]       = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+
+  const openSummary = (round: Round, holes: RoundHole[]) => {
+    setShareFile(null); setSharePreview(null); setShareCaption('')
+    setPhase({ type: 'summary', round, holes })
+  }
 
   const today = new Date().toISOString().split('T')[0]
   const [roundDate, setRoundDate] = useState(today)
@@ -515,7 +523,7 @@ export default function ScorecardView({
       })))
       const finalRound = { ...round, roundHoles: saved }
       onRoundAdded(finalRound)
-      setPhase({ type: 'summary', round: finalRound, holes: saved })
+      openSummary(finalRound, saved)
     } catch (err: unknown) {
       setSaveError(err instanceof Error ? err.message : 'Failed to save round.')
     } finally { setSaving(false) }
@@ -616,7 +624,7 @@ export default function ScorecardView({
                         </div>
                       </div>
                     )}
-                    <button onClick={() => setPhase({ type: 'summary', round: r, holes: r.roundHoles })}
+                    <button onClick={() => openSummary(r, r.roundHoles)}
                       style={{ background: color.sand, border: `1px solid ${color.border}`, borderRadius: radius.sm, padding: '7px 14px', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: font.body, color: color.ink, flexShrink: 0 }}>
                       View
                     </button>
@@ -1221,9 +1229,23 @@ export default function ScorecardView({
     const shareRound = async () => {
       if (!user || sharing || isShared) return
       setSharing(true)
-      try { await createRoundPost(user.id, recapMeta); setSharedRoundId(round.id) }
+      try {
+        const imageUrl = shareFile ? await uploadPostImage(user.id, shareFile) : null
+        await createRoundPost(user.id, recapMeta, shareCaption, imageUrl)
+        setSharedRoundId(round.id)
+      }
       catch { /* ignore — feed degrades gracefully */ }
       finally { setSharing(false) }
+    }
+    const handleSharePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
+      if (!file) return
+      setShareFile(file)
+      setSharePreview(URL.createObjectURL(file))
+    }
+    const clearSharePhoto = () => {
+      if (sharePreview) URL.revokeObjectURL(sharePreview)
+      setShareFile(null); setSharePreview(null)
     }
 
     return (
@@ -1255,24 +1277,61 @@ export default function ScorecardView({
           </div>
         </div>
 
-        <button
-          onClick={shareRound}
-          disabled={sharing || isShared}
-          style={{
-            width: '100%', marginBottom: 20, borderRadius: radius.md, padding: '14px',
-            fontFamily: font.body, fontSize: 15, fontWeight: 600,
-            cursor: isShared ? 'default' : 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            background: isShared ? color.greenTint : color.green,
-            color: isShared ? color.positive : color.onGreen,
-            border: 'none',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          {isShared
-            ? <>✓ Shared to your feed</>
-            : sharing ? 'Sharing…' : <>Share this round to your feed</>}
-        </button>
+        {isShared ? (
+          <button
+            disabled
+            style={{
+              width: '100%', marginBottom: 20, borderRadius: radius.md, padding: '14px',
+              fontFamily: font.body, fontSize: 15, fontWeight: 600, cursor: 'default',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              background: color.greenTint, color: color.positive, border: 'none',
+            }}
+          >
+            ✓ Shared to your feed
+          </button>
+        ) : (
+          <div style={{ ...cardSurface, padding: '16px', marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              {sharePreview ? (
+                <div style={{ position: 'relative', flexShrink: 0 }}>
+                  <img src={sharePreview} alt="" style={{ width: 64, height: 64, borderRadius: radius.sm, objectFit: 'cover', display: 'block' }} />
+                  <button
+                    onClick={clearSharePhoto}
+                    aria-label="Remove photo"
+                    style={{ position: 'absolute', top: -6, right: -6, width: 20, height: 20, borderRadius: 10, background: color.ink, border: `1.5px solid ${color.sheet}`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                  >
+                    <CloseIcon size={9} color={color.sheet} />
+                  </button>
+                </div>
+              ) : (
+                <label style={{ width: 64, height: 64, borderRadius: radius.sm, border: `1.5px dashed ${color.borderStrong}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, cursor: 'pointer', flexShrink: 0, color: color.muted }}>
+                  <CameraIcon size={16} color={color.muted} />
+                  <span style={{ fontSize: 9, fontWeight: 600, fontFamily: font.body }}>Add photo</span>
+                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleSharePhoto} />
+                </label>
+              )}
+              <input
+                value={shareCaption}
+                onChange={e => setShareCaption(e.target.value)}
+                placeholder="Say something about the round…"
+                style={{ flex: 1, ...well, padding: '11px 13px', fontSize: 16, color: color.ink, outline: 'none', fontFamily: font.body }}
+              />
+            </div>
+            <button
+              onClick={shareRound}
+              disabled={sharing}
+              style={{
+                width: '100%', borderRadius: radius.md, padding: '14px',
+                fontFamily: font.body, fontSize: 15, fontWeight: 600,
+                cursor: sharing ? 'default' : 'pointer',
+                background: color.green, color: color.onGreen, border: 'none',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              {sharing ? 'Sharing…' : 'Share to feed'}
+            </button>
+          </div>
+        )}
 
         {statsMode === 'score-stats' && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: isMobile ? 8 : 12, marginBottom: 20 }}>

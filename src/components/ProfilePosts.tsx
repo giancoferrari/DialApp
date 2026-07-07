@@ -317,7 +317,10 @@ export function PostDetail({ post, meId, isMobile, authorProfile, canDelete, onC
 
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {post.kind === 'round' && post.meta
-            ? <RecapCard kind="round" meta={post.meta as RoundRecapMeta} variant="detail" />
+            ? <>
+                {post.imageUrl && <img src={post.imageUrl} alt="" decoding="async" style={{ width: '100%', display: 'block', aspectRatio: '4 / 3', objectFit: 'cover' }} />}
+                <RecapCard kind="round" meta={post.meta as RoundRecapMeta} variant="detail" />
+              </>
             : post.kind === 'match' && post.meta
             ? <RecapCard kind="match" meta={post.meta as MatchRecapMeta} variant="detail" />
             : <img src={post.imageUrl ?? ''} alt="" decoding="async" style={{ width: '100%', display: 'block', background: '#000' }} />}
@@ -454,7 +457,7 @@ export default function ProfilePosts({ targetUserId, meId, isMobile = false, can
           {posts.map(p => (
             <button key={p.id} onClick={() => setActive(p)} style={{ aspectRatio: '1', padding: 0, border: 'none', borderRadius: 6, overflow: 'hidden', cursor: 'pointer', background: '#000', position: 'relative' }}>
               {p.kind === 'round' && p.meta
-                ? <RecapCard kind="round" meta={p.meta as RoundRecapMeta} variant="tile" />
+                ? <RecapCard kind="round" meta={p.meta as RoundRecapMeta} variant="tile" imageUrl={p.imageUrl} />
                 : p.kind === 'match' && p.meta
                 ? <RecapCard kind="match" meta={p.meta as MatchRecapMeta} variant="tile" />
                 : <img src={p.imageUrl ?? ''} alt="" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}

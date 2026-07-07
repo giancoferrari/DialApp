@@ -250,7 +250,10 @@ export default function Feed({ userId, isMobile = false, onViewProfile }: Props)
           {/* Media — photo, round recap, or match recap (single tap opens, double tap likes) */}
           <button onClick={e => onMediaTap(post, e.timeStamp)} style={{ position: 'relative', display: 'block', width: '100%', padding: 0, border: 'none', background: post.kind === 'round' || post.kind === 'match' ? 'none' : '#000', cursor: 'pointer' }}>
             {post.kind === 'round' && post.meta
-              ? <RecapCard kind="round" meta={post.meta as RoundRecapMeta} variant="feed" />
+              ? <>
+                  {post.imageUrl && <img src={post.imageUrl} alt="" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', aspectRatio: '4 / 3', objectFit: 'cover' }} />}
+                  <RecapCard kind="round" meta={post.meta as RoundRecapMeta} variant="feed" />
+                </>
               : post.kind === 'match' && post.meta
               ? <RecapCard kind="match" meta={post.meta as MatchRecapMeta} variant="feed" />
               : <img src={post.imageUrl ?? ''} alt="" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', aspectRatio: '4 / 5', objectFit: 'cover' }} />}
