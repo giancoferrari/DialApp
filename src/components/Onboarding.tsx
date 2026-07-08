@@ -194,7 +194,7 @@ export default function Onboarding({ userId, existingProfile, onComplete, isMobi
         {/* ── WELCOME ── */}
         {step === 'welcome' && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ paddingTop: `calc(env(safe-area-inset-top) + ${space[6]}px)` }}><DialWordmark size={26} onDark /></div>
+            <div style={{ paddingTop: `calc(env(safe-area-inset-top) + ${space[6]}px)` }}><DialWordmark size={26} tint="#FFFFFF" /></div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <h1 style={{ margin: 0, fontFamily: font.display, fontSize: isMobile ? 40 : 52, lineHeight: 1.02, letterSpacing: '-0.04em', fontWeight: 700, color: color.cream }}>
                 Welcome to the clubhouse.
@@ -324,7 +324,7 @@ export default function Onboarding({ userId, existingProfile, onComplete, isMobi
         {/* ── FINISH ── */}
         {step === 'finish' && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ paddingTop: `calc(env(safe-area-inset-top) + ${space[6]}px)` }}><DialWordmark size={26} onDark /></div>
+            <div style={{ paddingTop: `calc(env(safe-area-inset-top) + ${space[6]}px)` }}><DialWordmark size={26} tint="#FFFFFF" /></div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start' }}>
               <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(159,212,180,0.16)', border: '1px solid rgba(159,212,180,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: space[5], animation: 'popIn 0.5s cubic-bezier(0.22,1,0.36,1)' }}>
                 <CheckIcon size={30} color="#9FD4B4" />

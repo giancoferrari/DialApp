@@ -85,8 +85,15 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
   // frosted (unless the dark hero tone is active).
   const mobileFrost = isMobile && scrolled && !dark
   const showFrost   = !dark && (mobileFrost || !isMobile)
+  // On mobile Home, before any scroll, the bar is transparent and sits
+  // directly on the (always-light) hero photo — so the logo/icons need a
+  // FIXED dark color there regardless of app theme, not the theme-aware
+  // `color.ink` (which flips light in dark mode and would vanish against
+  // the still-light photo). Once frosted (scrolled, or any other screen,
+  // or desktop), color.ink is correct again since it's over a themed surface.
+  const overHeroImage = !dark && isMobile && view === 'dashboard' && !scrolled
   const hoverWash = dark ? 'rgba(255,255,255,0.08)' : color.sand
-  const iconColor = dark ? 'rgba(255,250,241,0.85)' : color.ink
+  const iconColor = dark ? 'rgba(255,250,241,0.85)' : overHeroImage ? '#0B0D0A' : color.ink
   const iconActive = dark ? color.onGreen : color.orange
 
   // Borderless 40px icon button — quiet until hovered.
@@ -138,7 +145,7 @@ export default function TopNav({ view, onView, onLogShot, onLogRound, onPost, on
             onClick={() => onView('dashboard')}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0, display: 'flex' }}
           >
-            <DialWordmark size={isMobile ? 26 : 27} onDark={dark} />
+            <DialWordmark size={isMobile ? 26 : 27} tint={dark ? '#FFFFFF' : overHeroImage ? '#0B0D0A' : undefined} />
           </button>
 
           {/* Segmented nav — hidden on mobile (replaced by bottom bar) */}

@@ -252,7 +252,9 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
       <time style={{ display: 'block', color: '#3E653E', fontSize: 15, fontWeight: 600, letterSpacing: '-0.02em', fontFamily: font.body }}>
         {date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: TZ })}
       </time>
-      <h1 style={{ margin: '9px 0 0', color: color.ink, fontFamily: font.display, fontSize: isMobile ? 33 : 38, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.98, textWrap: 'balance' as never }}>
+      {/* Fixed dark ink, NOT the theme-aware color.ink — this heading always
+          sits over the (always-light) hero photo, regardless of app theme. */}
+      <h1 style={{ margin: '9px 0 0', color: '#0B0D0A', fontFamily: font.display, fontSize: isMobile ? 33 : 38, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.98, textWrap: 'balance' as never }}>
         {greetingFor(date)},<br />{firstName}.
       </h1>
     </>

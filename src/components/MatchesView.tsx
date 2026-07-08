@@ -808,7 +808,7 @@ export default function MatchesView({ userId, isMobile = false }: Props) {
     return (
       <div style={{
         ...(pine
-          ? { background: color.green, border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 10px 26px rgba(58,48,28,0.10)' }
+          ? { background: color.green, border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 10px 26px rgba(58,48,28,0.10)', borderRadius: radius.lg }
           : cardSurface),
         overflow: 'hidden',
       }}>
