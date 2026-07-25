@@ -247,23 +247,151 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
   }
 
   // Greeting (date + "Good afternoon, <name>.") — shared by both layouts.
-  const greetingBlock = (
+  // `onPhoto` = the text sits on the hero illustration (mobile), which is a
+  // fixed-light image regardless of theme, so it needs FIXED dark colors.
+  // Off the photo (desktop, where the greeting sits beside the art on the
+  // themed page background) it must use the theme-aware tokens instead —
+  // fixed dark ink there would be invisible in dark mode.
+  const greetingBlock = (onPhoto: boolean) => (
     <>
-      <time style={{ display: 'block', color: '#3E653E', fontSize: 15, fontWeight: 600, letterSpacing: '-0.02em', fontFamily: font.body }}>
+      <time style={{ display: 'block', color: onPhoto ? '#3E653E' : color.birdie, fontSize: 15, fontWeight: 600, letterSpacing: '-0.02em', fontFamily: font.body }}>
         {date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: TZ })}
       </time>
-      {/* Fixed dark ink, NOT the theme-aware color.ink — this heading always
-          sits over the (always-light) hero photo, regardless of app theme. */}
-      <h1 style={{ margin: '9px 0 0', color: '#0B0D0A', fontFamily: font.display, fontSize: isMobile ? 33 : 38, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.98, textWrap: 'balance' as never }}>
+      <h1 style={{ margin: '9px 0 0', color: onPhoto ? '#0B0D0A' : color.ink, fontFamily: font.display, fontSize: isMobile ? 33 : 44, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.98, textWrap: 'balance' as never }}>
         {greetingFor(date)},<br />{firstName}.
       </h1>
     </>
   )
 
+  // ── Content blocks — composed differently per layout (see the return) ──
+  const rankCard = (
+    <button
+      onClick={() => setShowRanks(true)}
+      style={{ ...raised, display: 'block', width: '100%', textAlign: 'left', padding: '16px 16px 14px', cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)' }}
+      onMouseDown={pressFn(true)} onMouseUp={pressFn(false)} onMouseLeave={pressFn(false)}
+      onTouchStart={pressFn(true)} onTouchEnd={pressFn(false)}
+    >
+      <div style={{ display: 'grid', gridTemplateColumns: '48px minmax(0,1.05fr) minmax(0,1fr)', alignItems: 'center', gap: 13 }}>
+        <span style={{ width: 48, height: 48, borderRadius: 24, background: 'rgba(219,235,207,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <FlagGlyph size={26} color={color.green} strokeWidth={2.2} />
+        </span>
+        <span style={{ minWidth: 0 }}>
+          <span style={cardLabel}>Ranked points</span>
+          <span style={{ display: 'flex', alignItems: 'baseline', gap: 7, marginTop: 6 }}>
+            <span ref={pointsRef} style={{ fontFamily: font.display, fontSize: 38, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.9, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>
+              {points.toLocaleString()}
+            </span>
+            <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: '-0.03em', color: color.ink }}>pts</span>
+          </span>
+        </span>
+        <span style={{ minWidth: 0, textAlign: 'left' }}>
+          <span style={cardLabel}>Rank</span>
+          <span style={{ display: 'block', marginTop: 6, fontSize: 20, fontWeight: 500, letterSpacing: '-0.04em', lineHeight: 1, color: color.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rank.name}</span>
+          <span style={{ display: 'block', marginTop: 6, fontSize: 13, fontWeight: 500, letterSpacing: '-0.02em', color: color.muted, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
+            {nextTier ? `${nextTier.minPoints - points} pts to ${nextTier.name}` : 'Top tier'}
+          </span>
+        </span>
+      </div>
+      <div style={{ height: 9, marginTop: 14, overflow: 'hidden', borderRadius: 999, background: 'rgba(105,101,84,0.12)' }}>
+        <div style={{
+          height: '100%', borderRadius: 999,
+          background: 'linear-gradient(90deg, #7D9B68, #64834F)',
+          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.3)',
+          width: `${pct}%`,
+          animation: 'rankBarFill 1.2s cubic-bezier(0.22, 1, 0.36, 1)',
+          ['--bar-width' as never]: `${pct}%`,
+        }} />
+      </div>
+    </button>
+  )
+
+  const statsGrid = (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 10 }}>
+      {/* Last round */}
+      <div style={{ ...card, padding: '13px 13px 14px' }}>
+        <span style={statChip(color.greenMid)}><FlagGlyph size={16} color="#FFFAF1" /></span>
+        <div style={cardLabel}>Last round</div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, marginTop: 7 }}>
+          <span style={{ fontFamily: font.display, fontSize: 24, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: lastScore !== null ? color.ink : color.faint, fontVariantNumeric: 'tabular-nums' }}>
+            {lastScore ?? '—'}
+          </span>
+          {deltaText && <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '-0.02em', color: deltaColor, fontVariantNumeric: 'tabular-nums' }}>{deltaText}</span>}
+        </div>
+      </div>
+      {/* Handicap */}
+      <div style={{ ...card, padding: '13px 13px 14px' }}>
+        <span style={statChip(color.sage)}>H</span>
+        <div style={cardLabel}>Handicap</div>
+        <div style={{ marginTop: 7, fontFamily: font.display, fontSize: 24, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: profile?.handicapIndex != null ? color.ink : color.faint, fontVariantNumeric: 'tabular-nums' }}>
+          {profile?.handicapIndex != null ? profile.handicapIndex.toFixed(1) : '—'}
+        </div>
+      </div>
+      {/* Record */}
+      <div style={{ ...card, padding: '13px 13px 14px' }}>
+        <span style={statChip(color.orange)}><TrophyIcon size={15} color="#FFFAF1" /></span>
+        <div style={cardLabel}>Record</div>
+        <div style={{ marginTop: 7, display: 'flex', alignItems: 'baseline', gap: 6, lineHeight: 1 }}>
+          <span style={recNum}>{wins}</span>
+          <span style={recSep}>–</span>
+          <span style={recNum}>{losses}</span>
+          <span style={recSep}>–</span>
+          <span style={recNum}>{ties}</span>
+        </div>
+      </div>
+    </div>
+  )
+
+  const ctaRow = (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+      <button
+        onClick={() => onNavigate('rounds')}
+        style={{
+          display: 'grid', gridTemplateColumns: '22px 1fr auto', alignItems: 'center', gap: 9,
+          minHeight: 52, padding: '0 12px 0 16px', borderRadius: radius.md, border: 'none',
+          color: '#FFFAF1', fontFamily: font.body, fontSize: 15, fontWeight: 700, letterSpacing: '-0.03em',
+          background: 'radial-gradient(circle at 62% 45%, rgba(85,123,74,0.38), transparent 42%), linear-gradient(135deg, #174824 0%, #10361E 100%)',
+          boxShadow: '0 9px 15px rgba(18,55,31,0.2)',
+          cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)',
+        }}
+        onMouseDown={pressFn(true)} onMouseUp={pressFn(false)} onMouseLeave={pressFn(false)}
+        onTouchStart={pressFn(true)} onTouchEnd={pressFn(false)}
+      >
+        <ScorecardIcon size={20} color="#FFFAF1" />
+        <span style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>Log a round</span>
+        <ChevronRightIcon size={18} color="rgba(255,250,241,0.85)" />
+      </button>
+      <button
+        onClick={() => onNavigate('friends')}
+        style={{
+          display: 'grid', gridTemplateColumns: '22px 1fr auto', alignItems: 'center', gap: 9,
+          minHeight: 52, padding: '0 12px 0 16px', borderRadius: radius.md, border: 'none',
+          color: '#132F1D', fontFamily: font.body, fontSize: 15, fontWeight: 700, letterSpacing: '-0.03em',
+          background: 'linear-gradient(135deg, rgba(224,235,214,0.95), rgba(237,241,220,0.85))',
+          boxShadow: elevation.sm,
+          cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)',
+        }}
+        onMouseDown={pressFn(true)} onMouseUp={pressFn(false)} onMouseLeave={pressFn(false)}
+        onTouchStart={pressFn(true)} onTouchEnd={pressFn(false)}
+      >
+        <UsersIcon size={20} color="#132F1D" />
+        <span style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>Friends</span>
+        <ChevronRightIcon size={18} color="rgba(19,47,29,0.7)" />
+      </button>
+    </div>
+  )
+
+  const feedBlock = <Feed userId={userId} isMobile={isMobile} onViewProfile={onViewProfile} />
+
   return (
     <main
       ref={containerRef}
-      style={{ maxWidth: isMobile ? '100%' : 560, margin: '0 auto', paddingBottom: isMobile ? page.bottomMobile : page.bottomDesktop }}
+      className={isMobile ? undefined : 'home-shell'}
+      style={{
+        maxWidth: isMobile ? '100%' : undefined,
+        margin: '0 auto',
+        padding: isMobile ? undefined : `0 ${px}px`,
+        paddingBottom: isMobile ? page.bottomMobile : page.bottomDesktop,
+      }}
     >
 
       {isMobile ? (
@@ -272,147 +400,58 @@ export default function Dashboard({ profile, userId, rounds, onNavigate, onViewP
             greeting floats over its pale sky. The band is taller than the
             desktop hero so the extra height is sky up top — keeping the sea,
             green and flag low near the rank card (matches the reference). ── */
-        <div style={{ position: 'relative' }}>
-          <div className="hero-settle" style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', overflow: 'hidden' }}>
-            <CourseHero aspect="390 / 500" fadeStart={72} />
-          </div>
-          <div style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top) + 62px)', left: 0, right: 0, padding: `0 ${px}px`, zIndex: 2 }}>
-            {greetingBlock}
-          </div>
-        </div>
-      ) : (
-        /* ── Desktop: greeting above a rounded hero card ── */
         <>
-          <div style={{ padding: `24px ${px}px 0`, position: 'relative', zIndex: 2 }}>
-            {greetingBlock}
+          <div style={{ position: 'relative' }}>
+            <div className="hero-settle" style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', overflow: 'hidden' }}>
+              <CourseHero aspect="390 / 500" fadeStart={72} />
+            </div>
+            <div style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top) + 62px)', left: 0, right: 0, padding: `0 ${px}px`, zIndex: 2 }}>
+              {greetingBlock(true)}
+            </div>
           </div>
-          <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', marginTop: -96, marginLeft: px, marginRight: px, borderRadius: radius.sheet, overflow: 'hidden' }}>
-            <CourseHero />
+
+          {/* Overview stack — overlaps only the illustration's bottom edge */}
+          <div style={{ position: 'relative', zIndex: 3, marginTop: -54, padding: `0 ${px}px`, display: 'flex', flexDirection: 'column', gap: 13 }}>
+            {rankCard}
+            {statsGrid}
+            {ctaRow}
+            <div style={{ marginTop: 3 }}>{feedBlock}</div>
+          </div>
+        </>
+      ) : (
+        /* ── Desktop / tablet: the greeting deliberately does NOT overlap the
+            art here. That overlap is a mobile device — on a wide screen it
+            read as a squashed phone layout (a narrow 560px column with the
+            heading sitting on top of a near-square image). Instead: an
+            editorial hero (greeting beside the art at >=1024px, stacked below
+            that), then a two-column body with the feed as the main column and
+            a sticky at-a-glance sidebar. The 1024px split lives in the
+            .home-* classes in index.css — isMobile is a single 768px boolean
+            and can't express a second breakpoint. ── */
+        <>
+          <div className="home-hero-row" style={{ paddingTop: 30 }}>
+            <div>{greetingBlock(false)}</div>
+            {/* The settle lives INSIDE the frame: the card keeps a stable
+                size/radius while the illustration zooms within it (clipped).
+                Putting `hero-settle` on the frame itself would scale the whole
+                card 6% on mount and briefly eat into the grid gap. */}
+            <div style={{ borderRadius: radius.sheet, overflow: 'hidden', boxShadow: 'var(--raised-shadow)', pointerEvents: 'none' }}>
+              <div className="hero-settle">
+                <CourseHero aspect="16 / 11" fadeStart={100} />
+              </div>
+            </div>
+          </div>
+
+          <div className="home-body-grid" style={{ marginTop: 28 }}>
+            <div>{feedBlock}</div>
+            <aside className="home-side-col" style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
+              {rankCard}
+              {statsGrid}
+              {ctaRow}
+            </aside>
           </div>
         </>
       )}
-
-      {/* ── Overview stack — overlaps only the illustration's bottom edge ── */}
-      <div style={{ position: 'relative', zIndex: 3, marginTop: -54, padding: `0 ${px}px`, display: 'flex', flexDirection: 'column', gap: 13 }}>
-
-        {/* Rank card */}
-        <button
-          onClick={() => setShowRanks(true)}
-          style={{ ...raised, display: 'block', width: '100%', textAlign: 'left', padding: '16px 16px 14px', cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)' }}
-          onMouseDown={pressFn(true)} onMouseUp={pressFn(false)} onMouseLeave={pressFn(false)}
-          onTouchStart={pressFn(true)} onTouchEnd={pressFn(false)}
-        >
-          <div style={{ display: 'grid', gridTemplateColumns: '48px minmax(0,1.05fr) minmax(0,1fr)', alignItems: 'center', gap: 13 }}>
-            <span style={{ width: 48, height: 48, borderRadius: 24, background: 'rgba(219,235,207,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <FlagGlyph size={26} color={color.green} strokeWidth={2.2} />
-            </span>
-            <span style={{ minWidth: 0 }}>
-              <span style={cardLabel}>Ranked points</span>
-              <span style={{ display: 'flex', alignItems: 'baseline', gap: 7, marginTop: 6 }}>
-                <span ref={pointsRef} style={{ fontFamily: font.display, fontSize: 38, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.9, color: color.ink, fontVariantNumeric: 'tabular-nums' }}>
-                  {points.toLocaleString()}
-                </span>
-                <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: '-0.03em', color: color.ink }}>pts</span>
-              </span>
-            </span>
-            <span style={{ minWidth: 0, textAlign: 'left' }}>
-              <span style={cardLabel}>Rank</span>
-              <span style={{ display: 'block', marginTop: 6, fontSize: 20, fontWeight: 500, letterSpacing: '-0.04em', lineHeight: 1, color: color.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rank.name}</span>
-              <span style={{ display: 'block', marginTop: 6, fontSize: 13, fontWeight: 500, letterSpacing: '-0.02em', color: '#4D504A', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
-                {nextTier ? `${nextTier.minPoints - points} pts to ${nextTier.name}` : 'Top tier'}
-              </span>
-            </span>
-          </div>
-          <div style={{ height: 9, marginTop: 14, overflow: 'hidden', borderRadius: 999, background: 'rgba(105,101,84,0.12)' }}>
-            <div style={{
-              height: '100%', borderRadius: 999,
-              background: 'linear-gradient(90deg, #7D9B68, #64834F)',
-              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.3)',
-              width: `${pct}%`,
-              animation: 'rankBarFill 1.2s cubic-bezier(0.22, 1, 0.36, 1)',
-              ['--bar-width' as never]: `${pct}%`,
-            }} />
-          </div>
-        </button>
-
-        {/* Stats grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 10 }}>
-          {/* Last round */}
-          <div style={{ ...card, padding: '13px 13px 14px' }}>
-            <span style={statChip(color.greenMid)}><FlagGlyph size={16} color="#FFFAF1" /></span>
-            <div style={cardLabel}>Last round</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, marginTop: 7 }}>
-              <span style={{ fontFamily: font.display, fontSize: 24, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: lastScore !== null ? color.ink : color.faint, fontVariantNumeric: 'tabular-nums' }}>
-                {lastScore ?? '—'}
-              </span>
-              {deltaText && <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '-0.02em', color: deltaColor, fontVariantNumeric: 'tabular-nums' }}>{deltaText}</span>}
-            </div>
-          </div>
-          {/* Handicap */}
-          <div style={{ ...card, padding: '13px 13px 14px' }}>
-            <span style={statChip(color.sage)}>H</span>
-            <div style={cardLabel}>Handicap</div>
-            <div style={{ marginTop: 7, fontFamily: font.display, fontSize: 24, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1, color: profile?.handicapIndex != null ? color.ink : color.faint, fontVariantNumeric: 'tabular-nums' }}>
-              {profile?.handicapIndex != null ? profile.handicapIndex.toFixed(1) : '—'}
-            </div>
-          </div>
-          {/* Record */}
-          <div style={{ ...card, padding: '13px 13px 14px' }}>
-            <span style={statChip(color.orange)}><TrophyIcon size={15} color="#FFFAF1" /></span>
-            <div style={cardLabel}>Record</div>
-            <div style={{ marginTop: 7, display: 'flex', alignItems: 'baseline', gap: 6, lineHeight: 1 }}>
-              <span style={recNum}>{wins}</span>
-              <span style={recSep}>–</span>
-              <span style={recNum}>{losses}</span>
-              <span style={recSep}>–</span>
-              <span style={recNum}>{ties}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* CTAs */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <button
-            onClick={() => onNavigate('rounds')}
-            style={{
-              display: 'grid', gridTemplateColumns: '22px 1fr auto', alignItems: 'center', gap: 9,
-              minHeight: 52, padding: '0 12px 0 16px', borderRadius: radius.md, border: 'none',
-              color: '#FFFAF1', fontFamily: font.body, fontSize: 15, fontWeight: 700, letterSpacing: '-0.03em',
-              background: 'radial-gradient(circle at 62% 45%, rgba(85,123,74,0.38), transparent 42%), linear-gradient(135deg, #174824 0%, #10361E 100%)',
-              boxShadow: '0 9px 15px rgba(18,55,31,0.2)',
-              cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)',
-            }}
-            onMouseDown={pressFn(true)} onMouseUp={pressFn(false)} onMouseLeave={pressFn(false)}
-            onTouchStart={pressFn(true)} onTouchEnd={pressFn(false)}
-          >
-            <ScorecardIcon size={20} color="#FFFAF1" />
-            <span style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>Log a round</span>
-            <ChevronRightIcon size={18} color="rgba(255,250,241,0.85)" />
-          </button>
-          <button
-            onClick={() => onNavigate('friends')}
-            style={{
-              display: 'grid', gridTemplateColumns: '22px 1fr auto', alignItems: 'center', gap: 9,
-              minHeight: 52, padding: '0 12px 0 16px', borderRadius: radius.md, border: 'none',
-              color: '#132F1D', fontFamily: font.body, fontSize: 15, fontWeight: 700, letterSpacing: '-0.03em',
-              background: 'linear-gradient(135deg, rgba(224,235,214,0.95), rgba(237,241,220,0.85))',
-              boxShadow: elevation.sm,
-              cursor: 'pointer', transition: 'transform 0.16s cubic-bezier(0.22,1,0.36,1)',
-            }}
-            onMouseDown={pressFn(true)} onMouseUp={pressFn(false)} onMouseLeave={pressFn(false)}
-            onTouchStart={pressFn(true)} onTouchEnd={pressFn(false)}
-          >
-            <UsersIcon size={20} color="#132F1D" />
-            <span style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>Friends</span>
-            <ChevronRightIcon size={18} color="rgba(19,47,29,0.7)" />
-          </button>
-        </div>
-
-        {/* Clubhouse feed — sits directly under the CTAs (reference) */}
-        <div style={{ marginTop: 3 }}>
-          <Feed userId={userId} isMobile={isMobile} onViewProfile={onViewProfile} />
-        </div>
-      </div>
 
       {showRanks && <RanksModal points={points} isMobile={isMobile} onClose={() => setShowRanks(false)} onNavigate={onNavigate} />}
       {rankUp && <RankUpMoment tier={rankUp} onClose={() => setRankUp(null)} />}

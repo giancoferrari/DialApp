@@ -206,6 +206,45 @@ body {
   filter: brightness(0.82) saturate(0.9);
 }
 
+/* ── Home (Dashboard) desktop layout ──────────────────────────────────────
+   Mobile (<768px) uses its own full-bleed layout in Dashboard.tsx and never
+   gets these classes — `isMobile` is a single 768px boolean, so the second
+   breakpoint (1024px, one column vs. two) has to live here in CSS.
+     768–1023px : one centred column — greeting, hero art, then the sidebar
+                  blocks (rank/stats/CTAs, pulled above the feed via `order`).
+     ≥1024px    : two columns — greeting beside the hero art up top, then the
+                  feed with a sticky at-a-glance sidebar beside it. */
+.home-shell { margin: 0 auto; }
+@media (min-width: 768px)  { .home-shell { max-width: 680px; } }
+@media (min-width: 1024px) { .home-shell { max-width: 1040px; } }
+
+.home-hero-row,
+.home-body-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .home-hero-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 34px;
+  }
+  .home-body-grid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 24px;
+  }
+  /* Sidebar tracks the reader; 84px clears the sticky desktop header. */
+  .home-side-col { position: sticky; top: 84px; }
+}
+
+/* One column: the at-a-glance blocks belong above the feed, not below it. */
+@media (max-width: 1023px) {
+  .home-side-col { order: -1; }
+}
+
 /* Numbers that sit in columns (scores, handicaps, yardages) align cleanly. */
 .tnum { font-variant-numeric: tabular-nums; }
 
